@@ -10,7 +10,9 @@ use crate::parser::package::*;
 
 const DPKG_STATUS_FILE: &str = "/var/lib/dpkg/status";
 
+/// Simple utility that helps you to rebuild all your packages to DEB's
 #[derive(Clap)]
+#[clap(version = env!("CARGO_PKG_VERSION"))]
 struct CLIOptions {
     #[clap(subcommand)]
     subcmd: CLICommand,
@@ -18,30 +20,54 @@ struct CLIOptions {
 
 #[derive(Clap)]
 enum CLICommand {
-    List
+    /// This command prints installed (or all) packages to stdout
+    List(ListCommand),
+    Build(BuildCommand)
 }
+
+#[derive(Clap)]
+struct ListCommand {
+    /// Lists all found packages instead of installed only
+    #[clap(short, long)]
+    all: bool,
+
+    /// Sets a custom database file
+    #[clap(short, long, default_value=DPKG_STATUS_FILE)]
+    database: String,
+}
+
+#[derive(Clap)]
+struct BuildCommand {
+    /// Sets a custom database file
+    #[clap(short, long, default_value=DPKG_STATUS_FILE)]
+    database: String,
+}
+
 
 fn main() {
     let options = CLIOptions::parse();
     match options.subcmd {
-        CLICommand::List => list_packages(DPKG_STATUS_FILE),
+        CLICommand::List(cmd) => cmd.list(),
+        CLICommand::Build(cmd) => eprintln!("No implementation for this btw :(")
     }
 }
 
-fn list_packages(file: &str) {
-    let mut packages = get_actual_packages(file);
-    packages.sort_by(|a, b| {
-        a.name.to_lowercase().cmp(&b.name.to_lowercase())
-    });
+impl ListCommand {
+    fn list(&self) {
+        let mut packages = get_packages(self.database.as_str(), self.all);
+        packages.sort_by(|a, b| {
+            a.name.to_lowercase().cmp(&b.name.to_lowercase())
+        });
 
-    let mut counter = 0;
-    for package in packages.iter() {
-        counter += 1;
-        println!("{:3}: {} - {}", counter, package.name, package.identifier);
+        let mut counter = 0;
+        for package in packages.iter() {
+            counter += 1;
+            println!("{:3}: {} - {}", counter, package.name, package.identifier);
+        }
     }
 }
 
-fn get_actual_packages(file: &str) -> Vec<Package> {
+fn get_packages(file: &str, get_all: bool) -> Vec<Package> {
     let parser = Parser::new(file)
         .unwrap_or_else(|error| panic!("Failed to open {}. {}", file, error));
 
@@ -50,9 +76,13 @@ fn get_actual_packages(file: &str) -> Vec<Package> {
 
     let handler_pkgs = Arc::clone(&packages);
     parser.parse(move |pkg| -> () {
-        let identifier = &pkg.identifier;
-        if identifier.starts_with("gsc") || identifier.starts_with("cy+") || pkg.state != State::Install {
-            return;
+        if !get_all {
+            let identifier = &pkg.identifier;
+            if identifier.starts_with("gsc")
+                || identifier.starts_with("cy+")
+                || pkg.state != State::Install {
+                return;
+            }
         }
 
         let mut pkgs = handler_pkgs.lock().unwrap();
