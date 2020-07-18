@@ -1,0 +1,12 @@
+[package]
+name = "twackup"
+version = "0.1.0"
+authors = ["DanP"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+memmap = "0.7.0"
+num_cpus = "1.13.0"
+threadpool = "1.8.1"
