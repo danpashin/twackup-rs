@@ -76,10 +76,8 @@ impl Parser {
 
                 // And execute parser in another thread with calling atomic handler
                 self.thread_pool.execute(move || {
-                    let package = parser.parse();
-                    match package {
-                        Some(pkg) => th_handler(pkg),
-                        None=>{}
+                    if let Some(pkg) = parser.parse() {
+                        th_handler(pkg);
                     }
                 });
                 last_nl_pos = cur_position.clone();
@@ -110,10 +108,7 @@ impl ChunkParser {
         // Now process each line individually
         let fields_map = self.parse_fields(fields);
 
-        return Some(package::Package{
-            identifier: fields_map.get("Package")?.to_string(),
-            name: fields_map.get("Name").unwrap_or(&"".to_string()).to_string()
-        });
+        return Some(package::Package::new(&fields_map)?);
     }
 
     fn parse_chunk(&self, chunk: &[u8]) -> LinkedList<String> {
