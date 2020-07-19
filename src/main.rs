@@ -1,12 +1,13 @@
-pub mod cli_error;
-pub mod parser;
-use parser::*;
 use clap::Clap;
+use ansi_term::{Colour, Color};
 use std::{
     sync::{Arc, Mutex},
     vec::Vec
 };
-use crate::parser::package::*;
+
+mod cli_error;
+mod parser;
+use crate::parser::{*, package::*};
 
 const DPKG_STATUS_FILE: &str = "/var/lib/dpkg/status";
 
@@ -60,45 +61,14 @@ fn main() {
         _ => eprintln!("This feature is not implemented yet :(")
     }
 }
-
-impl ListCommand {
-    fn list(&self) {
-        let mut packages = get_packages(self.database.as_str(), self.all);
-        packages.sort_by(|a, b| {
-            a.name.to_lowercase().cmp(&b.name.to_lowercase())
-        });
-
-        let mut counter = 0;
-        for package in packages.iter() {
-            counter += 1;
-            println!("{:3}: {} - {}", counter, package.name, package.identifier);
-        }
-    }
-}
-
-impl LeavesCommand {
-    fn list(&self) {
-        let mut packages = get_packages(self.database.as_str(), false);
-        packages.sort_by(|a, b| {
-            a.name.to_lowercase().cmp(&b.name.to_lowercase())
-        });
-
-        let mut counter = 0;
-        for package in packages.iter() {
-            let mut is_dependency = false;
-            for pkg in packages.iter() {
-                is_dependency = pkg.depends.contains(&package.identifier);
-                is_dependency = is_dependency || pkg.predepends.contains(&package.identifier);
-                if is_dependency {
-                    break;
-                }
-            }
-
-            if !is_dependency {
-                counter += 1;
-                println!("{:3}: {} - {}", counter, package.name, package.identifier);
-            }
-        }
+fn section_color(section: &String)-> Colour {
+    match section.to_lowercase().as_str() {
+        "system" => Color::Red,
+        "tweaks" => Color::Yellow,
+        "utilities" => Color::Green,
+        "themes" => Color::Cyan,
+        "terminal_support" => Color::Green,
+        _ => Color::White
     }
 }
 
@@ -125,4 +95,47 @@ fn get_packages(file: &str, get_all: bool) -> Vec<Package> {
     });
 
     return packages.lock().unwrap().to_owned();
+}
+
+impl ListCommand {
+    fn list(&self) {
+        let mut packages = get_packages(self.database.as_str(), self.all);
+        packages.sort_by(|a, b| {
+            a.name.to_lowercase().cmp(&b.name.to_lowercase())
+        });
+
+        let mut counter = 0;
+        for package in packages.iter() {
+            counter += 1;
+            let name = section_color(&package.section).bold().paint(&package.name);
+            println!("{:3}: {} - {}", counter, name, package.identifier);
+        }
+    }
+}
+
+impl LeavesCommand {
+    fn list(&self) {
+        let mut packages = get_packages(self.database.as_str(), false);
+        packages.sort_by(|a, b| {
+            a.name.to_lowercase().cmp(&b.name.to_lowercase())
+        });
+
+        let mut counter = 0;
+        for package in packages.iter() {
+            let mut is_dependency = false;
+            for pkg in packages.iter() {
+                is_dependency = pkg.depends.contains(&package.identifier);
+                is_dependency = is_dependency || pkg.predepends.contains(&package.identifier);
+                if is_dependency {
+                    break;
+                }
+            }
+
+            if !is_dependency {
+                counter += 1;
+                let name = section_color(&package.section).bold().paint(&package.name);
+                println!("{:3}: {} - {}", counter, name, package.identifier);
+            }
+        }
+    }
 }

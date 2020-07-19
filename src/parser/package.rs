@@ -18,6 +18,7 @@ pub struct Package {
     pub state: State,
     pub depends: String,
     pub predepends: String,
+    pub section: String,
 }
 
 impl Package {
@@ -32,6 +33,7 @@ impl Package {
             state: State::from_dpkg(fields.get("Status")),
             depends: fields.get("Depends").unwrap_or(&"".to_string()).to_string(),
             predepends: fields.get("Pre-Depends").unwrap_or(&"".to_string()).to_string(),
+            section: fields.get("Section").unwrap_or(&"".to_string()).to_string(),
         });
     }
 }
