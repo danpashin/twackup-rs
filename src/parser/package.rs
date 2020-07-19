@@ -15,7 +15,9 @@ pub struct Package {
     pub name: String,
     pub version: String,
     pub architecture: String,
-    pub state: State
+    pub state: State,
+    pub depends: String,
+    pub predepends: String,
 }
 
 impl Package {
@@ -27,7 +29,9 @@ impl Package {
             name: fields.get("Name").unwrap_or(&package_id).to_string(),
             version: fields.get("Version")?.to_string(),
             architecture: fields.get("Architecture")?.to_string(),
-            state: State::from_dpkg(fields.get("Status"))
+            state: State::from_dpkg(fields.get("Status")),
+            depends: fields.get("Depends").unwrap_or(&"".to_string()).to_string(),
+            predepends: fields.get("Pre-Depends").unwrap_or(&"".to_string()).to_string(),
         });
     }
 }

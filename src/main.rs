@@ -22,7 +22,8 @@ struct CLIOptions {
 enum CLICommand {
     /// This command prints installed (or all) packages to stdout
     List(ListCommand),
-    Build(BuildCommand)
+    /// This command prints only unique packages from installed
+    Leaves(LeavesCommand),
 }
 
 #[derive(Clap)]
@@ -43,12 +44,20 @@ struct BuildCommand {
     database: String,
 }
 
+#[derive(Clap)]
+struct LeavesCommand {
+    /// Sets a custom database file
+    #[clap(short, long, default_value=DPKG_STATUS_FILE)]
+    database: String,
+}
+
 
 fn main() {
     let options = CLIOptions::parse();
     match options.subcmd {
         CLICommand::List(cmd) => cmd.list(),
-        CLICommand::Build(cmd) => eprintln!("No implementation for this btw :(")
+        CLICommand::Leaves(cmd) => cmd.list(),
+        _ => eprintln!("This feature is not implemented yet :(")
     }
 }
 
@@ -63,6 +72,32 @@ impl ListCommand {
         for package in packages.iter() {
             counter += 1;
             println!("{:3}: {} - {}", counter, package.name, package.identifier);
+        }
+    }
+}
+
+impl LeavesCommand {
+    fn list(&self) {
+        let mut packages = get_packages(self.database.as_str(), false);
+        packages.sort_by(|a, b| {
+            a.name.to_lowercase().cmp(&b.name.to_lowercase())
+        });
+
+        let mut counter = 0;
+        for package in packages.iter() {
+            let mut is_dependency = false;
+            for pkg in packages.iter() {
+                is_dependency = pkg.depends.contains(&package.identifier);
+                is_dependency = is_dependency || pkg.predepends.contains(&package.identifier);
+                if is_dependency {
+                    break;
+                }
+            }
+
+            if !is_dependency {
+                counter += 1;
+                println!("{:3}: {} - {}", counter, package.name, package.identifier);
+            }
         }
     }
 }
