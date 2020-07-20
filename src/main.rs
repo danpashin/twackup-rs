@@ -107,8 +107,9 @@ impl ListCommand {
         let mut counter = 0;
         for package in packages.iter() {
             counter += 1;
-            let name = section_color(&package.section).bold().paint(&package.name);
-            println!("{:3}: {} - {}", counter, name, package.identifier);
+            let section_sym = section_color(&package.section).paint("▶︎");
+            println!("{:3}: {} {} - {}",
+                     counter, section_sym, package.name, package.identifier);
         }
     }
 }
@@ -133,8 +134,9 @@ impl LeavesCommand {
 
             if !is_dependency {
                 counter += 1;
-                let name = section_color(&package.section).bold().paint(&package.name);
-                println!("{:3}: {} - {}", counter, name, package.identifier);
+                let section_sym = section_color(&package.section).paint("▶︎");
+                println!("{:3}: {} {} - {}",
+                         counter, section_sym, package.name, package.identifier);
             }
         }
     }
