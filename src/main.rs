@@ -9,7 +9,7 @@ mod cli_error;
 mod parser;
 use crate::parser::{*, package::*};
 
-const DPKG_STATUS_FILE: &str = "/var/lib/dpkg/status";
+const ADMIN_DIR: &str = "/var/lib/dpkg";
 
 /// Simple utility that helps you to rebuild all your packages to DEB's
 #[derive(Clap)]
@@ -33,23 +33,23 @@ struct ListCommand {
     #[clap(short, long)]
     all: bool,
 
-    /// Sets a custom database file
-    #[clap(short, long, default_value=DPKG_STATUS_FILE)]
-    database: String,
+    /// Use custom dpkg <directory> instead of default
+    #[clap(long, default_value=ADMIN_DIR)]
+    admindir: String,
 }
 
 #[derive(Clap)]
 struct BuildCommand {
-    /// Sets a custom database file
-    #[clap(short, long, default_value=DPKG_STATUS_FILE)]
-    database: String,
+    /// Use custom dpkg <directory> instead of default
+    #[clap(long, default_value=ADMIN_DIR)]
+    admindir: String,
 }
 
 #[derive(Clap)]
 struct LeavesCommand {
-    /// Sets a custom database file
-    #[clap(short, long, default_value=DPKG_STATUS_FILE)]
-    database: String,
+    /// Use custom dpkg <directory> instead of default
+    #[clap(long, default_value=ADMIN_DIR)]
+    admindir: String,
 }
 
 
@@ -99,7 +99,8 @@ fn get_packages(file: &str, get_all: bool) -> Vec<Package> {
 
 impl ListCommand {
     fn list(&self) {
-        let mut packages = get_packages(self.database.as_str(), self.all);
+        let status_file = format!("{}/status", self.admindir);
+        let mut packages = get_packages(status_file.as_str(), self.all);
         packages.sort_by(|a, b| {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });
@@ -116,7 +117,8 @@ impl ListCommand {
 
 impl LeavesCommand {
     fn list(&self) {
-        let mut packages = get_packages(self.database.as_str(), false);
+        let status_file = format!("{}/status", self.admindir);
+        let mut packages = get_packages(status_file.as_str(), false);
         packages.sort_by(|a, b| {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });
