@@ -2,7 +2,8 @@ use clap::Clap;
 use ansi_term::{Colour, Color};
 use std::{
     sync::{Arc, Mutex},
-    vec::Vec
+    vec::Vec,
+    collections::LinkedList
 };
 
 mod cli_error;
@@ -25,6 +26,7 @@ enum CLICommand {
     List(ListCommand),
     /// This command prints only unique packages from installed
     Leaves(LeavesCommand),
+    Build(BuildCommand)
 }
 
 #[derive(Clap)]
@@ -76,7 +78,7 @@ fn get_packages(file: &str, get_all: bool) -> Vec<Package> {
     let parser = Parser::new(file)
         .unwrap_or_else(|error| panic!("Failed to open {}. {}", file, error));
 
-    let pkgs: Vec<Package> = Vec::new();
+    let pkgs: LinkedList<Package> = LinkedList::new();
     let packages = Arc::new(Mutex::new(pkgs));
 
     let handler_pkgs = Arc::clone(&packages);
@@ -91,10 +93,11 @@ fn get_packages(file: &str, get_all: bool) -> Vec<Package> {
         }
 
         let mut pkgs = handler_pkgs.lock().unwrap();
-        pkgs.push(pkg);
+        pkgs.push_back(pkg);
     });
 
-    return packages.lock().unwrap().to_owned();
+    let packages_vec: Vec<Package> = packages.lock().unwrap().to_owned().into_iter().collect();
+    return packages_vec;
 }
 
 impl ListCommand {
