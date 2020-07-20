@@ -11,13 +11,33 @@ pub enum State {
 
 #[derive(Clone)]
 pub struct Package {
+    /// The name of the binary package. This field MUST NOT be empty.
     pub identifier: String,
+
+    /// Name of package that displays in every package manager.
+    /// If this field is empty, identifier will be used.
     pub name: String,
+
+    /// Version of package. This field MUST NOT be empty.
     pub version: String,
+
+    /// Architecture of package. This field MUST NOT be empty.
     pub architecture: String,
+
+    /// State of package as it was marked by dpkg itself.
+    /// If this field is empty, Unknown state must be used.
     pub state: State,
+
+    /// Packages of which this one depends.
+    /// If this field is empty, empty string must be used.
     pub depends: String,
+
+    /// Packages of which installition of this one depends.
+    /// If this field is empty, empty string must be used.
     pub predepends: String,
+
+    /// This field specifies an application area into which
+    /// the package has been classified
     pub section: String,
 }
 

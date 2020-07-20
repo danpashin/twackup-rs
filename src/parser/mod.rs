@@ -95,6 +95,7 @@ impl ChunkParser {
         return ChunkParser { file_path, start, end };
     }
 
+    /// Parses chunk to package model
     fn parse(&self) -> Option<package::Package> {
         // Open file and load it in memory with mmap kernel feature
         let file = File::open(&self.file_path).unwrap();
@@ -111,6 +112,7 @@ impl ChunkParser {
         return Some(package::Package::new(&fields_map)?);
     }
 
+    /// Converts raw chunk bytes to list of lines with multi-line syntax support
     fn parse_chunk(&self, chunk: &[u8]) -> LinkedList<String> {
         let mut fields = LinkedList::new();
 
@@ -135,12 +137,17 @@ impl ChunkParser {
         return fields;
     }
 
+    /// Parses lines to keys and values
     fn parse_fields(&self, fields: LinkedList<String>) -> HashMap<String, String> {
         let mut fields_map = HashMap::new();
 
         for field in fields {
+            // Dpkg uses key-value syntax, so firsly, we'll find delimeter
+            // Every line without delimiter is invalid and will be skipped
             let delim_pos = field.find(':');
             if delim_pos.is_some() {
+                // Then we'll split line into two ones and trim the result
+                // to remove linebreaks and spaces
                 let (key, value) = field.split_at(delim_pos.unwrap());
                 fields_map.insert(
                     key.trim().to_string(),
