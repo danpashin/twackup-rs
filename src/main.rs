@@ -8,7 +8,8 @@ use std::{
 
 mod cli_error;
 mod parser;
-use crate::parser::{*, package::*};
+mod package;
+use crate::{package::*, parser::*};
 
 const ADMIN_DIR: &str = "/var/lib/dpkg";
 

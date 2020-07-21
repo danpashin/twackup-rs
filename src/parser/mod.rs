@@ -1,11 +1,11 @@
-pub mod package;
+// pub mod crate::package;
 use std::{
     fs::File, io::BufRead,
     str,
     collections::{LinkedList, HashMap},
 };
 use memmap::Mmap;
-use crate::cli_error::CliError;
+use crate::{cli_error::CliError, package::*};
 
 extern crate num_cpus;
 extern crate threadpool;
@@ -50,7 +50,7 @@ impl Parser {
     /// ```
     pub fn parse<F>(&self, handler: F)
     where
-        F: Fn(package::Package) + Send + Sync + 'static,
+        F: Fn(Package) + Send + Sync + 'static,
     {
         let mut last_is_nl = true;
         let mut last_nl_pos = 0;
@@ -96,7 +96,7 @@ impl ChunkParser {
     }
 
     /// Parses chunk to package model
-    fn parse(&self) -> Option<package::Package> {
+    fn parse(&self) -> Option<Package> {
         // Open file and load it in memory with mmap kernel feature
         let file = File::open(&self.file_path).unwrap();
         let mmap = unsafe { Mmap::map(&file).unwrap()  };
@@ -109,7 +109,7 @@ impl ChunkParser {
         // Now process each line individually
         let fields_map = self.parse_fields(fields);
 
-        return Some(package::Package::new(&fields_map)?);
+        return Some(Package::new(&fields_map)?);
     }
 
     /// Converts raw chunk bytes to list of lines with multi-line syntax support
