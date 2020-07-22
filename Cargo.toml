@@ -3,6 +3,7 @@ name = "twackup"
 version = "1.0.0-alpha"
 authors = ["DanP"]
 edition = "2018"
+publish = false
 
 [dependencies]
 memmap = "0.7.0"
@@ -10,3 +11,10 @@ num_cpus = "1.13.0"
 threadpool = "1.8.1"
 clap = "3.0.0-beta.1"
 ansi_term = "0.12"
+
+[profile.release]
+opt-level = 'z'
+lto = true
+codegen-units = 1
+panic = 'abort'
+debug = 0
