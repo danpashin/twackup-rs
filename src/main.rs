@@ -1,15 +1,21 @@
 use clap::Clap;
 use ansi_term::{Colour, Color};
+use num_cpus;
+use threadpool::ThreadPool;
 use std::{
     sync::{Arc, Mutex},
     vec::Vec,
-    collections::LinkedList
+    collections::LinkedList,
+    fs,
+    process::exit,
 };
 
 mod cli_error;
 mod parser;
 mod package;
-use crate::{package::*, parser::*};
+mod builder;
+use crate::{package::*, parser::*, builder::*};
+
 
 const ADMIN_DIR: &str = "/var/lib/dpkg";
 
@@ -43,9 +49,16 @@ struct ListCommand {
 
 #[derive(Clap)]
 struct BuildCommand {
+    /// Builds all found packages instead of installed only
+    #[clap(short, long)]
+    all: bool,
+
     /// Use custom dpkg <directory> instead of default
     #[clap(long, default_value=ADMIN_DIR)]
     admindir: String,
+
+    #[clap(long, default_value="/var/mobile/Documents/twackup")]
+    destination: String,
 }
 
 #[derive(Clap)]
@@ -61,6 +74,7 @@ fn main() {
     match options.subcmd {
         CLICommand::List(cmd) => cmd.list(),
         CLICommand::Leaves(cmd) => cmd.list(),
+        CLICommand::Build(cmd) => cmd.build(),
         _ => eprintln!("This feature is not implemented yet :(")
     }
 }
@@ -75,9 +89,13 @@ fn section_color(section: &String)-> Colour {
     }
 }
 
-fn get_packages(file: &str, get_all: bool) -> Vec<Package> {
-    let parser = Parser::new(file)
-        .unwrap_or_else(|error| panic!("Failed to open {}. {}", file, error));
+fn get_packages(admin_dir: &String, get_all: bool) -> Vec<Package> {
+    let status_file = format!("{}/status", admin_dir);
+    let parser = Parser::new(status_file.as_str())
+        .unwrap_or_else(|error| {
+            eprintln!("Failed to open {}. {}", status_file, error);
+            exit(1);
+        });
 
     let pkgs: LinkedList<Package> = LinkedList::new();
     let packages = Arc::new(Mutex::new(pkgs));
@@ -103,8 +121,7 @@ fn get_packages(file: &str, get_all: bool) -> Vec<Package> {
 
 impl ListCommand {
     fn list(&self) {
-        let status_file = format!("{}/status", self.admindir);
-        let mut packages = get_packages(status_file.as_str(), self.all);
+        let mut packages = get_packages(&self.admindir, self.all);
         packages.sort_by(|a, b| {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });
@@ -121,8 +138,7 @@ impl ListCommand {
 
 impl LeavesCommand {
     fn list(&self) {
-        let status_file = format!("{}/status", self.admindir);
-        let mut packages = get_packages(status_file.as_str(), false);
+        let mut packages = get_packages(&self.admindir, false);
         packages.sort_by(|a, b| {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });
@@ -146,4 +162,42 @@ impl LeavesCommand {
             }
         }
     }
+}
+
+impl BuildCommand {
+    fn build(&self) {
+        self.create_dir_if_needed();
+        let packages = get_packages(&self.admindir, self.all);
+        let threadpool = ThreadPool::new(num_cpus::get());
+
+        for package in packages {
+            let builder = BuildWorker::new(&self.admindir, &package, &self.destination);
+            threadpool.execute(move || {
+                if let Err(error) = builder.run() {
+                    eprintln!("Error while building {}. {}", builder.package.name, error);
+                }
+            });
+        }
+
+        threadpool.join();
+    }
+
+    fn create_dir_if_needed(&self) {
+        if let Ok(metadata) = fs::metadata(&self.destination) {
+            if !metadata.is_dir() {
+                if let Err(error) = fs::remove_file(&self.destination) {
+                    eprintln!("Failed to remove {}. {}", self.destination, error);
+                    exit(1);
+                }
+            }
+
+            return;
+        }
+
+        if let Err(error) = fs::create_dir_all(&self.destination) {
+            eprintln!("Failed to create {}. {}", self.destination, error);
+            exit(1);
+        }
+    }
+
 }
