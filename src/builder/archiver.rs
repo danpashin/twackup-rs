@@ -1,9 +1,11 @@
 extern crate tar;
 use tar::Builder;
+use flate2::{Compression, write::GzEncoder};
 use std::{
-    io,
+    io::{self, Read, Write},
     path::{Path, PathBuf},
-    fs::File
+    fs::File,
+    time::SystemTime,
 };
 
 pub struct Archiver {
@@ -27,11 +29,41 @@ impl Archiver {
         return self.builder.append_path_with_name(path, name);
     }
 
-    pub fn get_mut(&mut self) -> &mut Builder<File> {
-        return &mut self.builder;
+    pub fn finish_appending(&mut self) -> io::Result<()> {
+        return self.builder.finish();
     }
 
-    pub fn finish(&mut self) -> io::Result<()> {
-        return self.builder.finish();
+    pub fn append_new_file(&mut self, path: &Path, contents: &[u8]) -> io::Result<()> {
+        let cur_time = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH).unwrap()
+            .as_secs();
+
+        let mut header = tar::Header::new_gnu();
+        header.set_mode(0o644);
+        header.set_uid(0);
+        header.set_gid(0);
+        header.set_size(contents.len() as u64 + 1);
+        header.set_mtime(cur_time);
+        header.set_cksum();
+
+        return self.builder.append_data(&mut header, path, contents);
+    }
+
+    pub fn compress_gzip(&mut self, path: &Path, compression: u32)-> io::Result<()> {
+        debug_assert!(compression <= 9, "Compression level must be below or equal to 9");
+
+        let mut uncompressed = File::open(&self.output_file)?;
+        let compressed = File::create(path)?;
+        let mut buffer = vec![0; 1024];
+
+        let mut encoder = GzEncoder::new(compressed, Compression::new(compression));
+
+        while uncompressed.read_exact(&mut buffer).is_ok() {
+            encoder.write(buffer.as_slice()).unwrap();
+        }
+
+        encoder.finish()?;
+
+        return Ok(());
     }
 }
