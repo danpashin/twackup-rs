@@ -178,6 +178,8 @@ impl BuildCommand {
             threadpool.execute(move || {
                 if let Err(error) = builder.run() {
                     eprintln!("Error while building {}. {}", builder.package.name, error);
+                } else {
+                    println!("Successfully rebuild {}", builder.package.name);
                 }
             });
         }

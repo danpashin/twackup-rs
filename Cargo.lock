@@ -16,6 +16,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "ar"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "450575f58f7bee32816abbff470cbc47797397c2a81e0eaced4b98436daf52e1"
+
+[[package]]
 name = "atty"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -340,6 +346,7 @@ name = "twackup"
 version = "1.0.0-alpha"
 dependencies = [
  "ansi_term",
+ "ar",
  "clap",
  "flate2",
  "memmap",

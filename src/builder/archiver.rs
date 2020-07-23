@@ -8,12 +8,12 @@ use std::{
     time::SystemTime,
 };
 
-pub struct Archiver {
+pub struct TarArchive {
     output_file: PathBuf,
     builder: Builder<File>
 }
 
-impl Archiver {
+impl TarArchive {
     pub fn new(output_file: &Path) -> io::Result<Self> {
         return Ok(Self {
             output_file: output_file.to_path_buf(),
