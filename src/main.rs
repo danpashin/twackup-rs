@@ -18,6 +18,7 @@ use crate::{package::*, parser::*, builder::*};
 
 
 const ADMIN_DIR: &str = "/var/lib/dpkg";
+const TARGET_DIR: &str = "/var/mobile/Documents/twackup";
 
 /// Simple utility that helps you to rebuild all your packages to DEB's
 #[derive(Clap)]
@@ -33,6 +34,7 @@ enum CLICommand {
     List(ListCommand),
     /// This command prints only unique packages from installed
     Leaves(LeavesCommand),
+    /// Creates DEB from files in the filesystem
     Build(BuildCommand)
 }
 
@@ -53,11 +55,12 @@ struct BuildCommand {
     #[clap(short, long)]
     all: bool,
 
-    /// Use custom dpkg <directory> instead of default
+    /// Use custom dpkg <directory>
     #[clap(long, default_value=ADMIN_DIR)]
     admindir: String,
 
-    #[clap(long, default_value="/var/mobile/Documents/twackup")]
+    /// Use custom debs destination <directory>
+    #[clap(long, short, default_value=TARGET_DIR)]
     destination: String,
 }
 
@@ -75,7 +78,6 @@ fn main() {
         CLICommand::List(cmd) => cmd.list(),
         CLICommand::Leaves(cmd) => cmd.list(),
         CLICommand::Build(cmd) => cmd.build(),
-        _ => eprintln!("This feature is not implemented yet :(")
     }
 }
 fn section_color(section: &String)-> Colour {
@@ -170,6 +172,7 @@ impl BuildCommand {
         let packages = get_packages(&self.admindir, self.all);
         let threadpool = ThreadPool::new(num_cpus::get());
 
+        // Tricky hack. Tar'ing accepts only relative files so we'll move to root dir
         let root = std::path::Path::new("/");
         assert!(std::env::set_current_dir(&root).is_ok());
 
