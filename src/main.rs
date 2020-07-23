@@ -170,6 +170,9 @@ impl BuildCommand {
         let packages = get_packages(&self.admindir, self.all);
         let threadpool = ThreadPool::new(num_cpus::get());
 
+        let root = std::path::Path::new("/");
+        assert!(std::env::set_current_dir(&root).is_ok());
+
         for package in packages {
             let builder = BuildWorker::new(&self.admindir, &package, &self.destination);
             threadpool.execute(move || {
