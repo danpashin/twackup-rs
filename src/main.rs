@@ -22,6 +22,7 @@ struct CLIOptions {
 }
 
 #[derive(Clap)]
+#[clap(version = env!("CARGO_PKG_VERSION"))]
 enum CLICommand {
     /// This command prints installed (or all) packages to stdout
     List(ListCommand),
@@ -31,6 +32,7 @@ enum CLICommand {
 }
 
 #[derive(Clap)]
+#[clap(version = env!("CARGO_PKG_VERSION"))]
 struct ListCommand {
     /// Lists all found packages instead of installed only
     #[clap(short, long)]
@@ -42,6 +44,7 @@ struct ListCommand {
 }
 
 #[derive(Clap)]
+#[clap(version = env!("CARGO_PKG_VERSION"))]
 struct BuildCommand {
     /// Use custom dpkg <directory> instead of default
     #[clap(long, default_value=ADMIN_DIR)]
@@ -49,6 +52,7 @@ struct BuildCommand {
 }
 
 #[derive(Clap)]
+#[clap(version = env!("CARGO_PKG_VERSION"))]
 struct LeavesCommand {
     /// Use custom dpkg <directory> instead of default
     #[clap(long, default_value=ADMIN_DIR)]
