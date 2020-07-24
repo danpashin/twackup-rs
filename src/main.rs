@@ -9,6 +9,7 @@ use std::{
     fs, io,
     process::exit,
     time::Instant,
+    path::Path
 };
 
 mod parser;
@@ -95,10 +96,10 @@ fn section_color(section: &String)-> Colour {
     }
 }
 
-fn get_packages(admin_dir: &String, leaves_only: bool) -> Vec<Package> {
-    let status_file = format!("{}/status", admin_dir);
-    let parser = Parser::new(status_file.as_str()).unwrap_or_else(|error| {
-        eprintln!("Failed to open {}. {}", status_file, error);
+fn get_packages(admin_dir: &Path, leaves_only: bool) -> Vec<Package> {
+    let status_file = admin_dir.join("status");
+    let parser = Parser::new(status_file.as_path()).unwrap_or_else(|error| {
+        eprintln!("Failed to open {}. {}", status_file.display().to_string(), error);
         exit(1);
     });
 
@@ -141,7 +142,7 @@ fn get_packages(admin_dir: &String, leaves_only: bool) -> Vec<Package> {
 
 impl ListCommand {
     fn list(&self) {
-        let mut packages = get_packages(&self.admindir, false);
+        let mut packages = get_packages(Path::new(&self.admindir), false);
         packages.sort_by(|a, b| {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });
@@ -157,7 +158,7 @@ impl ListCommand {
 
 impl LeavesCommand {
     fn list(&self) {
-        let mut packages = get_packages(&self.admindir, true);
+        let mut packages = get_packages(Path::new(&self.admindir), true);
         packages.sort_by(|a, b| {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });
@@ -179,17 +180,17 @@ impl BuildCommand {
             let mut buffer = String::new();
             let _ = io::stdin().read_line(&mut buffer);
             if buffer.trim().to_lowercase() == "y" {
-                self.build(get_packages(&self.admindir, true));
+                self.build(get_packages(Path::new(&self.admindir), true));
             } else {
                 eprintln!("Ok, cancelling...");
             }
         } else {
-            self.build(get_packages(&self.admindir, false));
+            self.build(get_packages(Path::new(&self.admindir), false));
         }
     }
 
     fn build_user_specified(&self) {
-        let mut all_packages = get_packages(&self.admindir, !self.all);
+        let mut all_packages = get_packages(Path::new(&self.admindir), !self.all);
         all_packages.sort_by(|a, b| {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });

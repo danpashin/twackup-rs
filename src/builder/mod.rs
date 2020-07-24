@@ -82,11 +82,11 @@ impl BuildWorker {
 
     /// Archives package files and compresses in a single archive
     fn archive_files(&self) -> io::Result<String> {
-        let files = self.package.get_installed_files(&self.admin_dir)?;
+        let files = self.package.get_installed_files(Path::new(&self.admin_dir))?;
 
         let working_dir = self.get_working_dir();
-        let temp_file = Path::new(&working_dir).join("data.tar");
         // Firstly, we'll pack all files together
+        let temp_file = self.get_working_dir().join("data.tar");
         let mut archiver = TarArchive::new(temp_file.as_path())?;
 
         for file in files {
@@ -104,7 +104,7 @@ impl BuildWorker {
 
         // Finish and compress with gzip
         archiver.finish_appending()?;
-        let output_file = Path::new(&working_dir).join("data.tar.gz");
+        let output_file = working_dir.join("data.tar.gz");
         archiver.compress_gzip(output_file.as_path(), 6)?;
 
         return Ok(output_file.to_str().unwrap().to_string());
@@ -156,7 +156,7 @@ impl BuildWorker {
 
         // Finish and compress with gzip
         archiver.finish_appending()?;
-        let output_file = Path::new(&working_dir).join("control.tar.gz");
+        let output_file = working_dir.join("control.tar.gz");
         archiver.compress_gzip(output_file.as_path(), 6)?;
 
         return Ok(output_file.to_str().unwrap().to_string());

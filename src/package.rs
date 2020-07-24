@@ -1,6 +1,6 @@
 use std::{
     collections::HashMap,
-    fs::File,
+    fs::File, path::Path,
     io::{self, BufReader, BufRead}
 };
 
@@ -62,8 +62,8 @@ impl Package {
         });
     }
 
-    pub fn get_installed_files(&self, dpkg_dir: &String) -> io::Result<Vec<String>> {
-        let file = File::open(format!("{}/info/{}.list", dpkg_dir, self.identifier))?;
+    pub fn get_installed_files(&self, dpkg_dir: &Path) -> io::Result<Vec<String>> {
+        let file = File::open(dpkg_dir.join("info").join(format!("{}.list", self.identifier)))?;
         return BufReader::new(file).lines().collect();
     }
 

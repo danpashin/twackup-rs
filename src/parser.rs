@@ -1,6 +1,6 @@
 use std::{
-    str,
     fs::File, io::{self, BufRead},
+    path::{Path, PathBuf},
     collections::{LinkedList, HashMap},
 };
 use memmap::Mmap;
@@ -12,22 +12,22 @@ extern crate threadpool;
 const NEWLINE_CHAR: u8 = 0xA;
 
 pub struct Parser {
-    file_path: String,
+    file_path: PathBuf,
     file: File,
     thread_pool: threadpool::ThreadPool
 }
 
 struct ChunkParser {
-    file_path: String,
+    file_path: PathBuf,
     start: usize,
     end: usize
 }
 
 impl Parser {
     /// Prepares environment and creates parser instance
-    pub fn new(file_path: &str) -> io::Result<Parser> {
+    pub fn new(file_path: &Path) -> io::Result<Parser> {
         return Ok(Parser {
-            file_path: file_path.to_string(),
+            file_path: file_path.clone().to_path_buf(),
             // If file is not found or user has no rigths, this method will throw an error
             file: File::open(file_path)?,
             // Thread pool will grab all processor cores
@@ -90,7 +90,7 @@ impl Parser {
 
 impl ChunkParser {
     /// Prepares environment and creates parser instance
-    fn new(file_path: String, start: usize, end: usize) -> ChunkParser {
+    fn new(file_path: PathBuf, start: usize, end: usize) -> ChunkParser {
         return ChunkParser { file_path, start, end };
     }
 
