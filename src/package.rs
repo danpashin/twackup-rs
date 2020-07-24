@@ -32,12 +32,6 @@ pub struct Package {
     /// If this field is empty, Unknown state must be used.
     pub state: State,
 
-    /// Packages of which this one depends.
-    pub depends: Vec<String>,
-
-    /// Packages of which installition of this one depends.
-    pub predepends: Vec<String>,
-
     /// This field specifies an application area into which
     /// the package has been classified
     pub section: String,
@@ -55,8 +49,6 @@ impl Package {
             version: fields.get("Version")?.to_string(),
             architecture: fields.get("Architecture")?.to_string(),
             state: State::from_dpkg(fields.get("Status")),
-            depends: Self::parse_depends(fields.get("Depends")),
-            predepends: Self::parse_depends(fields.get("Pre-Depends")),
             section: fields.get("Section").unwrap_or(&"".to_string()).to_string(),
             hashmap: fields.clone(),
         });
@@ -74,7 +66,7 @@ impl Package {
     pub fn create_control(&self) -> String {
         let mut fields_len = 0;
         for (key, value) in self.hashmap.iter() {
-            fields_len += key.len() + value.len() + 3;
+            fields_len += key.len() + value.len() + 4;
         }
 
         let mut control = String::with_capacity(fields_len);
@@ -97,9 +89,16 @@ impl Package {
         }
     }
 
+    /// Returnes packages of which this one depends.
+    pub fn depends(&self) -> Vec<String> { Self::parse_depends(self.hashmap.get("Depends")) }
+
+    /// Returnes packages of which the installation of this package depends.
+    pub fn predepends(&self) -> Vec<String> { Self::parse_depends(self.hashmap.get("Pre-Depends")) }
+
+    /// Returnes true if this package us a dependency of other.
     pub fn is_dependency_of(&self, pkg: &Package) -> bool {
         let id = &self.identifier;
-        return pkg.depends.contains(id) || pkg.predepends.contains(id);
+        return pkg.depends().contains(id) || pkg.predepends().contains(id);
     }
 }
 
