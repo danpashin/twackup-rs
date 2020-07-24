@@ -8,6 +8,7 @@ use std::{
     collections::LinkedList,
     fs,
     process::exit,
+    time::Instant,
 };
 
 mod cli_error;
@@ -80,6 +81,7 @@ fn main() {
         CLICommand::Build(cmd) => cmd.build(),
     }
 }
+
 fn section_color(section: &String)-> Colour {
     match section.to_lowercase().as_str() {
         "system" => Color::Red,
@@ -93,11 +95,10 @@ fn section_color(section: &String)-> Colour {
 
 fn get_packages(admin_dir: &String, get_all: bool) -> Vec<Package> {
     let status_file = format!("{}/status", admin_dir);
-    let parser = Parser::new(status_file.as_str())
-        .unwrap_or_else(|error| {
-            eprintln!("Failed to open {}. {}", status_file, error);
-            exit(1);
-        });
+    let parser = Parser::new(status_file.as_str()).unwrap_or_else(|error| {
+        eprintln!("Failed to open {}. {}", status_file, error);
+        exit(1);
+    });
 
     let pkgs: LinkedList<Package> = LinkedList::new();
     let packages = Arc::new(Mutex::new(pkgs));
@@ -168,26 +169,49 @@ impl LeavesCommand {
 
 impl BuildCommand {
     fn build(&self) {
+        let started = Instant::now();
         self.create_dir_if_needed();
         let packages = get_packages(&self.admindir, self.all);
         let threadpool = ThreadPool::new(num_cpus::get());
+
+        let all_count = packages.len();
+        let pb = indicatif::ProgressBar::new(all_count as u64);
+        let progress_bar = Arc::new(pb);
+        progress_bar.set_style(
+            indicatif::ProgressStyle::default_bar()
+            .template("{pos}/{len} [{wide_bar:.cyan/blue}] {msg}")
+            .progress_chars("##-")
+        );
 
         // Tricky hack. Tar'ing accepts only relative files so we'll move to root dir
         let root = std::path::Path::new("/");
         assert!(std::env::set_current_dir(&root).is_ok());
 
-        for package in packages {
-            let builder = BuildWorker::new(&self.admindir, &package, &self.destination);
+        for package in packages.iter() {
+            let builder = BuildWorker::new(
+                &self.admindir, package, &self.destination, Arc::clone(&progress_bar)
+            );
             threadpool.execute(move || {
-                if let Err(error) = builder.run() {
-                    eprintln!("Error while building {}. {}", builder.package.name, error);
+                let status = builder.run();
+                builder.progress.inc(1);
+                if let Err(error) = status {
+                    builder.progress.println(Colour::Red.paint(
+                        format!("Building {} error. {}", builder.package.name, error)
+                    ).to_string());
                 } else {
-                    println!("Successfully rebuild {}", builder.package.name);
+                    builder.progress.set_message(
+                        format!("Done {}", builder.package.name).as_str()
+                    );
                 }
             });
         }
 
         threadpool.join();
+        progress_bar.finish_and_clear();
+        println!(
+            "Processed {} packages in {}",
+            packages.len(), indicatif::HumanDuration(started.elapsed())
+        );
     }
 
     fn create_dir_if_needed(&self) {

@@ -2,24 +2,30 @@ use crate::Package;
 use std::{
     io::{self, Write}, fs::{self, File},
     path::{Path, PathBuf},
+    sync::Arc
 };
 
 mod archiver;
 use archiver::TarArchive;
+use indicatif::ProgressBar;
 
 /// Creates DEB from filesystem contents
 pub struct BuildWorker {
     pub package: Package,
+    pub progress: Arc<ProgressBar>,
     admin_dir: String,
-    destination: String
+    destination: String,
 }
 
 impl BuildWorker {
-    pub fn new(admin_dir: &String, pkg: &Package, destination: &String) -> Self {
-        return Self {
-            package: pkg.clone(),
-            admin_dir: admin_dir.clone(),
-            destination: destination.clone()
+    pub fn new(admin_dir: &String,
+               pkg: &Package,
+               destination: &String,
+               progress: Arc<ProgressBar>
+    ) -> Self {
+        Self {
+            package: pkg.clone(), progress,
+            admin_dir: admin_dir.clone(), destination: destination.clone()
         }
     }
 
@@ -89,9 +95,10 @@ impl BuildWorker {
             // Tricky hack. Archiver packs only relative paths. So let's add dot at start
             let path = format!(".{}", file);
             if let Err(error) = archiver.append_path(Path::new(&path)) {
-                eprintln!("Error while archiving file for package {}. {}",
-                          self.package.identifier,
-                          error);
+                self.progress.println(format!(
+                    "[{}] {}", self.package.identifier,
+                    ansi_term::Colour::Yellow.paint(format!("{}", error))
+                ));
             }
         }
 
@@ -139,9 +146,10 @@ impl BuildWorker {
                 let path = Path::new(&rel_path);
 
                 if let Err(error) = archiver.append_path_with_name(path, Path::new(&ext)) {
-                    eprintln!("Error while archiving control for package {}. {}",
-                              self.package.identifier,
-                              error);
+                    self.progress.println(format!(
+                        "[{}] {}", self.package.identifier,
+                        ansi_term::Colour::Yellow.paint(format!("{}", error))
+                    ));
                 }
             }
         }

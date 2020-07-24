@@ -13,3 +13,4 @@ ansi_term = "0.12"
 tar = "0.4.29"
 ar = "0.8.0"
 flate2 = { version = "1.0.16", features = ["zlib"], default-features = false }
+indicatif = "0.15.0"
