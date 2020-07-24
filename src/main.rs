@@ -170,17 +170,18 @@ impl BuildCommand {
     fn run(&self) {
         if !self.packages.is_empty() {
             self.build_user_specified();
-        } else {
+        } else if !self.all {
             eprint!("No packages specified. Rebuild all? [Y/N] [default N] ");
 
             let mut buffer = String::new();
             let _ = io::stdin().read_line(&mut buffer);
-            // println!("Buffer '{}'", buffer.trim().to_lowercase());
             if buffer.trim().to_lowercase() == "y" {
-                self.build(get_packages(&self.admindir, !self.all));
+                self.build(get_packages(&self.admindir, true));
             } else {
                 eprintln!("Ok, cancelling...");
             }
+        } else {
+            self.build(get_packages(&self.admindir, false));
         }
     }
 
@@ -211,6 +212,8 @@ impl BuildCommand {
                 }
             }
         }
+
+        self.build(to_build);
     }
 
     fn build(&self, packages: Vec<Package>) {
@@ -220,12 +223,12 @@ impl BuildCommand {
 
         let all_count = packages.len();
         let pb = indicatif::ProgressBar::new(all_count as u64);
-        let progress_bar = Arc::new(pb);
-        progress_bar.set_style(
+        pb.set_style(
             indicatif::ProgressStyle::default_bar()
             .template("{pos}/{len} [{wide_bar:.cyan/blue}] {msg}")
             .progress_chars("##-")
         );
+        let progress_bar = Arc::new(pb);
 
         // Tricky hack. Tar'ing accepts only relative files so we'll move to root dir
         let root = std::path::Path::new("/");
@@ -236,6 +239,9 @@ impl BuildCommand {
                 &self.admindir, package, &self.destination, Arc::clone(&progress_bar)
             );
             threadpool.execute(move || {
+                builder.progress.set_message(
+                    format!("Processing {}", builder.package.name).as_str()
+                );
                 let status = builder.run();
                 builder.progress.inc(1);
                 if let Err(error) = status {
