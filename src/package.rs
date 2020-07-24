@@ -33,12 +33,10 @@ pub struct Package {
     pub state: State,
 
     /// Packages of which this one depends.
-    /// If this field is empty, empty string must be used.
-    pub depends: String,
+    pub depends: Vec<String>,
 
     /// Packages of which installition of this one depends.
-    /// If this field is empty, empty string must be used.
-    pub predepends: String,
+    pub predepends: Vec<String>,
 
     /// This field specifies an application area into which
     /// the package has been classified
@@ -57,8 +55,8 @@ impl Package {
             version: fields.get("Version")?.to_string(),
             architecture: fields.get("Architecture")?.to_string(),
             state: State::from_dpkg(fields.get("Status")),
-            depends: fields.get("Depends").unwrap_or(&"".to_string()).to_string(),
-            predepends: fields.get("Pre-Depends").unwrap_or(&"".to_string()).to_string(),
+            depends: Self::parse_depends(fields.get("Depends")),
+            predepends: Self::parse_depends(fields.get("Pre-Depends")),
             section: fields.get("Section").unwrap_or(&"".to_string()).to_string(),
             hashmap: fields.clone(),
         });
@@ -87,6 +85,21 @@ impl Package {
         }
 
         return  control;
+    }
+
+    fn parse_depends(value: Option<&String>) -> Vec<String> {
+        match value {
+            None => Vec::new(),
+            Some(depends) => depends
+                .split(",")
+                .map(|dependency| dependency.trim().to_string())
+                .collect::<Vec<String>>()
+        }
+    }
+
+    pub fn is_dependency_of(&self, pkg: &Package) -> bool {
+        let id = &self.identifier;
+        return pkg.depends.contains(id) || pkg.predepends.contains(id);
     }
 }
 
