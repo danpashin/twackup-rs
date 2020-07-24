@@ -90,7 +90,7 @@ impl BuildWorker {
         let mut archiver = TarArchive::new(temp_file.as_path())?;
 
         for file in files {
-            // We'll not append root dir to archive 'cause dpkg will unpack to root though
+            // We'll not append root dir to archive because dpkg will unpack to root though
             if file == "/." { continue; }
             // Tricky hack. Archiver packs only relative paths. So let's add dot at start
             let path = format!(".{}", file);

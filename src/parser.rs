@@ -28,7 +28,7 @@ impl Parser {
     pub fn new(file_path: &Path) -> io::Result<Parser> {
         return Ok(Parser {
             file_path: file_path.clone().to_path_buf(),
-            // If file is not found or user has no rigths, this method will throw an error
+            // If file is not found or user has no permissions, this method will throw an error
             file: File::open(file_path)?,
             // Thread pool will grab all processor cores
             thread_pool: threadpool::ThreadPool::new(num_cpus::get())
@@ -102,7 +102,7 @@ impl ChunkParser {
         // Load package (chunk) in buffer. This usually allocates 1 MB of memory
         let chunk = &mmap[self.start..self.end];
 
-        // First, we'll get all lines (with these which can be multi-line
+        // First, we'll get all lines (with these which can be multi-line)
         let fields = self.parse_chunk(chunk);
 
         // Now process each line individually
@@ -141,7 +141,7 @@ impl ChunkParser {
         let mut fields_map = HashMap::new();
 
         for field in fields {
-            // Dpkg uses key-value syntax, so firsly, we'll find delimeter
+            // Dpkg uses key-value syntax, so firstly, we'll find delimiter
             // Every line without delimiter is invalid and will be skipped
             let delim_pos = field.find(':');
             if delim_pos.is_some() {

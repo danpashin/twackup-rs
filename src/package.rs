@@ -89,13 +89,13 @@ impl Package {
         }
     }
 
-    /// Returnes packages of which this one depends.
+    /// Returns packages of which this one depends.
     pub fn depends(&self) -> Vec<String> { Self::parse_depends(self.hashmap.get("Depends")) }
 
-    /// Returnes packages of which the installation of this package depends.
+    /// Returns packages of which the installation of this package depends.
     pub fn predepends(&self) -> Vec<String> { Self::parse_depends(self.hashmap.get("Pre-Depends")) }
 
-    /// Returnes true if this package us a dependency of other.
+    /// Returns true if this package us a dependency of other.
     pub fn is_dependency_of(&self, pkg: &Package) -> bool {
         let id = &self.identifier;
         return pkg.depends().contains(id) || pkg.predepends().contains(id);
