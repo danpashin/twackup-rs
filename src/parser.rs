@@ -1,11 +1,10 @@
-// pub mod crate::package;
 use std::{
-    fs::File, io::BufRead,
     str,
+    fs::File, io::{self, BufRead},
     collections::{LinkedList, HashMap},
 };
 use memmap::Mmap;
-use crate::{cli_error::CliError, package::*};
+use crate::package::*;
 
 extern crate num_cpus;
 extern crate threadpool;
@@ -26,7 +25,7 @@ struct ChunkParser {
 
 impl Parser {
     /// Prepares environment and creates parser instance
-    pub fn new(file_path: &str) -> Result<Parser, CliError> {
+    pub fn new(file_path: &str) -> io::Result<Parser> {
         return Ok(Parser {
             file_path: file_path.to_string(),
             // If file is not found or user has no rigths, this method will throw an error

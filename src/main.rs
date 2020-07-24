@@ -11,7 +11,6 @@ use std::{
     time::Instant,
 };
 
-mod cli_error;
 mod parser;
 mod package;
 mod builder;
