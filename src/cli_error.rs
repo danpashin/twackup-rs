@@ -20,8 +20,8 @@ impl From<std::str::Utf8Error> for CliError {
 impl fmt::Display for CliError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            CliError::Io(ref err) => write!(f, "IO error: {}", err),
-            CliError::String(ref err) => write!(f, "String error: {}", err),
+            CliError::Io(ref err) => write!(f, "{}", err),
+            CliError::String(ref err) => write!(f, "{}", err),
         }
     }
 }
