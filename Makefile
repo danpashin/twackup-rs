@@ -1,18 +1,28 @@
-
-BUILD_DIR=target
+CC=cargo
+CARGO_FLAGS=--release
 TARGET=twackup
+BUILD_DIR=build
+RUSTFLAGS="-C link-arg=-s"
+ARCHS=aarch64-apple-ios armv7-apple-ios
 
-.PHONY: all, release, ios, clean
+ifneq (,$(findstring --release,$(CARGO_FLAGS)))
+	BINARY_TARGETS=$(addsuffix /release/${TARGET},$(addprefix ${BUILD_DIR}/,${ARCHS}))
+else
+	BINARY_TARGETS=$(addsuffix /debug/${TARGET},$(addprefix ${BUILD_DIR}/,${ARCHS}))
+endif
 
-ios:
-	@RUSTFLAGS='-C link-arg=-s' cargo build --release --target aarch64-apple-ios
-	@ldid -S ${BUILD_DIR}/aarch64-apple-ios/release/${TARGET}
+.PHONY: all, native, clean
 
-release:
-	@RUSTFLAGS='-C link-arg=-s' cargo build --release
+all: $(ARCHS)
+	@lipo -create $(BINARY_TARGETS) -o $(BUILD_DIR)/$(TARGET)
+	@ldid -S $(BUILD_DIR)/$(TARGET)
+	@$(CC) deb --no-build --no-strip -o $(BUILD_DIR)
 
-all:
-	@cargo build --debug
+native:
+	@RUSTFLAGS=$(RUSTFLAGS) $(CC) build $(CARGO_FLAGS) --target-dir $(BUILD_DIR)
 
 clean:
 	@rm -rf ${BUILD_DIR}
+
+$(ARCHS):
+	@RUSTFLAGS=$(RUSTFLAGS) $(CC) build $(CARGO_FLAGS) --target-dir $(BUILD_DIR) --target $@
