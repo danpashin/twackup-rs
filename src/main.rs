@@ -190,7 +190,7 @@ impl BuildCommand {
     }
 
     fn build_user_specified(&self) {
-        let mut all_packages = get_packages(Path::new(&self.admindir), !self.all);
+        let mut all_packages = get_packages(Path::new(&self.admindir), false);
         all_packages.sort_by(|a, b| {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });
