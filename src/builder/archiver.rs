@@ -3,21 +3,19 @@ use tar::Builder;
 use flate2::{Compression, write::GzEncoder};
 use std::{
     io::{self, Read, Write},
-    path::{Path, PathBuf},
+    path::Path,
     fs::File,
     time::SystemTime,
 };
 
 /// Just a wrapper for tar and flate2 libs
 pub struct TarArchive {
-    output_file: PathBuf,
     builder: Builder<File>
 }
 
 impl TarArchive {
     pub fn new(output_file: &Path) -> io::Result<Self> {
         return Ok(Self {
-            output_file: output_file.to_path_buf(),
             builder: Builder::new(File::create(output_file)?)
         });
     }
@@ -53,24 +51,25 @@ impl TarArchive {
 
         return self.builder.append_data(&mut header, path, contents);
     }
+}
+/// Compresses output file with gzip
+pub fn compress_gzip<P: AsRef<Path>, O: AsRef<Path>>(
+    path: P, output: O, compression: u32
+)-> io::Result<()> {
+    debug_assert!(compression <= 9, "Compression level must be below or equal to 9");
 
-    /// Compresses output file with gzip
-    pub fn compress_gzip<P: AsRef<Path>>(&mut self, path: P, compression: u32)-> io::Result<()> {
-        debug_assert!(compression <= 9, "Compression level must be below or equal to 9");
+    let mut uncompressed = File::open(path)?;
+    let compressed = File::create(output)?;
+    // Allocate 1 MB of memory in heap
+    let mut buffer = vec![0; 1024];
 
-        let mut uncompressed = File::open(&self.output_file)?;
-        let compressed = File::create(path)?;
-        // Allocate 1 MB of memory in heap
-        let mut buffer = vec![0; 1024];
+    let mut encoder = GzEncoder::new(compressed, Compression::new(compression));
 
-        let mut encoder = GzEncoder::new(compressed, Compression::new(compression));
-
-        while uncompressed.read_exact(&mut buffer).is_ok() {
-            encoder.write(buffer.as_slice()).unwrap();
-        }
-
-        encoder.finish()?;
-
-        return Ok(());
+    while uncompressed.read_exact(&mut buffer).is_ok() {
+        encoder.write(buffer.as_slice()).unwrap();
     }
+
+    encoder.finish()?;
+
+    return Ok(());
 }

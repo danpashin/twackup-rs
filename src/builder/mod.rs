@@ -1,6 +1,6 @@
 use crate::Package;
 use std::{
-    io::{self, Write}, fs::{self, File},
+    io, fs,
     path::{Path, PathBuf},
     sync::Arc
 };
@@ -8,6 +8,8 @@ use std::{
 mod archiver;
 use archiver::TarArchive;
 use indicatif::ProgressBar;
+mod deb;
+use deb::Deb;
 
 /// Creates DEB from filesystem contents
 pub struct BuildWorker {
@@ -44,39 +46,13 @@ impl BuildWorker {
         let _ = fs::remove_dir_all(dir);
         fs::create_dir(dir)?;
 
-        // Start archiving files and getting target paths
-        let data_path = self.archive_files()?;
-        let metadata_path = self.archive_metadata()?;
         let deb_name = format!("{}.deb", self.package.canonical_name());
         let deb_path = self.destination.join(deb_name);
 
-        // Now combine all files together
-        let mut builder = ar::Builder::new(File::create(&deb_path)?);
-
-        // First file is debian-binary.
-        // It contains just a version of dpkg used for deb creation
-        // The latest one is 2.0 so we'll use this
-        // Although, creating new file costs more but I did't find way to do this better
-        let binary_file_path = dir.join("debian-binary");
-        let mut version_file = File::create(&binary_file_path)?;
-        let _ = version_file.write("2.0\n".as_bytes());
-
-        builder.append_file(
-            "debian-binary".as_bytes(),
-            &mut File::open(&binary_file_path)?
-        ).unwrap();
-
-        // Second file is control archive. It is compressed with gzip and packed with tar
-        builder.append_file(
-            metadata_path.file_name().unwrap().to_str().unwrap().as_bytes(),
-            &mut File::open(&metadata_path)?
-        ).unwrap();
-
-        // Third - main archive with data. Compressed and package same way as control
-        builder.append_file(
-            data_path.file_name().unwrap().to_str().unwrap().as_bytes(),
-            &mut File::open(&data_path)?
-        ).unwrap();
+        let mut deb = Deb::new(&self.working_dir, &deb_path)?;
+        self.archive_files(deb.data_mut_ref())?;
+        self.archive_metadata(deb.control_mut_ref())?;
+        deb.package()?;
 
         let _ = fs::remove_dir_all(dir);
 
@@ -84,13 +60,8 @@ impl BuildWorker {
     }
 
     /// Archives package files and compresses in a single archive
-    fn archive_files(&self) -> io::Result<PathBuf> {
+    fn archive_files(&self, archiver: &mut TarArchive) -> io::Result<()> {
         let files = self.package.get_installed_files(&self.admin_dir)?;
-
-        let working_dir = &self.working_dir;
-        // Firstly, we'll pack all files together
-        let temp_file = working_dir.join("data.tar");
-        let mut archiver = TarArchive::new(temp_file.as_path())?;
 
         for file in files {
             // We'll not append root dir to archive because dpkg will unpack to root though
@@ -104,19 +75,12 @@ impl BuildWorker {
             }
         }
 
-        // Finish and compress with gzip
-        archiver.finish_appending()?;
-        let output_file = working_dir.join("data.tar.gz");
-        archiver.compress_gzip(output_file.as_path(), 6)?;
-
-        return Ok(output_file);
+        return Ok(());
     }
 
     /// Collects package metadata such as install scripts,
     /// creates control and packages all this together
-    fn archive_metadata(&self) -> io::Result<PathBuf> {
-        let working_dir = &self.working_dir;
-        let mut archiver = TarArchive::new(working_dir.join("control.tar").as_path())?;
+    fn archive_metadata(&self, archiver: &mut TarArchive) -> io::Result<()> {
         // Order in this archive doesn't matter. So we'll add control at first
         archiver.append_new_file("control", &self.package.create_control().as_bytes())?;
 
@@ -156,11 +120,6 @@ impl BuildWorker {
             }
         }
 
-        // Finish and compress with gzip
-        archiver.finish_appending()?;
-        let output_file = working_dir.join("control.tar.gz");
-        archiver.compress_gzip(output_file.as_path(), 6)?;
-
-        return Ok(output_file);
+        return Ok(());
     }
 }
