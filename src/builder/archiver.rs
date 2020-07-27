@@ -23,12 +23,12 @@ impl TarArchive {
     }
 
     /// Adds a file on the local filesystem to this archive.
-    pub fn append_path(&mut self, path: &Path) -> io::Result<()> {
+    pub fn append_path<P: AsRef<Path>>(&mut self, path: P) -> io::Result<()> {
         return self.builder.append_path(path);
     }
 
     /// Adds a file on the local filesystem to this archive under another name.
-    pub fn append_path_with_name(&mut self, path: &Path, name: &Path) -> io::Result<()> {
+    pub fn append_path_with_name<P: AsRef<Path>>(&mut self, path: P, name: P) -> io::Result<()> {
         return self.builder.append_path_with_name(path, name);
     }
 
@@ -38,7 +38,7 @@ impl TarArchive {
     }
 
     /// Appends non-existing on the filesystem file to archive
-    pub fn append_new_file(&mut self, path: &Path, contents: &[u8]) -> io::Result<()> {
+    pub fn append_new_file<P: AsRef<Path>>(&mut self, path: P, contents: &[u8]) -> io::Result<()> {
         let cur_time = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH).unwrap()
             .as_secs();
@@ -55,7 +55,7 @@ impl TarArchive {
     }
 
     /// Compresses output file with gzip
-    pub fn compress_gzip(&mut self, path: &Path, compression: u32)-> io::Result<()> {
+    pub fn compress_gzip<P: AsRef<Path>>(&mut self, path: P, compression: u32)-> io::Result<()> {
         debug_assert!(compression <= 9, "Compression level must be below or equal to 9");
 
         let mut uncompressed = File::open(&self.output_file)?;

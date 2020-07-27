@@ -9,7 +9,7 @@ use std::{
     fs, io,
     process::exit,
     time::Instant,
-    path::Path
+    path::PathBuf
 };
 
 mod parser;
@@ -17,62 +17,67 @@ mod package;
 mod builder;
 use crate::{package::*, parser::*, builder::*};
 
-
 const ADMIN_DIR: &str = "/var/lib/dpkg";
 const TARGET_DIR: &str = "/var/mobile/Documents/twackup";
 
-/// Simple utility that helps you to rebuild all your packages to DEB's
 #[derive(Clap)]
-#[clap(version = env!("CARGO_PKG_VERSION"))]
+#[clap(about, version)]
 struct CLIOptions {
     #[clap(subcommand)]
     subcmd: CLICommand,
 }
 
 #[derive(Clap)]
-#[clap(version = env!("CARGO_PKG_VERSION"))]
+#[clap(version)]
 enum CLICommand {
-    /// This command prints installed (or all) packages to stdout
+    /// Prints installed packages to stdout
     List(ListCommand),
-    /// This command prints only unique packages from installed
+    /// Prints packages that are not dependencies of others to stdout
     Leaves(LeavesCommand),
-    /// Creates DEB from files in the filesystem
+    /// Creates DEB from the already installed package(s)
     Build(BuildCommand)
 }
 
 #[derive(Clap)]
-#[clap(version = env!("CARGO_PKG_VERSION"))]
+#[clap(version)]
 struct ListCommand {
-    /// Use custom dpkg <directory> instead of default
-    #[clap(long, default_value=ADMIN_DIR)]
-    admindir: String,
+    /// Use custom dpkg <directory>
+    #[clap(long, default_value=ADMIN_DIR, parse(from_os_str))]
+    admindir: PathBuf,
 }
 
 #[derive(Clap)]
-#[clap(version = env!("CARGO_PKG_VERSION"))]
+#[clap(version)]
+struct LeavesCommand {
+    /// Use custom dpkg <directory>
+    #[clap(long, default_value=ADMIN_DIR, parse(from_os_str))]
+    admindir: PathBuf,
+}
+
+#[derive(Clap)]
+#[clap(version, after_help="
+Beware, this command doesn't guarantee to copy all files to the final DEB! \
+Some files can be skipped because of being renamed or removed in the installation process.
+If you see yellow warnings, it means the final deb will miss some contents \
+and may not work properly anymore.
+")]
 struct BuildCommand {
-    /// Rebuilds only independent packages that are not dependencies
+    /// By default twackup rebuilds only that packages which are not dependencies of others.
+    /// This flag disables this restriction - command will rebuild all found packages.
     #[clap(short, long)]
     all: bool,
 
     /// Use custom dpkg <directory>
-    #[clap(long, default_value=ADMIN_DIR)]
-    admindir: String,
+    #[clap(long, default_value=ADMIN_DIR, parse(from_os_str))]
+    admindir: PathBuf,
 
-    /// Packages numbers or identifiers from the list command
+    /// Package identifier or number from the list command.
+    /// This argument can have multiple values separated by space ' '.
     packages: Vec<String>,
 
-    /// Use custom debs destination <directory>
-    #[clap(long, short, default_value=TARGET_DIR)]
-    destination: String,
-}
-
-#[derive(Clap)]
-#[clap(version = env!("CARGO_PKG_VERSION"))]
-struct LeavesCommand {
-    /// Use custom dpkg <directory> instead of default
-    #[clap(long, default_value=ADMIN_DIR)]
-    admindir: String,
+    /// Use custom destination <directory>.
+    #[clap(long, short, default_value=TARGET_DIR, parse(from_os_str))]
+    destination: PathBuf,
 }
 
 
@@ -96,7 +101,7 @@ fn section_color(section: &String)-> Colour {
     }
 }
 
-fn get_packages(admin_dir: &Path, leaves_only: bool) -> Vec<Package> {
+fn get_packages(admin_dir: &PathBuf, leaves_only: bool) -> Vec<Package> {
     let status_file = admin_dir.join("status");
     let parser = Parser::new(status_file.as_path()).unwrap_or_else(|error| {
         eprintln!("Failed to open {}. {}", status_file.display().to_string(), error);
@@ -142,7 +147,7 @@ fn get_packages(admin_dir: &Path, leaves_only: bool) -> Vec<Package> {
 
 impl ListCommand {
     fn list(&self) {
-        let mut packages = get_packages(Path::new(&self.admindir), false);
+        let mut packages = get_packages(&self.admindir, false);
         packages.sort_by(|a, b| {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });
@@ -158,7 +163,7 @@ impl ListCommand {
 
 impl LeavesCommand {
     fn list(&self) {
-        let mut packages = get_packages(Path::new(&self.admindir), true);
+        let mut packages = get_packages(&self.admindir, true);
         packages.sort_by(|a, b| {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });
@@ -180,17 +185,17 @@ impl BuildCommand {
             let mut buffer = String::new();
             let _ = io::stdin().read_line(&mut buffer);
             if buffer.trim().to_lowercase() == "y" {
-                self.build(get_packages(Path::new(&self.admindir), true));
+                self.build(get_packages(&self.admindir, true));
             } else {
                 eprintln!("Ok, cancelling...");
             }
         } else {
-            self.build(get_packages(Path::new(&self.admindir), false));
+            self.build(get_packages(&self.admindir, false));
         }
     }
 
     fn build_user_specified(&self) {
-        let mut all_packages = get_packages(Path::new(&self.admindir), false);
+        let mut all_packages = get_packages(&self.admindir, false);
         all_packages.sort_by(|a, b| {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });
@@ -235,8 +240,7 @@ impl BuildCommand {
         let progress_bar = Arc::new(pb);
 
         // Tricky hack. Tar'ing accepts only relative files so we'll move to root dir
-        let root = std::path::Path::new("/");
-        assert!(std::env::set_current_dir(&root).is_ok());
+        assert!(std::env::set_current_dir("/").is_ok());
 
         for package in packages.iter() {
             let builder = BuildWorker::new(
@@ -272,7 +276,7 @@ impl BuildCommand {
         if let Ok(metadata) = fs::metadata(&self.destination) {
             if !metadata.is_dir() {
                 if let Err(error) = fs::remove_file(&self.destination) {
-                    eprintln!("Failed to remove {}. {}", self.destination, error);
+                    eprintln!("Failed to remove {:?}. {}", self.destination, error);
                     exit(1);
                 }
             }
@@ -281,7 +285,7 @@ impl BuildCommand {
         }
 
         if let Err(error) = fs::create_dir_all(&self.destination) {
-            eprintln!("Failed to create {}. {}", self.destination, error);
+            eprintln!("Failed to create {:?}. {}", self.destination, error);
             exit(1);
         }
     }
