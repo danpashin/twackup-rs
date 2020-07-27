@@ -1,46 +1,61 @@
+use tar::Builder;
+use flate2::{Compression, write::GzEncoder};
 use std::{
-    path::PathBuf,
+    path::{Path, PathBuf},
     io::{self, Write}, fs::File,
-    borrow::BorrowMut
+    borrow::BorrowMut,
+    time::SystemTime,
 };
-use super::archiver::*;
+use std::borrow::Borrow;
+
+pub type DebTarArchive = TarArchive<GzEncoder<File>>;
 
 pub struct Deb {
     temp_dir: PathBuf,
     output: PathBuf,
-    control: TarArchive,
-    data: TarArchive,
+    control: DebTarArchive,
+    data: DebTarArchive,
     control_path: PathBuf,
     data_path: PathBuf
 }
 
+pub struct TarArchive<W: Write> {
+    builder: Builder<W>
+}
+
 impl Deb {
-    pub fn new(temp_dir: &PathBuf, output: &PathBuf) -> io::Result<Self> {
-        let control_path  = temp_dir.join("control.tar");
-        let data_path = temp_dir.join("data.tar");
+    pub fn new(temp_dir: &PathBuf, output: &PathBuf, compression: u32) -> io::Result<Self> {
+        let control_path  = temp_dir.join("control.tar.gz");
+        let data_path = temp_dir.join("data.tar.gz");
+
+        let control_file = GzEncoder::new(
+            File::create(&control_path)?,
+            Compression::new(compression)
+        );
+
+        let data_file = GzEncoder::new(
+            File::create(&data_path)?,
+            Compression::new(compression)
+        );
 
         Ok(Self {
             temp_dir: temp_dir.clone(),
             output: output.clone(),
-            control: TarArchive::new(control_path.as_path())?,
-            data: TarArchive::new(data_path.as_path())?,
+            control: TarArchive::new(control_file)?,
+            data: TarArchive::new(data_file)?,
             control_path, data_path
         })
     }
 
-    pub fn data_mut_ref(&mut self) -> &mut TarArchive { self.data.borrow_mut() }
+    pub fn data_mut_ref(&mut self) -> &mut DebTarArchive { self.data.borrow_mut() }
 
-    pub fn control_mut_ref(&mut self) -> &mut TarArchive { self.control.borrow_mut() }
+    pub fn control_mut_ref(&mut self) -> &mut DebTarArchive { self.control.borrow_mut() }
 
     pub fn package(&mut self) -> io::Result<()> {
-        self.control.finish_appending()?;
-        self.data.finish_appending()?;
-
-        let control_compressed = self.temp_dir.join("control.tar.gz");
-        compress_gzip(&self.control_path, &control_compressed, 6)?;
-
-        let data_compressed = self.temp_dir.join("data.tar.gz");
-        compress_gzip(&self.data_path, &data_compressed, 6)?;
+        self.control.builder.finish()?;
+        self.control.builder.get_mut().try_finish()?;
+        self.data.builder.finish()?;
+        self.data.builder.get_mut().try_finish()?;
 
         // Now combine all files together
         let mut builder = ar::Builder::new(File::create(&self.output)?);
@@ -61,15 +76,48 @@ impl Deb {
         // Second file is control archive. It is compressed with gzip and packed with tar
         builder.append_file(
             "control.tar.gz".as_bytes(),
-            &mut File::open(control_compressed)?
+            &mut File::open(&self.control_path)?
         ).unwrap();
 
         // Third - main archive with data. Compressed and package same way as control
         builder.append_file(
             "data.tar.gz".as_bytes(),
-            &mut File::open(data_compressed)?
+            &mut File::open(&self.data_path)?
         ).unwrap();
 
         return Ok(());
+    }
+}
+
+impl<W: Write> TarArchive<W> {
+    pub fn new(writer: W) -> io::Result<Self> {
+        return Ok(Self { builder: Builder::new(writer) });
+    }
+
+    /// Adds a file on the local filesystem to this archive.
+    pub fn append_path<P: AsRef<Path>>(&mut self, path: P) -> io::Result<()> {
+        return self.builder.append_path(path);
+    }
+
+    /// Adds a file on the local filesystem to this archive under another name.
+    pub fn append_path_with_name<P: AsRef<Path>>(&mut self, path: P, name: P) -> io::Result<()> {
+        return self.builder.append_path_with_name(path, name);
+    }
+
+    /// Appends non-existing on the filesystem file to archive
+    pub fn append_new_file<P: AsRef<Path>>(&mut self, path: P, contents: &[u8]) -> io::Result<()> {
+        let cur_time = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH).unwrap()
+            .as_secs();
+
+        let mut header = tar::Header::new_old();
+        header.set_mode(0o644); // o=rw,g=r
+        header.set_uid(0);
+        header.set_gid(0);
+        header.set_size(contents.len() as u64);
+        header.set_mtime(cur_time); // modify time
+        header.set_cksum();
+
+        return self.builder.append_data(&mut header, path, contents);
     }
 }

@@ -5,11 +5,9 @@ use std::{
     sync::Arc
 };
 
-mod archiver;
-use archiver::TarArchive;
 use indicatif::ProgressBar;
 mod deb;
-use deb::Deb;
+use deb::*;
 
 /// Creates DEB from filesystem contents
 pub struct BuildWorker {
@@ -49,7 +47,7 @@ impl BuildWorker {
         let deb_name = format!("{}.deb", self.package.canonical_name());
         let deb_path = self.destination.join(deb_name);
 
-        let mut deb = Deb::new(&self.working_dir, &deb_path)?;
+        let mut deb = Deb::new(&self.working_dir, &deb_path, 6)?;
         self.archive_files(deb.data_mut_ref())?;
         self.archive_metadata(deb.control_mut_ref())?;
         deb.package()?;
@@ -60,7 +58,7 @@ impl BuildWorker {
     }
 
     /// Archives package files and compresses in a single archive
-    fn archive_files(&self, archiver: &mut TarArchive) -> io::Result<()> {
+    fn archive_files(&self, archiver: &mut DebTarArchive) -> io::Result<()> {
         let files = self.package.get_installed_files(&self.admin_dir)?;
 
         for file in files {
@@ -80,7 +78,7 @@ impl BuildWorker {
 
     /// Collects package metadata such as install scripts,
     /// creates control and packages all this together
-    fn archive_metadata(&self, archiver: &mut TarArchive) -> io::Result<()> {
+    fn archive_metadata(&self, archiver: &mut DebTarArchive) -> io::Result<()> {
         // Order in this archive doesn't matter. So we'll add control at first
         archiver.append_new_file("control", &self.package.create_control().as_bytes())?;
 
