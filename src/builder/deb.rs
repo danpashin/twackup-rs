@@ -6,7 +6,6 @@ use std::{
     borrow::BorrowMut,
     time::SystemTime,
 };
-use std::borrow::Borrow;
 
 pub type DebTarArchive = TarArchive<GzEncoder<File>>;
 

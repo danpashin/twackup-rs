@@ -9,7 +9,6 @@ pub enum State {
     Unknown,
     Install,
     Remove,
-    Purge,
     Hold,
 }
 
@@ -66,7 +65,7 @@ impl Package {
     pub fn create_control(&self) -> String {
         let mut fields_len = 0;
         for (key, value) in self.hashmap.iter() {
-            fields_len += key.len() + value.len() + 4;
+            fields_len += key.len() + value.len() + 3;
         }
 
         let mut control = String::with_capacity(fields_len);
