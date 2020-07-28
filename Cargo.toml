@@ -31,3 +31,6 @@ tar = "^0.4"
 ar = "^0.8"
 flate2 = { version = "^1.0", features = ["zlib"], default-features = false }
 indicatif = "^0.15"
+
+[patch.crates-io]
+termios = { git = "https://github.com/danpashin/termios-rs", branch = "feature/ios" }

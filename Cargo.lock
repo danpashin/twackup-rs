@@ -392,8 +392,7 @@ dependencies = [
 [[package]]
 name = "termios"
 version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f0fcee7b24a25675de40d5bb4de6e41b0df07bc9856295e7e2b3a3600c400c2"
+source = "git+https://github.com/danpashin/termios-rs?branch=feature/ios#f3505b93ab43c9765f10d795ad126325b2f34ed0"
 dependencies = [
  "libc",
 ]
