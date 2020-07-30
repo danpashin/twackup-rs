@@ -58,7 +58,7 @@ impl Package {
     pub fn new(fields: &HashMap<String, String>) -> Option<Self> {
         let package_id = fields.get("Package")?.to_string();
 
-        return Some(Package{
+        Some(Package{
             identifier: package_id.clone(),
             name: fields.get("Name").unwrap_or(&package_id).to_string(),
             version: fields.get("Version")?.to_string(),
@@ -66,7 +66,7 @@ impl Package {
             state: State::from_dpkg(fields.get("Status")),
             section: Section::from_string_opt(fields.get("Section")),
             hashmap: fields.clone(),
-        });
+        })
     }
 
     pub fn get_installed_files(&self, dpkg_dir: &Path) -> io::Result<Vec<String>> {
@@ -75,7 +75,7 @@ impl Package {
     }
 
     pub fn canonical_name(&self) -> String {
-        return format!("{}_{}_{}", self.identifier, self.version, self.architecture);
+        format!("{}_{}_{}", self.identifier, self.version, self.architecture)
     }
 
     pub fn create_control(&self) -> String {

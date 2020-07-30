@@ -6,9 +6,6 @@ use std::{
 use memmap::Mmap;
 use crate::package::*;
 
-extern crate num_cpus;
-extern crate threadpool;
-
 const NEWLINE_CHAR: u8 = 0xA;
 
 pub struct Parser {
@@ -26,13 +23,13 @@ struct ChunkParser {
 impl Parser {
     /// Prepares environment and creates parser instance
     pub fn new(file_path: &Path) -> io::Result<Parser> {
-        return Ok(Parser {
+        Ok(Parser {
             file_path: file_path.clone().to_path_buf(),
             // If file is not found or user has no permissions, this method will throw an error
             file: File::open(file_path)?,
             // Thread pool will grab all processor cores
             thread_pool: threadpool::ThreadPool::new(num_cpus::get())
-        });
+        })
     }
 
     /// This method will parse file with key-value syntax on separate lines
@@ -91,7 +88,7 @@ impl Parser {
 impl ChunkParser {
     /// Prepares environment and creates parser instance
     fn new(file_path: PathBuf, start: usize, end: usize) -> ChunkParser {
-        return ChunkParser { file_path, start, end };
+        ChunkParser { file_path, start, end }
     }
 
     /// Parses chunk to package model

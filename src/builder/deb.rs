@@ -40,8 +40,8 @@ impl Deb {
         Ok(Self {
             temp_dir: temp_dir.clone(),
             output: output.clone(),
-            control: TarArchive::new(control_file)?,
-            data: TarArchive::new(data_file)?,
+            control: TarArchive::new(control_file),
+            data: TarArchive::new(data_file),
             control_path, data_path
         })
     }
@@ -89,18 +89,18 @@ impl Deb {
 }
 
 impl<W: Write> TarArchive<W> {
-    pub fn new(writer: W) -> io::Result<Self> {
-        return Ok(Self { builder: Builder::new(writer) });
+    pub fn new(writer: W) -> Self {
+        Self { builder: Builder::new(writer) }
     }
 
     /// Adds a file on the local filesystem to this archive.
     pub fn append_path<P: AsRef<Path>>(&mut self, path: P) -> io::Result<()> {
-        return self.builder.append_path(path);
+        self.builder.append_path(path)
     }
 
     /// Adds a file on the local filesystem to this archive under another name.
     pub fn append_path_with_name<P: AsRef<Path>>(&mut self, path: P, name: P) -> io::Result<()> {
-        return self.builder.append_path_with_name(path, name);
+        self.builder.append_path_with_name(path, name)
     }
 
     /// Appends non-existing on the filesystem file to archive

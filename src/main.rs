@@ -1,5 +1,5 @@
 use clap::Clap;
-use ansi_term::{Colour, Color};
+use ansi_term::Colour;
 use num_cpus;
 use threadpool::ThreadPool;
 use std::{
