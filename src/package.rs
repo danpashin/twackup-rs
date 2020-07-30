@@ -12,6 +12,22 @@ pub enum State {
     Hold,
 }
 
+#[derive(Clone, PartialEq)]
+pub enum Section {
+    Other(String),
+    Unknown,
+    System,
+    Tweaks,
+    Utilities,
+    Packaging,
+    Development,
+    TerminalSupport,
+    Themes,
+    Archiving,
+    Networking,
+    TextEditors,
+}
+
 #[derive(Clone)]
 pub struct Package {
     /// The name of the binary package. This field MUST NOT be empty.
@@ -33,7 +49,7 @@ pub struct Package {
 
     /// This field specifies an application area into which
     /// the package has been classified
-    pub section: String,
+    pub section: Section,
 
     hashmap: HashMap<String, String>,
 }
@@ -48,7 +64,7 @@ impl Package {
             version: fields.get("Version")?.to_string(),
             architecture: fields.get("Architecture")?.to_string(),
             state: State::from_dpkg(fields.get("Status")),
-            section: fields.get("Section").unwrap_or(&"".to_string()).to_string(),
+            section: Section::from_string_opt(fields.get("Section")),
             hashmap: fields.clone(),
         });
     }
@@ -116,5 +132,31 @@ impl State {
         }
 
         return Self::Unknown;
+    }
+}
+
+
+impl Section {
+    pub fn from_string(value: &String) -> Section {
+        match value.to_lowercase().as_str() {
+            "system" => Section::System,
+            "tweaks" => Section::Tweaks,
+            "utilities" => Section::Utilities,
+            "packaging" => Section::Packaging,
+            "development" => Section::Development,
+            "themes" => Section::Themes,
+            "terminal_support" | "terminal support" => Section::TerminalSupport,
+            "networking" => Section::Networking,
+            "archiving" => Section::Archiving,
+            "text_editors" => Section::TextEditors,
+            _ => Section::Other(value.clone())
+        }
+    }
+
+    pub fn from_string_opt(value: Option<&String>) -> Section {
+        match value {
+            Some(value) => Self::from_string(value),
+            None => Section::Unknown
+        }
     }
 }

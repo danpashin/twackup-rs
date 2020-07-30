@@ -90,14 +90,18 @@ fn main() {
     }
 }
 
-fn section_color(section: &String)-> Colour {
-    match section.to_lowercase().as_str() {
-        "system" => Color::Red,
-        "tweaks" => Color::Yellow,
-        "utilities" => Color::Green,
-        "themes" => Color::Cyan,
-        "terminal_support" => Color::Green,
-        _ => Color::White
+fn section_color(section: &Section)-> Colour {
+    match section {
+        Section::System => Colour::Fixed(9), // bright red
+        Section::Tweaks => Colour::Fixed(11), // bright yellow
+        Section::Utilities | Section::Packaging => Colour::Fixed(14), // bright cyan
+        Section::Development => Colour::Fixed(130), // more like orange with pink
+        Section::Themes => Colour::Fixed(12), // bright blue
+        Section::TerminalSupport => Colour::Fixed(10), // bright green
+        Section::Networking => Colour::Fixed(112), // bright green with some cyan
+        Section::Archiving => Colour::Fixed(216),  // peach?
+        Section::TextEditors => Colour::Fixed(162), // between red and magenta. Raspberry?
+        _ => Colour::Fixed(8) // bright grey
     }
 }
 
