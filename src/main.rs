@@ -17,6 +17,9 @@ mod package;
 mod builder;
 use crate::{package::*, parser::*, builder::*};
 
+#[cfg(test)]
+mod tests;
+
 const ADMIN_DIR: &str = "/var/lib/dpkg";
 const TARGET_DIR: &str = "/var/mobile/Documents/twackup";
 
