@@ -34,6 +34,7 @@ clap = "3.0.0-beta.1"
 ansi_term = "^0.12"
 tar = "^0.4"
 ar = "^0.8"
+nix = "^0.18"
 flate2 = { version = "^1.0", features = ["zlib"], default-features = false }
 indicatif = "^0.15"
 

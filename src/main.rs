@@ -6,7 +6,7 @@ use std::{
     sync::{Arc, Mutex},
     vec::Vec,
     collections::LinkedList,
-    fs, io,
+    fs, io, env,
     process::exit,
     time::Instant,
     path::PathBuf
@@ -24,7 +24,16 @@ const ADMIN_DIR: &str = "/var/lib/dpkg";
 const TARGET_DIR: &str = "/var/mobile/Documents/twackup";
 
 #[derive(Clap)]
-#[clap(about, version)]
+#[clap(about, version, after_help="
+Hello there! This is twackup - the most advanced, safe and fast tool for rebuilding your tweaks \
+back to DEB's.
+But be careful! It doesn't download new DEB from somewhere, it passes through all system and \
+collects all files it finds to a single DEB. Therefore it's highly recommended to run this tool \
+as root - lower probability it couldn't open and/or copy some files.
+
+All commands will never ever list or backup \"virtual\" packages - different dependencies which \
+package managers use to define your OS version or device.
+")]
 struct CLIOptions {
     #[clap(subcommand)]
     subcmd: CLICommand,
@@ -247,7 +256,14 @@ impl BuildCommand {
         let progress_bar = Arc::new(pb);
 
         // Tricky hack. Tar'ing accepts only relative files so we'll move to root dir
-        assert!(std::env::set_current_dir("/").is_ok());
+        env::set_current_dir("/").expect("Can't change working dir to /");
+
+        if !nix::unistd::getuid().is_root() {
+            progress_bar.println(Colour::Yellow.paint(
+                "You seem not to be a root user. It is highly recommended to use root, \
+                in other case building some packages can fail."
+            ).to_string());
+        }
 
         for package in packages.iter() {
             let builder = BuildWorker::new(
@@ -275,7 +291,7 @@ impl BuildCommand {
         progress_bar.finish_and_clear();
         println!(
             "Processed {} packages in {}",
-            packages.len(), indicatif::HumanDuration(started.elapsed())
+            all_count, indicatif::HumanDuration(started.elapsed())
         );
     }
 

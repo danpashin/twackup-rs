@@ -116,6 +116,7 @@ impl Package {
         return pkg.depends().contains(id) || pkg.predepends().contains(id);
     }
 
+    #[allow(dead_code)]
     pub fn description(&self) -> Option<&String> { self.hashmap.get("Description") }
 }
 
