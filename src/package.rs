@@ -115,6 +115,8 @@ impl Package {
         let id = &self.identifier;
         return pkg.depends().contains(id) || pkg.predepends().contains(id);
     }
+
+    pub fn description(&self) -> Option<&String> { self.hashmap.get("Description") }
 }
 
 impl State {

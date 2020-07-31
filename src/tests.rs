@@ -1,19 +1,17 @@
 use std::{
     sync::{Arc, Mutex},
-    env, io, fs::{self, File},
+    env, io::{self, Write}, fs::{self, File},
     collections::HashMap,
-    os::unix::fs::PermissionsExt
+    os::unix::fs::PermissionsExt,
+    collections::LinkedList,
 };
 
 use crate::{package::*, parser::*};
-use std::io::Write;
 
 #[test]
 fn parser_valid_database() {
     let database = env::current_dir().unwrap().join("assets/database/valid");
-    let parser = Parser::new(database.as_path()).unwrap_or_else(|error| {
-        panic!("Failed to open {}. {}", database.display().to_string(), error);
-    });
+    let parser = Parser::new(database.as_path()).unwrap();
 
     let packages_counter = Arc::new(Mutex::new(0));
     let handler_counter = Arc::clone(&packages_counter);
@@ -29,9 +27,7 @@ fn parser_valid_database() {
 #[test]
 fn parser_partially_valid_database() {
     let database = env::current_dir().unwrap().join("assets/database/partially_valid");
-    let parser = Parser::new(database.as_path()).unwrap_or_else(|error| {
-        panic!("Failed to open {}. {}", database.display().to_string(), error);
-    });
+    let parser = Parser::new(database.as_path()).unwrap();
 
     let packages_counter = Arc::new(Mutex::new(0));
     let handler_counter = Arc::clone(&packages_counter);
@@ -42,6 +38,28 @@ fn parser_partially_valid_database() {
 
     let real_count = *packages_counter.lock().unwrap();
     assert_ne!(real_count, 3);
+}
+
+#[test]
+fn parser_multiline() {
+    let database = env::current_dir().unwrap().join("assets/database/multiline");
+    let parser = Parser::new(database.as_path()).unwrap();
+
+    let pkgs = Arc::new(Mutex::new(LinkedList::new()));
+    let handler_ref = Arc::clone(&pkgs);
+
+    parser.parse(move |pkg| -> () {
+        handler_ref.lock().unwrap().push_back(pkg.clone());
+    });
+
+    let packages = pkgs.lock().unwrap();
+    let mut iterator = packages.iter();
+
+    let second_pkg = iterator.find(|pkg|pkg.identifier.as_str() == "valid-package-1").unwrap();
+    assert_eq!(second_pkg.description().unwrap().as_str(), "First Line\nSecond Line\nThird Line");
+
+    let second_pkg = iterator.find(|pkg|pkg.identifier.as_str() == "valid-package-2").unwrap();
+    assert_eq!(second_pkg.description().unwrap().as_str(), "First Line");
 }
 
 #[test]
