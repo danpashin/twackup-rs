@@ -16,7 +16,7 @@ depends = "firmware (>= 3.0)"
 changelog = "changelog"
 homepage = ""
 assets = [
-    ["build/twackup", "/usr/bin/"],
+    ["build/twackup-ios", "/usr/bin/twackup"],
 ]
 
 [profile.release]
