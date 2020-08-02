@@ -40,9 +40,8 @@ impl BuildWorker {
         }
 
         // Removing all dir contents
-        let dir = &self.working_dir;
-        let _ = fs::remove_dir_all(dir);
-        fs::create_dir(dir)?;
+        let _ = fs::remove_dir_all(&self.working_dir);
+        fs::create_dir(&self.working_dir)?;
 
         let deb_name = format!("{}.deb", self.package.canonical_name());
         let deb_path = self.destination.join(deb_name);
@@ -52,7 +51,7 @@ impl BuildWorker {
         self.archive_metadata(deb.control_mut_ref())?;
         deb.package()?;
 
-        let _ = fs::remove_dir_all(dir);
+        let _ = fs::remove_dir_all(&self.working_dir);
 
         return Ok(deb_path);
     }
@@ -101,7 +100,8 @@ impl BuildWorker {
                     .to_lowercase();
                 // And skip this two files
                 // First one contains package files list
-                // Second - md5 sums for every package file. Maybe it shouldn't be rejected but i don't sure
+                // Second - md5 sums for every package file. Maybe it shouldn't be rejected
+                // but i don't sure
                 if ext == "list" || ext == "md5sums" { continue; }
 
                 let abs_path =  entry.path().into_os_string().into_string().unwrap();

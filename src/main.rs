@@ -1,13 +1,11 @@
 use clap::Clap;
 use ansi_term::Colour;
-use num_cpus;
 use threadpool::ThreadPool;
 use std::{
     sync::{Arc, Mutex},
     vec::Vec,
     collections::LinkedList,
     fs, io, env,
-    process::exit,
     time::Instant,
     path::PathBuf
 };
@@ -119,17 +117,16 @@ fn section_color(section: &Section)-> Colour {
 
 fn get_packages(admin_dir: &PathBuf, leaves_only: bool) -> Vec<Package> {
     let status_file = admin_dir.join("status");
-    let parser = Parser::new(status_file.as_path()).unwrap_or_else(|error| {
-        eprintln!("Failed to open {}. {}", status_file.display().to_string(), error);
-        exit(1);
-    });
+    let parser = Parser::new(status_file.as_path()).expect("Failed to open database");
 
     let pkgs: LinkedList<Package> = LinkedList::new();
     let packages = Arc::new(Mutex::new(pkgs));
 
+    // Create mutexed pointer for multithreading parser
     let handler_pkgs = Arc::clone(&packages);
     parser.parse(move |pkg| -> () {
         let identifier = &pkg.identifier;
+        // Ignore all virtual dependencies for Cydia and all uninstalled packages
         if identifier.starts_with("gsc") || identifier.starts_with("cy+")
             || pkg.state != State::Install
         { return; }
@@ -143,6 +140,7 @@ fn get_packages(admin_dir: &PathBuf, leaves_only: bool) -> Vec<Package> {
     let unfiltered = packages.lock().unwrap();
     for package in unfiltered.iter() {
         if leaves_only {
+            // Drop this package if it is the dependency of other
             let mut is_dependency = false;
             for pkg in unfiltered.iter() {
                 if package.is_dependency_of(pkg) {
@@ -244,7 +242,7 @@ impl BuildCommand {
     fn build(&self, packages: Vec<Package>) {
         let started = Instant::now();
         self.create_dir_if_needed();
-        let threadpool = ThreadPool::new(num_cpus::get());
+        let threadpool = ThreadPool::default();
 
         let all_count = packages.len();
         let pb = indicatif::ProgressBar::new(all_count as u64);
@@ -298,18 +296,12 @@ impl BuildCommand {
     fn create_dir_if_needed(&self) {
         if let Ok(metadata) = fs::metadata(&self.destination) {
             if !metadata.is_dir() {
-                if let Err(error) = fs::remove_file(&self.destination) {
-                    eprintln!("Failed to remove {:?}. {}", self.destination, error);
-                    exit(1);
-                }
+                fs::remove_file(&self.destination).expect("Failed to remove working dir");
             }
 
             return;
         }
 
-        if let Err(error) = fs::create_dir_all(&self.destination) {
-            eprintln!("Failed to create {:?}. {}", self.destination, error);
-            exit(1);
-        }
+        fs::create_dir_all(&self.destination).expect("Failed to create working dir");
     }
 }

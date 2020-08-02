@@ -6,8 +6,6 @@ use std::{
 use memmap::Mmap;
 use crate::package::*;
 
-const NEWLINE_CHAR: u8 = 0xA;
-
 pub struct Parser {
     file_path: PathBuf,
     file: File,
@@ -28,7 +26,7 @@ impl Parser {
             // If file is not found or user has no permissions, this method will throw an error
             file: File::open(file_path)?,
             // Thread pool will grab all processor cores
-            thread_pool: threadpool::ThreadPool::new(num_cpus::get())
+            thread_pool: threadpool::ThreadPool::default()
         })
     }
 
@@ -60,7 +58,7 @@ impl Parser {
         for byte in fmmap.iter() {
             cur_position += 1;
             // When double new line is detected
-            let nl = byte ^ NEWLINE_CHAR == 0;
+            let nl = byte ^ b'\n' == 0;
             if nl && last_is_nl {
                 // Create ARC pointer for handler, get package (chunk) start/end positions
                 let th_handler = std::sync::Arc::clone(&safe_handler);

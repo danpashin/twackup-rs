@@ -70,19 +70,19 @@ impl Deb {
         builder.append_file(
             "debian-binary".as_bytes(),
             &mut File::open(&binary_file_path)?
-        ).unwrap();
+        )?;
 
         // Second file is control archive. It is compressed with gzip and packed with tar
         builder.append_file(
             "control.tar.gz".as_bytes(),
             &mut File::open(&self.control_path)?
-        ).unwrap();
+        )?;
 
         // Third - main archive with data. Compressed and package same way as control
         builder.append_file(
             "data.tar.gz".as_bytes(),
             &mut File::open(&self.data_path)?
-        ).unwrap();
+        )?;
 
         return Ok(());
     }

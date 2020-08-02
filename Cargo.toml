@@ -28,7 +28,6 @@ debug = 0
 
 [dependencies]
 memmap = "^0.7"
-num_cpus = "^1.13"
 threadpool = "^1.8"
 clap = "3.0.0-beta.1"
 ansi_term = "^0.12"
