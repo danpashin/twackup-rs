@@ -56,7 +56,7 @@ fn parser_multiline() {
     let mut iterator = packages.iter();
 
     let second_pkg = iterator.find(|pkg|pkg.identifier.as_str() == "valid-package-1").unwrap();
-    assert_eq!(second_pkg.description().unwrap().as_str(), "First Line\nSecond Line\nThird Line");
+    assert_eq!(second_pkg.description().unwrap().as_str(), "First Line\n Second Line\n  Third Line");
 
     let second_pkg = iterator.find(|pkg|pkg.identifier.as_str() == "valid-package-2").unwrap();
     assert_eq!(second_pkg.description().unwrap().as_str(), "First Line");

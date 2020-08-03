@@ -118,11 +118,11 @@ impl ChunkParser {
                 continue;
             }
 
-            // Keys can have multi-line syntax starting with two or four spaces
+            // Keys can have multi-line syntax starting with single space
             // So we'll process them and concat with previous line in list
             if unwrapped_line.starts_with(" ") && !fields.is_empty() {
                 let prev_line = fields.pop_back().unwrap();
-                fields.push_back(format!("{}\n{}", prev_line, unwrapped_line.trim()).to_string());
+                fields.push_back(format!("{}\n{}", prev_line, unwrapped_line).to_string());
             } else {
                 fields.push_back(unwrapped_line);
             }
