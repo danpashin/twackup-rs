@@ -55,17 +55,17 @@ pub struct Package {
 }
 
 impl Package {
-    pub fn new(fields: &HashMap<String, String>) -> Option<Self> {
-        let package_id = fields.get("Package")?.to_string();
+    pub fn new(fields: HashMap<String, String>) -> Option<Self> {
+        let package_id = fields.get("Package")?;
 
         Some(Package{
-            identifier: package_id.clone(),
-            name: fields.get("Name").unwrap_or(&package_id).to_string(),
+            identifier: package_id.to_string(),
+            name: fields.get("Name").unwrap_or(package_id).to_string(),
             version: fields.get("Version")?.to_string(),
             architecture: fields.get("Architecture")?.to_string(),
             state: State::from_dpkg(fields.get("Status")),
             section: Section::from_string_opt(fields.get("Section")),
-            hashmap: fields.clone(),
+            hashmap: fields,
         })
     }
 
@@ -78,7 +78,7 @@ impl Package {
         format!("{}_{}_{}", self.identifier, self.version, self.architecture)
     }
 
-    pub fn create_control(&self) -> String {
+    pub fn to_control(&self) -> String {
         let mut fields_len = 0;
         for (key, value) in self.hashmap.iter() {
             fields_len += key.len() + value.len() + 3;
@@ -87,28 +87,28 @@ impl Package {
         let mut control = String::with_capacity(fields_len);
 
         for (key, value) in self.hashmap.iter() {
-            if *key == "Status".to_string() { continue; }
-            control.push_str(format!("{}: {}\n", key, value).as_str());
+            if key.as_str() == "Status" { continue; }
+            control.push_str(key);
+            control.push_str(": ");
+            control.push_str(value);
+            control.push_str("\n");
         }
 
-        return  control;
+        return control;
     }
 
-    fn parse_depends(value: Option<&String>) -> Vec<String> {
-        match value {
+    fn split_by_comma(&self, field: Option<&String>) -> Vec<String> {
+        match field {
             None => Vec::new(),
-            Some(depends) => depends
-                .split(",")
-                .map(|dependency| dependency.trim().to_string())
-                .collect::<Vec<String>>()
+            Some(value) => value.split(",").map(|val| val.trim().to_string()).collect()
         }
     }
 
     /// Returns packages of which this one depends.
-    pub fn depends(&self) -> Vec<String> { Self::parse_depends(self.hashmap.get("Depends")) }
+    pub fn depends(&self) -> Vec<String> { self.split_by_comma(self.hashmap.get("Depends")) }
 
     /// Returns packages of which the installation of this package depends.
-    pub fn predepends(&self) -> Vec<String> { Self::parse_depends(self.hashmap.get("Pre-Depends")) }
+    pub fn predepends(&self) -> Vec<String> { self.split_by_comma(self.hashmap.get("Pre-Depends")) }
 
     /// Returns true if this package us a dependency of other.
     pub fn is_dependency_of(&self, pkg: &Package) -> bool {

@@ -103,7 +103,7 @@ impl ChunkParser {
         // Now process each line individually
         let fields_map = self.parse_fields(fields);
 
-        return Some(Package::new(&fields_map)?);
+        return Some(Package::new(fields_map)?);
     }
 
     /// Converts raw chunk bytes to list of lines with multi-line syntax support

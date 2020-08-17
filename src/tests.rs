@@ -83,7 +83,7 @@ fn valid_package_get_files() {
     package_info.insert("Version".to_string(), "1.0.0".to_string());
     package_info.insert("Architecture".to_string(), "all".to_string());
 
-    let package = Package::new(&package_info).unwrap();
+    let package = Package::new(package_info).unwrap();
 
     let path = env::current_dir().unwrap().join("assets/packages");
     let files = package.get_installed_files(path.as_path());
@@ -98,7 +98,7 @@ fn non_valid_package_get_files() {
     package_info.insert("Version".to_string(), "1.0.0".to_string());
     package_info.insert("Architecture".to_string(), "all".to_string());
 
-    let package = Package::new(&package_info).unwrap();
+    let package = Package::new(package_info).unwrap();
 
     let path = env::current_dir().unwrap().join("assets/packages");
     let files = package.get_installed_files(path.as_path());

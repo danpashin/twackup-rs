@@ -79,7 +79,7 @@ impl BuildWorker {
     /// creates control and packages all this together
     fn archive_metadata(&self, archiver: &mut DebTarArchive) -> io::Result<()> {
         // Order in this archive doesn't matter. So we'll add control at first
-        archiver.append_new_file("control", &self.package.create_control().as_bytes())?;
+        archiver.append_new_file("control", &self.package.to_control().as_bytes())?;
 
         // Then add every matching metadata file in dpkg database dir
         let files = fs::read_dir(self.admin_dir.join("info"))?;
