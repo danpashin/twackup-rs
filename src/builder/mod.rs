@@ -6,7 +6,7 @@ use std::{
 };
 
 use indicatif::ProgressBar;
-mod deb;
+pub mod deb;
 use deb::*;
 
 /// Creates DEB from filesystem contents

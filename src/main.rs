@@ -1,13 +1,15 @@
 use clap::Clap;
 use ansi_term::Colour;
 use threadpool::ThreadPool;
+use gethostname::gethostname;
+use chrono::Local;
 use std::{
     sync::{Arc, Mutex},
     vec::Vec,
     collections::LinkedList,
     fs, io, env,
     time::Instant,
-    path::PathBuf
+    path::{Path, PathBuf},
 };
 
 mod parser;
@@ -20,6 +22,7 @@ mod tests;
 
 const ADMIN_DIR: &str = "/var/lib/dpkg";
 const TARGET_DIR: &str = "/var/mobile/Documents/twackup";
+const DEFAULT_ARCHIVE_NAME: &str = "%host%_%date%.tar.gz";
 
 #[derive(Clap)]
 #[clap(about, version, after_help="
@@ -88,6 +91,18 @@ struct BuildCommand {
     /// Use custom destination <directory>.
     #[clap(long, short, default_value=TARGET_DIR, parse(from_os_str))]
     destination: PathBuf,
+
+    /// Packs all rebuilded DEB's to single archive
+    #[clap(long)]
+    archive: bool,
+
+    /// Name of archive if --archive is set. Supports only .tar.gz archives for now.
+    #[clap(long, default_value=DEFAULT_ARCHIVE_NAME)]
+    archive_name: String,
+
+    /// Removes all DEB's after adding to archive. Makes sense only if --archive is set.
+    #[clap(short="R", long)]
+    remove_after: bool,
 }
 
 
@@ -263,10 +278,16 @@ impl BuildCommand {
             ).to_string());
         }
 
+        let archive = self.create_archive_if_needed();
+        let archive_ptr = Arc::new(Mutex::new(archive));
+
         for package in packages.iter() {
             let builder = BuildWorker::new(
                 &self.admindir, package, &self.destination, Arc::clone(&progress_bar)
             );
+            let b_archive_ptr = Arc::clone(&archive_ptr);
+            let perform_archive = self.archive;
+            let remove_deb = self.remove_after;
             threadpool.execute(move || {
                 builder.progress.set_message(
                     format!("Processing {}", builder.package.name).as_str()
@@ -281,6 +302,17 @@ impl BuildCommand {
                     builder.progress.set_message(
                         format!("Done {}", builder.package.name).as_str()
                     );
+
+                    if perform_archive {
+                        let mut archive = b_archive_ptr.lock().unwrap();
+                        let file = status.unwrap();
+                        let abs_file = Path::new(".").join(file.file_name().unwrap());
+                        let result = archive.as_mut().unwrap()
+                            .append_path_with_name(&file, &abs_file);
+                        if result.is_ok() && remove_deb {
+                            let _ = fs::remove_file(file);
+                        }
+                    }
                 }
             });
         }
@@ -291,6 +323,25 @@ impl BuildCommand {
             "Processed {} packages in {}",
             all_count, indicatif::HumanDuration(started.elapsed())
         );
+    }
+
+    fn create_archive_if_needed(&self) -> Option<builder::deb::DebTarArchive> {
+        if !self.archive {
+            return None;
+        }
+
+        let filename = if self.archive_name == DEFAULT_ARCHIVE_NAME {
+            format!("{}_{}.tar.gz", gethostname().to_str().unwrap(), Local::now().format("%v_%T"))
+        } else {
+            self.archive_name.clone()
+        };
+
+        let filepath = self.destination.join(&filename);
+        let file = fs::File::create(filepath).expect("Can't open archive file");
+        let compression = flate2::Compression::default();
+        let encoder = flate2::write::GzEncoder::new(file, compression);
+
+        return Some(builder::deb::TarArchive::new(encoder));
     }
 
     fn create_dir_if_needed(&self) {
