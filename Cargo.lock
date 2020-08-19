@@ -479,7 +479,7 @@ dependencies = [
 
 [[package]]
 name = "twackup"
-version = "1.0.0-a1"
+version = "1.0.0-a2"
 dependencies = [
  "ansi_term",
  "ar",

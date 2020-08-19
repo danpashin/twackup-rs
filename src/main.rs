@@ -7,7 +7,7 @@ use std::{
     sync::{Arc, Mutex},
     vec::Vec,
     collections::LinkedList,
-    fs, io, env,
+    fs, io,
     time::Instant,
     path::{Path, PathBuf},
 };
@@ -268,9 +268,6 @@ impl BuildCommand {
         );
         let progress_bar = Arc::new(pb);
 
-        // Tricky hack. Tar'ing accepts only relative files so we'll move to root dir
-        env::set_current_dir("/").expect("Can't change working dir to /");
-
         if !nix::unistd::getuid().is_root() {
             progress_bar.println(Colour::Yellow.paint(
                 "You seem not to be a root user. It is highly recommended to use root, \
@@ -307,7 +304,7 @@ impl BuildCommand {
                         let mut archive = b_archive_ptr.lock().unwrap();
                         let file = status.unwrap();
                         let abs_file = Path::new(".").join(file.file_name().unwrap());
-                        let result = archive.as_mut().unwrap()
+                        let result = archive.as_mut().unwrap().get_mut()
                             .append_path_with_name(&file, &abs_file);
                         if result.is_ok() && remove_deb {
                             let _ = fs::remove_file(file);

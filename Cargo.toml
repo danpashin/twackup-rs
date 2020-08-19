@@ -1,6 +1,6 @@
 [package]
 name = "twackup"
-version = "1.0.0-a1"
+version = "1.0.0-a2"
 description = "Simple DEB rebuilding utility for iOS and Debian-based platforms"
 authors = ["DanP"]
 edition = "2018"

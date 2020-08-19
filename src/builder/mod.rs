@@ -34,11 +34,6 @@ impl BuildWorker {
 
     /// Runs worker. Should be executed in a single thread usually
     pub fn run(&self) -> io::Result<PathBuf>  {
-        // Tricky hack. Because of tar contents must be relative, we must move to root dir
-        if std::env::current_dir()? != Path::new("/").to_path_buf() {
-            panic!("Current dir must be /!");
-        }
-
         // Removing all dir contents
         let _ = fs::remove_dir_all(&self.working_dir);
         fs::create_dir(&self.working_dir)?;
@@ -64,7 +59,8 @@ impl BuildWorker {
             // We'll not append root dir to archive because dpkg will unpack to root though
             if file == "/." { continue; }
             // Tricky hack. Archiver packs only relative paths. So let's add dot at start
-            if let Err(error) = archiver.append_path(format!(".{}", file)) {
+            let res = archiver.get_mut().append_path_with_name(&file, format!(".{}", file));
+            if let Err(error) = res {
                 self.progress.println(format!(
                     "[{}] {}", self.package.identifier,
                     ansi_term::Colour::Yellow.paint(format!("{}", error))
@@ -96,20 +92,19 @@ impl BuildWorker {
                 }
                 let ext = file_name
                     .chars().skip(id_len + 1)
-                    .collect::<String>()
-                    .to_lowercase();
+                    .collect::<String>();
                 // And skip this two files
                 // First one contains package files list
                 // Second - md5 sums for every package file. Maybe it shouldn't be rejected
                 // but i don't sure
                 if ext == "list" || ext == "md5sums" { continue; }
 
+                // Tricky hack. Archiver packs only relative paths. So let's add dot at start
                 let abs_path =  entry.path().into_os_string().into_string().unwrap();
-                // Tricky hack again!
-                let rel_path = format!(".{}",abs_path).to_string();
-                let path = Path::new(&rel_path);
+                let rel_path = format!("./{}", ext);
 
-                if let Err(error) = archiver.append_path_with_name(path, Path::new(&ext)) {
+                let res = archiver.get_mut().append_path_with_name(abs_path, rel_path);
+                if let Err(error) = res {
                     self.progress.println(format!(
                         "[{}] {}", self.package.identifier,
                         ansi_term::Colour::Yellow.paint(format!("{}", error))

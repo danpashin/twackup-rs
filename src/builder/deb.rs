@@ -93,15 +93,7 @@ impl<W: Write> TarArchive<W> {
         Self { builder: Builder::new(writer) }
     }
 
-    /// Adds a file on the local filesystem to this archive.
-    pub fn append_path<P: AsRef<Path>>(&mut self, path: P) -> io::Result<()> {
-        self.builder.append_path(path)
-    }
-
-    /// Adds a file on the local filesystem to this archive under another name.
-    pub fn append_path_with_name<P: AsRef<Path>>(&mut self, path: P, name: P) -> io::Result<()> {
-        self.builder.append_path_with_name(path, name)
-    }
+    pub fn get_mut(&mut self) -> &mut Builder<W> { &mut self.builder }
 
     /// Appends non-existing on the filesystem file to archive
     pub fn append_new_file<P: AsRef<Path>>(&mut self, path: P, contents: &[u8]) -> io::Result<()> {
