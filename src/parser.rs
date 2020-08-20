@@ -2,31 +2,34 @@ use std::{
     fs::File, io::{self, BufRead},
     path::{Path, PathBuf},
     collections::{LinkedList, HashMap},
+    thread, sync::Arc,
 };
 use memmap::Mmap;
+use deque::{Stealer, Stolen};
 use crate::package::*;
 
 pub struct Parser {
     file_path: PathBuf,
     file: File,
-    thread_pool: threadpool::ThreadPool
 }
 
-struct ChunkParser {
-    file_path: PathBuf,
-    start: usize,
-    end: usize
+enum ChunkWorkerState {
+    Process(usize, usize),
+    Quit,
+}
+
+struct ChunkWorker {
+    file: Mmap,
+    stealer: Stealer<ChunkWorkerState>,
 }
 
 impl Parser {
     /// Prepares environment and creates parser instance
     pub fn new(file_path: &Path) -> io::Result<Parser> {
         Ok(Parser {
-            file_path: file_path.clone().to_path_buf(),
+            file_path: file_path.to_path_buf(),
             // If file is not found or user has no permissions, this method will throw an error
             file: File::open(file_path)?,
-            // Thread pool will grab all processor cores
-            thread_pool: threadpool::ThreadPool::default()
         })
     }
 
@@ -42,15 +45,17 @@ impl Parser {
     /// Package: com.example.my.other.package
     /// Name: My Other Package
     /// ```
-    pub fn parse<F>(&self, handler: F)
-    where
-        F: Fn(Package) + Send + Sync + 'static,
-    {
+    pub fn parse(&self) -> Vec<Arc<Package>> {
         let mut last_is_nl = true;
         let mut last_nl_pos = 0;
         let mut cur_position = 0;
 
-        let safe_handler = std::sync::Arc::new(handler);
+        let mut workers = Vec::new();
+        let (workq, stealer) = deque::new();
+        for _ in 0..num_cpus::get() {
+            let worker = ChunkWorker::new(&self.file_path, stealer.clone());
+            workers.push(thread::spawn(move || worker.run()));
+        }
 
         // Load file in memory with mmap kernel feature
         let fmmap = unsafe { Mmap::map(&self.file).unwrap()  };
@@ -60,42 +65,53 @@ impl Parser {
             // When double new line is detected
             let nl = byte ^ b'\n' == 0;
             if nl && last_is_nl {
-                // Create ARC pointer for handler, get package (chunk) start/end positions
-                let th_handler = std::sync::Arc::clone(&safe_handler);
-                let parser = ChunkParser::new(
-                    self.file_path.clone(),
-                    last_nl_pos.clone(),
-                    cur_position.clone()
-                );
-
-                // And execute parser in another thread with calling atomic handler
-                self.thread_pool.execute(move || {
-                    if let Some(pkg) = parser.parse() {
-                        th_handler(pkg);
-                    }
-                });
+                workq.push(ChunkWorkerState::Process(last_nl_pos, cur_position));
                 last_nl_pos = cur_position.clone();
             }
             last_is_nl = nl;
         }
 
-        self.thread_pool.join();
+        for _ in 0..workers.len() {
+            workq.push(ChunkWorkerState::Quit);
+        }
+
+        let mut packages = Vec::new();
+        for worker in workers {
+            packages.extend(worker.join().unwrap().iter().cloned())
+        }
+
+        return packages;
     }
 }
 
-impl ChunkParser {
+impl ChunkWorker {
     /// Prepares environment and creates parser instance
-    fn new(file_path: PathBuf, start: usize, end: usize) -> ChunkParser {
-        ChunkParser { file_path, start, end }
+    fn new<P: AsRef<Path>>(file_path: P, stealer: Stealer<ChunkWorkerState>) -> ChunkWorker {
+        let file = unsafe { Mmap::map(&File::open(file_path).unwrap()).unwrap() };
+        ChunkWorker { file, stealer }
     }
 
     /// Parses chunk to package model
-    fn parse(&self) -> Option<Package> {
-        // Open file and load it in memory with mmap kernel feature
-        let file = File::open(&self.file_path).unwrap();
-        let mmap = unsafe { Mmap::map(&file).unwrap()  };
-        // Load package (chunk) in buffer. This usually allocates 1 MB of memory
-        let chunk = &mmap[self.start..self.end];
+    fn run(&self) -> Vec<Arc<Package>> {
+        let mut packages = Vec::new();
+        loop {
+            match self.stealer.steal() {
+                Stolen::Empty | Stolen::Abort => continue,
+                Stolen::Data(ChunkWorkerState::Quit) => break,
+                Stolen::Data(ChunkWorkerState::Process(start, end)) => {
+                    if let Some(package) = self.parse(start, end) {
+                        packages.push(Arc::new(package));
+                    }
+                }
+            }
+        }
+
+        return packages;
+    }
+
+    fn parse(&self, start: usize, end: usize) -> Option<Package> {
+        // Load package (chunk) in buffer
+        let chunk = &self.file[start..end];
 
         // First, we'll get all lines (with these which can be multi-line)
         let fields = self.parse_chunk(chunk);

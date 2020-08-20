@@ -1,12 +1,10 @@
 use clap::Clap;
 use ansi_term::Colour;
-use threadpool::ThreadPool;
 use gethostname::gethostname;
 use chrono::Local;
 use std::{
     sync::{Arc, Mutex},
     vec::Vec,
-    collections::LinkedList,
     fs, io,
     time::Instant,
     path::{Path, PathBuf},
@@ -16,6 +14,7 @@ mod parser;
 mod package;
 mod builder;
 use crate::{package::*, parser::*, builder::*};
+use std::collections::LinkedList;
 
 #[cfg(test)]
 mod tests;
@@ -134,23 +133,9 @@ fn get_packages(admin_dir: &PathBuf, leaves_only: bool) -> Vec<Arc<Package>> {
     let status_file = admin_dir.join("status");
     let parser = Parser::new(status_file.as_path()).expect("Failed to open database");
 
-    let pkgs: LinkedList<Arc<Package>> = LinkedList::new();
-    let packages = Arc::new(Mutex::new(pkgs));
-
-    // Create mutexed pointer for multithreading parser
-    let handler_pkgs = Arc::clone(&packages);
-    parser.parse(move |pkg| -> () {
-        let identifier = &pkg.identifier;
-        // Ignore all virtual dependencies for Cydia and all uninstalled packages
-        if identifier.starts_with("gsc") || identifier.starts_with("cy+")
-            || pkg.state != State::Install
-        { return; }
-
-        let mut pkgs = handler_pkgs.lock().unwrap();
-        pkgs.push_back(Arc::new(pkg));
-    });
-
-    let unfiltered = packages.lock().unwrap();
+    let unfiltered = parser.parse().drain(..).filter(|pkg| {
+        !(pkg.identifier.starts_with("gsc.") || pkg.identifier.starts_with("cy+"))
+    }).collect::<LinkedList<Arc<Package>>>();
 
     let mut filtered: Vec<Arc<Package>> = Vec::with_capacity(unfiltered.len());
     for package in unfiltered.iter() {
@@ -257,7 +242,7 @@ impl BuildCommand {
     fn build(&self, packages: Vec<Arc<Package>>) {
         let started = Instant::now();
         self.create_dir_if_needed();
-        let threadpool = ThreadPool::default();
+        let threadpool = threadpool::ThreadPool::default();
 
         let all_count = packages.len();
         let pb = indicatif::ProgressBar::new(all_count as u64);

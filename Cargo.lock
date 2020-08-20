@@ -126,6 +126,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "deque"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a694dae478589798d752c7125542f8a5ae8b6e59476172baf2eed67357bdfa27"
+
+[[package]]
 name = "encode_unicode"
 version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -485,11 +491,13 @@ dependencies = [
  "ar",
  "chrono",
  "clap",
+ "deque",
  "flate2",
  "gethostname",
  "indicatif",
  "memmap",
  "nix",
+ "num_cpus",
  "tar",
  "threadpool",
 ]
