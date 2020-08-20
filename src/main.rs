@@ -130,11 +130,11 @@ fn section_color(section: &Section)-> Colour {
     }
 }
 
-fn get_packages(admin_dir: &PathBuf, leaves_only: bool) -> Vec<Package> {
+fn get_packages(admin_dir: &PathBuf, leaves_only: bool) -> Vec<Arc<Package>> {
     let status_file = admin_dir.join("status");
     let parser = Parser::new(status_file.as_path()).expect("Failed to open database");
 
-    let pkgs: LinkedList<Package> = LinkedList::new();
+    let pkgs: LinkedList<Arc<Package>> = LinkedList::new();
     let packages = Arc::new(Mutex::new(pkgs));
 
     // Create mutexed pointer for multithreading parser
@@ -147,12 +147,12 @@ fn get_packages(admin_dir: &PathBuf, leaves_only: bool) -> Vec<Package> {
         { return; }
 
         let mut pkgs = handler_pkgs.lock().unwrap();
-        pkgs.push_back(pkg);
+        pkgs.push_back(Arc::new(pkg));
     });
 
-    let mut filtered: LinkedList<Package> = LinkedList::new();
-
     let unfiltered = packages.lock().unwrap();
+
+    let mut filtered: Vec<Arc<Package>> = Vec::with_capacity(unfiltered.len());
     for package in unfiltered.iter() {
         if leaves_only {
             // Drop this package if it is the dependency of other
@@ -164,14 +164,14 @@ fn get_packages(admin_dir: &PathBuf, leaves_only: bool) -> Vec<Package> {
                 }
             }
             if !is_dependency {
-                filtered.push_back(package.clone());
+                filtered.push(Arc::clone(package));
             }
         } else {
-            filtered.push_back(package.clone());
+            filtered.push(Arc::clone(package));
         }
     }
 
-    return filtered.into_iter().collect::<Vec<Package>>();
+    return filtered;
 }
 
 impl ListCommand {
@@ -181,7 +181,7 @@ impl ListCommand {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });
 
-        let mut counter = 0;
+        let mut counter: usize = 0;
         for package in packages.iter() {
             counter += 1;
             let section_sym = section_color(&package.section).paint("▶︎");
@@ -229,7 +229,7 @@ impl BuildCommand {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });
 
-        let mut to_build: Vec<Package> = Vec::with_capacity(self.packages.len());
+        let mut to_build: Vec<Arc<Package>> = Vec::with_capacity(self.packages.len());
 
         for package_id in self.packages.iter() {
             if let Ok(human_pos) = package_id.parse::<usize>() {
@@ -254,7 +254,7 @@ impl BuildCommand {
         self.build(to_build);
     }
 
-    fn build(&self, packages: Vec<Package>) {
+    fn build(&self, packages: Vec<Arc<Package>>) {
         let started = Instant::now();
         self.create_dir_if_needed();
         let threadpool = ThreadPool::default();

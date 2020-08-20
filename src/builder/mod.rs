@@ -9,6 +9,8 @@ use indicatif::ProgressBar;
 pub mod deb;
 use deb::*;
 
+const DEB_COMPRESSION_LEVEL: u32 = 6;
+
 /// Creates DEB from filesystem contents
 pub struct BuildWorker {
     pub package: Package,
@@ -26,8 +28,8 @@ impl BuildWorker {
     ) -> Self {
         Self {
             package: pkg.clone(), progress,
-            admin_dir: admin_dir.clone().to_path_buf(),
-            destination: destination.clone().to_path_buf(),
+            admin_dir: admin_dir.to_path_buf(),
+            destination: destination.to_path_buf(),
             working_dir: destination.join(pkg.canonical_name())
         }
     }
@@ -41,7 +43,7 @@ impl BuildWorker {
         let deb_name = format!("{}.deb", self.package.canonical_name());
         let deb_path = self.destination.join(deb_name);
 
-        let mut deb = Deb::new(&self.working_dir, &deb_path, 6)?;
+        let mut deb = Deb::new(&self.working_dir, &deb_path, DEB_COMPRESSION_LEVEL)?;
         self.archive_files(deb.data_mut_ref())?;
         self.archive_metadata(deb.control_mut_ref())?;
         deb.package()?;
