@@ -44,7 +44,7 @@ struct CLIOptions {
 enum CLICommand {
     /// Prints installed packages to stdout
     List(ListCommand),
-    /// Prints packages that are not dependencies of others to stdout
+    /// Detects packages that are not dependencies of others and prints them to stdout
     Leaves(LeavesCommand),
     /// Creates DEB from the already installed package(s)
     Build(BuildCommand)
@@ -92,7 +92,7 @@ struct BuildCommand {
     destination: PathBuf,
 
     /// Packs all rebuilded DEB's to single archive
-    #[clap(long)]
+    #[clap(short="A", long)]
     archive: bool,
 
     /// Name of archive if --archive is set. Supports only .tar.gz archives for now.
@@ -198,7 +198,7 @@ impl BuildCommand {
         if !self.packages.is_empty() {
             self.build_user_specified();
         } else if !self.all {
-            eprint!("No packages specified. Rebuild all? [Y/N] [default N] ");
+            eprint!("No packages specified. Build leaves? [Y/N] [default N] ");
 
             let mut buffer = String::new();
             let _ = io::stdin().read_line(&mut buffer);
