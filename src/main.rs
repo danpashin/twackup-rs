@@ -140,7 +140,11 @@ fn get_packages(admin_dir: &PathBuf, leaves_only: bool) -> Vec<Arc<Package>> {
     let mut filtered: Vec<Arc<Package>> = Vec::with_capacity(unfiltered.len());
     for package in unfiltered.iter() {
         if leaves_only {
-            // Drop this package if it is the dependency of other
+            // Skip package if it is system
+            if package.section == Section::System || package.priority == Priority::Required {
+                continue;
+            }
+            // Skip this package if it is the dependency of other
             let mut is_dependency = false;
             for pkg in unfiltered.iter() {
                 if package.is_dependency_of(pkg) {

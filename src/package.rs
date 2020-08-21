@@ -28,6 +28,15 @@ pub enum Section {
     TextEditors,
 }
 
+#[derive(Clone, PartialEq)]
+pub enum Priority {
+    Optional,
+    Required,
+    Important,
+    Standard,
+    Unknown,
+}
+
 #[derive(Clone)]
 pub struct Package {
     /// The name of the binary package. This field MUST NOT be empty.
@@ -51,7 +60,9 @@ pub struct Package {
     /// the package has been classified
     pub section: Section,
 
-    hashmap: HashMap<String, String>,
+    pub priority: Priority,
+
+    fields: HashMap<String, String>,
 }
 
 impl Package {
@@ -65,7 +76,8 @@ impl Package {
             architecture: fields.get("Architecture")?.to_string(),
             state: State::from_dpkg(fields.get("Status")),
             section: Section::from_string_opt(fields.get("Section")),
-            hashmap: fields,
+            priority: Priority::from_string_opt(fields.get("Priority")),
+            fields,
         })
     }
 
@@ -80,13 +92,13 @@ impl Package {
 
     pub fn to_control(&self) -> String {
         let mut fields_len = 0;
-        for (key, value) in self.hashmap.iter() {
+        for (key, value) in self.fields.iter() {
             fields_len += key.len() + value.len() + 3;
         }
 
         let mut control = String::with_capacity(fields_len);
 
-        for (key, value) in self.hashmap.iter() {
+        for (key, value) in self.fields.iter() {
             if key.as_str() == "Status" { continue; }
             control.push_str(key);
             control.push_str(": ");
@@ -105,10 +117,10 @@ impl Package {
     }
 
     /// Returns packages of which this one depends.
-    pub fn depends(&self) -> Vec<String> { self.split_by_comma(self.hashmap.get("Depends")) }
+    pub fn depends(&self) -> Vec<String> { self.split_by_comma(self.fields.get("Depends")) }
 
     /// Returns packages of which the installation of this package depends.
-    pub fn predepends(&self) -> Vec<String> { self.split_by_comma(self.hashmap.get("Pre-Depends")) }
+    pub fn predepends(&self) -> Vec<String> { self.split_by_comma(self.fields.get("Pre-Depends")) }
 
     /// Returns true if this package us a dependency of other.
     pub fn is_dependency_of(&self, pkg: &Package) -> bool {
@@ -117,7 +129,7 @@ impl Package {
     }
 
     #[allow(dead_code)]
-    pub fn description(&self) -> Option<&String> { self.hashmap.get("Description") }
+    pub fn description(&self) -> Option<&String> { self.fields.get("Description") }
 }
 
 impl State {
@@ -160,6 +172,25 @@ impl Section {
         match value {
             Some(value) => Self::from_string(value),
             None => Section::Unknown
+        }
+    }
+}
+
+impl Priority {
+    pub fn from_string(value: &String) -> Priority {
+        match value.to_lowercase().as_str() {
+            "optional" => Priority::Optional,
+            "required" => Priority::Required,
+            "important" => Priority::Important,
+            "standard" => Priority::Standard,
+            _ => Priority::Unknown,
+        }
+    }
+
+    pub fn from_string_opt(value: Option<&String>) -> Priority {
+        match value {
+            Some(value) => Self::from_string(value),
+            None => Priority::Unknown
         }
     }
 }
