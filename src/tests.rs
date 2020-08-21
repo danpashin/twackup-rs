@@ -27,13 +27,14 @@ fn parser_multiline() {
     let database = env::current_dir().unwrap().join("assets/database/multiline");
     let parser = Parser::new(database.as_path()).unwrap();
 
-    let packages = parser.parse();
-    let mut iterator = packages.iter();
+    let packages: HashMap<String, Package> = parser.parse().iter().map(|pkg| {
+        (pkg.identifier.clone(), pkg.as_ref().clone())
+    }).collect();
 
-    let second_pkg = iterator.find(|pkg|pkg.identifier.as_str() == "valid-package-1").unwrap();
-    assert_eq!(second_pkg.description().unwrap().as_str(), "First Line\n Second Line\n  Third Line");
+    let first_package = packages.get("valid-package-1").unwrap();
+    assert_eq!(first_package.description().unwrap().as_str(), "First Line\n Second Line\n  Third Line");
 
-    let second_pkg = iterator.find(|pkg|pkg.identifier.as_str() == "valid-package-2").unwrap();
+    let second_pkg = packages.get("valid-package-2").unwrap();
     assert_eq!(second_pkg.description().unwrap().as_str(), "First Line");
 }
 
