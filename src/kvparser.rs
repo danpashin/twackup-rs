@@ -30,9 +30,9 @@ struct ChunkWorker {
 
 impl Parser {
     /// Prepares environment and creates parser instance
-    pub fn new(file_path: &Path) -> io::Result<Self> {
+    pub fn new<P: AsRef<Path>>(file_path: P) -> io::Result<Self> {
         Ok(Self {
-            file_path: file_path.to_path_buf(),
+            file_path: file_path.as_ref().to_path_buf(),
             // If file is not found or user has no permissions, this method will throw an error
             file: File::open(file_path)?,
         })

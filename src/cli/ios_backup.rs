@@ -4,9 +4,10 @@ use std::{
     io, fs::File,
 };
 use clap::Clap;
+use serde::{Deserialize, Serialize};
 
-use crate::ADMIN_DIR;
-use super::{CLICommand, utils::get_packages};
+use crate::{ADMIN_DIR, repository::Repository};
+use super::{CLICommand, utils::{get_packages, get_repos}};
 
 #[derive(Clap, PartialEq)]
 enum ExportFormat {
@@ -41,6 +42,12 @@ pub struct Export {
     output: Option<PathBuf>,
 }
 
+#[derive(Serialize, Deserialize)]
+struct DataLayout {
+    packages: LinkedList<String>,
+    repositories: HashMap<String, Vec<Repository>>,
+}
+
 impl ExportFormat {
     fn as_str(&self) -> &str {
         match self {
@@ -53,13 +60,15 @@ impl ExportFormat {
 
 impl CLICommand for Export {
     fn run(&self) {
-        let mut data = HashMap::new();
-        match self.data {
-            ExportData::Packages => data.insert("packages", self.get_packages()),
-            ExportData::Repositories => data.insert("repositories", self.get_repositories()),
-            ExportData::All => {
-                data.insert("packages", self.get_packages());
-                data.insert("repositories", self.get_repositories())
+        let data = match self.data {
+            ExportData::Packages => DataLayout {
+                packages: self.get_packages(), repositories: HashMap::new()
+            },
+            ExportData::Repositories => DataLayout {
+                packages: LinkedList::new(), repositories: get_repos()
+            },
+            ExportData::All => DataLayout {
+                packages: self.get_packages(), repositories: get_repos()
             }
         };
 
@@ -81,9 +90,5 @@ impl Export {
         get_packages(&self.admindir, true).iter().map(|pkg| {
             pkg.identifier.clone()
         }).collect()
-    }
-
-    fn get_repositories(&self) -> LinkedList<String> {
-        LinkedList::new()
     }
 }

@@ -41,6 +41,7 @@ chrono = "^0.4"
 deque = "^0.3"
 num_cpus = "^1.13"
 serde_any = { version = "^0.5", default-features = false, features = ["yaml", "toml", "json"] }
+serde = { version = "^1.0", features = ["derive"] }
 
 [patch.crates-io]
 termios = { git = "https://github.com/danpashin/termios-rs", branch = "feature/ios" }

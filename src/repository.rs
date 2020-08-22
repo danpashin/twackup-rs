@@ -3,14 +3,15 @@ use std::{
     str::FromStr, string::ToString,
 };
 use crate::kvparser::Parsable;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub enum Type {
     Binaries,
     SourceCode,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Repository {
     pub repo_type: Type,
     pub address: String,
