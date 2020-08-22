@@ -1,5 +1,5 @@
 
-mod parser;
+mod kvparser;
 mod package;
 mod builder;
 mod cli;

@@ -5,7 +5,7 @@ use std::{
     path::PathBuf,
     collections::LinkedList,
 };
-use crate::{package::*, parser::Parser};
+use crate::{package::*, kvparser::Parser};
 
 pub fn section_color(section: &Section)-> Colour {
     match section {
@@ -26,9 +26,10 @@ pub fn get_packages(admin_dir: &PathBuf, leaves_only: bool) -> Vec<Arc<Package>>
     let status_file = admin_dir.join("status");
     let parser = Parser::new(status_file.as_path()).expect("Failed to open database");
 
-    let unfiltered = parser.parse().drain(..).filter(|pkg| {
-        !(pkg.identifier.starts_with("gsc.") || pkg.identifier.starts_with("cy+"))
-    }).collect::<LinkedList<Arc<Package>>>();
+    let unfiltered = parser.parse::<Package>().drain(..)
+        .filter(|pkg| {
+            !(pkg.identifier.starts_with("gsc.") || pkg.identifier.starts_with("cy+"))
+        }).collect::<LinkedList<Arc<Package>>>();
 
     let mut filtered: Vec<Arc<Package>> = Vec::with_capacity(unfiltered.len());
     for package in unfiltered.iter() {

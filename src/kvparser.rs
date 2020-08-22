@@ -3,10 +3,15 @@ use std::{
     path::{Path, PathBuf},
     collections::{LinkedList, HashMap},
     thread, sync::Arc,
+    marker::{Send, Sync},
 };
 use memmap::Mmap;
 use deque::{Stealer, Stolen};
-use crate::package::*;
+
+pub trait Parsable {
+    type Output;
+    fn new(key_values: HashMap<String, String>) -> Option<Self::Output>;
+}
 
 pub struct Parser {
     file_path: PathBuf,
@@ -25,8 +30,8 @@ struct ChunkWorker {
 
 impl Parser {
     /// Prepares environment and creates parser instance
-    pub fn new(file_path: &Path) -> io::Result<Parser> {
-        Ok(Parser {
+    pub fn new(file_path: &Path) -> io::Result<Self> {
+        Ok(Self {
             file_path: file_path.to_path_buf(),
             // If file is not found or user has no permissions, this method will throw an error
             file: File::open(file_path)?,
@@ -45,7 +50,7 @@ impl Parser {
     /// Package: com.example.my.other.package
     /// Name: My Other Package
     /// ```
-    pub fn parse(&self) -> Vec<Arc<Package>> {
+    pub fn parse<P: Parsable<Output = P> + 'static + Send + Sync>(&self) -> Vec<Arc<P>> {
         let mut last_is_nl = true;
         let mut last_nl_pos = 0;
         let mut cur_position = 0;
@@ -66,7 +71,7 @@ impl Parser {
             let nl = byte ^ b'\n' == 0;
             if nl && last_is_nl {
                 workq.push(ChunkWorkerState::Process(last_nl_pos, cur_position));
-                last_nl_pos = cur_position.clone();
+                last_nl_pos = cur_position;
             }
             last_is_nl = nl;
         }
@@ -75,51 +80,39 @@ impl Parser {
             workq.push(ChunkWorkerState::Quit);
         }
 
-        let mut packages = Vec::new();
+        let mut models = Vec::new();
         for worker in workers {
-            packages.extend(worker.join().unwrap().iter().cloned())
+            models.extend(worker.join().unwrap().iter().cloned())
         }
 
-        return packages;
+        return models;
     }
 }
 
 impl ChunkWorker {
     /// Prepares environment and creates parser instance
-    fn new<P: AsRef<Path>>(file_path: P, stealer: Stealer<ChunkWorkerState>) -> ChunkWorker {
+    fn new<P: AsRef<Path>>(file_path: P, stealer: Stealer<ChunkWorkerState>) -> Self {
         let file = unsafe { Mmap::map(&File::open(file_path).unwrap()).unwrap() };
-        ChunkWorker { file, stealer }
+        Self { file, stealer }
     }
 
-    /// Parses chunk to package model
-    fn run(&self) -> Vec<Arc<Package>> {
-        let mut packages = Vec::new();
+    /// Parses chunk to model
+    fn run<P: Parsable + Parsable<Output = P>>(&self) -> Vec<Arc<P>> {
+        let mut models = Vec::new();
         loop {
             match self.stealer.steal() {
                 Stolen::Empty | Stolen::Abort => continue,
                 Stolen::Data(ChunkWorkerState::Quit) => break,
                 Stolen::Data(ChunkWorkerState::Process(start, end)) => {
-                    if let Some(package) = self.parse(start, end) {
-                        packages.push(Arc::new(package));
+                    let fields = self.parse_chunk(&self.file[start..end]);
+                    if let Some(model) = P::new(self.parse_fields(fields)) {
+                        models.push(Arc::new(model));
                     }
                 }
             }
         }
 
-        return packages;
-    }
-
-    fn parse(&self, start: usize, end: usize) -> Option<Package> {
-        // Load package (chunk) in buffer
-        let chunk = &self.file[start..end];
-
-        // First, we'll get all lines (with these which can be multi-line)
-        let fields = self.parse_chunk(chunk);
-
-        // Now process each line individually
-        let fields_map = self.parse_fields(fields);
-
-        return Some(Package::new(fields_map)?);
+        return models;
     }
 
     /// Converts raw chunk bytes to list of lines with multi-line syntax support

@@ -4,13 +4,13 @@ use std::{
     os::unix::fs::PermissionsExt,
 };
 
-use crate::{package::*, parser::*};
+use crate::{package::*, kvparser::*};
 
 #[test]
 fn parser_valid_database() {
     let database = env::current_dir().unwrap().join("assets/database/valid");
     let parser = Parser::new(database.as_path()).unwrap();
-    let packages = parser.parse();
+    let packages = parser.parse::<Package>();
     assert_eq!(packages.len(), 3);
 }
 
@@ -18,7 +18,7 @@ fn parser_valid_database() {
 fn parser_partially_valid_database() {
     let database = env::current_dir().unwrap().join("assets/database/partially_valid");
     let parser = Parser::new(database.as_path()).unwrap();
-    let packages = parser.parse();
+    let packages = parser.parse::<Package>();
     assert_ne!(packages.len(), 3);
 }
 
@@ -27,7 +27,7 @@ fn parser_multiline() {
     let database = env::current_dir().unwrap().join("assets/database/multiline");
     let parser = Parser::new(database.as_path()).unwrap();
 
-    let packages: HashMap<String, Package> = parser.parse().iter().map(|pkg| {
+    let packages: HashMap<String, Package> = parser.parse::<Package>().iter().map(|pkg| {
         (pkg.identifier.clone(), pkg.as_ref().clone())
     }).collect();
 

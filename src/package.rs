@@ -3,6 +3,7 @@ use std::{
     fs::File, path::Path,
     io::{self, BufReader, BufRead}
 };
+use crate::kvparser::Parsable;
 
 #[derive(Clone, PartialEq)]
 pub enum State {
@@ -65,11 +66,13 @@ pub struct Package {
     fields: HashMap<String, String>,
 }
 
-impl Package {
-    pub fn new(fields: HashMap<String, String>) -> Option<Self> {
+impl Parsable for Package {
+    type Output = Self;
+
+    fn new(fields: HashMap<String, String>) -> Option<Self::Output> {
         let package_id = fields.get("Package")?;
 
-        Some(Package{
+        Some(Self{
             identifier: package_id.to_string(),
             name: fields.get("Name").unwrap_or(package_id).to_string(),
             version: fields.get("Version")?.to_string(),
@@ -80,7 +83,9 @@ impl Package {
             fields,
         })
     }
+}
 
+impl Package {
     pub fn get_installed_files(&self, dpkg_dir: &Path) -> io::Result<Vec<String>> {
         let file = File::open(dpkg_dir.join("info").join(format!("{}.list", self.identifier)))?;
         return BufReader::new(file).lines().collect();
