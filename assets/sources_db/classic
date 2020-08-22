@@ -1,0 +1,3 @@
+deb https://apt3.example.com/ /some/another/distribution
+deb https://apt1.example.com/ stable main orig
+deb https://apt2.example.com/ ./

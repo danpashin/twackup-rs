@@ -1,0 +1,14 @@
+Types: deb
+URIs: https://apt1.example.com/
+Suites: stable
+Components: main orig
+
+Types: deb
+URIs: https://apt2.example.com/
+Suites: ./
+Components:
+
+Types: deb
+URIs: https://apt3.example.com/
+Suites: ./
+

@@ -1,10 +1,10 @@
 use std::{
-    env, io::{self, Write}, fs::{self, File},
+    env, io::{self, Write, BufReader, BufRead}, fs::{self, File},
     collections::HashMap,
     os::unix::fs::PermissionsExt,
 };
 
-use crate::{package::*, kvparser::*};
+use crate::{package::*, kvparser::*, repository::*};
 
 #[test]
 fn parser_valid_database() {
@@ -79,4 +79,37 @@ fn non_valid_package_get_files() {
     let path = env::current_dir().unwrap().join("assets/packages");
     let files = package.get_installed_files(path.as_path());
     assert_eq!(files.is_err(), true);
+}
+
+#[test]
+fn parser_modern_repository() {
+    let database = env::current_dir().unwrap().join("assets/sources_db/modern");
+    let parser = Parser::new(database.as_path()).unwrap();
+    let repositories: HashMap<String, Repository> = parser.parse::<Repository>().iter().map(|repo| {
+        (repo.address.clone(), repo.as_ref().clone())
+    }).collect();
+
+    assert_eq!(repositories.len(), 3);
+
+    let repo = repositories.get("https://apt1.example.com/").unwrap();
+    assert_eq!(repo.components.as_str(), "main orig");
+}
+
+#[test]
+fn parser_classic_repository() {
+    let database = env::current_dir().unwrap().join("assets/sources_db/classic");
+    let reader = BufReader::new(File::open(database).unwrap());
+
+    let repositories: HashMap<String, Repository> = reader.lines().map(|line| {
+        let line = line.expect("Can't unwrap line");
+        eprintln!("{}", line);
+        let repo = Repository::from_oneline(line.as_str()).expect("Parsing repo failed");
+        (repo.address.clone(), repo)
+    }).collect();
+
+    assert_eq!(repositories.len(), 3);
+
+    let repo = repositories.get("https://apt1.example.com/").unwrap();
+    assert_eq!(repo.distribution.as_str(), "stable");
+    assert_eq!(repo.components.as_str(), "main orig");
 }

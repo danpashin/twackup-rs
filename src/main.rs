@@ -1,6 +1,7 @@
 
 mod kvparser;
 mod package;
+mod repository;
 mod builder;
 mod cli;
 
