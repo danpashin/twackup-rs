@@ -5,6 +5,9 @@ mod leaves;
 mod build;
 mod utils;
 
+#[cfg(any(target_os = "ios", debug_assertions))]
+mod ios_backup;
+
 trait CLICommand {
     fn run(&self);
 }
@@ -34,6 +37,9 @@ enum Command {
     Leaves(leaves::Leaves),
     /// Creates DEB from the already installed package(s)
     Build(build::Build),
+
+    #[cfg(any(target_os = "ios", debug_assertions))]
+    Export(ios_backup::Export),
 }
 
 /// Starts parsing CLI arguments and runs actions for them
@@ -43,5 +49,8 @@ pub fn run() {
         Command::List(cmd) => cmd.run(),
         Command::Leaves(cmd) => cmd.run(),
         Command::Build(cmd) => cmd.run(),
+
+        #[cfg(any(target_os = "ios", debug_assertions))]
+        Command::Export(cmd) => cmd.run(),
     }
 }
