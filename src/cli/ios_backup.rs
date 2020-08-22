@@ -66,11 +66,12 @@ impl CLICommand for Export {
         let format = serde_any::guess_format_from_extension(self.format.as_str())
             .expect("Unsupported format");
 
-         if let Some(path) = &self.output {
+        if let Some(path) = &self.output {
             let file = File::create(path).expect("Can't open fd for writing");
             serde_any::to_writer(file, &data, format).unwrap();
         } else {
             serde_any::to_writer(io::stdout(), &data, format).unwrap();
+            println!();
         }
     }
 }
@@ -83,6 +84,6 @@ impl Export {
     }
 
     fn get_repositories(&self) -> LinkedList<String> {
-       LinkedList::new()
+        LinkedList::new()
     }
 }
