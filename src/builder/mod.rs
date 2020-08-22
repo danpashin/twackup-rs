@@ -1,4 +1,4 @@
-use crate::Package;
+use crate::package::Package;
 use std::{
     io, fs,
     path::{Path, PathBuf},
