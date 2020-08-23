@@ -38,8 +38,13 @@ enum Command {
     /// Creates DEB from the already installed package(s)
     Build(build::Build),
 
+    /// Exports packages and repositories to backup file
     #[cfg(any(target_os = "ios", debug_assertions))]
     Export(ios_backup::Export),
+
+    /// Performs importing packages and repositories from backup file
+    #[cfg(any(target_os = "ios", debug_assertions))]
+    Import(ios_backup::Import),
 }
 
 /// Starts parsing CLI arguments and runs actions for them
@@ -52,5 +57,8 @@ pub fn run() {
 
         #[cfg(any(target_os = "ios", debug_assertions))]
         Command::Export(cmd) => cmd.run(),
+
+        #[cfg(any(target_os = "ios", debug_assertions))]
+        Command::Import(cmd) => cmd.run(),
     }
 }

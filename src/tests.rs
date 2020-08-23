@@ -86,7 +86,7 @@ fn parser_modern_repository() {
     let database = env::current_dir().unwrap().join("assets/sources_db/modern");
     let parser = Parser::new(database.as_path()).unwrap();
     let repositories: HashMap<String, Repository> = parser.parse::<Repository>().iter().map(|repo| {
-        (repo.address.clone(), repo.as_ref().clone())
+        (repo.url.clone(), repo.as_ref().clone())
     }).collect();
 
     assert_eq!(repositories.len(), 3);
@@ -103,8 +103,8 @@ fn parser_classic_repository() {
     let repositories: HashMap<String, Repository> = reader.lines().map(|line| {
         let line = line.expect("Can't unwrap line");
         eprintln!("{}", line);
-        let repo = Repository::from_oneline(line.as_str()).expect("Parsing repo failed");
-        (repo.address.clone(), repo)
+        let repo = Repository::from_one_line(line.as_str()).expect("Parsing repo failed");
+        (repo.url.clone(), repo)
     }).collect();
 
     assert_eq!(repositories.len(), 3);
