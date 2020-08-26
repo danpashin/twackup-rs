@@ -1,15 +1,14 @@
 use std::{
     path::PathBuf,
     collections::LinkedList,
-    io::{self, BufReader, BufRead}, fs::File,
+    io::{self, BufReader, BufRead, BufWriter, Write},
+    fs::File,
 };
 use clap::Clap;
 use serde::{Deserialize, Serialize};
-use sysinfo::{ProcessExt, System, SystemExt, Signal};
 
-use crate::{ADMIN_DIR, repository::Repository, kvparser::Parser};
+use crate::{ADMIN_DIR, repository::Repository, kvparser::Parser, process};
 use super::{CLICommand, utils::get_packages};
-use std::io::{BufWriter, Write};
 
 const MODERN_MANAGERS: &[(&str, &str)] = &[
     ("Sileo", "/etc/apt/sources.list.d/sileo.sources")
@@ -177,16 +176,16 @@ impl CLICommand for Import {
         let data = self.try_deserializing_file().expect("Can't deserialize file");
 
         if let Some(repositories) = data.repositories {
-            let system = System::new_all();
-            for repo_group in repositories {
+            for repo_group in repositories.iter() {
                 if let Err(error) = self.import_repo_group(&repo_group) {
                     eprint!("Can't import sources for {}. {}", repo_group.executable, error);
                 }
-
-                for process in system.get_process_by_name(&repo_group.executable) {
-                    process.kill(Signal::Kill);
-                }
             }
+
+            let executables = repositories.iter().map(|src| {
+                src.executable.clone()
+            }).collect();
+            process::send_signal_to_multiple(executables, process::Signal::Kill);
         }
     }
 }
@@ -213,6 +212,44 @@ impl Import {
             };
             writer.write(b"\n")?;
             writer.flush()?;
+        }
+
+        eprintln!("Triggering post-import hooks for {}...", repo_group.executable);
+        let hook_res = match repo_group.executable.as_str() {
+            "Zebra" => std::fs::remove_file(
+                "/var/mobile/Library/Application Support/xyz.willy.Zebra/zebra.db"
+            ),
+            "Cydia" =>  self.cydia_post_import_hook(repo_group),
+            _ => Ok(())
+        };
+        if let Err(error) = hook_res {
+            eprintln!("Post-import hook completed with error: {}", error);
+        }
+
+        Ok(())
+    }
+
+    fn cydia_post_import_hook(&self, repo_group: &RepoGroup) -> io::Result<()> {
+        let prefs_path = "/var/mobile/Library/Preferences/com.saurik.Cydia.plist";
+        let prefs = plist::Value::from_file(prefs_path);
+        if let Err(_) = prefs {
+            return Err(io::Error::from(io::ErrorKind::InvalidInput));
+        }
+        let mut prefs = prefs.unwrap();
+
+        let prefs_dict = prefs.as_dictionary_mut();
+        if let None = prefs_dict {
+            return Err(io::Error::from(io::ErrorKind::InvalidInput));
+        }
+
+        let sources: plist::Dictionary = repo_group.sources.iter().map(|src| {
+            (src.to_cydia_key(), plist::Value::Dictionary(src.to_dict()))
+        }).collect();
+
+        prefs_dict.unwrap().insert("CydiaSources".to_string(), plist::Value::Dictionary(sources));
+
+        if let Err(_) = prefs.to_file_binary(prefs_path) {
+            return Err(io::Error::from(io::ErrorKind::WriteZero));
         }
 
         Ok(())

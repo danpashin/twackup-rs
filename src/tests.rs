@@ -92,7 +92,7 @@ fn parser_modern_repository() {
     assert_eq!(repositories.len(), 3);
 
     let repo = repositories.get("https://apt1.example.com/").unwrap();
-    assert_eq!(repo.components.as_str(), "main orig");
+    assert_eq!(repo.components.as_slice(), &["main", "orig"]);
 }
 
 #[test]
@@ -111,5 +111,5 @@ fn parser_classic_repository() {
 
     let repo = repositories.get("https://apt1.example.com/").unwrap();
     assert_eq!(repo.distribution.as_str(), "stable");
-    assert_eq!(repo.components.as_str(), "main orig");
+    assert_eq!(repo.components.as_slice(), &["main", "orig"]);
 }

@@ -27,7 +27,7 @@ pub struct Repository {
     /// Specifies a subdirectory in $ARCHIVE_ROOT/dists
     pub distribution: String,
 
-    pub components: String,
+    pub components: Vec<String>,
 }
 
 impl FromStr for Kind {
@@ -68,7 +68,8 @@ impl Parsable for Repository {
             kind: kind.unwrap(),
             url: fields.get("URIs")?.to_string(),
             distribution: fields.get("Suites")?.to_string(),
-            components: fields.get("Components").unwrap_or(&"".to_string()).to_string(),
+            components: fields.get("Components").unwrap_or(&"".to_string())
+                .split(" ").map(|str| str.to_string()).collect(),
         })
     }
 }
@@ -93,9 +94,7 @@ impl Repository {
             kind: _type.unwrap(),
             url: components[1].to_string(),
             distribution: components[2].to_string(),
-            components: components.iter()
-                .skip(3).fold(String::new(), |r, c| r + c.trim() + " ")
-                .trim().to_string(),
+            components: components.iter().skip(3).map(|str| str.to_string()).collect(),
         })
     }
 
@@ -103,7 +102,7 @@ impl Repository {
     /// #### Doesn't support options
     pub fn to_one_line(&self) -> String {
         format!("{} {} {} {}",
-            self.kind.as_str(), self.url, self.distribution, self.components
+            self.kind.as_str(), self.url, self.distribution, self.components.join(" ")
         ).trim().to_string()
     }
 
@@ -112,7 +111,35 @@ impl Repository {
     pub fn to_deb822(&self) -> String {
         format!(
             "Types: {}\nURIs: {}\nSuites: {}\nComponents: {}",
-            self.kind.as_str(), self.url, self.distribution, self.components
+            self.kind.as_str(), self.url, self.distribution, self.components.join(" ")
         ).trim().to_string()
+    }
+
+    pub fn to_cydia_key(&self) -> String {
+        format!("{}:{}:{}", self.kind.as_str(), self.url, self.distribution)
+    }
+
+    pub fn to_dict(&self) -> plist::Dictionary {
+        let mut dict = plist::Dictionary::new();
+        dict.insert(
+            "Distribution".to_string(),
+            plist::Value::String(self.distribution.clone())
+        );
+        dict.insert(
+            "URI".to_string(),
+            plist::Value::String(self.url.clone())
+        );
+        dict.insert(
+            "Type".to_string(),
+            plist::Value::String(self.kind.as_str().to_string())
+        );
+        dict.insert(
+            "Sections".to_string(),
+            plist::Value::Array(self.components.iter().map(|val| {
+                plist::Value::String(val.clone())
+            }).collect())
+        );
+
+        return dict;
     }
 }
