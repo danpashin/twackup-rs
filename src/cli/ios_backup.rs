@@ -3,6 +3,7 @@ use std::{
     collections::LinkedList,
     io::{self, BufReader, BufRead, BufWriter, Write},
     fs::File,
+    process::{Command, Stdio, exit}
 };
 use clap::Clap;
 use serde::{Deserialize, Serialize};
@@ -178,6 +179,11 @@ impl CLICommand for Import {
     fn run(&self) {
         if !utils::is_root() {
             eprintln!("{}", utils::non_root_warn_msg());
+            eprintln!(
+                "Importing requires executing apt command. \
+                Please, consider switching to root user."
+            );
+            exit(1);
         }
 
         let data = self.deserialize_input().expect("Can't deserialize input");
@@ -193,6 +199,20 @@ impl CLICommand for Import {
                 src.executable.clone()
             }).collect();
             process::send_signal_to_multiple(executables, process::Signal::Kill);
+        }
+
+        if let Some(packages) = data.packages {
+            eprintln!("Importing packages...");
+            self.run_apt(vec![
+                "update", "--allow-unauthenticated", "--allow-insecure-repositories",
+                "-o", "Acquire::Languages=none"
+            ]).expect("Failed to run update subcommand");
+
+            let mut install_args = vec![
+                "install", "-y", "--allow-unauthenticated", "--fix-missing",
+            ];
+            install_args.extend(packages.iter().map(|pkg| pkg.as_str()));
+            self.run_apt(install_args).expect("Failed to run install subcommand");
         }
     }
 }
@@ -260,5 +280,22 @@ impl Import {
         }
 
         Ok(())
+    }
+
+    fn run_apt(&self, args: Vec<&str>) -> Option<()> {
+        let apt_cmd = Command::new("apt")
+            .args(args)
+            .stdin(Stdio::inherit())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .status()
+            .expect("apt command failed to start");
+
+        if !apt_cmd.success() {
+            eprintln!("Apt exited with status: {}. See stderr for more info.", apt_cmd);
+            return None;
+        }
+
+        Some(())
     }
 }
