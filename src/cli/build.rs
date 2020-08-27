@@ -10,7 +10,7 @@ use gethostname::gethostname;
 
 use crate::{package::*, builder::*};
 use crate::{ADMIN_DIR, TARGET_DIR, DEFAULT_ARCHIVE_NAME};
-use super::{CLICommand, utils::get_packages};
+use super::{CLICommand, utils::{self, get_packages}};
 
 #[derive(Clap)]
 #[clap(version, after_help="
@@ -96,11 +96,8 @@ impl Build {
         );
         let progress_bar = Arc::new(pb);
 
-        if !nix::unistd::getuid().is_root() {
-            progress_bar.println(Colour::Yellow.paint(
-                "You seem not to be a root user. It is highly recommended to use root, \
-                in other case building some packages can fail."
-            ).to_string());
+        if !utils::is_root() {
+            progress_bar.println(utils::non_root_warn_msg().to_string());
         }
 
         let archive = self.create_archive_if_needed();

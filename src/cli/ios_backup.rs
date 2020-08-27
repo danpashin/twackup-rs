@@ -8,7 +8,7 @@ use clap::Clap;
 use serde::{Deserialize, Serialize};
 
 use crate::{ADMIN_DIR, repository::Repository, kvparser::Parser, process};
-use super::{CLICommand, utils::get_packages};
+use super::{CLICommand, utils::{self, get_packages}};
 
 const MODERN_MANAGERS: &[(&str, &str)] = &[
     ("Sileo", "/etc/apt/sources.list.d/sileo.sources")
@@ -26,7 +26,7 @@ enum DataFormat {
     Yaml,
 }
 
-#[derive(Clap, PartialEq)]
+#[derive(Clap, PartialEq, Debug)]
 enum DataType {
     Packages,
     Repositories,
@@ -103,6 +103,7 @@ impl DataFormat {
 
 impl CLICommand for Export {
     fn run(&self) {
+        eprintln!("Exporting data for {:?}...", self.data);
         let data = match self.data {
             DataType::Packages => DataLayout {
                 packages: Some(self.get_packages()), repositories: None
@@ -125,6 +126,8 @@ impl CLICommand for Export {
             serde_any::to_writer(io::stdout(), &data, format).unwrap();
             println!();
         }
+
+        eprintln!("Successfully exported {:?} data!", self.data);
     }
 }
 
@@ -173,7 +176,11 @@ impl Export {
 
 impl CLICommand for Import {
     fn run(&self) {
-        let data = self.try_deserializing_file().expect("Can't deserialize file");
+        if !utils::is_root() {
+            eprintln!("{}", utils::non_root_warn_msg());
+        }
+
+        let data = self.deserialize_input().expect("Can't deserialize input");
 
         if let Some(repositories) = data.repositories {
             for repo_group in repositories.iter() {
@@ -191,7 +198,7 @@ impl CLICommand for Import {
 }
 
 impl Import {
-    fn try_deserializing_file(&self) -> Result<DataLayout, serde_any::error::Error> {
+    fn deserialize_input(&self) -> Result<DataLayout, serde_any::error::Error> {
         let format =  self.format.to_serde();
         match self.input.as_str() {
             "-" => serde_any::from_reader(io::stdin(), format),
@@ -200,9 +207,9 @@ impl Import {
     }
 
     fn import_repo_group(&self, repo_group: &RepoGroup) -> io::Result<()> {
+        eprintln!("Importing {} source(s) for {}", repo_group.sources.len(), repo_group.executable);
         let mut writer = BufWriter::new(File::create(&repo_group.path)?);
         for source in repo_group.sources.iter() {
-            eprintln!("Importing {} for {}", source.url, repo_group.executable);
             match repo_group.kind {
                 RepoGroupKind::Classic => writer.write(source.to_one_line().as_bytes())?,
                 RepoGroupKind::Modern => {

@@ -1,5 +1,4 @@
-use crate::package::Section;
-use ansi_term::Colour;
+use ansi_term::{Colour, ANSIString};
 use std::{
     sync::Arc,
     path::PathBuf,
@@ -57,3 +56,14 @@ pub fn get_packages(admin_dir: &PathBuf, leaves_only: bool) -> Vec<Arc<Package>>
     return filtered;
 }
 
+pub fn non_root_warn_msg() -> ANSIString<'static> {
+    Colour::Yellow.paint(
+        "You seem not to be a root user. It is highly recommended to use root, \
+         in other case some operations can fail."
+    )
+}
+
+/// Returns true if the `Uid` represents privileged user - root. (If it equals zero.)
+pub fn is_root() -> bool {
+    nix::unistd::getuid().is_root()
+}
