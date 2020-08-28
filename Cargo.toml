@@ -8,7 +8,7 @@ publish = false
 
 [package.metadata.deb_pkg]
 name = "Twackup (CLI)"
-identifier = "ru.shaddy.twackup"
+identifier = "ru.danpashin.twackup"
 section = "Utilities"
 priority = "optional"
 architecture = "iphoneos-arm"
@@ -20,24 +20,31 @@ assets = [
 ]
 
 [profile.release]
-opt-level = 3
+opt-level = 's'
 lto = true
 codegen-units = 1
 panic = 'abort'
 debug = 0
+debug-assertions = false
+
+[profile.release.package."*"]
+opt-level = 's'
+codegen-units = 1
+debug = 0
+debug-assertions = false
 
 [dependencies]
 memmap = "^0.7"
 threadpool = "^1.8"
-clap = "3.0.0-beta.1"
-ansi_term = "^0.12"
-tar = "^0.4"
+clap = { version = "3.0.0-beta.1", default-features = false, features = ["derive", "std"] }
+ansi_term = { version = "^0.12", default-features = false }
+tar = { version = "^0.4", default-features = false }
 ar = "^0.8"
 nix = "^0.18"
 flate2 = { version = "^1.0", features = ["zlib"], default-features = false }
 indicatif = "^0.15"
 gethostname = "^0.2"
-chrono = "^0.4"
+chrono = { version = "^0.4", default-features = false, features = ["clock"] }
 deque = "^0.3"
 num_cpus = "^1.13"
 serde_any = { version = "^0.5", default-features = false, features = ["yaml", "toml", "json"] }
