@@ -10,7 +10,6 @@ use std::{
 pub type DebTarArchive = TarArchive<GzEncoder<File>>;
 
 pub struct Deb {
-    temp_dir: PathBuf,
     output: PathBuf,
     control: DebTarArchive,
     data: DebTarArchive,
@@ -40,7 +39,6 @@ impl Deb {
         );
 
         Ok(Self {
-            temp_dir: temp_dir.as_ref().to_path_buf(),
             output: output.as_ref().to_path_buf(),
             control: TarArchive::new(control_file),
             data: TarArchive::new(data_file),
@@ -64,29 +62,32 @@ impl Deb {
         // First file is debian-binary.
         // It contains just a version of dpkg used for deb creation
         // The latest one is 2.0 so we'll use this
-        // Although, creating new file costs more but I did't find way to do this better
-        let binary_file_path = self.temp_dir.join("debian-binary");
-        let mut version_file = File::create(&binary_file_path)?;
-        let _ = version_file.write("2.0\n".as_bytes());
-
-        builder.append_file(
-            "debian-binary".as_bytes(),
-            &mut File::open(&binary_file_path)?
-        )?;
+        let version = "2.0\n".as_bytes();
+        let mut header = ar::Header::new(b"debian-binary".to_vec(), version.len() as u64);
+        header.set_mode(0o100644); // o=rw,g=r,o=r
+        header.set_mtime(current_timestamp()); // modify time
+        builder.append(&header, version)?;
 
         // Second file is control archive. It is compressed with gzip and packed with tar
-        builder.append_file(
-            "control.tar.gz".as_bytes(),
-            &mut File::open(&self.control_path)?
-        )?;
+        let data = self.prepare_path(&self.control_path, "control.tar.gz")?;
+        builder.append(&data.0, data.1)?;
 
         // Third - main archive with data. Compressed and package same way as control
-        builder.append_file(
-            "data.tar.gz".as_bytes(),
-            &mut File::open(&self.data_path)?
-        )?;
+        let data = self.prepare_path(&self.data_path, "data.tar.gz")?;
+        builder.append(&data.0, data.1)?;
 
         return Ok(());
+    }
+
+    fn prepare_path<P: AsRef<Path>>(&self, path: P, name: &str) -> io::Result<(ar::Header, File)> {
+        let file = File::open(path)?;
+        let metadata = file.metadata()?;
+        let mut header = ar::Header::from_metadata(name.as_bytes().to_vec(), &metadata);
+        header.set_mode(0o100644); // o=rw,g=r,o=r
+        header.set_uid(0); // root
+        header.set_gid(0); // root
+
+        Ok((header, file))
     }
 }
 
@@ -99,18 +100,19 @@ impl<W: Write> TarArchive<W> {
 
     /// Appends non-existing on the filesystem file to archive
     pub fn append_new_file<P: AsRef<Path>>(&mut self, path: P, contents: &[u8]) -> io::Result<()> {
-        let cur_time = SystemTime::now()
-            .duration_since(SystemTime::UNIX_EPOCH).unwrap()
-            .as_secs();
-
         let mut header = tar::Header::new_old();
-        header.set_mode(0o644); // o=rw,g=r
+        header.set_mode(0o100644); // o=rw,g=r,o=r
         header.set_uid(0);
         header.set_gid(0);
         header.set_size(contents.len() as u64);
-        header.set_mtime(cur_time); // modify time
+        header.set_mtime(current_timestamp()); // modify time
         header.set_cksum();
 
         return self.builder.append_data(&mut header, path, contents);
     }
+}
+
+/// Returns UNIX timestamp in seconds
+fn current_timestamp() -> u64 {
+    SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs()
 }
