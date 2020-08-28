@@ -6,7 +6,7 @@ mod build;
 mod utils;
 
 #[cfg(any(target_os = "ios", debug_assertions))]
-mod ios_backup;
+mod backup;
 
 trait CLICommand {
     fn run(&self);
@@ -47,13 +47,13 @@ enum Command {
     /// Can be used for backing up data for to restore in another jailbreak
     /// or after restoring system itself.
     #[cfg(any(target_os = "ios", debug_assertions))]
-    Export(ios_backup::Export),
+    Export(backup::export::Export),
 
     /// Performs importing packages and repositories from file created by export command.
     ///
     /// Useful when you want to restore packages from your old device or another jailbreak.
     #[cfg(any(target_os = "ios", debug_assertions))]
-    Import(ios_backup::Import),
+    Import(backup::import::Import),
 }
 
 /// Starts parsing CLI arguments and runs actions for them
