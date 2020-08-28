@@ -21,16 +21,17 @@ pub struct BuildWorker {
 }
 
 impl BuildWorker {
-    pub fn new(admin_dir: &Path,
-               pkg: &Package,
-               destination: &Path,
-               progress: Arc<ProgressBar>
+    pub fn new<P: AsRef<Path>, D: AsRef<Path>>(
+        admin_dir: P,
+        pkg: &Package,
+        destination: D,
+        progress: Arc<ProgressBar>
     ) -> Self {
         Self {
             package: pkg.clone(), progress,
-            admin_dir: admin_dir.to_path_buf(),
-            destination: destination.to_path_buf(),
-            working_dir: destination.join(pkg.canonical_name())
+            admin_dir: admin_dir.as_ref().to_path_buf(),
+            destination: destination.as_ref().to_path_buf(),
+            working_dir: destination.as_ref().join(pkg.canonical_name())
         }
     }
 

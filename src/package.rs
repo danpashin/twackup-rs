@@ -87,14 +87,16 @@ impl Parsable for Package {
 
 impl Package {
     pub fn get_installed_files(&self, dpkg_dir: &Path) -> io::Result<Vec<String>> {
-        let file = File::open(dpkg_dir.join("info").join(format!("{}.list", self.identifier)))?;
+        let file = File::open(dpkg_dir.join(format!("info/{}.list", self.identifier)))?;
         return BufReader::new(file).lines().collect();
     }
 
+    /// Creates canonical DEB filename in format of id_version_arch
     pub fn canonical_name(&self) -> String {
         format!("{}_{}_{}", self.identifier, self.version, self.architecture)
     }
 
+    /// Converts model to DEB control file
     pub fn to_control(&self) -> String {
         let mut fields_len = 0;
         for (key, value) in self.fields.iter() {
@@ -104,6 +106,7 @@ impl Package {
         let mut control = String::with_capacity(fields_len);
 
         for (key, value) in self.fields.iter() {
+            // Skip status field. It is invalid in control
             if key.as_str() == "Status" { continue; }
             control.push_str(key);
             control.push_str(": ");
@@ -114,6 +117,7 @@ impl Package {
         return control;
     }
 
+    /// Splits optional string by comma to vector of strings
     fn split_by_comma(&self, field: Option<&String>) -> Vec<String> {
         match field {
             None => Vec::new(),
@@ -157,7 +161,7 @@ impl State {
 
 
 impl Section {
-    pub fn from_string(value: &String) -> Section {
+    pub fn from_string(value: &str) -> Section {
         match value.to_lowercase().as_str() {
             "system" => Section::System,
             "tweaks" => Section::Tweaks,
@@ -169,7 +173,7 @@ impl Section {
             "networking" => Section::Networking,
             "archiving" => Section::Archiving,
             "text_editors" => Section::TextEditors,
-            _ => Section::Other(value.clone())
+            _ => Section::Other(value.to_string())
         }
     }
 
@@ -182,7 +186,7 @@ impl Section {
 }
 
 impl Priority {
-    pub fn from_string(value: &String) -> Priority {
+    pub fn from_string(value: &str) -> Priority {
         match value.to_lowercase().as_str() {
             "optional" => Priority::Optional,
             "required" => Priority::Required,

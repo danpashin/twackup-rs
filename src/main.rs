@@ -9,9 +9,8 @@ mod process;
 #[cfg(test)]
 mod tests;
 
-const ADMIN_DIR: &str = "/var/lib/dpkg";
-const TARGET_DIR: &str = "/var/mobile/Documents/twackup";
-const DEFAULT_ARCHIVE_NAME: &str = "%host%_%date%.tar.gz";
+const ADMIN_DIR: &'static str = "/var/lib/dpkg";
+const TARGET_DIR: &'static str = "/var/mobile/Documents/twackup";
 
 fn main() {
     cli::run();

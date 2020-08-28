@@ -23,9 +23,11 @@ pub struct TarArchive<W: Write> {
 }
 
 impl Deb {
-    pub fn new(temp_dir: &PathBuf, output: &PathBuf, compression: u32) -> io::Result<Self> {
-        let control_path  = temp_dir.join("control.tar.gz");
-        let data_path = temp_dir.join("data.tar.gz");
+    pub fn new<T: AsRef<Path>, O: AsRef<Path>>(
+        temp_dir: T, output: O, compression: u32
+    ) -> io::Result<Self> {
+        let control_path  = temp_dir.as_ref().join("control.tar.gz");
+        let data_path = temp_dir.as_ref().join("data.tar.gz");
 
         let control_file = GzEncoder::new(
             File::create(&control_path)?,
@@ -38,8 +40,8 @@ impl Deb {
         );
 
         Ok(Self {
-            temp_dir: temp_dir.clone(),
-            output: output.clone(),
+            temp_dir: temp_dir.as_ref().to_path_buf(),
+            output: output.as_ref().to_path_buf(),
             control: TarArchive::new(control_file),
             data: TarArchive::new(data_file),
             control_path, data_path

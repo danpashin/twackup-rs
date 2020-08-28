@@ -1,7 +1,7 @@
 use ansi_term::{Colour, ANSIString};
 use std::{
     sync::Arc,
-    path::PathBuf,
+    path::Path,
     collections::LinkedList,
 };
 use crate::{package::*, kvparser::Parser};
@@ -21,8 +21,8 @@ pub fn section_color(section: &Section)-> Colour {
     }
 }
 
-pub fn get_packages(admin_dir: &PathBuf, leaves_only: bool) -> Vec<Arc<Package>> {
-    let status_file = admin_dir.join("status");
+pub fn get_packages<P: AsRef<Path>>(admin_dir: P, leaves_only: bool) -> Vec<Arc<Package>> {
+    let status_file = admin_dir.as_ref().join("status");
     let parser = Parser::new(status_file.as_path()).expect("Failed to open database");
 
     let unfiltered = parser.parse::<Package>().drain(..)
