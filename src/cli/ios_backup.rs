@@ -11,15 +11,16 @@ use serde::{Deserialize, Serialize};
 use crate::{ADMIN_DIR, repository::Repository, kvparser::Parser, process};
 use super::{CLICommand, utils::{self, get_packages}};
 
-const MODERN_MANAGERS: &[(&str, &str)] = &[
+const MODERN_MANAGERS: &'static [(&'static str, &'static str)] = &[
     ("Sileo", "/etc/apt/sources.list.d/sileo.sources")
 ];
 
-const CLASSIC_MANAGERS: &[(&str, &str)] = &[
+const CLASSIC_MANAGERS: &'static [(&'static str, &'static str)] = &[
     ("Cydia", "/var/mobile/Library/Caches/com.saurik.Cydia/sources.list"),
     ("Zebra", "/var/mobile/Library/Application Support/xyz.willy.Zebra/sources.list"),
 ];
 
+/// Data format used for export and import commands
 #[derive(Clap, PartialEq)]
 enum DataFormat {
     Json,
@@ -27,6 +28,7 @@ enum DataFormat {
     Yaml,
 }
 
+/// Describes what data should be used for exporting or importing
 #[derive(Clap, PartialEq, Debug)]
 enum DataType {
     Packages,
@@ -34,15 +36,19 @@ enum DataType {
     All,
 }
 
+/// Package manager repos data format
 #[derive(PartialEq, Serialize, Deserialize)]
-enum RepoGroupKind {
+enum RepoGroupFormat {
+    /// Store repo data in DEB822 format
     Modern,
+
+    /// Store repo data in one line format
     Classic,
 }
 
 #[derive(Serialize, Deserialize)]
 struct RepoGroup {
-    kind: RepoGroupKind,
+    format: RepoGroupFormat,
     path: String,
     executable: String,
     sources: LinkedList<Repository>,
@@ -56,15 +62,18 @@ struct DataLayout {
 
 #[derive(Clap)]
 pub struct Export {
-    /// Use custom dpkg <directory>
+    /// Use custom dpkg <directory>.
+    /// This option is used for detecting installed packages
     #[clap(long, default_value=ADMIN_DIR, parse(from_os_str))]
     admindir: PathBuf,
 
-    /// Use custom output format
+    /// Use another output format
+    /// (e.g. for using output with third-party parser like jq)
     #[clap(short, long, arg_enum, default_value="json")]
     format: DataFormat,
 
     /// Data to export
+    /// (e.g. if you want to export only packages)
     #[clap(short, long, arg_enum, default_value="all")]
     data: DataType,
 
@@ -75,7 +84,8 @@ pub struct Export {
 
 #[derive(Clap)]
 pub struct Import {
-    /// Use custom input format
+    /// Use another input format
+    /// (e.g. when it was processed with third-party parser like jq)
     #[clap(short, long, arg_enum, default_value="json")]
     format: DataFormat,
 
@@ -85,7 +95,7 @@ pub struct Import {
 }
 
 impl DataFormat {
-    fn as_str(&self) -> &str {
+    fn as_str(&self) -> &'static str {
         match self {
             Self::Json => "json",
             Self::Toml => "toml",
@@ -148,7 +158,7 @@ impl Export {
                     repo.as_ref().clone()
                 }).collect();
                 sources.push_back(RepoGroup {
-                    kind: RepoGroupKind::Modern, path: path.to_string(),
+                    format: RepoGroupFormat::Modern, path: path.to_string(),
                     executable: name.to_string(), sources: repos
                 });
             }
@@ -165,7 +175,7 @@ impl Export {
                     }
                 }
                 sources.push_back(RepoGroup {
-                    kind: RepoGroupKind::Classic, path: path.to_string(),
+                    format: RepoGroupFormat::Classic, path: path.to_string(),
                     executable: name.to_string(), sources: repos
                 });
             }
@@ -230,9 +240,9 @@ impl Import {
         eprintln!("Importing {} source(s) for {}", repo_group.sources.len(), repo_group.executable);
         let mut writer = BufWriter::new(File::create(&repo_group.path)?);
         for source in repo_group.sources.iter() {
-            match repo_group.kind {
-                RepoGroupKind::Classic => writer.write(source.to_one_line().as_bytes())?,
-                RepoGroupKind::Modern => {
+            match repo_group.format {
+                RepoGroupFormat::Classic => writer.write(source.to_one_line().as_bytes())?,
+                RepoGroupFormat::Modern => {
                     writer.write(source.to_deb822().as_bytes())?;
                     writer.write(b"\n")?
                 }

@@ -1,14 +1,14 @@
 [package]
 name = "twackup"
 version = "1.0.0-a3"
-description = "Simple DEB rebuilding utility for iOS and Debian-based platforms"
+description = "Safe and fast iOS utility for rebuilding DEB's and backing up packages"
 authors = ["DanP"]
 edition = "2018"
 publish = false
 
 [package.metadata.deb_pkg]
 name = "Twackup (CLI)"
-identifier = "ru.danpashin.twackup"
+identifier = "ru.shaddy.twackup"
 section = "Utilities"
 priority = "optional"
 architecture = "iphoneos-arm"

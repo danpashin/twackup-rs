@@ -25,7 +25,8 @@ pub struct Build {
     #[clap(short, long)]
     all: bool,
 
-    /// Use custom dpkg <directory>
+    /// Use custom dpkg <directory>.
+    /// This option is used for detecting installed packages
     #[clap(long, default_value=ADMIN_DIR, parse(from_os_str))]
     admindir: PathBuf,
 

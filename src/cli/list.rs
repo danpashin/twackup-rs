@@ -7,7 +7,8 @@ use super::{CLICommand, utils::{get_packages, section_color}};
 #[derive(Clap)]
 #[clap(version)]
 pub struct List {
-    /// Use custom dpkg <directory>
+    /// Use custom dpkg <directory>.
+    /// This option is used for detecting installed packages
     #[clap(long, default_value=ADMIN_DIR, parse(from_os_str))]
     admindir: PathBuf,
 }

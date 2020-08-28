@@ -13,16 +13,7 @@ trait CLICommand {
 }
 
 #[derive(Clap)]
-#[clap(about, version, after_help="
-Hello there! This is twackup - the most advanced, safe and fast tool for rebuilding your tweaks \
-back to DEB's.
-But be careful! It doesn't download new DEB from somewhere, it passes through all system and \
-collects all files it finds to a single DEB. Therefore it's highly recommended to run this tool \
-as root - lower probability it couldn't open and/or copy some files.
-
-All commands will never ever list or backup \"virtual\" packages - different dependencies which \
-package managers use to define your OS version or device.
-")]
+#[clap(about, version)]
 struct Options {
     #[clap(subcommand)]
     subcmd: Command,
@@ -31,18 +22,36 @@ struct Options {
 #[derive(Clap)]
 #[clap(version)]
 enum Command {
-    /// Prints installed packages to stdout
+    /// Just prints installed packages to stdout.
+    /// Skips "virtual" packages mostly used by all iOS package managers.
     List(list::List),
+
     /// Detects packages that are not dependencies of others and prints them to stdout
+    ///
+    /// If you know homebrew, you should know similar command. This does the same thing.
+    ///
     Leaves(leaves::Leaves),
-    /// Creates DEB from the already installed package(s)
+
+    /// Collects package from files in the filesystem and packages them to DEB.
+    /// Skips "virtual" packages mostly used by all iOS package managers.
+    ///
+    /// Note, this command can fail in finding some files
+    /// (e.g. when they were moved by post-installation or another script),
+    /// so it can't be used for "backing up" all packages you have.
+    /// For backups, please, use export and import commands.
     Build(build::Build),
 
-    /// Exports packages and repositories to backup file
+    /// Exports packages and repositories to file.
+    /// Skips "virtual" packages mostly used by all iOS package managers.
+    ///
+    /// Can be used for backing up data for to restore in another jailbreak
+    /// or after restoring system itself.
     #[cfg(any(target_os = "ios", debug_assertions))]
     Export(ios_backup::Export),
 
-    /// Performs importing packages and repositories from backup file
+    /// Performs importing packages and repositories from file created by export command.
+    ///
+    /// Useful when you want to restore packages from your old device or another jailbreak.
     #[cfg(any(target_os = "ios", debug_assertions))]
     Import(ios_backup::Import),
 }
