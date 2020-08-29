@@ -31,10 +31,19 @@ struct ChunkWorker {
 impl Parser {
     /// Prepares environment and creates parser instance
     pub fn new<P: AsRef<Path>>(file_path: P) -> io::Result<Self> {
+
+        // If file is not found or user has no permissions throw an error
+        let file = File::open(file_path.as_ref())?;
+        let metadata = file.metadata()?;
+
+        // Also throw error if file is empty
+        if metadata.len() == 0 {
+            return Err(io::Error::from(io::ErrorKind::UnexpectedEof));
+        }
+
         Ok(Self {
             file_path: file_path.as_ref().to_path_buf(),
-            // If file is not found or user has no permissions, this method will throw an error
-            file: File::open(file_path)?,
+            file,
         })
     }
 
