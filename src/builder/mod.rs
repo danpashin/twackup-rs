@@ -59,10 +59,9 @@ impl BuildWorker {
         let files = self.package.get_installed_files(&self.admin_dir)?;
 
         for file in files {
-            // We'll not append root dir to archive because dpkg will unpack to root though
-            if file == "/." { continue; }
-            // Tricky hack. Archiver packs only relative paths. So let's add dot at start
-            let res = archiver.get_mut().append_path_with_name(&file, format!(".{}", file));
+            // Remove root slash because tars don't contain absolute paths
+            let name = file.trim_start_matches("/");
+            let res = archiver.get_mut().append_path_with_name(&file, name);
             if let Err(error) = res {
                 self.progress.println(format!(
                     "[{}] {}", self.package.identifier,
@@ -102,11 +101,7 @@ impl BuildWorker {
                 // but i don't sure
                 if ext == "list" || ext == "md5sums" { continue; }
 
-                // Tricky hack. Archiver packs only relative paths. So let's add dot at start
-                let abs_path =  entry.path().into_os_string().into_string().unwrap();
-                let rel_path = format!("./{}", ext);
-
-                let res = archiver.get_mut().append_path_with_name(abs_path, rel_path);
+                let res = archiver.get_mut().append_path_with_name(entry.path(), ext);
                 if let Err(error) = res {
                     self.progress.println(format!(
                         "[{}] {}", self.package.identifier,
