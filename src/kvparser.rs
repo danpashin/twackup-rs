@@ -156,11 +156,10 @@ impl ChunkWorker {
         for field in fields {
             // Dpkg uses key-value syntax, so firstly, we'll find delimiter
             // Every line without delimiter is invalid and will be skipped
-            let delim_pos = field.find(':');
-            if delim_pos.is_some() {
+            if let Some(delim_pos) = field.find(':') {
                 // Then we'll split line into two ones and trim the result
                 // to remove linebreaks and spaces
-                let (key, value) = field.split_at(delim_pos.unwrap());
+                let (key, value) = field.split_at(delim_pos);
                 fields_map.insert(
                     key.trim().to_string(),
                     value.trim_start_matches(':').trim().to_string()
