@@ -1,8 +1,5 @@
 use ansi_term::{Colour, ANSIString};
-use std::{
-    path::Path,
-    collections::LinkedList,
-};
+use std::path::Path;
 use crate::{package::*, kvparser::Parser};
 
 pub fn section_color(section: &Section)-> Colour {
@@ -22,37 +19,40 @@ pub fn section_color(section: &Section)-> Colour {
 
 pub fn get_packages<P: AsRef<Path>>(admin_dir: P, leaves_only: bool) -> Vec<Package> {
     let status_file = admin_dir.as_ref().join("status");
-    let parser = Parser::new(status_file.as_path()).expect("Failed to open database");
+    let parser = Parser::new(status_file).expect("Failed to open database");
 
-    let unfiltered = parser.parse::<Package>().drain(..)
+    let packages = parser.parse::<Package>().into_iter()
         .filter(|pkg| {
             !(pkg.identifier.starts_with("gsc.") || pkg.identifier.starts_with("cy+"))
-        }).collect::<LinkedList<Package>>();
+        }).collect();
 
-    let mut filtered: Vec<Package> = Vec::with_capacity(unfiltered.len());
-    for package in unfiltered.iter() {
-        if leaves_only {
-            // Skip package if it is system
-            if package.section == Section::System || package.priority == Priority::Required {
-                continue;
+    if !leaves_only {
+        return packages;
+    }
+
+    let mut leaves_indexes = Vec::with_capacity(packages.len());
+    for (index, package) in packages.iter().enumerate() {
+        // Skip package if it is system
+        if package.section == Section::System || package.priority == Priority::Required {
+            continue;
+        }
+        // Skip this package if it is the dependency of other
+        let mut is_dependency = false;
+        for pkg in packages.iter() {
+            if package.is_dependency_of(pkg) {
+                is_dependency = true;
+                break;
             }
-            // Skip this package if it is the dependency of other
-            let mut is_dependency = false;
-            for pkg in unfiltered.iter() {
-                if package.is_dependency_of(pkg) {
-                    is_dependency = true;
-                    break;
-                }
-            }
-            if !is_dependency {
-                filtered.push(package.clone());
-            }
-        } else {
-            filtered.push(package.clone());
+        }
+        // Save index to filter packages in further
+        if !is_dependency {
+            leaves_indexes.push(index);
         }
     }
 
-    return filtered;
+    packages.into_iter().enumerate()
+        .filter(|(index, _)| { leaves_indexes.contains(index) })
+        .map(|(_, pkg)| pkg).collect()
 }
 
 pub fn non_root_warn_msg() -> ANSIString<'static> {
