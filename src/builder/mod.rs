@@ -23,15 +23,16 @@ pub struct BuildWorker {
 impl BuildWorker {
     pub fn new<P: AsRef<Path>, D: AsRef<Path>>(
         admin_dir: P,
-        pkg: &Package,
+        pkg: Package,
         destination: D,
         progress: Arc<ProgressBar>
     ) -> Self {
+        let name = pkg.canonical_name();
         Self {
-            package: pkg.clone(), progress,
+            package: pkg, progress,
             admin_dir: admin_dir.as_ref().to_path_buf(),
             destination: destination.as_ref().to_path_buf(),
-            working_dir: destination.as_ref().join(pkg.canonical_name())
+            working_dir: destination.as_ref().join(name)
         }
     }
 

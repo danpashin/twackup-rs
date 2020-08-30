@@ -106,7 +106,7 @@ impl Build {
         let archive = self.create_archive_if_needed();
         let archive_ptr = Arc::new(Mutex::new(archive));
 
-        for package in packages.iter() {
+        for package in packages {
             let builder = BuildWorker::new(
                 &self.admindir, package, &self.destination, Arc::clone(&progress_bar)
             );

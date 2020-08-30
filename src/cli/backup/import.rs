@@ -62,6 +62,7 @@ impl CLICommand for Import {
 }
 
 impl Import {
+    #[inline]
     fn deserialize_input(&self) -> Result<DataLayout, serde_any::error::Error> {
         let format =  self.format.to_serde();
         match self.input.as_str() {

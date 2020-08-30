@@ -86,12 +86,14 @@ impl Parsable for Package {
 }
 
 impl Package {
+    #[inline]
     pub fn get_installed_files(&self, dpkg_dir: &Path) -> io::Result<Vec<String>> {
         let file = File::open(dpkg_dir.join(format!("info/{}.list", self.identifier)))?;
         return BufReader::new(file).lines().collect();
     }
 
     /// Creates canonical DEB filename in format of id_version_arch
+    #[inline]
     pub fn canonical_name(&self) -> String {
         format!("{}_{}_{}", self.identifier, self.version, self.architecture)
     }
@@ -118,6 +120,7 @@ impl Package {
     }
 
     /// Splits optional string by comma to vector of strings
+    #[inline]
     fn split_by_comma(&self, field: Option<&String>) -> Vec<String> {
         match field {
             None => Vec::new(),
@@ -126,9 +129,11 @@ impl Package {
     }
 
     /// Returns packages of which this one depends.
+    #[inline]
     pub fn depends(&self) -> Vec<String> { self.split_by_comma(self.fields.get("Depends")) }
 
     /// Returns packages of which the installation of this package depends.
+    #[inline]
     pub fn predepends(&self) -> Vec<String> { self.split_by_comma(self.fields.get("Pre-Depends")) }
 
     /// Returns true if this package us a dependency of other.

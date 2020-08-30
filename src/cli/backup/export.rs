@@ -72,9 +72,7 @@ impl Export {
 
         for (name, path) in MODERN_MANAGERS {
             if let Ok(parser) = Parser::new(path) {
-                let repos = parser.parse::<Repository>().iter().map(|repo| {
-                    repo.clone()
-                }).collect();
+                let repos = parser.parse::<Repository>().into_iter().collect();
                 sources.push_back(RepoGroup {
                     format: RepoGroupFormat::Modern, path: path.to_string(),
                     executable: name.to_string(), sources: repos

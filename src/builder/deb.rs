@@ -113,6 +113,7 @@ impl<W: Write> TarArchive<W> {
 }
 
 /// Returns UNIX timestamp in seconds
+#[inline]
 fn current_timestamp() -> u64 {
     SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs()
 }

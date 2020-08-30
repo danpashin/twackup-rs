@@ -55,6 +55,7 @@ pub fn get_packages<P: AsRef<Path>>(admin_dir: P, leaves_only: bool) -> Vec<Pack
         .map(|(_, pkg)| pkg).collect()
 }
 
+#[inline]
 pub fn non_root_warn_msg() -> ANSIString<'static> {
     Colour::Yellow.paint(
         "You seem not to be a root user. It is highly recommended to use root, \
@@ -63,6 +64,7 @@ pub fn non_root_warn_msg() -> ANSIString<'static> {
 }
 
 /// Returns true if the `Uid` represents privileged user - root. (If it equals zero.)
+#[inline]
 pub fn is_root() -> bool {
     nix::unistd::getuid().is_root()
 }

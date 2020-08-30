@@ -86,6 +86,7 @@ pub fn send_signal_to_multiple(executables: Vec<String>, signal: Signal) {
     }
 }
 
+#[inline]
 pub fn send_signal(pid: i32, signal: &Signal) {
     unsafe { nix::libc::kill(pid as i32, *signal as c_int) };
 }
