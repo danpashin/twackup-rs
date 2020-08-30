@@ -2,7 +2,7 @@ use std::{
     fs::File, io::{self, BufRead},
     path::{Path, PathBuf},
     collections::{LinkedList, HashMap},
-    thread, sync::Arc,
+    thread,
     marker::{Send, Sync},
 };
 use memmap::Mmap;
@@ -59,7 +59,7 @@ impl Parser {
     /// Package: com.example.my.other.package
     /// Name: My Other Package
     /// ```
-    pub fn parse<P: Parsable<Output = P> + 'static + Send + Sync>(&self) -> Vec<Arc<P>> {
+    pub fn parse<P: Parsable<Output = P> + 'static + Send + Sync>(&self) -> Vec<P> {
         let mut last_is_nl = true;
         let mut last_nl_pos = 0;
         let mut cur_position = 0;
@@ -91,7 +91,7 @@ impl Parser {
 
         let mut models = Vec::new();
         for worker in workers {
-            models.extend(worker.join().unwrap().iter().cloned())
+            models.extend(worker.join().unwrap());
         }
 
         return models;
@@ -106,7 +106,7 @@ impl ChunkWorker {
     }
 
     /// Parses chunk to model
-    fn run<P: Parsable + Parsable<Output = P>>(&self) -> Vec<Arc<P>> {
+    fn run<P: Parsable + Parsable<Output = P>>(&self) -> Vec<P> {
         let mut models = Vec::new();
         loop {
             match self.stealer.steal() {
@@ -115,7 +115,7 @@ impl ChunkWorker {
                 Stolen::Data(ChunkWorkerState::Process(start, end)) => {
                     let fields = self.parse_chunk(&self.file[start..end]);
                     if let Some(model) = P::new(self.parse_fields(fields)) {
-                        models.push(Arc::new(model));
+                        models.push(model);
                     }
                 }
             }

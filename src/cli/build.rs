@@ -60,7 +60,7 @@ impl Build {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });
 
-        let mut to_build: Vec<Arc<Package>> = Vec::with_capacity(self.packages.len());
+        let mut to_build: Vec<Package> = Vec::with_capacity(self.packages.len());
 
         for package_id in self.packages.iter() {
             if let Ok(human_pos) = package_id.parse::<usize>() {
@@ -85,7 +85,7 @@ impl Build {
         self.build(to_build);
     }
 
-    fn build(&self, packages: Vec<Arc<Package>>) {
+    fn build(&self, packages: Vec<Package>) {
         let started = Instant::now();
         self.create_dir_if_needed();
         let threadpool = threadpool::ThreadPool::default();

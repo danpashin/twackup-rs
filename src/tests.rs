@@ -28,7 +28,7 @@ fn parser_multiline() {
     let parser = Parser::new(database.as_path()).unwrap();
 
     let packages: HashMap<String, Package> = parser.parse::<Package>().iter().map(|pkg| {
-        (pkg.identifier.clone(), pkg.as_ref().clone())
+        (pkg.identifier.clone(), pkg.clone())
     }).collect();
 
     let first_package = packages.get("valid-package-1").unwrap();
@@ -86,7 +86,7 @@ fn parser_modern_repository() {
     let database = env::current_dir().unwrap().join("assets/sources_db/modern");
     let parser = Parser::new(database.as_path()).unwrap();
     let repositories: HashMap<String, Repository> = parser.parse::<Repository>().iter().map(|repo| {
-        (repo.url.clone(), repo.as_ref().clone())
+        (repo.url.clone(), repo.clone())
     }).collect();
 
     assert_eq!(repositories.len(), 3);

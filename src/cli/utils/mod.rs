@@ -1,6 +1,5 @@
 use ansi_term::{Colour, ANSIString};
 use std::{
-    sync::Arc,
     path::Path,
     collections::LinkedList,
 };
@@ -21,16 +20,16 @@ pub fn section_color(section: &Section)-> Colour {
     }
 }
 
-pub fn get_packages<P: AsRef<Path>>(admin_dir: P, leaves_only: bool) -> Vec<Arc<Package>> {
+pub fn get_packages<P: AsRef<Path>>(admin_dir: P, leaves_only: bool) -> Vec<Package> {
     let status_file = admin_dir.as_ref().join("status");
     let parser = Parser::new(status_file.as_path()).expect("Failed to open database");
 
     let unfiltered = parser.parse::<Package>().drain(..)
         .filter(|pkg| {
             !(pkg.identifier.starts_with("gsc.") || pkg.identifier.starts_with("cy+"))
-        }).collect::<LinkedList<Arc<Package>>>();
+        }).collect::<LinkedList<Package>>();
 
-    let mut filtered: Vec<Arc<Package>> = Vec::with_capacity(unfiltered.len());
+    let mut filtered: Vec<Package> = Vec::with_capacity(unfiltered.len());
     for package in unfiltered.iter() {
         if leaves_only {
             // Skip package if it is system
@@ -46,10 +45,10 @@ pub fn get_packages<P: AsRef<Path>>(admin_dir: P, leaves_only: bool) -> Vec<Arc<
                 }
             }
             if !is_dependency {
-                filtered.push(Arc::clone(package));
+                filtered.push(package.clone());
             }
         } else {
-            filtered.push(Arc::clone(package));
+            filtered.push(package.clone());
         }
     }
 
