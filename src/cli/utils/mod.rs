@@ -21,10 +21,7 @@ pub fn get_packages<P: AsRef<Path>>(admin_dir: P, leaves_only: bool) -> Vec<Pack
     let status_file = admin_dir.as_ref().join("status");
     let parser = Parser::new(status_file).expect("Failed to open database");
 
-    let packages = parser.parse::<Package>().into_iter()
-        .filter(|pkg| {
-            !(pkg.identifier.starts_with("gsc.") || pkg.identifier.starts_with("cy+"))
-        }).collect();
+    let packages = parser.parse::<Package>();
 
     if !leaves_only {
         return packages;

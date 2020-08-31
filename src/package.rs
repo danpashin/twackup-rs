@@ -71,6 +71,10 @@ impl Parsable for Package {
 
     fn new(fields: HashMap<String, String>) -> Option<Self::Output> {
         let package_id = fields.get("Package")?;
+        // Ignore virtual packages
+        if package_id.starts_with("gsc.") || package_id.starts_with("cy+") {
+            return None;
+        }
 
         Some(Self{
             identifier: package_id.to_string(),
