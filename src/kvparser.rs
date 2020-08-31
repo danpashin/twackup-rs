@@ -15,7 +15,7 @@ pub trait Parsable {
 
 pub struct Parser {
     file_path: PathBuf,
-    file: File,
+    file: Mmap,
 }
 
 enum ChunkWorkerState {
@@ -30,21 +30,13 @@ struct ChunkWorker {
 
 impl Parser {
     /// Prepares environment and creates parser instance
+    ///
+    /// Will return error when user has no permissions to read
+    /// or file is empty
     pub fn new<P: AsRef<Path>>(file_path: P) -> io::Result<Self> {
-
-        // If file is not found or user has no permissions throw an error
-        let file = File::open(file_path.as_ref())?;
-        let metadata = file.metadata()?;
-
-        // Also throw error if file is empty
-        if metadata.len() == 0 {
-            return Err(io::Error::from(io::ErrorKind::UnexpectedEof));
-        }
-
-        Ok(Self {
-            file_path: file_path.as_ref().to_path_buf(),
-            file,
-        })
+        let file = unsafe { Mmap::map(&File::open(file_path.as_ref())?) }?;
+        let file_path = file_path.as_ref().to_path_buf();
+        Ok(Self { file_path, file })
     }
 
     /// This method will parse file with key-value syntax on separate lines
@@ -71,12 +63,9 @@ impl Parser {
             workers.push(thread::spawn(move || worker.run()));
         }
 
-        // Load file in memory with mmap kernel feature
-        let fmmap = unsafe { Mmap::map(&self.file).unwrap()  };
-        // And iterate for all bytes in file
-        for byte in fmmap.iter() {
+        for byte in self.file.iter() {
             cur_position += 1;
-            // When double new line is detected
+            // When double new line is detected, give parsing to worker
             let nl = byte ^ b'\n' == 0;
             if nl && last_is_nl {
                 workq.push(ChunkWorkerState::Process(last_nl_pos, cur_position));
@@ -106,7 +95,7 @@ impl ChunkWorker {
     }
 
     /// Parses chunk to model
-    fn run<P: Parsable + Parsable<Output = P>>(&self) -> Vec<P> {
+    fn run<P: Parsable<Output = P>>(&self) -> Vec<P> {
         let mut models = Vec::new();
         loop {
             match self.stealer.steal() {
@@ -140,7 +129,7 @@ impl ChunkWorker {
             // So we'll process them and concat with previous line in list
             if unwrapped_line.starts_with(" ") && !fields.is_empty() {
                 let prev_line = fields.pop_back().unwrap();
-                fields.push_back(format!("{}\n{}", prev_line, unwrapped_line).to_string());
+                fields.push_back(format!("{}\n{}", prev_line, unwrapped_line));
             } else {
                 fields.push_back(unwrapped_line);
             }
