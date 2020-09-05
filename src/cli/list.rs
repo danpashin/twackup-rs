@@ -20,11 +20,9 @@ impl CLICommand for List {
             a.name.to_lowercase().cmp(&b.name.to_lowercase())
         });
 
-        let mut counter: usize = 0;
-        for package in packages.iter() {
-            counter += 1;
+        for (position, package) in packages.into_iter().enumerate() {
             let section_sym = section_color(&package.section).paint("▶︎");
-            println!("{:3}: {} {} - {}", counter, section_sym, package.name, package.identifier);
+            println!("{:3}: {} {} - {}", position + 1, section_sym, package.name, package.id);
         }
     }
 }

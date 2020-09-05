@@ -7,7 +7,7 @@ use crate::kvparser::Parsable;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
-pub enum Kind {
+pub enum Category {
     /// Used for distributing binaries only
     Binary,
     /// This is used for distributing sources only
@@ -19,7 +19,7 @@ pub enum Kind {
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Repository {
     /// specifies type of repo packages - Binary or Source
-    pub kind: Kind,
+    pub category: Category,
 
     /// Specifies the root of the archive
     pub url: String,
@@ -30,7 +30,7 @@ pub struct Repository {
     pub components: Vec<String>,
 }
 
-impl FromStr for Kind {
+impl FromStr for Category {
     type Err = io::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -43,7 +43,7 @@ impl FromStr for Kind {
     }
 }
 
-impl Kind {
+impl Category {
     fn as_str(&self) -> &'static str {
         match self {
             Self::Binary => "deb",
@@ -59,13 +59,13 @@ impl Parsable for Repository {
     /// Performs parsing repo model in DEB822 format
     /// #### Doesn't support options
     fn new(fields: HashMap<String, String>) -> Option<Self::Output> {
-        let kind = Kind::from_str(fields.get("Types")?);
-        if kind.is_err() {
+        let category = Category::from_str(fields.get("Types")?);
+        if category.is_err() {
             return None;
         }
 
         Some(Self{
-            kind: kind.unwrap(),
+            category: category.unwrap(),
             url: fields.get("URIs")?.to_string(),
             distribution: fields.get("Suites")?.to_string(),
             components: fields.get("Components").unwrap_or(&"".to_string())
@@ -85,13 +85,13 @@ impl Repository {
             return None;
         }
 
-        let _type = Kind::from_str(components[0]);
+        let _type = Category::from_str(components[0]);
         if _type.is_err() {
             return None;
         }
 
         Some(Self{
-            kind: _type.unwrap(),
+            category: _type.unwrap(),
             url: components[1].to_string(),
             distribution: components[2].to_string(),
             components: components.iter().skip(3).map(|str| str.to_string()).collect(),
@@ -102,7 +102,7 @@ impl Repository {
     /// #### Doesn't support options
     pub fn to_one_line(&self) -> String {
         format!("{} {} {} {}",
-            self.kind.as_str(), self.url, self.distribution, self.components.join(" ")
+            self.category.as_str(), self.url, self.distribution, self.components.join(" ")
         ).trim().to_string()
     }
 
@@ -111,12 +111,12 @@ impl Repository {
     pub fn to_deb822(&self) -> String {
         format!(
             "Types: {}\nURIs: {}\nSuites: {}\nComponents: {}",
-            self.kind.as_str(), self.url, self.distribution, self.components.join(" ")
+            self.category.as_str(), self.url, self.distribution, self.components.join(" ")
         ).trim().to_string()
     }
 
     pub fn to_cydia_key(&self) -> String {
-        format!("{}:{}:{}", self.kind.as_str(), self.url, self.distribution)
+        format!("{}:{}:{}", self.category.as_str(), self.url, self.distribution)
     }
 
     pub fn to_dict(&self) -> plist::Dictionary {
@@ -131,7 +131,7 @@ impl Repository {
         );
         dict.insert(
             "Type".to_string(),
-            plist::Value::String(self.kind.as_str().to_string())
+            plist::Value::String(self.category.as_str().to_string())
         );
         dict.insert(
             "Sections".to_string(),

@@ -28,7 +28,7 @@ fn parser_multiline() {
     let parser = Parser::new(database.as_path()).unwrap();
 
     let packages: HashMap<String, Package> = parser.parse::<Package>().iter().map(|pkg| {
-        (pkg.identifier.clone(), pkg.clone())
+        (pkg.id.clone(), pkg.clone())
     }).collect();
 
     let first_package = packages.get("valid-package-1").unwrap();

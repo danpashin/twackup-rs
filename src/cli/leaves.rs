@@ -21,7 +21,7 @@ impl CLICommand for Leaves {
 
         for package in packages.iter() {
             let section_sym = section_color(&package.section).paint("▶︎");
-            println!("{} {} - {}", section_sym, package.name, package.identifier);
+            println!("{} {} - {}", section_sym, package.name, package.id);
         }
     }
 }

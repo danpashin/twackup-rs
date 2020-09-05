@@ -65,7 +65,7 @@ impl BuildWorker {
             let res = archiver.get_mut().append_path_with_name(&file, name);
             if let Err(error) = res {
                 self.progress.println(format!(
-                    "[{}] {}", self.package.identifier,
+                    "[{}] {}", self.package.id,
                     ansi_term::Colour::Yellow.paint(format!("{}", error))
                 ));
             }
@@ -87,8 +87,8 @@ impl BuildWorker {
                 let file_name = entry.file_name().into_string().unwrap();
 
                 // Firstly, reject every file not starting with package id
-                if !file_name.starts_with(&self.package.identifier) { continue; }
-                let id_len = self.package.identifier.len();
+                if !file_name.starts_with(&self.package.id) { continue; }
+                let id_len = self.package.id.len();
                 // Then reject every file without dot after package id
                 if file_name.chars().skip(id_len).take(1).next().unwrap_or('\0') != '.' {
                     continue;
@@ -105,7 +105,7 @@ impl BuildWorker {
                 let res = archiver.get_mut().append_path_with_name(entry.path(), ext);
                 if let Err(error) = res {
                     self.progress.println(format!(
-                        "[{}] {}", self.package.identifier,
+                        "[{}] {}", self.package.id,
                         ansi_term::Colour::Yellow.paint(format!("{}", error))
                     ));
                 }

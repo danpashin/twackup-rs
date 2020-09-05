@@ -68,14 +68,14 @@ impl Build {
                 match all_packages.iter().skip(position).next() {
                     Some(pkg) => to_build.push(pkg.clone()),
                     None => {
-                        match all_packages.iter().find(|pkg| pkg.identifier == *package_id) {
+                        match all_packages.iter().find(|pkg| pkg.id == *package_id) {
                             Some(pkg)=> to_build.push(pkg.clone()),
                             None => eprintln!("Can't find any package with name or index {}", package_id)
                         }
                     }
                 }
             } else {
-                match all_packages.iter().find(|pkg| pkg.identifier == *package_id) {
+                match all_packages.iter().find(|pkg| pkg.id == *package_id) {
                     Some(pkg)=> to_build.push(pkg.clone()),
                     None => eprintln!("Can't find any package with name or index {}", package_id)
                 }

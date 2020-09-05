@@ -41,7 +41,7 @@ pub enum Priority {
 #[derive(Clone)]
 pub struct Package {
     /// The name of the binary package. This field MUST NOT be empty.
-    pub identifier: String,
+    pub id: String,
 
     /// Name of package that displays in every package manager.
     /// If this field is empty, identifier will be used.
@@ -77,7 +77,7 @@ impl Parsable for Package {
         }
 
         Some(Self{
-            identifier: package_id.to_string(),
+            id: package_id.to_string(),
             name: fields.get("Name").unwrap_or(package_id).to_string(),
             version: fields.get("Version")?.to_string(),
             architecture: fields.get("Architecture")?.to_string(),
@@ -92,14 +92,14 @@ impl Parsable for Package {
 impl Package {
     #[inline]
     pub fn get_installed_files(&self, dpkg_dir: &Path) -> io::Result<Vec<String>> {
-        let file = File::open(dpkg_dir.join(format!("info/{}.list", self.identifier)))?;
+        let file = File::open(dpkg_dir.join(format!("info/{}.list", self.id)))?;
         return BufReader::new(file).lines().collect();
     }
 
     /// Creates canonical DEB filename in format of id_version_arch
     #[inline]
     pub fn canonical_name(&self) -> String {
-        format!("{}_{}_{}", self.identifier, self.version, self.architecture)
+        format!("{}_{}_{}", self.id, self.version, self.architecture)
     }
 
     /// Converts model to DEB control file
@@ -142,7 +142,7 @@ impl Package {
 
     /// Returns true if this package us a dependency of other.
     pub fn is_dependency_of(&self, pkg: &Package) -> bool {
-        let id = &self.identifier;
+        let id = &self.id;
         return pkg.depends().contains(id) || pkg.predepends().contains(id);
     }
 

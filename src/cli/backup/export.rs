@@ -63,7 +63,7 @@ impl CLICommand for Export {
 impl Export {
     fn get_packages(&self) -> LinkedList<String> {
         utils::get_packages(&self.admindir, true).iter().map(|pkg| {
-            pkg.identifier.clone()
+            pkg.id.clone()
         }).collect()
     }
 

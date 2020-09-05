@@ -54,7 +54,6 @@ impl Parser {
     pub fn parse<P: Parsable<Output = P> + 'static + Send + Sync>(&self) -> Vec<P> {
         let mut last_is_nl = true;
         let mut last_nl_pos = 0;
-        let mut cur_position = 0;
 
         let mut workers = Vec::new();
         let (workq, stealer) = deque::new();
@@ -63,13 +62,12 @@ impl Parser {
             workers.push(thread::spawn(move || worker.run()));
         }
 
-        for byte in self.file.iter() {
-            cur_position += 1;
+        for (cur_position, byte) in self.file.iter().enumerate() {
             // When double new line is detected, give parsing to worker
             let nl = byte ^ b'\n' == 0;
             if nl && last_is_nl {
-                workq.push(ChunkWorkerState::Process(last_nl_pos, cur_position));
-                last_nl_pos = cur_position;
+                workq.push(ChunkWorkerState::Process(last_nl_pos, cur_position + 1));
+                last_nl_pos = cur_position + 1;
             }
             last_is_nl = nl;
         }
@@ -80,7 +78,7 @@ impl Parser {
 
         let mut models = Vec::new();
         for worker in workers {
-            models.extend(worker.join().unwrap());
+            models.extend(worker.join().expect("Can't join thread"));
         }
 
         return models;
