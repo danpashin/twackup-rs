@@ -3,7 +3,7 @@ use std::{
     path::{Path, PathBuf},
     collections::{LinkedList, HashMap},
     thread,
-    marker::{Send, Sync},
+    marker::Send,
 };
 use memmap::Mmap;
 use deque::{Stealer, Stolen};
@@ -51,7 +51,7 @@ impl Parser {
     /// Package: com.example.my.other.package
     /// Name: My Other Package
     /// ```
-    pub fn parse<P: Parsable<Output = P> + 'static + Send + Sync>(&self) -> Vec<P> {
+    pub fn parse<P: Parsable<Output = P> + 'static + Send>(&self) -> Vec<P> {
         let mut last_is_nl = true;
         let mut last_nl_pos = 0;
 
