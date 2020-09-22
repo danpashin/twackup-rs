@@ -41,7 +41,7 @@ pub struct Build {
     destination: PathBuf,
 
     /// Packs all rebuilded DEB's to single archive
-    #[clap(short="A", long)]
+    #[clap(short='A', long)]
     archive: bool,
 
     /// Name of archive if --archive is set. Supports only .tar.gz archives for now.
@@ -49,7 +49,7 @@ pub struct Build {
     archive_name: String,
 
     /// Removes all DEB's after adding to archive. Makes sense only if --archive is set.
-    #[clap(short="R", long)]
+    #[clap(short='R', long)]
     remove_after: bool,
 }
 
