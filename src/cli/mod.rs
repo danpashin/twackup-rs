@@ -8,6 +8,9 @@ mod utils;
 #[cfg(any(target_os = "ios", debug_assertions))]
 mod backup;
 
+const ADMIN_DIR: &'static str = "/var/lib/dpkg";
+const TARGET_DIR: &'static str = "/var/mobile/Documents/twackup";
+
 trait CLICommand {
     fn run(&self);
 }

@@ -6,6 +6,9 @@ authors = ["DanP"]
 edition = "2018"
 publish = false
 
+[lib]
+crate-type = ["cdylib", "staticlib", "rlib"]
+
 [package.metadata.deb_pkg]
 name = "Twackup (CLI)"
 identifier = "ru.danpashin.twackup"

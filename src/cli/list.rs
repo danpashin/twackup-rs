@@ -1,8 +1,9 @@
 use clap::Clap;
 use std::path::PathBuf;
 
-use crate::ADMIN_DIR;
-use super::{CLICommand, utils::{get_packages, section_color}};
+use super::{
+    ADMIN_DIR, CLICommand, utils::{get_packages, section_color}
+};
 
 #[derive(Clap)]
 #[clap(version)]

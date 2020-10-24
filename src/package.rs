@@ -1,7 +1,7 @@
 use std::{
     collections::HashMap,
     fs::File, path::Path,
-    io::{self, BufReader, BufRead}
+    io::{self, BufReader, BufRead},
 };
 use crate::kvparser::Parsable;
 
@@ -147,7 +147,9 @@ impl Package {
     }
 
     #[allow(dead_code)]
-    pub fn description(&self) -> Option<&String> { self.fields.get("Description") }
+    pub fn get_field<F: AsRef<str>>(&self, field: F) -> Option<&String> {
+        self.fields.get(field.as_ref())
+    }
 }
 
 impl State {
