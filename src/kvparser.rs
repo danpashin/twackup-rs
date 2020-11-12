@@ -39,53 +39,55 @@ impl Parser {
         Ok(Self { file_path, file })
     }
 
-    /// This method will parse file with key-value syntax on separate lines
-    /// and call handler for each found block
-    ///
-    /// ### File should have following syntax. Every wrong line will be skipped.
-    ///
-    /// ```
-    /// Package: com.example.my.package
-    /// Name: My Package
-    ///
-    /// Package: com.example.my.other.package
-    /// Name: My Other Package
-    /// ```
+    /// This method will parse file with key-value syntax on separate lines.
     pub fn parse<P: Parsable<Output = P> + 'static + Send>(&self) -> Vec<P> {
         let mut workers = Vec::new();
         let (workq, stealer) = deque::new();
         for _ in 0..num_cpus::get() {
-            let worker = ChunkWorker::new(&self.file_path, stealer.clone());
-            workers.push(thread::spawn(move || worker.run()));
+            if let Ok(worker) = ChunkWorker::new(&self.file_path, stealer.clone()) {
+                workers.push(thread::spawn(move || worker.run()));
+            }
+        }
+        let workers_count = workers.len();
+        if workers_count == 0 {
+            return vec![];
         }
 
-        let file_len = self.file_path.metadata().expect("Can't get file").len() as usize;
         let mut last_nl_pos = 0;
-        for pos in 0..file_len - 1 {
+        for pos in 0..self.get_file_len() - 1 {
             if self.file[pos] ^ b'\n' == 0 && self.file[pos + 1] ^ b'\n' == 0 {
                 workq.push(ChunkWorkerState::Process(last_nl_pos, pos));
                 last_nl_pos = pos;
             }
         }
 
-        for _ in 0..workers.len() {
+        for _ in 0..workers_count {
             workq.push(ChunkWorkerState::Quit);
         }
 
-        let mut models = Vec::with_capacity(workers.len());
+        let mut models = Vec::new();
         for worker in workers {
-            models.extend(worker.join().expect("Can't join thread"));
+            if let Ok(worker_models) = worker.join() {
+                models.extend(worker_models);
+            }
         }
 
         return models;
+    }
+
+    fn get_file_len(&self) -> usize {
+        if let Ok(metadata) = self.file_path.metadata() {
+            return metadata.len() as usize;
+        }
+        return 0;
     }
 }
 
 impl ChunkWorker {
     /// Prepares environment and creates parser instance
-    fn new<P: AsRef<Path>>(file_path: P, stealer: Stealer<ChunkWorkerState>) -> Self {
-        let file = unsafe { Mmap::map(&File::open(file_path).unwrap()).unwrap() };
-        Self { file, stealer }
+    fn new<P: AsRef<Path>>(file_path: P, stealer: Stealer<ChunkWorkerState>) -> io::Result<Self> {
+        let file = unsafe { Mmap::map(&File::open(file_path)?)? };
+        Ok(Self { file, stealer })
     }
 
     /// Parses chunk to model
@@ -113,19 +115,20 @@ impl ChunkWorker {
 
         // Now we'll process each line of chunk
         for line in chunk.lines() {
-            let unwrapped_line = line.unwrap();
-            // If line is empty (but it shouldn't) - skip
-            if unwrapped_line.is_empty() {
-                continue;
-            }
+            if let Ok(line) = line {
+                // If line is empty (but it shouldn't) - skip
+                if line.is_empty() {
+                    continue;
+                }
 
-            // Keys can have multi-line syntax starting with single space
-            // So we'll process them and concat with previous line in list
-            if unwrapped_line.starts_with(" ") && !fields.is_empty() {
-                let prev_line = fields.pop_back().unwrap();
-                fields.push_back(format!("{}\n{}", prev_line, unwrapped_line));
-            } else {
-                fields.push_back(unwrapped_line);
+                // Keys can have multi-line syntax starting with single space
+                // So we'll process them and concat with previous line in list
+                if line.starts_with(" ") && !fields.is_empty() {
+                    let prev_line = fields.pop_back().unwrap_or("".into());
+                    fields.push_back(format!("{}\n{}", prev_line, line));
+                } else {
+                    fields.push_back(line);
+                }
             }
         }
 

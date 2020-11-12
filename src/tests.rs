@@ -31,11 +31,13 @@ fn parser_multiline() {
         (pkg.id.clone(), pkg.clone())
     }).collect();
 
-    let first_package = packages.get("valid-package-1").unwrap();
-    assert_eq!(first_package.description().unwrap().as_str(), "First Line\n Second Line\n  Third Line");
+    let package = packages.get("valid-package-1").unwrap();
+    let description = package.get_field("Description").unwrap();
+    assert_eq!(description.as_str(), "First Line\n Second Line\n  Third Line");
 
-    let second_pkg = packages.get("valid-package-2").unwrap();
-    assert_eq!(second_pkg.description().unwrap().as_str(), "First Line");
+    let package = packages.get("valid-package-2").unwrap();
+    let description = package.get_field("Description").unwrap();
+    assert_eq!(description.as_str(), "First Line");
 }
 
 #[test]
