@@ -1,6 +1,6 @@
 use std::{
     fs::File, io::{self, BufRead},
-    path::{Path, PathBuf},
+    path::Path,
     collections::{LinkedList, HashMap},
     thread,
     marker::Send,
@@ -14,8 +14,8 @@ pub trait Parsable {
 }
 
 pub struct Parser {
-    file_path: PathBuf,
-    file: Mmap,
+    file: File,
+    mmap: Mmap,
 }
 
 enum ChunkWorkerState {
@@ -34,28 +34,29 @@ impl Parser {
     /// Will return error when user has no permissions to read
     /// or file is empty
     pub fn new<P: AsRef<Path>>(file_path: P) -> io::Result<Self> {
-        let file = unsafe { Mmap::map(&File::open(file_path.as_ref())?) }?;
-        let file_path = file_path.as_ref().to_path_buf();
-        Ok(Self { file_path, file })
+        let file = File::open(file_path.as_ref())?;
+        let mmap = unsafe { Mmap::map(&file) }?;
+        Ok(Self { file, mmap })
     }
 
     /// This method will parse file with key-value syntax on separate lines.
-    pub fn parse<P: Parsable<Output = P> + 'static + Send>(&self) -> Vec<P> {
+    pub fn parse<P: Parsable<Output = P> + 'static + Send>(&self) -> LinkedList<P> {
         let mut workers = Vec::new();
         let (workq, stealer) = deque::new();
         for _ in 0..num_cpus::get() {
-            if let Ok(worker) = ChunkWorker::new(&self.file_path, stealer.clone()) {
+            if let Ok(worker) = ChunkWorker::new(&self.file, stealer.clone()) {
                 workers.push(thread::spawn(move || worker.run()));
             }
         }
         let workers_count = workers.len();
         if workers_count == 0 {
-            return vec![];
+            return LinkedList::new();
         }
 
         let mut last_nl_pos = 0;
-        for pos in 0..self.get_file_len() - 1 {
-            if self.file[pos] ^ b'\n' == 0 && self.file[pos + 1] ^ b'\n' == 0 {
+        let file_len = self.get_file_len();
+        for pos in 0..file_len - 1 {
+            if self.mmap[pos] ^ b'\n' == 0 && self.mmap[pos + 1] ^ b'\n' == 0 {
                 workq.push(ChunkWorkerState::Process(last_nl_pos, pos));
                 last_nl_pos = pos;
             }
@@ -65,7 +66,7 @@ impl Parser {
             workq.push(ChunkWorkerState::Quit);
         }
 
-        let mut models = Vec::new();
+        let mut models = LinkedList::new();
         for worker in workers {
             if let Ok(worker_models) = worker.join() {
                 models.extend(worker_models);
@@ -76,7 +77,7 @@ impl Parser {
     }
 
     fn get_file_len(&self) -> usize {
-        if let Ok(metadata) = self.file_path.metadata() {
+        if let Ok(metadata) = self.file.metadata() {
             return metadata.len() as usize;
         }
         return 0;
@@ -85,14 +86,14 @@ impl Parser {
 
 impl ChunkWorker {
     /// Prepares environment and creates parser instance
-    fn new<P: AsRef<Path>>(file_path: P, stealer: Stealer<ChunkWorkerState>) -> io::Result<Self> {
-        let file = unsafe { Mmap::map(&File::open(file_path)?)? };
+    fn new(file: &File, stealer: Stealer<ChunkWorkerState>) -> io::Result<Self> {
+        let file = unsafe { Mmap::map(file)? };
         Ok(Self { file, stealer })
     }
 
     /// Parses chunk to model
-    fn run<P: Parsable<Output = P>>(&self) -> Vec<P> {
-        let mut models = Vec::new();
+    fn run<P: Parsable<Output = P>>(&self) -> LinkedList<P> {
+        let mut models = LinkedList::new();
         loop {
             match self.stealer.steal() {
                 Stolen::Empty | Stolen::Abort => continue,
@@ -100,7 +101,7 @@ impl ChunkWorker {
                 Stolen::Data(ChunkWorkerState::Process(start, end)) => {
                     let fields = self.parse_chunk(&self.file[start..end]);
                     if let Some(model) = P::new(self.parse_fields(fields)) {
-                        models.push(model);
+                        models.push_back(model);
                     }
                 }
             }

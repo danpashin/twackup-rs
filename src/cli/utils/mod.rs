@@ -24,7 +24,7 @@ pub fn get_packages<P: AsRef<Path>>(admin_dir: P, leaves_only: bool) -> Vec<Pack
     let packages = parser.parse::<Package>();
 
     if !leaves_only {
-        return packages;
+        return packages.into_iter().collect();
     }
 
     let mut leaves_indexes = Vec::with_capacity(packages.len());
