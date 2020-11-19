@@ -5,6 +5,7 @@ description = "Safe and fast iOS utility for rebuilding DEBs and backing up pack
 authors = ["DanP"]
 edition = "2018"
 publish = false
+license = "GPL-3.0-only"
 
 [lib]
 crate-type = ["cdylib", "staticlib", "rlib"]
@@ -20,7 +21,9 @@ changelog = "changelog"
 homepage = ""
 assets = [
     ["build/twackup-ios", "/usr/bin/twackup"],
+    ["COPYING", "/usr/share/doc/ru.danpashin.twackup/LICENSE"],
 ]
+license_type = "GPL-3.0"
 
 [profile.release]
 opt-level = 's'

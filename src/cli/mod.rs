@@ -1,4 +1,24 @@
+/*
+ * Copyright 2020 DanP
+ *
+ * This file is part of Twackup
+ *
+ * Twackup is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twackup is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 use clap::Clap;
+use std::fs;
 
 mod list;
 mod leaves;
@@ -10,6 +30,7 @@ mod backup;
 
 const ADMIN_DIR: &'static str = "/var/lib/dpkg";
 const TARGET_DIR: &'static str = "/var/mobile/Documents/twackup";
+const LICENSE_PATH: &'static str = "/usr/share/doc/ru.danpashin.twackup/LICENSE";
 
 trait CLICommand {
     fn run(&self);
@@ -57,6 +78,10 @@ enum Command {
     /// Useful when you want to restore packages from your old device or another jailbreak.
     #[cfg(any(target_os = "ios", debug_assertions))]
     Import(backup::import::Import),
+
+    /// Shows license under Twackup is being distributed
+    #[clap(aliases = &["w", "c"])]
+    ShowLicense,
 }
 
 /// Starts parsing CLI arguments and runs actions for them
@@ -72,5 +97,10 @@ pub fn run() {
 
         #[cfg(any(target_os = "ios", debug_assertions))]
         Command::Import(cmd) => cmd.run(),
+
+        Command::ShowLicense => {
+            let license = fs::read_to_string(LICENSE_PATH).expect("Can't open license file");
+            println!("\n{}\n", license);
+        },
     }
 }

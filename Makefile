@@ -30,6 +30,7 @@ DEB_DEPENDS:=$(shell echo $(PKG_METADATA) | jq -r '.metadata.deb_pkg.depends')
 DEB_CHANGELOG:=$(shell echo $(PKG_METADATA) | jq -r '.metadata.deb_pkg.changelog')
 DEB_FILES:=$(shell echo $(PKG_METADATA) | jq -r '.metadata.deb_pkg.assets[] | join("=")')
 DEB_HOMEPAGE:=$(shell echo $(PKG_METADATA) | jq -r '.metadata.deb_pkg.homepage')
+DEB_LICENSE_TYPE:=$(shell echo $(PKG_METADATA) | jq -r '.metadata.deb_pkg.license_type')
 
 
 .PHONY: all, native, ios, test, clean
@@ -44,7 +45,7 @@ ios: $(OUTPUT_DIR) $(IOS_ARCHS) test
 	@ldid -S $(BUILD_DIR)/$(TARGET)-ios
 	@fpm -s dir -t deb -f --log error -n "$(DEB_IDENTIFIER)" --category "$(DEB_CATEGORY)" -d "$(DEB_DEPENDS)" \
 	-a "$(DEB_ARCHITECTURE)" -m "$(DEB_AUTHOR)" --deb-priority "$(DEB_PRIORITY)" --description "$(DEB_DESCRITPTION)" \
-	-v "$(DEB_VERSION)" --deb-no-default-config-files --vendor "" --deb-changelog "$(DEB_CHANGELOG)" \
+	-v "$(DEB_VERSION)" --license "$(DEB_LICENSE_TYPE)" --vendor "" --deb-changelog "$(DEB_CHANGELOG)" \
 	--url "$(DEB_HOMEPAGE)" --deb-field "Name: $(DEB_NAME)" \
 	-p $(OUTPUT_DIR)/$(DEB_IDENTIFIER)_$(DEB_VERSION)_$(DEB_ARCHITECTURE).deb  $(DEB_FILES)
 
