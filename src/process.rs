@@ -94,7 +94,7 @@ pub enum Signal {
 }
 
 pub fn send_signal_to_multiple(executables: Vec<String>, signal: Signal) {
-    if let Ok(pids)  = proc_pid::listpids(proc_pid::ProcType::ProcAllPIDS) {
+    if let Ok(pids) = proc_pid::listpids(proc_pid::ProcType::ProcAllPIDS) {
         for pid in pids {
             if let Ok(name) = proc_pid::name(pid as i32) {
                 if executables.contains(&name) {

@@ -37,7 +37,7 @@ pub struct BuildWorker {
     pub progress: Arc<ProgressBar>,
     admin_dir: PathBuf,
     destination: PathBuf,
-    working_dir: PathBuf
+    working_dir: PathBuf,
 }
 
 impl BuildWorker {
@@ -45,19 +45,20 @@ impl BuildWorker {
         admin_dir: P,
         pkg: Package,
         destination: D,
-        progress: Arc<ProgressBar>
+        progress: Arc<ProgressBar>,
     ) -> Self {
         let name = pkg.canonical_name();
         Self {
-            package: pkg, progress,
+            package: pkg,
+            progress,
             admin_dir: admin_dir.as_ref().to_path_buf(),
             destination: destination.as_ref().to_path_buf(),
-            working_dir: destination.as_ref().join(name)
+            working_dir: destination.as_ref().join(name),
         }
     }
 
     /// Runs worker. Should be executed in a single thread usually
-    pub fn run(&self) -> io::Result<PathBuf>  {
+    pub fn run(&self) -> io::Result<PathBuf> {
         // Removing all dir contents
         let _ = fs::remove_dir_all(&self.working_dir);
         fs::create_dir(&self.working_dir)?;

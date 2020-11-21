@@ -33,7 +33,7 @@ pub struct Deb {
     control: DebTarArchive,
     data: DebTarArchive,
     control_path: PathBuf,
-    data_path: PathBuf
+    data_path: PathBuf,
 }
 
 pub struct TarArchive<W: Write> {
@@ -42,26 +42,27 @@ pub struct TarArchive<W: Write> {
 
 impl Deb {
     pub fn new<T: AsRef<Path>, O: AsRef<Path>>(
-        temp_dir: T, output: O, compression: u32
+        temp_dir: T, output: O, compression: u32,
     ) -> io::Result<Self> {
-        let control_path  = temp_dir.as_ref().join("control.tar.gz");
+        let control_path = temp_dir.as_ref().join("control.tar.gz");
         let data_path = temp_dir.as_ref().join("data.tar.gz");
 
         let control_file = GzEncoder::new(
             File::create(&control_path)?,
-            Compression::new(compression)
+            Compression::new(compression),
         );
 
         let data_file = GzEncoder::new(
             File::create(&data_path)?,
-            Compression::new(compression)
+            Compression::new(compression),
         );
 
         Ok(Self {
             output: output.as_ref().to_path_buf(),
             control: TarArchive::new(control_file),
             data: TarArchive::new(data_file),
-            control_path, data_path
+            control_path,
+            data_path,
         })
     }
 

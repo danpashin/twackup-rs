@@ -21,7 +21,7 @@ use ansi_term::{Colour, ANSIString};
 use std::path::Path;
 use crate::{package::*, kvparser::Parser};
 
-pub fn section_color(section: &Section)-> Colour {
+pub fn section_color(section: &Section) -> Colour {
     match section {
         Section::System => Colour::Fixed(9), // bright red
         Section::Tweaks => Colour::Fixed(11), // bright yellow
