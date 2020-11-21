@@ -83,7 +83,7 @@ impl Parsable for Repository {
             return None;
         }
 
-        Some(Self{
+        Some(Self {
             category: category.unwrap(),
             url: fields.get("URIs")?.to_string(),
             distribution: fields.get("Suites")?.to_string(),
@@ -109,7 +109,7 @@ impl Repository {
             return None;
         }
 
-        Some(Self{
+        Some(Self {
             category: _type.unwrap(),
             url: components[1].to_string(),
             distribution: components[2].to_string(),
@@ -121,7 +121,7 @@ impl Repository {
     /// #### Doesn't support options
     pub fn to_one_line(&self) -> String {
         format!("{} {} {} {}",
-            self.category.as_str(), self.url, self.distribution, self.components.join(" ")
+                self.category.as_str(), self.url, self.distribution, self.components.join(" ")
         ).trim().to_string()
     }
 

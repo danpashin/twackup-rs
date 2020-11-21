@@ -31,17 +31,17 @@ use std::{
 pub struct Export {
     /// Use custom dpkg <directory>.
     /// This option is used for detecting installed packages
-    #[clap(long, default_value=ADMIN_DIR, parse(from_os_str))]
+    #[clap(long, default_value = ADMIN_DIR, parse(from_os_str))]
     admindir: PathBuf,
 
     /// Use another output format
     /// (e.g. for using output with third-party parser like jq)
-    #[clap(short, long, arg_enum, default_value="json")]
+    #[clap(short, long, arg_enum, default_value = "json")]
     format: DataFormat,
 
     /// Data to export
     /// (e.g. if you want to export only packages)
-    #[clap(short, long, arg_enum, default_value="all")]
+    #[clap(short, long, arg_enum, default_value = "all")]
     data: DataType,
 
     /// Output file, stdout if not present
@@ -54,13 +54,16 @@ impl CLICommand for Export {
         eprintln!("Exporting data for {:?}...", self.data);
         let data = match self.data {
             DataType::Packages => DataLayout {
-                packages: Some(self.get_packages()), repositories: None
+                packages: Some(self.get_packages()),
+                repositories: None,
             },
             DataType::Repositories => DataLayout {
-                packages: None, repositories: Some(self.get_repos())
+                packages: None,
+                repositories: Some(self.get_repos()),
             },
             DataType::All => DataLayout {
-                packages: Some(self.get_packages()), repositories: Some(self.get_repos())
+                packages: Some(self.get_packages()),
+                repositories: Some(self.get_repos()),
             }
         };
 
@@ -93,8 +96,10 @@ impl Export {
             if let Ok(parser) = Parser::new(path) {
                 let repos = parser.parse::<Repository>().into_iter().collect();
                 sources.push_back(RepoGroup {
-                    format: RepoGroupFormat::Modern, path: path.to_string(),
-                    executable: name.to_string(), sources: repos
+                    format: RepoGroupFormat::Modern,
+                    path: path.to_string(),
+                    executable: name.to_string(),
+                    sources: repos,
                 });
             }
         }
@@ -110,8 +115,10 @@ impl Export {
                     }
                 }
                 sources.push_back(RepoGroup {
-                    format: RepoGroupFormat::Classic, path: path.to_string(),
-                    executable: name.to_string(), sources: repos
+                    format: RepoGroupFormat::Classic,
+                    path: path.to_string(),
+                    executable: name.to_string(),
+                    sources: repos,
                 });
             }
         }

@@ -59,7 +59,7 @@ impl Parser {
     }
 
     /// This method will parse file with key-value syntax on separate lines.
-    pub fn parse<P: Parsable<Output = P> + 'static + Send>(&self) -> LinkedList<P> {
+    pub fn parse<P: Parsable<Output=P> + 'static + Send>(&self) -> LinkedList<P> {
         let mut workers = Vec::new();
         let (workq, stealer) = deque::new();
         for _ in 0..num_cpus::get() {
@@ -111,7 +111,7 @@ impl ChunkWorker {
     }
 
     /// Parses chunk to model
-    fn run<P: Parsable<Output = P>>(&self) -> LinkedList<P> {
+    fn run<P: Parsable<Output=P>>(&self) -> LinkedList<P> {
         let mut models = LinkedList::new();
         loop {
             match self.stealer.steal() {

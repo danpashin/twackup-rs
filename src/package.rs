@@ -95,7 +95,7 @@ impl Parsable for Package {
             return None;
         }
 
-        Some(Self{
+        Some(Self {
             id: package_id.to_string(),
             name: fields.get("Name").unwrap_or(package_id).to_string(),
             version: fields.get("Version")?.to_string(),
@@ -181,7 +181,7 @@ impl State {
                     "deinstall" => Self::Remove,
                     "hold" => Self::Hold,
                     _ => Self::Unknown
-                }
+                };
             }
         }
 

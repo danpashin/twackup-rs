@@ -29,13 +29,13 @@ use gethostname::gethostname;
 
 use crate::{package::*, builder::*};
 use super::{
-    ADMIN_DIR, TARGET_DIR,CLICommand, utils::{self, get_packages}
+    ADMIN_DIR, TARGET_DIR, CLICommand, utils::{self, get_packages},
 };
 
-const DEFAULT_ARCHIVE_NAME: &'static str= "%host%_%date%.tar.gz";
+const DEFAULT_ARCHIVE_NAME: &'static str = "%host%_%date%.tar.gz";
 
 #[derive(Clap)]
-#[clap(version, after_help="
+#[clap(version, after_help = "
 Beware, this command doesn't guarantee to copy all files to the final DEB! \
 Some files can be skipped because of being renamed or removed in the installation process.
 If you see yellow warnings, it means the final deb will miss some contents \
@@ -49,7 +49,7 @@ pub struct Build {
 
     /// Use custom dpkg <directory>.
     /// This option is used for detecting installed packages
-    #[clap(long, default_value=ADMIN_DIR, parse(from_os_str))]
+    #[clap(long, default_value = ADMIN_DIR, parse(from_os_str))]
     admindir: PathBuf,
 
     /// Package identifier or number from the list command.
@@ -57,19 +57,19 @@ pub struct Build {
     packages: Vec<String>,
 
     /// Use custom destination <directory>.
-    #[clap(long, short, default_value=TARGET_DIR, parse(from_os_str))]
+    #[clap(long, short, default_value = TARGET_DIR, parse(from_os_str))]
     destination: PathBuf,
 
     /// Packs all rebuilded DEB's to single archive
-    #[clap(short='A', long)]
+    #[clap(short = 'A', long)]
     archive: bool,
 
     /// Name of archive if --archive is set. Supports only .tar.gz archives for now.
-    #[clap(long, default_value=DEFAULT_ARCHIVE_NAME)]
+    #[clap(long, default_value = DEFAULT_ARCHIVE_NAME)]
     archive_name: String,
 
     /// Removes all DEB's after adding to archive. Makes sense only if --archive is set.
-    #[clap(short='R', long)]
+    #[clap(short = 'R', long)]
     remove_after: bool,
 }
 
@@ -89,14 +89,14 @@ impl Build {
                     Some(pkg) => to_build.push(pkg.clone()),
                     None => {
                         match all_packages.iter().find(|pkg| pkg.id == *package_id) {
-                            Some(pkg)=> to_build.push(pkg.clone()),
+                            Some(pkg) => to_build.push(pkg.clone()),
                             None => eprintln!("Can't find any package with name or index {}", package_id)
                         }
                     }
                 }
             } else {
                 match all_packages.iter().find(|pkg| pkg.id == *package_id) {
-                    Some(pkg)=> to_build.push(pkg.clone()),
+                    Some(pkg) => to_build.push(pkg.clone()),
                     None => eprintln!("Can't find any package with name or index {}", package_id)
                 }
             }

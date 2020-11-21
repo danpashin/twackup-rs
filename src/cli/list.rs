@@ -21,7 +21,7 @@ use clap::Clap;
 use std::path::PathBuf;
 
 use super::{
-    ADMIN_DIR, CLICommand, utils::{get_packages, section_color}
+    ADMIN_DIR, CLICommand, utils::{get_packages, section_color},
 };
 
 #[derive(Clap)]
@@ -29,7 +29,7 @@ use super::{
 pub struct List {
     /// Use custom dpkg <directory>.
     /// This option is used for detecting installed packages
-    #[clap(long, default_value=ADMIN_DIR, parse(from_os_str))]
+    #[clap(long, default_value = ADMIN_DIR, parse(from_os_str))]
     admindir: PathBuf,
 }
 

@@ -23,18 +23,18 @@ use crate::process;
 use std::{
     io::{self, BufWriter, Write},
     fs::File,
-    process::{Command, Stdio, exit}
+    process::{Command, Stdio, exit},
 };
 
 #[derive(Clap)]
 pub struct Import {
     /// Use another input format
     /// (e.g. when it was processed with third-party parser like jq)
-    #[clap(short, long, arg_enum, default_value="json")]
+    #[clap(short, long, arg_enum, default_value = "json")]
     format: DataFormat,
 
     /// Input file, stdin if equal to '-'
-    #[clap(name="file")]
+    #[clap(name = "file")]
     input: String,
 }
 
@@ -83,7 +83,7 @@ impl CLICommand for Import {
 impl Import {
     #[inline]
     fn deserialize_input(&self) -> Result<DataLayout, serde_any::error::Error> {
-        let format =  self.format.to_serde();
+        let format = self.format.to_serde();
         match self.input.as_str() {
             "-" => serde_any::from_reader(io::stdin(), format),
             _ => serde_any::from_reader(File::open(&self.input)?, format)
@@ -110,7 +110,7 @@ impl Import {
             "Zebra" => std::fs::remove_file(
                 "/var/mobile/Library/Application Support/xyz.willy.Zebra/zebra.db"
             ),
-            "Cydia" =>  self.cydia_post_import_hook(repo_group),
+            "Cydia" => self.cydia_post_import_hook(repo_group),
             _ => Ok(())
         };
         if let Err(error) = hook_res {
