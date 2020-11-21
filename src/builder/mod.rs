@@ -21,7 +21,8 @@ use crate::package::Package;
 use std::{
     io, fs,
     path::{Path, PathBuf},
-    sync::Arc
+    sync::Arc,
+    os::unix::ffi::OsStringExt,
 };
 
 use indicatif::ProgressBar;
@@ -100,26 +101,20 @@ impl BuildWorker {
         archiver.append_new_file("control", &self.package.to_control().as_bytes())?;
 
         // Then add every matching metadata file in dpkg database dir
-        let files = fs::read_dir(self.admin_dir.join("info"))?;
-        for entry in files {
+        let pid_len = self.package.id.len();
+        let package_id = self.package.id.as_bytes();
+        for entry in fs::read_dir(self.admin_dir.join("info"))? {
             if let Ok(entry) = entry {
-                let file_name = entry.file_name().into_string().unwrap();
+                let file_name = entry.file_name().into_vec();
 
-                // Firstly, reject every file not starting with package id
-                if !file_name.starts_with(&self.package.id) { continue; }
-                let id_len = self.package.id.len();
-                // Then reject every file without dot after package id
-                if file_name.chars().skip(id_len).take(1).next().unwrap_or('\0') != '.' {
+                // Reject every file not starting with package id + dot
+                if file_name.len() <= pid_len + 1 { continue; }
+                if &file_name[..pid_len] != package_id || file_name[pid_len] != b'.' {
                     continue;
                 }
-                let ext = file_name
-                    .chars().skip(id_len + 1)
-                    .collect::<String>();
-                // And skip this two files
-                // First one contains package files list
-                // Second - md5 sums for every package file. Maybe it shouldn't be rejected
-                // but i don't sure
-                if ext == "list" || ext == "md5sums" { continue; }
+                let ext = unsafe { std::str::from_utf8_unchecked(&file_name[pid_len + 1..]) };
+                // And skip .list file as it contains package files list
+                if ext == "list" { continue; }
 
                 let res = archiver.get_mut().append_path_with_name(entry.path(), ext);
                 if let Err(error) = res {
