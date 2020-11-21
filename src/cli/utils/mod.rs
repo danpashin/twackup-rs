@@ -82,5 +82,5 @@ pub fn non_root_warn_msg() -> ANSIString<'static> {
 /// Returns true if the `Uid` represents privileged user - root. (If it equals zero.)
 #[inline]
 pub fn is_root() -> bool {
-    nix::unistd::getuid().is_root()
+    unsafe { libc::getuid() == 0 }
 }
