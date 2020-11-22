@@ -17,45 +17,19 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+mod state;
+mod section;
+mod priority;
+
 use std::{
     collections::HashMap,
     fs::File, path::Path,
     io::{self, BufReader, BufRead},
 };
 use crate::kvparser::Parsable;
-
-#[derive(Clone, PartialEq)]
-pub enum State {
-    Unknown,
-    Install,
-    Remove,
-    Hold,
-}
-
-#[derive(Clone, PartialEq)]
-pub enum Section {
-    Other(String),
-    Unknown,
-    System,
-    Tweaks,
-    Utilities,
-    Packaging,
-    Development,
-    TerminalSupport,
-    Themes,
-    Archiving,
-    Networking,
-    TextEditors,
-}
-
-#[derive(Clone, PartialEq)]
-pub enum Priority {
-    Optional,
-    Required,
-    Important,
-    Standard,
-    Unknown,
-}
+pub use self::{
+    state::State, section::Section, priority::Priority,
+};
 
 #[derive(Clone)]
 pub struct Package {
@@ -168,68 +142,5 @@ impl Package {
     #[allow(dead_code)]
     pub fn get_field<F: AsRef<str>>(&self, field: F) -> Option<&String> {
         self.fields.get(field.as_ref())
-    }
-}
-
-impl State {
-    pub fn from_dpkg(string: Option<&String>) -> Self {
-        if let Some(status) = string {
-            let mut components = status.split_whitespace();
-            if let Some(state) = components.next() {
-                return match state.to_lowercase().as_str() {
-                    "install" => Self::Install,
-                    "deinstall" => Self::Remove,
-                    "hold" => Self::Hold,
-                    _ => Self::Unknown
-                };
-            }
-        }
-
-        return Self::Unknown;
-    }
-}
-
-
-impl Section {
-    pub fn from_string(value: &str) -> Section {
-        match value.to_lowercase().as_str() {
-            "system" => Section::System,
-            "tweaks" => Section::Tweaks,
-            "utilities" => Section::Utilities,
-            "packaging" => Section::Packaging,
-            "development" => Section::Development,
-            "themes" => Section::Themes,
-            "terminal_support" | "terminal support" => Section::TerminalSupport,
-            "networking" => Section::Networking,
-            "archiving" => Section::Archiving,
-            "text_editors" => Section::TextEditors,
-            _ => Section::Other(value.to_string())
-        }
-    }
-
-    pub fn from_string_opt(value: Option<&String>) -> Section {
-        match value {
-            Some(value) => Self::from_string(value),
-            None => Section::Unknown
-        }
-    }
-}
-
-impl Priority {
-    pub fn from_string(value: &str) -> Priority {
-        match value.to_lowercase().as_str() {
-            "optional" => Priority::Optional,
-            "required" => Priority::Required,
-            "important" => Priority::Important,
-            "standard" => Priority::Standard,
-            _ => Priority::Unknown,
-        }
-    }
-
-    pub fn from_string_opt(value: Option<&String>) -> Priority {
-        match value {
-            Some(value) => Self::from_string(value),
-            None => Priority::Unknown
-        }
     }
 }
