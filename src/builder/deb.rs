@@ -113,7 +113,9 @@ impl Deb {
 
 impl<W: Write> TarArchive<W> {
     pub fn new(writer: W) -> Self {
-        Self { builder: Builder::new(writer) }
+        let mut builder = Builder::new(writer);
+        builder.follow_symlinks(false);
+        Self { builder }
     }
 
     pub fn get_mut(&mut self) -> &mut Builder<W> { &mut self.builder }
