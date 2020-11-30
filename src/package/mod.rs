@@ -23,7 +23,7 @@ mod priority;
 mod field;
 
 use std::{
-    collections::HashMap,
+    collections::{HashMap, LinkedList},
     fs::File, path::Path,
     io::{self, BufReader, BufRead},
     str::FromStr,
@@ -121,29 +121,36 @@ impl Package {
         return control;
     }
 
-    /// Splits optional string by comma to vector of strings
-    fn split_by_comma(&self, field: Option<&String>) -> Vec<String> {
-        match field {
-            None => Vec::new(),
-            Some(value) => value.split(",").map(|val| val.trim().to_string()).collect()
-        }
+    fn parse_dependencies(&self, dependencies: &str) -> LinkedList<String> {
+        // Flat all possible dependencies
+        dependencies.split(&[',', '|'][..])
+            .map(|dependency| {
+                // Remove version condition
+                if let (Some(cond_start), Some(_)) = (dependency.find("("), dependency.find(")")) {
+                    return dependency[0..cond_start].trim().to_string();
+                }
+                return dependency.trim().to_string();
+            })
+            .collect()
     }
-
-    /// Returns packages of which this one depends.
-    #[inline]
-    pub fn depends(&self) -> Vec<String> { self.split_by_comma(self.fields.get(&Field::Depends)) }
-
-    /// Returns packages of which the installation of this package depends.
-    #[inline]
-    pub fn predepends(&self) -> Vec<String> { self.split_by_comma(self.fields.get(&Field::PreDepends)) }
 
     /// Returns true if this package us a dependency of other.
     pub fn is_dependency_of(&self, pkg: &Package) -> bool {
         let id = &self.id;
-        return pkg.depends().contains(id) || pkg.predepends().contains(id);
+        if let Some(depends) = pkg.get_field(&Field::Depends) {
+            if self.parse_dependencies(&depends).contains(&id) {
+                return true;
+            }
+        }
+        if let Some(depends) = pkg.get_field(&Field::PreDepends) {
+            if self.parse_dependencies(&depends).contains(&id) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    #[allow(dead_code)]
     #[inline]
     pub fn get_field(&self, field: &Field) -> Option<&String> {
         self.fields.get(field)
