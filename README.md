@@ -27,7 +27,6 @@ Twackup is the fastest tool at this moment. It uses Rust lightweight threads and
      
 ## Known issues
 
-* Doesn't handle conditions when parsing *Depends* and and *Pre-Depends* fields. This can lead to system packages appear in **leaves** and **export** command outputs.
 * Doesn't have arm64e (Apple A12 and higher) support with PAC as Rust doesn't support it. Although, plain arm64 runs fine.
 
 ## License
