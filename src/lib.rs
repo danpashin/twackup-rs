@@ -23,6 +23,7 @@ pub mod package;
 pub mod repository;
 pub mod builder;
 pub mod process;
+pub mod flock;
 
 #[cfg(test)]
 mod tests;

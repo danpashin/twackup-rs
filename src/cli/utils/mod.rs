@@ -18,8 +18,12 @@
  */
 
 use ansi_term::{Colour, ANSIString};
-use std::path::Path;
-use crate::{package::*, kvparser::Parser};
+use std::{
+    fs, path::Path,
+};
+use crate::{
+    package::*, kvparser::Parser, flock::*,
+};
 
 pub fn section_color(section: &Section) -> Colour {
     match section {
@@ -37,10 +41,19 @@ pub fn section_color(section: &Section) -> Colour {
 }
 
 pub fn get_packages<P: AsRef<Path>>(admin_dir: P, leaves_only: bool) -> Vec<Package> {
+    // lock database as it can be modified while parsing
+    let lock_file_path = admin_dir.as_ref().join("lock");
+    let lock_file = fs::File::create(&lock_file_path).expect("Can't create locking file");
+    lock_exclusive(&lock_file).expect("Can't acquire lock on dpkg database");
+
     let status_file = admin_dir.as_ref().join("status");
     let parser = Parser::new(status_file).expect("Failed to open database");
 
     let packages = parser.parse::<Package>();
+
+    // remove database lock as it is not needed anymore
+    let _ = unlock(&lock_file);
+    let _ = fs::remove_file(lock_file_path);
 
     if !leaves_only {
         return packages.into_iter().collect();
