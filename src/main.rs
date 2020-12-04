@@ -23,6 +23,7 @@ mod repository;
 mod builder;
 mod cli;
 mod process;
+mod flock;
 
 #[cfg(test)]
 mod tests;
