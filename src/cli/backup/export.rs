@@ -49,7 +49,7 @@ pub struct Export {
     output: Option<PathBuf>,
 }
 
-impl CLICommand for Export {
+impl CliCommand for Export {
     fn run(&self) {
         eprintln!("Exporting data for {:?}...", self.data);
         let data = match self.data {

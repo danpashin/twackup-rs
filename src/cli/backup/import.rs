@@ -38,7 +38,7 @@ pub struct Import {
     input: String,
 }
 
-impl CLICommand for Import {
+impl CliCommand for Import {
     fn run(&self) {
         if !utils::is_root() {
             eprintln!("{}", utils::non_root_warn_msg());
