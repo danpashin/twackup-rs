@@ -39,6 +39,6 @@ impl State {
             }
         }
 
-        return Self::Unknown;
+        Self::Unknown
     }
 }

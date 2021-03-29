@@ -73,7 +73,7 @@ impl BuildWorker {
 
         let _ = fs::remove_dir_all(&self.working_dir);
 
-        return Ok(deb_path);
+        Ok(deb_path)
     }
 
     /// Archives package files and compresses in a single archive
@@ -82,7 +82,7 @@ impl BuildWorker {
 
         for file in files {
             // Remove root slash because tars don't contain absolute paths
-            let name = file.trim_start_matches("/");
+            let name = file.trim_start_matches('/');
             let res = archiver.get_mut().append_path_with_name(&file, name);
             if let Err(error) = res {
                 self.progress.println(format!(
@@ -92,7 +92,7 @@ impl BuildWorker {
             }
         }
 
-        return Ok(());
+        Ok(())
     }
 
     /// Collects package metadata such as install scripts,
@@ -104,29 +104,27 @@ impl BuildWorker {
         // Then add every matching metadata file in dpkg database dir
         let pid_len = self.package.id.len();
         let package_id = self.package.id.as_bytes();
-        for entry in fs::read_dir(self.admin_dir.join("info"))? {
-            if let Ok(entry) = entry {
-                let file_name = entry.file_name().into_vec();
+        for entry in fs::read_dir(self.admin_dir.join("info"))?.flatten() {
+            let file_name = entry.file_name().into_vec();
 
-                // Reject every file not starting with package id + dot
-                if file_name.len() <= pid_len + 1 { continue; }
-                if &file_name[..pid_len] != package_id || file_name[pid_len] != b'.' {
-                    continue;
-                }
-                let ext = unsafe { std::str::from_utf8_unchecked(&file_name[pid_len + 1..]) };
-                // And skip .list file as it contains package files list
-                if ext == "list" { continue; }
+            // Reject every file not starting with package id + dot
+            if file_name.len() <= pid_len + 1 { continue; }
+            if &file_name[..pid_len] != package_id || file_name[pid_len] != b'.' {
+                continue;
+            }
+            let ext = unsafe { std::str::from_utf8_unchecked(&file_name[pid_len + 1..]) };
+            // And skip .list file as it contains package files list
+            if ext == "list" { continue; }
 
-                let res = archiver.get_mut().append_path_with_name(entry.path(), ext);
-                if let Err(error) = res {
-                    self.progress.println(format!(
-                        "[{}] {}", self.package.id,
-                        ansi_term::Colour::Yellow.paint(format!("{}", error))
-                    ));
-                }
+            let res = archiver.get_mut().append_path_with_name(entry.path(), ext);
+            if let Err(error) = res {
+                self.progress.println(format!(
+                    "[{}] {}", self.package.id,
+                    ansi_term::Colour::Yellow.paint(format!("{}", error))
+                ));
             }
         }
 
-        return Ok(());
+        Ok(())
     }
 }

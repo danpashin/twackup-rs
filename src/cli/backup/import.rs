@@ -97,11 +97,11 @@ impl Import {
             match repo_group.format {
                 RepoGroupFormat::Classic => writer.write(source.to_one_line().as_bytes())?,
                 RepoGroupFormat::Modern => {
-                    writer.write(source.to_deb822().as_bytes())?;
+                    writer.write_all(source.to_deb822().as_bytes())?;
                     writer.write(b"\n")?
                 }
             };
-            writer.write(b"\n")?;
+            writer.write_all(b"\n")?;
             writer.flush()?;
         }
 
@@ -123,13 +123,13 @@ impl Import {
     fn cydia_post_import_hook(&self, repo_group: &RepoGroup) -> io::Result<()> {
         let prefs_path = "/var/mobile/Library/Preferences/com.saurik.Cydia.plist";
         let prefs = plist::Value::from_file(prefs_path);
-        if let Err(_) = prefs {
+        if prefs.is_err() {
             return Err(io::Error::from(io::ErrorKind::InvalidInput));
         }
         let mut prefs = prefs.unwrap();
 
         let prefs_dict = prefs.as_dictionary_mut();
-        if let None = prefs_dict {
+        if prefs_dict.is_none() {
             return Err(io::Error::from(io::ErrorKind::InvalidInput));
         }
 
@@ -139,7 +139,7 @@ impl Import {
 
         prefs_dict.unwrap().insert("CydiaSources".to_string(), plist::Value::Dictionary(sources));
 
-        if let Err(_) = prefs.to_file_binary(prefs_path) {
+        if prefs.to_file_binary(prefs_path).is_err() {
             return Err(io::Error::from(io::ErrorKind::WriteZero));
         }
 

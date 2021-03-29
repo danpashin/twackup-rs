@@ -107,11 +107,9 @@ impl Export {
         for (name, path) in CLASSIC_MANAGERS {
             if let Ok(file) = File::open(path) {
                 let mut repos = LinkedList::new();
-                for line in BufReader::new(file).lines() {
-                    if let Ok(line) = line {
-                        if let Some(repo) = Repository::from_one_line(line.as_str()) {
-                            repos.push_back(repo);
-                        }
+                for line in BufReader::new(file).lines().flatten() {
+                    if let Some(repo) = Repository::from_one_line(line.as_str()) {
+                        repos.push_back(repo);
                     }
                 }
                 sources.push_back(RepoGroup {
@@ -123,6 +121,6 @@ impl Export {
             }
         }
 
-        return sources;
+        sources
     }
 }

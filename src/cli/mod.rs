@@ -28,9 +28,9 @@ mod utils;
 #[cfg(any(target_os = "ios", debug_assertions))]
 mod backup;
 
-const ADMIN_DIR: &'static str = "/var/lib/dpkg";
-const TARGET_DIR: &'static str = "/var/mobile/Documents/twackup";
-const LICENSE_PATH: &'static str = "/usr/share/doc/ru.danpashin.twackup/LICENSE";
+const ADMIN_DIR: &str = "/var/lib/dpkg";
+const TARGET_DIR: &str = "/var/mobile/Documents/twackup";
+const LICENSE_PATH: &str = "/usr/share/doc/ru.danpashin.twackup/LICENSE";
 
 trait CLICommand {
     fn run(&self);

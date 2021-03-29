@@ -25,11 +25,11 @@ use clap::Clap;
 use serde::{Deserialize, Serialize};
 use crate::repository::Repository;
 
-const MODERN_MANAGERS: &'static [(&'static str, &'static str)] = &[
+const MODERN_MANAGERS: &[(&str, &str)] = &[
     ("Sileo", "/etc/apt/sources.list.d/sileo.sources")
 ];
 
-const CLASSIC_MANAGERS: &'static [(&'static str, &'static str)] = &[
+const CLASSIC_MANAGERS: &[(&str, &str)] = &[
     ("Cydia", "/var/mobile/Library/Caches/com.saurik.Cydia/sources.list"),
     ("Zebra", "/var/mobile/Library/Application Support/xyz.willy.Zebra/sources.list"),
 ];

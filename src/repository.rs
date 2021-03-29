@@ -88,7 +88,8 @@ impl Parsable for Repository {
             url: fields.get("URIs")?.to_string(),
             distribution: fields.get("Suites")?.to_string(),
             components: fields.get("Components").unwrap_or(&"".to_string())
-                .split(" ").map(|str| str.to_string()).collect(),
+                .split_ascii_whitespace()
+                .map(|str| str.to_string()).collect(),
         })
     }
 }
@@ -98,7 +99,7 @@ impl Repository {
     ///
     /// #### This func doesn't support options as they aren't used in iOS.
     pub fn from_one_line(line: &str) -> Option<Self> {
-        let components: Vec<&str> = line.split(" ").collect();
+        let components: Vec<&str> = line.split_ascii_whitespace().collect();
         // type, uri and suite are required, so break if they don't exist
         if components.len() < 3 {
             return None;
@@ -159,6 +160,6 @@ impl Repository {
             }).collect())
         );
 
-        return dict;
+        dict
     }
 }
