@@ -17,30 +17,35 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use std::{
-    path::{Path, PathBuf},
-    io, fs, time::Instant,
-    sync::{Arc, Mutex},
-};
-use clap::Clap;
-use chrono::Local;
 use ansi_term::Colour;
+use chrono::Local;
+use clap::Clap;
 use gethostname::gethostname;
-
-use crate::{package::*, builder::*};
-use super::{
-    ADMIN_DIR, TARGET_DIR, CLICommand, utils::{self, get_packages},
+use std::{
+    fs, io,
+    path::{Path, PathBuf},
+    sync::{Arc, Mutex},
+    time::Instant,
 };
+
+use super::{
+    utils::{self, get_packages},
+    CLICommand, ADMIN_DIR, TARGET_DIR,
+};
+use crate::{builder::*, package::*};
 
 const DEFAULT_ARCHIVE_NAME: &str = "%host%_%date%.tar.gz";
 
 #[derive(Clap)]
-#[clap(version, after_help = "
+#[clap(
+    version,
+    after_help = "
 Beware, this command doesn't guarantee to copy all files to the final DEB! \
 Some files can be skipped because of being renamed or removed in the installation process.
 If you see yellow warnings, it means the final deb will miss some contents \
 and may not work properly anymore.
-")]
+"
+)]
 pub struct Build {
     /// By default twackup rebuilds only that packages which are not dependencies of others.
     /// This flag disables this restriction - command will rebuild all found packages.
@@ -76,9 +81,7 @@ pub struct Build {
 impl Build {
     fn build_user_specified(&self) {
         let mut all_packages = get_packages(&self.admindir, false);
-        all_packages.sort_by(|a, b| {
-            a.name.to_lowercase().cmp(&b.name.to_lowercase())
-        });
+        all_packages.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
 
         let mut to_build: Vec<Package> = Vec::with_capacity(self.packages.len());
 
@@ -86,17 +89,17 @@ impl Build {
             if let Ok(human_pos) = package_id.parse::<usize>() {
                 match all_packages.get(human_pos - 1) {
                     Some(pkg) => to_build.push(pkg.clone()),
-                    None => {
-                        match all_packages.iter().find(|pkg| pkg.id == *package_id) {
-                            Some(pkg) => to_build.push(pkg.clone()),
-                            None => eprintln!("Can't find any package with name or index {}", package_id)
+                    None => match all_packages.iter().find(|pkg| pkg.id == *package_id) {
+                        Some(pkg) => to_build.push(pkg.clone()),
+                        None => {
+                            eprintln!("Can't find any package with name or index {}", package_id)
                         }
-                    }
+                    },
                 }
             } else {
                 match all_packages.iter().find(|pkg| pkg.id == *package_id) {
                     Some(pkg) => to_build.push(pkg.clone()),
-                    None => eprintln!("Can't find any package with name or index {}", package_id)
+                    None => eprintln!("Can't find any package with name or index {}", package_id),
                 }
             }
         }
@@ -114,7 +117,7 @@ impl Build {
         pb.set_style(
             indicatif::ProgressStyle::default_bar()
                 .template("{pos}/{len} [{wide_bar:.cyan/blue}] {msg}")
-                .progress_chars("##-")
+                .progress_chars("##-"),
         );
         let progress_bar = Arc::new(pb);
 
@@ -127,31 +130,42 @@ impl Build {
 
         for package in packages {
             let builder = BuildWorker::new(
-                &self.admindir, package, &self.destination, Arc::clone(&progress_bar)
+                &self.admindir,
+                package,
+                &self.destination,
+                Arc::clone(&progress_bar),
             );
             let b_archive_ptr = Arc::clone(&archive_ptr);
             let perform_archive = self.archive;
             let remove_deb = self.remove_after;
             threadpool.execute(move || {
-                builder.progress.set_message(
-                    format!("Processing {}", builder.package.name).as_str()
-                );
+                builder
+                    .progress
+                    .set_message(format!("Processing {}", builder.package.name).as_str());
                 let status = builder.run();
                 builder.progress.inc(1);
                 if let Err(error) = status {
-                    builder.progress.println(Colour::Red.paint(
-                        format!("Building {} error. {}", builder.package.name, error)
-                    ).to_string());
-                } else {
-                    builder.progress.set_message(
-                        format!("Done {}", builder.package.name).as_str()
+                    builder.progress.println(
+                        Colour::Red
+                            .paint(format!(
+                                "Building {} error. {}",
+                                builder.package.name, error
+                            ))
+                            .to_string(),
                     );
+                } else {
+                    builder
+                        .progress
+                        .set_message(format!("Done {}", builder.package.name).as_str());
 
                     if perform_archive {
                         let mut archive = b_archive_ptr.lock().unwrap();
                         let file = status.unwrap();
                         let abs_file = Path::new(".").join(file.file_name().unwrap());
-                        let result = archive.as_mut().unwrap().get_mut()
+                        let result = archive
+                            .as_mut()
+                            .unwrap()
+                            .get_mut()
                             .append_path_with_name(&file, &abs_file);
                         if result.is_ok() && remove_deb {
                             let _ = fs::remove_file(file);
@@ -165,7 +179,8 @@ impl Build {
         progress_bar.finish_and_clear();
         println!(
             "Processed {} packages in {}",
-            all_count, indicatif::HumanDuration(started.elapsed())
+            all_count,
+            indicatif::HumanDuration(started.elapsed())
         );
     }
 
@@ -175,7 +190,11 @@ impl Build {
         }
 
         let filename = if self.archive_name == DEFAULT_ARCHIVE_NAME {
-            format!("{}_{}.tar.gz", gethostname().to_str().unwrap(), Local::now().format("%v_%T"))
+            format!(
+                "{}_{}.tar.gz",
+                gethostname().to_str().unwrap(),
+                Local::now().format("%v_%T")
+            )
         } else {
             self.archive_name.clone()
         };

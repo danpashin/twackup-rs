@@ -17,26 +17,22 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use ansi_term::{Colour, ANSIString};
-use std::{
-    fs, path::Path,
-};
-use crate::{
-    package::*, kvparser::Parser, flock::*,
-};
+use crate::{flock::*, kvparser::Parser, package::*};
+use ansi_term::{ANSIString, Colour};
+use std::{fs, path::Path};
 
 pub fn section_color(section: &Section) -> Colour {
     match section {
-        Section::System => Colour::Fixed(9), // bright red
+        Section::System => Colour::Fixed(9),  // bright red
         Section::Tweaks => Colour::Fixed(11), // bright yellow
         Section::Utilities | Section::Packaging => Colour::Fixed(14), // bright cyan
         Section::Development => Colour::Fixed(130), // more like orange with pink
         Section::Themes => Colour::Fixed(12), // bright blue
         Section::TerminalSupport => Colour::Fixed(10), // bright green
         Section::Networking => Colour::Fixed(112), // bright green with some cyan
-        Section::Archiving => Colour::Fixed(216),  // peach?
+        Section::Archiving => Colour::Fixed(216), // peach?
         Section::TextEditors => Colour::Fixed(162), // between red and magenta. Raspberry?
-        _ => Colour::Fixed(8) // bright grey
+        _ => Colour::Fixed(8),                // bright grey
     }
 }
 
@@ -79,16 +75,19 @@ pub fn get_packages<P: AsRef<Path>>(admin_dir: P, leaves_only: bool) -> Vec<Pack
         }
     }
 
-    packages.into_iter().enumerate()
-        .filter(|(index, _)| { leaves_indexes.contains(index) })
-        .map(|(_, pkg)| pkg).collect()
+    packages
+        .into_iter()
+        .enumerate()
+        .filter(|(index, _)| leaves_indexes.contains(index))
+        .map(|(_, pkg)| pkg)
+        .collect()
 }
 
 #[inline]
 pub fn non_root_warn_msg() -> ANSIString<'static> {
     Colour::Yellow.paint(
         "You seem not to be a root user. It is highly recommended to use root, \
-         in other case some operations can fail."
+         in other case some operations can fail.",
     )
 }
 

@@ -20,9 +20,9 @@
 use clap::Clap;
 use std::fs;
 
-mod list;
-mod leaves;
 mod build;
+mod leaves;
+mod list;
 mod utils;
 
 #[cfg(any(target_os = "ios", debug_assertions))]
@@ -101,6 +101,6 @@ pub fn run() {
         Command::ShowLicense => {
             let license = fs::read_to_string(LICENSE_PATH).expect("Can't open license file");
             println!("\n{}\n", license);
-        },
+        }
     }
 }

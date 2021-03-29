@@ -19,10 +19,10 @@
 
 use crate::package::Package;
 use std::{
-    io, fs,
+    fs, io,
+    os::unix::ffi::OsStringExt,
     path::{Path, PathBuf},
     sync::Arc,
-    os::unix::ffi::OsStringExt,
 };
 
 use indicatif::ProgressBar;
@@ -86,7 +86,8 @@ impl BuildWorker {
             let res = archiver.get_mut().append_path_with_name(&file, name);
             if let Err(error) = res {
                 self.progress.println(format!(
-                    "[{}] {}", self.package.id,
+                    "[{}] {}",
+                    self.package.id,
                     ansi_term::Colour::Yellow.paint(format!("{}", error))
                 ));
             }
@@ -108,18 +109,23 @@ impl BuildWorker {
             let file_name = entry.file_name().into_vec();
 
             // Reject every file not starting with package id + dot
-            if file_name.len() <= pid_len + 1 { continue; }
+            if file_name.len() <= pid_len + 1 {
+                continue;
+            }
             if &file_name[..pid_len] != package_id || file_name[pid_len] != b'.' {
                 continue;
             }
             let ext = unsafe { std::str::from_utf8_unchecked(&file_name[pid_len + 1..]) };
             // And skip .list file as it contains package files list
-            if ext == "list" { continue; }
+            if ext == "list" {
+                continue;
+            }
 
             let res = archiver.get_mut().append_path_with_name(entry.path(), ext);
             if let Err(error) = res {
                 self.progress.println(format!(
-                    "[{}] {}", self.package.id,
+                    "[{}] {}",
+                    self.package.id,
                     ansi_term::Colour::Yellow.paint(format!("{}", error))
                 ));
             }

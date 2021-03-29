@@ -17,14 +17,15 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use tar::Builder;
-use flate2::{Compression, write::GzEncoder};
+use flate2::{write::GzEncoder, Compression};
 use std::{
-    path::{Path, PathBuf},
-    io::{self, Write}, fs::File,
     borrow::BorrowMut,
+    fs::File,
+    io::{self, Write},
+    path::{Path, PathBuf},
     time::SystemTime,
 };
+use tar::Builder;
 
 pub type DebTarArchive = TarArchive<GzEncoder<File>>;
 
@@ -37,25 +38,22 @@ pub struct Deb {
 }
 
 pub struct TarArchive<W: Write> {
-    builder: Builder<W>
+    builder: Builder<W>,
 }
 
 impl Deb {
     pub fn new<T: AsRef<Path>, O: AsRef<Path>>(
-        temp_dir: T, output: O, compression: u32,
+        temp_dir: T,
+        output: O,
+        compression: u32,
     ) -> io::Result<Self> {
         let control_path = temp_dir.as_ref().join("control.tar.gz");
         let data_path = temp_dir.as_ref().join("data.tar.gz");
 
-        let control_file = GzEncoder::new(
-            File::create(&control_path)?,
-            Compression::new(compression),
-        );
+        let control_file =
+            GzEncoder::new(File::create(&control_path)?, Compression::new(compression));
 
-        let data_file = GzEncoder::new(
-            File::create(&data_path)?,
-            Compression::new(compression),
-        );
+        let data_file = GzEncoder::new(File::create(&data_path)?, Compression::new(compression));
 
         Ok(Self {
             output: output.as_ref().to_path_buf(),
@@ -66,9 +64,13 @@ impl Deb {
         })
     }
 
-    pub fn data_mut_ref(&mut self) -> &mut DebTarArchive { self.data.borrow_mut() }
+    pub fn data_mut_ref(&mut self) -> &mut DebTarArchive {
+        self.data.borrow_mut()
+    }
 
-    pub fn control_mut_ref(&mut self) -> &mut DebTarArchive { self.control.borrow_mut() }
+    pub fn control_mut_ref(&mut self) -> &mut DebTarArchive {
+        self.control.borrow_mut()
+    }
 
     pub fn package(&mut self) -> io::Result<()> {
         self.control.builder.finish()?;
@@ -118,7 +120,9 @@ impl<W: Write> TarArchive<W> {
         Self { builder }
     }
 
-    pub fn get_mut(&mut self) -> &mut Builder<W> { &mut self.builder }
+    pub fn get_mut(&mut self) -> &mut Builder<W> {
+        &mut self.builder
+    }
 
     /// Appends non-existing on the filesystem file to archive
     pub fn append_new_file<P: AsRef<Path>>(&mut self, path: P, contents: &[u8]) -> io::Result<()> {
@@ -137,5 +141,8 @@ impl<W: Write> TarArchive<W> {
 /// Returns UNIX timestamp in seconds
 #[inline]
 fn current_timestamp() -> u64 {
-    SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs()
+    SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
 }

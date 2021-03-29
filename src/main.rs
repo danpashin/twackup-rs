@@ -17,13 +17,13 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-mod kvparser;
-mod package;
-mod repository;
 mod builder;
 mod cli;
-mod process;
 mod flock;
+mod kvparser;
+mod package;
+mod process;
+mod repository;
 
 #[cfg(test)]
 mod tests;

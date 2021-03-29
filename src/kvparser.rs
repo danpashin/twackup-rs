@@ -17,15 +17,16 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use std::{
-    fs::File, io::{self, BufRead},
-    path::Path,
-    collections::{LinkedList, HashMap},
-    thread,
-    marker::Send,
-};
-use memmap::Mmap;
 use deque::{Stealer, Stolen};
+use memmap::Mmap;
+use std::{
+    collections::{HashMap, LinkedList},
+    fs::File,
+    io::{self, BufRead},
+    marker::Send,
+    path::Path,
+    thread,
+};
 
 pub trait Parsable {
     type Output;
@@ -59,7 +60,7 @@ impl Parser {
     }
 
     /// This method will parse file with key-value syntax on separate lines.
-    pub fn parse<P: Parsable<Output=P> + 'static + Send>(&self) -> LinkedList<P> {
+    pub fn parse<P: Parsable<Output = P> + 'static + Send>(&self) -> LinkedList<P> {
         let mut workers = Vec::new();
         let (workq, stealer) = deque::new();
         for _ in 0..num_cpus::get() {
@@ -98,7 +99,7 @@ impl Parser {
     fn get_file_len(&self) -> usize {
         match self.file.metadata() {
             Ok(metadata) => metadata.len() as usize,
-            Err(_) => 0
+            Err(_) => 0,
         }
     }
 }
@@ -111,7 +112,7 @@ impl ChunkWorker {
     }
 
     /// Parses chunk to model
-    fn run<P: Parsable<Output=P>>(&self) -> LinkedList<P> {
+    fn run<P: Parsable<Output = P>>(&self) -> LinkedList<P> {
         let mut models = LinkedList::new();
         loop {
             match self.stealer.steal() {
@@ -166,7 +167,7 @@ impl ChunkWorker {
                 let (key, value) = field.split_at(delim_pos);
                 fields_map.insert(
                     key.trim().to_string(),
-                    value.trim_start_matches(':').trim().to_string()
+                    value.trim_start_matches(':').trim().to_string(),
                 );
             }
         }

@@ -17,20 +17,19 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-mod state;
-mod section;
-mod priority;
 mod field;
+mod priority;
+mod section;
+mod state;
 
+pub use self::{field::Field, priority::Priority, section::Section, state::State};
+use crate::kvparser::Parsable;
 use std::{
     collections::{HashMap, LinkedList},
-    fs::File, path::Path,
-    io::{self, BufReader, BufRead},
+    fs::File,
+    io::{self, BufRead, BufReader},
+    path::Path,
     str::FromStr,
-};
-use crate::kvparser::Parsable;
-pub use self::{
-    state::State, section::Section, priority::Priority, field::Field,
 };
 
 #[derive(Clone)]
@@ -62,10 +61,13 @@ impl Parsable for Package {
     type Output = Self;
 
     fn new(fields: HashMap<String, String>) -> Option<Self::Output> {
-        let fields: HashMap<Field, String> = fields.into_iter().map(|(key, value)| {
-            // Safe to unwrap because from_str doesn't return error
-            (Field::from_str(key.as_str()).unwrap(), value)
-        }).collect();
+        let fields: HashMap<Field, String> = fields
+            .into_iter()
+            .map(|(key, value)| {
+                // Safe to unwrap because from_str doesn't return error
+                (Field::from_str(key.as_str()).unwrap(), value)
+            })
+            .collect();
 
         let package_id = fields.get(&Field::Package)?;
         // Ignore virtual packages
@@ -95,7 +97,11 @@ impl Package {
     /// Creates canonical DEB filename in format of id_version_arch
     #[inline]
     pub fn canonical_name(&self) -> String {
-        let arch = self.fields.get(&Field::Architecture).unwrap_or(&String::new()).to_string();
+        let arch = self
+            .fields
+            .get(&Field::Architecture)
+            .unwrap_or(&String::new())
+            .to_string();
         format!("{}_{}_{}", self.id, self.version, arch)
     }
 
@@ -103,7 +109,9 @@ impl Package {
     pub fn to_control(&self) -> String {
         let mut fields_len = 0;
         for (key, value) in self.fields.iter() {
-            if *key == Field::Status { continue; }
+            if *key == Field::Status {
+                continue;
+            }
             fields_len += key.as_str().len() + value.len() + 3;
         }
 
@@ -111,7 +119,9 @@ impl Package {
 
         for (key, value) in self.fields.iter() {
             // Skip status field. It is invalid in control
-            if *key == Field::Status { continue; }
+            if *key == Field::Status {
+                continue;
+            }
             control.push_str(key.as_str());
             control.push_str(": ");
             control.push_str(value);
@@ -123,7 +133,8 @@ impl Package {
 
     fn parse_dependencies(&self, dependencies: &str) -> LinkedList<String> {
         // Flat all possible dependencies
-        dependencies.split(&[',', '|'][..])
+        dependencies
+            .split(&[',', '|'][..])
             .map(|dependency| {
                 // Remove version condition
                 if let (Some(cond_start), Some(_)) = (dependency.find('('), dependency.find(')')) {

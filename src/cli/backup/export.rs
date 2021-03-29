@@ -17,14 +17,14 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{*, super::*};
-use clap::Clap;
+use super::{super::*, *};
 use crate::kvparser::Parser;
+use clap::Clap;
 use std::{
-    path::PathBuf,
     collections::LinkedList,
-    io::{self, BufReader, BufRead},
     fs::File,
+    io::{self, BufRead, BufReader},
+    path::PathBuf,
 };
 
 #[derive(Clap)]
@@ -64,7 +64,7 @@ impl CLICommand for Export {
             DataType::All => DataLayout {
                 packages: Some(self.get_packages()),
                 repositories: Some(self.get_repos()),
-            }
+            },
         };
 
         let format = serde_any::guess_format_from_extension(self.format.as_str())
@@ -84,9 +84,10 @@ impl CLICommand for Export {
 
 impl Export {
     fn get_packages(&self) -> LinkedList<String> {
-        utils::get_packages(&self.admindir, true).iter().map(|pkg| {
-            pkg.id.clone()
-        }).collect()
+        utils::get_packages(&self.admindir, true)
+            .iter()
+            .map(|pkg| pkg.id.clone())
+            .collect()
     }
 
     fn get_repos(&self) -> LinkedList<RepoGroup> {

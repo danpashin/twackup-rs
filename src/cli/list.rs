@@ -21,7 +21,8 @@ use clap::Clap;
 use std::path::PathBuf;
 
 use super::{
-    ADMIN_DIR, CLICommand, utils::{get_packages, section_color},
+    utils::{get_packages, section_color},
+    CLICommand, ADMIN_DIR,
 };
 
 #[derive(Clap)]
@@ -36,13 +37,17 @@ pub struct List {
 impl CLICommand for List {
     fn run(&self) {
         let mut packages = get_packages(&self.admindir, false);
-        packages.sort_by(|a, b| {
-            a.name.to_lowercase().cmp(&b.name.to_lowercase())
-        });
+        packages.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
 
         for (position, package) in packages.into_iter().enumerate() {
             let section_sym = section_color(&package.section).paint("▶︎");
-            println!("{:3}: {} {} - {}", position + 1, section_sym, package.name, package.id);
+            println!(
+                "{:3}: {} {} - {}",
+                position + 1,
+                section_sym,
+                package.name,
+                package.id
+            );
         }
     }
 }

@@ -104,7 +104,7 @@ impl FromStr for Field {
             "Pre-Depends" => Field::PreDepends,
             "Description" => Field::Description,
             "Status" => Field::Status,
-            "Depiction" =>Field::Depiction,
+            "Depiction" => Field::Depiction,
             "Maintainer" => Field::Maintainer,
             "Homepage" => Field::Homepage,
             "Recommends" => Field::Recommends,

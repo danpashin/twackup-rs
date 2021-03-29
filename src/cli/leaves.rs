@@ -21,7 +21,8 @@ use clap::Clap;
 use std::path::PathBuf;
 
 use super::{
-    ADMIN_DIR, CLICommand, utils::{get_packages, section_color},
+    utils::{get_packages, section_color},
+    CLICommand, ADMIN_DIR,
 };
 
 #[derive(Clap)]
@@ -35,9 +36,7 @@ pub struct Leaves {
 impl CLICommand for Leaves {
     fn run(&self) {
         let mut packages = get_packages(&self.admindir, true);
-        packages.sort_by(|a, b| {
-            a.name.to_lowercase().cmp(&b.name.to_lowercase())
-        });
+        packages.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
 
         for package in packages.iter() {
             let section_sym = section_color(&package.section).paint("▶︎");

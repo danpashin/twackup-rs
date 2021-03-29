@@ -17,13 +17,13 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+pub mod builder;
+pub mod flock;
 #[allow(dead_code)]
 pub mod kvparser;
 pub mod package;
-pub mod repository;
-pub mod builder;
 pub mod process;
-pub mod flock;
+pub mod repository;
 
 #[cfg(test)]
 mod tests;

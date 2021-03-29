@@ -20,18 +20,22 @@
 pub mod export;
 pub mod import;
 
-use std::collections::LinkedList;
+use crate::repository::Repository;
 use clap::Clap;
 use serde::{Deserialize, Serialize};
-use crate::repository::Repository;
+use std::collections::LinkedList;
 
-const MODERN_MANAGERS: &[(&str, &str)] = &[
-    ("Sileo", "/etc/apt/sources.list.d/sileo.sources")
-];
+const MODERN_MANAGERS: &[(&str, &str)] = &[("Sileo", "/etc/apt/sources.list.d/sileo.sources")];
 
 const CLASSIC_MANAGERS: &[(&str, &str)] = &[
-    ("Cydia", "/var/mobile/Library/Caches/com.saurik.Cydia/sources.list"),
-    ("Zebra", "/var/mobile/Library/Application Support/xyz.willy.Zebra/sources.list"),
+    (
+        "Cydia",
+        "/var/mobile/Library/Caches/com.saurik.Cydia/sources.list",
+    ),
+    (
+        "Zebra",
+        "/var/mobile/Library/Application Support/xyz.willy.Zebra/sources.list",
+    ),
 ];
 
 /// Data format used for export and import commands
