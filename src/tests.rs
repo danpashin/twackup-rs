@@ -18,12 +18,14 @@
  */
 
 use std::{
-    env, io::{self, Write, BufReader, BufRead}, fs::{self, File},
     collections::HashMap,
+    env,
+    fs::{self, File},
+    io::{self, BufRead, BufReader, Write},
     os::unix::fs::PermissionsExt,
 };
 
-use crate::{package::*, kvparser::*, repository::*};
+use crate::{kvparser::*, package::*, repository::*};
 
 #[test]
 fn parser_valid_database() {
@@ -35,7 +37,9 @@ fn parser_valid_database() {
 
 #[test]
 fn parser_partially_valid_database() {
-    let database = env::current_dir().unwrap().join("assets/database/partially_valid");
+    let database = env::current_dir()
+        .unwrap()
+        .join("assets/database/partially_valid");
     let parser = Parser::new(database.as_path()).unwrap();
     let packages = parser.parse::<Package>();
     assert_ne!(packages.len(), 3);
@@ -43,16 +47,23 @@ fn parser_partially_valid_database() {
 
 #[test]
 fn parser_multiline() {
-    let database = env::current_dir().unwrap().join("assets/database/multiline");
+    let database = env::current_dir()
+        .unwrap()
+        .join("assets/database/multiline");
     let parser = Parser::new(database.as_path()).unwrap();
 
-    let packages: HashMap<String, Package> = parser.parse::<Package>().iter().map(|pkg| {
-        (pkg.id.clone(), pkg.clone())
-    }).collect();
+    let packages: HashMap<String, Package> = parser
+        .parse::<Package>()
+        .iter()
+        .map(|pkg| (pkg.id.clone(), pkg.clone()))
+        .collect();
 
     let package = packages.get("valid-package-1").unwrap();
     let description = package.get_field(&Field::Description).unwrap();
-    assert_eq!(description.as_str(), "First Line\n Second Line\n  Third Line");
+    assert_eq!(
+        description.as_str(),
+        "First Line\n Second Line\n  Third Line"
+    );
 
     let package = packages.get("valid-package-2").unwrap();
     let description = package.get_field(&Field::Description).unwrap();
@@ -63,12 +74,16 @@ fn parser_multiline() {
 fn parser_no_permissions_database() {
     let database = env::temp_dir().join("twackup-no-permissions");
     let mut file = File::create(&database).unwrap();
-    file.write("This contents will never be read".as_bytes()).unwrap();
+    file.write("This contents will never be read".as_bytes())
+        .unwrap();
     fs::set_permissions(&database, fs::Permissions::from_mode(0o333)).unwrap();
 
     let parser = Parser::new(database.as_path());
     assert_eq!(parser.is_err(), true);
-    assert_eq!(io::Error::last_os_error().kind(), io::ErrorKind::PermissionDenied);
+    assert_eq!(
+        io::Error::last_os_error().kind(),
+        io::ErrorKind::PermissionDenied
+    );
 
     fs::remove_file(&database).unwrap();
 }
@@ -106,9 +121,11 @@ fn non_valid_package_get_files() {
 fn parser_modern_repository() {
     let database = env::current_dir().unwrap().join("assets/sources_db/modern");
     let parser = Parser::new(database.as_path()).unwrap();
-    let repositories: HashMap<String, Repository> = parser.parse::<Repository>().iter().map(|repo| {
-        (repo.url.clone(), repo.clone())
-    }).collect();
+    let repositories: HashMap<String, Repository> = parser
+        .parse::<Repository>()
+        .iter()
+        .map(|repo| (repo.url.clone(), repo.clone()))
+        .collect();
 
     assert_eq!(repositories.len(), 3);
 
@@ -118,15 +135,20 @@ fn parser_modern_repository() {
 
 #[test]
 fn parser_classic_repository() {
-    let database = env::current_dir().unwrap().join("assets/sources_db/classic");
+    let database = env::current_dir()
+        .unwrap()
+        .join("assets/sources_db/classic");
     let reader = BufReader::new(File::open(database).unwrap());
 
-    let repositories: HashMap<String, Repository> = reader.lines().map(|line| {
-        let line = line.expect("Can't unwrap line");
-        eprintln!("{}", line);
-        let repo = Repository::from_one_line(line.as_str()).expect("Parsing repo failed");
-        (repo.url.clone(), repo)
-    }).collect();
+    let repositories: HashMap<String, Repository> = reader
+        .lines()
+        .map(|line| {
+            let line = line.expect("Can't unwrap line");
+            eprintln!("{}", line);
+            let repo = Repository::from_one_line(line.as_str()).expect("Parsing repo failed");
+            (repo.url.clone(), repo)
+        })
+        .collect();
 
     assert_eq!(repositories.len(), 3);
 

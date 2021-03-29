@@ -17,8 +17,8 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use std::os::raw::c_int;
 use libproc::libproc::proc_pid;
+use std::os::raw::c_int;
 
 // Taken from sysinfo crate
 #[allow(dead_code)]

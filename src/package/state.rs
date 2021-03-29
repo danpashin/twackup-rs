@@ -34,7 +34,7 @@ impl State {
                     "install" => Self::Install,
                     "deinstall" => Self::Remove,
                     "hold" => Self::Hold,
-                    _ => Self::Unknown
+                    _ => Self::Unknown,
                 };
             }
         }

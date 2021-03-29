@@ -17,13 +17,9 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use std::{
-    collections::HashMap,
-    str::FromStr, string::ToString,
-    io,
-};
 use crate::kvparser::Parsable;
 use serde::{Deserialize, Serialize};
+use std::{collections::HashMap, io, str::FromStr, string::ToString};
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub enum Category {
@@ -57,7 +53,7 @@ impl FromStr for Category {
             "deb" => Ok(Self::Binary),
             "deb-src" => Ok(Self::Source),
             "deb deb-src" | "deb-src deb" => Ok(Self::Both),
-            _ => Err(io::Error::from(io::ErrorKind::InvalidInput))
+            _ => Err(io::Error::from(io::ErrorKind::InvalidInput)),
         }
     }
 }
@@ -87,9 +83,12 @@ impl Parsable for Repository {
             category: category.unwrap(),
             url: fields.get("URIs")?.to_string(),
             distribution: fields.get("Suites")?.to_string(),
-            components: fields.get("Components").unwrap_or(&"".to_string())
+            components: fields
+                .get("Components")
+                .unwrap_or(&"".to_string())
                 .split_ascii_whitespace()
-                .map(|str| str.to_string()).collect(),
+                .map(|str| str.to_string())
+                .collect(),
         })
     }
 }
@@ -114,16 +113,26 @@ impl Repository {
             category: _type.unwrap(),
             url: components[1].to_string(),
             distribution: components[2].to_string(),
-            components: components.iter().skip(3).map(|str| str.to_string()).collect(),
+            components: components
+                .iter()
+                .skip(3)
+                .map(|str| str.to_string())
+                .collect(),
         })
     }
 
     /// Performs fields formatting in the one-line style.
     /// #### Doesn't support options
     pub fn to_one_line(&self) -> String {
-        format!("{} {} {} {}",
-                self.category.as_str(), self.url, self.distribution, self.components.join(" ")
-        ).trim().to_string()
+        format!(
+            "{} {} {} {}",
+            self.category.as_str(),
+            self.url,
+            self.distribution,
+            self.components.join(" ")
+        )
+        .trim()
+        .to_string()
     }
 
     /// Performs fields formatting in multiple-lines style. (Also known as DEB822 Style)
@@ -131,33 +140,43 @@ impl Repository {
     pub fn to_deb822(&self) -> String {
         format!(
             "Types: {}\nURIs: {}\nSuites: {}\nComponents: {}",
-            self.category.as_str(), self.url, self.distribution, self.components.join(" ")
-        ).trim().to_string()
+            self.category.as_str(),
+            self.url,
+            self.distribution,
+            self.components.join(" ")
+        )
+        .trim()
+        .to_string()
     }
 
     pub fn to_cydia_key(&self) -> String {
-        format!("{}:{}:{}", self.category.as_str(), self.url, self.distribution)
+        format!(
+            "{}:{}:{}",
+            self.category.as_str(),
+            self.url,
+            self.distribution
+        )
     }
 
     pub fn to_dict(&self) -> plist::Dictionary {
         let mut dict = plist::Dictionary::new();
         dict.insert(
             "Distribution".to_string(),
-            plist::Value::String(self.distribution.clone())
+            plist::Value::String(self.distribution.clone()),
         );
-        dict.insert(
-            "URI".to_string(),
-            plist::Value::String(self.url.clone())
-        );
+        dict.insert("URI".to_string(), plist::Value::String(self.url.clone()));
         dict.insert(
             "Type".to_string(),
-            plist::Value::String(self.category.as_str().to_string())
+            plist::Value::String(self.category.as_str().to_string()),
         );
         dict.insert(
             "Sections".to_string(),
-            plist::Value::Array(self.components.iter().map(|val| {
-                plist::Value::String(val.clone())
-            }).collect())
+            plist::Value::Array(
+                self.components
+                    .iter()
+                    .map(|val| plist::Value::String(val.clone()))
+                    .collect(),
+            ),
         );
 
         dict

@@ -46,14 +46,14 @@ impl Section {
             "networking" => Section::Networking,
             "archiving" => Section::Archiving,
             "text_editors" => Section::TextEditors,
-            _ => Section::Other(value.to_string())
+            _ => Section::Other(value.to_string()),
         }
     }
 
     pub fn from_string_opt(value: Option<&String>) -> Section {
         match value {
             Some(value) => Self::from_string(value),
-            None => Section::Unknown
+            None => Section::Unknown,
         }
     }
 }

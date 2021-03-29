@@ -40,7 +40,7 @@ impl Priority {
     pub fn from_string_opt(value: Option<&String>) -> Priority {
         match value {
             Some(value) => Self::from_string(value),
-            None => Priority::Unknown
+            None => Priority::Unknown,
         }
     }
 }

@@ -17,13 +17,13 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{*, super::*};
-use clap::Clap;
+use super::{super::*, *};
 use crate::process;
+use clap::Clap;
 use std::{
-    io::{self, BufWriter, Write},
     fs::File,
-    process::{Command, Stdio, exit},
+    io::{self, BufWriter, Write},
+    process::{exit, Command, Stdio},
 };
 
 #[derive(Clap)]
@@ -54,28 +54,36 @@ impl CLICommand for Import {
         if let Some(repositories) = data.repositories {
             for repo_group in repositories.iter() {
                 if let Err(error) = self.import_repo_group(&repo_group) {
-                    eprint!("Can't import sources for {}. {}", repo_group.executable, error);
+                    eprint!(
+                        "Can't import sources for {}. {}",
+                        repo_group.executable, error
+                    );
                 }
             }
 
-            let executables = repositories.iter().map(|src| {
-                src.executable.clone()
-            }).collect();
+            let executables = repositories
+                .iter()
+                .map(|src| src.executable.clone())
+                .collect();
             process::send_signal_to_multiple(executables, process::Signal::Kill);
         }
 
         if let Some(packages) = data.packages {
             eprintln!("Importing packages...");
             self.run_apt(vec![
-                "update", "--allow-unauthenticated", "--allow-insecure-repositories",
-                "-o", "Acquire::Languages=none"
-            ]).expect("Failed to run update subcommand");
+                "update",
+                "--allow-unauthenticated",
+                "--allow-insecure-repositories",
+                "-o",
+                "Acquire::Languages=none",
+            ])
+            .expect("Failed to run update subcommand");
 
-            let mut install_args = vec![
-                "install", "-y", "--allow-unauthenticated", "--fix-missing",
-            ];
+            let mut install_args =
+                vec!["install", "-y", "--allow-unauthenticated", "--fix-missing"];
             install_args.extend(packages.iter().map(|pkg| pkg.as_str()));
-            self.run_apt(install_args).expect("Failed to run install subcommand");
+            self.run_apt(install_args)
+                .expect("Failed to run install subcommand");
         }
     }
 }
@@ -86,12 +94,16 @@ impl Import {
         let format = self.format.to_serde();
         match self.input.as_str() {
             "-" => serde_any::from_reader(io::stdin(), format),
-            _ => serde_any::from_reader(File::open(&self.input)?, format)
+            _ => serde_any::from_reader(File::open(&self.input)?, format),
         }
     }
 
     fn import_repo_group(&self, repo_group: &RepoGroup) -> io::Result<()> {
-        eprintln!("Importing {} source(s) for {}", repo_group.sources.len(), repo_group.executable);
+        eprintln!(
+            "Importing {} source(s) for {}",
+            repo_group.sources.len(),
+            repo_group.executable
+        );
         let mut writer = BufWriter::new(File::create(&repo_group.path)?);
         for source in repo_group.sources.iter() {
             match repo_group.format {
@@ -105,13 +117,16 @@ impl Import {
             writer.flush()?;
         }
 
-        eprintln!("Triggering post-import hooks for {}...", repo_group.executable);
+        eprintln!(
+            "Triggering post-import hooks for {}...",
+            repo_group.executable
+        );
         let hook_res = match repo_group.executable.as_str() {
             "Zebra" => std::fs::remove_file(
-                "/var/mobile/Library/Application Support/xyz.willy.Zebra/zebra.db"
+                "/var/mobile/Library/Application Support/xyz.willy.Zebra/zebra.db",
             ),
             "Cydia" => self.cydia_post_import_hook(repo_group),
-            _ => Ok(())
+            _ => Ok(()),
         };
         if let Err(error) = hook_res {
             eprintln!("Post-import hook completed with error: {}", error);
@@ -133,11 +148,16 @@ impl Import {
             return Err(io::Error::from(io::ErrorKind::InvalidInput));
         }
 
-        let sources: plist::Dictionary = repo_group.sources.iter().map(|src| {
-            (src.to_cydia_key(), plist::Value::Dictionary(src.to_dict()))
-        }).collect();
+        let sources: plist::Dictionary = repo_group
+            .sources
+            .iter()
+            .map(|src| (src.to_cydia_key(), plist::Value::Dictionary(src.to_dict())))
+            .collect();
 
-        prefs_dict.unwrap().insert("CydiaSources".to_string(), plist::Value::Dictionary(sources));
+        prefs_dict.unwrap().insert(
+            "CydiaSources".to_string(),
+            plist::Value::Dictionary(sources),
+        );
 
         if prefs.to_file_binary(prefs_path).is_err() {
             return Err(io::Error::from(io::ErrorKind::WriteZero));
@@ -156,7 +176,10 @@ impl Import {
             .expect("apt command failed to start");
 
         if !apt_cmd.success() {
-            eprintln!("Apt exited with status: {}. See stderr for more info.", apt_cmd);
+            eprintln!(
+                "Apt exited with status: {}. See stderr for more info.",
+                apt_cmd
+            );
             return None;
         }
 
