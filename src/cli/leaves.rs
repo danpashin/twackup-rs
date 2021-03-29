@@ -22,7 +22,7 @@ use std::path::PathBuf;
 
 use super::{
     utils::{get_packages, section_color},
-    CLICommand, ADMIN_DIR,
+    CliCommand, ADMIN_DIR,
 };
 
 #[derive(Clap)]
@@ -33,7 +33,7 @@ pub struct Leaves {
     admindir: PathBuf,
 }
 
-impl CLICommand for Leaves {
+impl CliCommand for Leaves {
     fn run(&self) {
         let mut packages = get_packages(&self.admindir, true);
         packages.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));

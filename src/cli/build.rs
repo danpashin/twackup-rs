@@ -30,7 +30,7 @@ use std::{
 
 use super::{
     utils::{self, get_packages},
-    CLICommand, ADMIN_DIR, TARGET_DIR,
+    CliCommand, ADMIN_DIR, TARGET_DIR,
 };
 use crate::{builder::*, package::*};
 
@@ -220,7 +220,7 @@ impl Build {
     }
 }
 
-impl CLICommand for Build {
+impl CliCommand for Build {
     fn run(&self) {
         if !self.packages.is_empty() {
             self.build_user_specified();
