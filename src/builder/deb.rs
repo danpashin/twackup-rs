@@ -96,7 +96,7 @@ impl Deb {
         let data = self.prepare_path(&self.data_path, "data.tar.gz")?;
         builder.append(&data.0, data.1)?;
 
-        return Ok(());
+        Ok(())
     }
 
     fn prepare_path<P: AsRef<Path>>(&self, path: P, name: &str) -> io::Result<(ar::Header, File)> {
@@ -130,7 +130,7 @@ impl<W: Write> TarArchive<W> {
         header.set_mtime(current_timestamp()); // modify time
         header.set_cksum();
 
-        return self.builder.append_data(&mut header, path, contents);
+        self.builder.append_data(&mut header, path, contents)
     }
 }
 

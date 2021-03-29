@@ -89,7 +89,7 @@ impl Package {
     #[inline]
     pub fn get_installed_files(&self, dpkg_dir: &Path) -> io::Result<Vec<String>> {
         let file = File::open(dpkg_dir.join(format!("info/{}.list", self.id)))?;
-        return BufReader::new(file).lines().collect();
+        BufReader::new(file).lines().collect()
     }
 
     /// Creates canonical DEB filename in format of id_version_arch
@@ -115,10 +115,10 @@ impl Package {
             control.push_str(key.as_str());
             control.push_str(": ");
             control.push_str(value);
-            control.push_str("\n");
+            control.push('\n');
         }
 
-        return control;
+        control
     }
 
     fn parse_dependencies(&self, dependencies: &str) -> LinkedList<String> {
@@ -126,7 +126,7 @@ impl Package {
         dependencies.split(&[',', '|'][..])
             .map(|dependency| {
                 // Remove version condition
-                if let (Some(cond_start), Some(_)) = (dependency.find("("), dependency.find(")")) {
+                if let (Some(cond_start), Some(_)) = (dependency.find('('), dependency.find(')')) {
                     return dependency[0..cond_start].trim().to_string();
                 }
                 return dependency.trim().to_string();
@@ -148,7 +148,7 @@ impl Package {
             }
         }
 
-        return false;
+        false
     }
 
     #[inline]

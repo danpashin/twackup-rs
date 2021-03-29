@@ -32,7 +32,7 @@ use super::{
     ADMIN_DIR, TARGET_DIR, CLICommand, utils::{self, get_packages},
 };
 
-const DEFAULT_ARCHIVE_NAME: &'static str = "%host%_%date%.tar.gz";
+const DEFAULT_ARCHIVE_NAME: &str = "%host%_%date%.tar.gz";
 
 #[derive(Clap)]
 #[clap(version, after_help = "
@@ -84,8 +84,7 @@ impl Build {
 
         for package_id in self.packages.iter() {
             if let Ok(human_pos) = package_id.parse::<usize>() {
-                let position = human_pos - 1;
-                match all_packages.iter().skip(position).next() {
+                match all_packages.get(human_pos - 1) {
                     Some(pkg) => to_build.push(pkg.clone()),
                     None => {
                         match all_packages.iter().find(|pkg| pkg.id == *package_id) {
@@ -186,7 +185,7 @@ impl Build {
         let compression = flate2::Compression::default();
         let encoder = flate2::write::GzEncoder::new(file, compression);
 
-        return Some(deb::TarArchive::new(encoder));
+        Some(deb::TarArchive::new(encoder))
     }
 
     fn create_dir_if_needed(&self) {

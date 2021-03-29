@@ -92,14 +92,14 @@ impl Parser {
             }
         }
 
-        return models;
+        models
     }
 
     fn get_file_len(&self) -> usize {
-        if let Ok(metadata) = self.file.metadata() {
-            return metadata.len() as usize;
+        match self.file.metadata() {
+            Ok(metadata) => metadata.len() as usize,
+            Err(_) => 0
         }
-        return 0;
     }
 }
 
@@ -126,7 +126,7 @@ impl ChunkWorker {
             }
         }
 
-        return models;
+        models
     }
 
     /// Converts raw chunk bytes to list of lines with multi-line syntax support
@@ -134,25 +134,23 @@ impl ChunkWorker {
         let mut fields = LinkedList::new();
 
         // Now we'll process each line of chunk
-        for line in chunk.lines() {
-            if let Ok(line) = line {
-                // If line is empty (but it shouldn't) - skip
-                if line.is_empty() {
-                    continue;
-                }
+        for line in chunk.lines().flatten() {
+            // If line is empty (but it shouldn't) - skip
+            if line.is_empty() {
+                continue;
+            }
 
-                // Keys can have multi-line syntax starting with single space
-                // So we'll process them and concat with previous line in list
-                if line.starts_with(" ") && !fields.is_empty() {
-                    let prev_line = fields.pop_back().unwrap_or("".into());
-                    fields.push_back(format!("{}\n{}", prev_line, line));
-                } else {
-                    fields.push_back(line);
-                }
+            // Keys can have multi-line syntax starting with single space
+            // So we'll process them and concat with previous line in list
+            if line.starts_with(' ') {
+                let prev_line = fields.pop_back().unwrap_or_else(|| "".into());
+                fields.push_back(format!("{}\n{}", prev_line, line));
+            } else {
+                fields.push_back(line);
             }
         }
 
-        return fields;
+        fields
     }
 
     /// Parses lines to keys and values
@@ -173,6 +171,6 @@ impl ChunkWorker {
             }
         }
 
-        return fields_map;
+        fields_map
     }
 }
