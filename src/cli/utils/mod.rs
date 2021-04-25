@@ -36,7 +36,7 @@ pub fn section_color(section: &Section) -> Colour {
     }
 }
 
-pub fn get_packages<P: AsRef<Path>>(admin_dir: P, leaves_only: bool) -> Vec<Package> {
+pub async fn get_packages<P: AsRef<Path>>(admin_dir: P, leaves_only: bool) -> Vec<Package> {
     // lock database as it can be modified while parsing
     let lock_file_path = admin_dir.as_ref().join("lock");
     let lock_file = fs::File::create(&lock_file_path).expect("Can't create locking file");
@@ -45,7 +45,7 @@ pub fn get_packages<P: AsRef<Path>>(admin_dir: P, leaves_only: bool) -> Vec<Pack
     let status_file = admin_dir.as_ref().join("status");
     let parser = Parser::new(status_file).expect("Failed to open database");
 
-    let packages = parser.parse::<Package>();
+    let packages = parser.parse::<Package>().await;
 
     // remove database lock as it is not needed anymore
     let _ = unlock(&lock_file);

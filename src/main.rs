@@ -28,6 +28,7 @@ mod repository;
 #[cfg(test)]
 mod tests;
 
-fn main() {
-    cli::run();
+#[tokio::main]
+async fn main() {
+    cli::run().await;
 }

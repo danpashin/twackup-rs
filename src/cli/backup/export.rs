@@ -19,7 +19,6 @@
 
 use super::{super::*, *};
 use crate::kvparser::Parser;
-use clap::Clap;
 use std::{
     collections::LinkedList,
     fs::File,
@@ -27,7 +26,7 @@ use std::{
     path::PathBuf,
 };
 
-#[derive(Clap)]
+#[derive(clap::Parser)]
 pub struct Export {
     /// Use custom dpkg <directory>.
     /// This option is used for detecting installed packages
@@ -49,22 +48,27 @@ pub struct Export {
     output: Option<PathBuf>,
 }
 
+#[async_trait::async_trait]
 impl CliCommand for Export {
-    fn run(&self) {
+    async fn run(&self) {
         eprintln!("Exporting data for {:?}...", self.data);
         let data = match self.data {
             DataType::Packages => DataLayout {
-                packages: Some(self.get_packages()),
+                packages: Some(self.get_packages().await),
                 repositories: None,
             },
             DataType::Repositories => DataLayout {
                 packages: None,
-                repositories: Some(self.get_repos()),
+                repositories: Some(self.get_repos().await),
             },
-            DataType::All => DataLayout {
-                packages: Some(self.get_packages()),
-                repositories: Some(self.get_repos()),
-            },
+            DataType::All => {
+                let packages = self.get_packages().await;
+                let repos = self.get_repos().await;
+                DataLayout {
+                    packages: Some(packages),
+                    repositories: Some(repos),
+                }
+            }
         };
 
         let format = serde_any::guess_format_from_extension(self.format.as_str())
@@ -83,19 +87,20 @@ impl CliCommand for Export {
 }
 
 impl Export {
-    fn get_packages(&self) -> LinkedList<String> {
+    async fn get_packages(&self) -> LinkedList<String> {
         utils::get_packages(&self.admindir, true)
-            .iter()
-            .map(|pkg| pkg.id.clone())
+            .await
+            .into_iter()
+            .map(|pkg| pkg.id)
             .collect()
     }
 
-    fn get_repos(&self) -> LinkedList<RepoGroup> {
+    async fn get_repos(&self) -> LinkedList<RepoGroup> {
         let mut sources = LinkedList::new();
 
         for (name, path) in MODERN_MANAGERS {
             if let Ok(parser) = Parser::new(path) {
-                let repos = parser.parse::<Repository>().into_iter().collect();
+                let repos = parser.parse::<Repository>().await.into_iter().collect();
                 sources.push_back(RepoGroup {
                     format: RepoGroupFormat::Modern,
                     path: path.to_string(),

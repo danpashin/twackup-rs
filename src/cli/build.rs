@@ -19,13 +19,14 @@
 
 use ansi_term::Colour;
 use chrono::Local;
-use clap::Clap;
 use gethostname::gethostname;
 use std::{
     fs, io,
     path::{Path, PathBuf},
     sync::{Arc, Mutex},
     time::Instant,
+    borrow::Cow,
+    collections::LinkedList,
 };
 
 use super::{
@@ -36,7 +37,7 @@ use crate::{builder::*, package::*};
 
 const DEFAULT_ARCHIVE_NAME: &str = "%host%_%date%.tar.gz";
 
-#[derive(Clap)]
+#[derive(clap::Parser)]
 #[clap(
     version,
     after_help = "
@@ -79,8 +80,8 @@ pub struct Build {
 }
 
 impl Build {
-    fn build_user_specified(&self) {
-        let mut all_packages = get_packages(&self.admindir, false);
+    async fn build_user_specified(&self) {
+        let mut all_packages = get_packages(&self.admindir, false).await;
         all_packages.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
 
         let mut to_build: Vec<Package> = Vec::with_capacity(self.packages.len());
@@ -104,13 +105,13 @@ impl Build {
             }
         }
 
-        self.build(to_build);
+        self.build(to_build).await;
     }
 
-    fn build(&self, packages: Vec<Package>) {
+    async fn build(&self, packages: Vec<Package>) {
         let started = Instant::now();
         self.create_dir_if_needed();
-        let threadpool = threadpool::ThreadPool::default();
+        let mut tasks = LinkedList::new();
 
         let all_count = packages.len();
         let pb = indicatif::ProgressBar::new(all_count as u64);
@@ -138,10 +139,10 @@ impl Build {
             let b_archive_ptr = Arc::clone(&archive_ptr);
             let perform_archive = self.archive;
             let remove_deb = self.remove_after;
-            threadpool.execute(move || {
+            tasks.push_back(tokio::spawn(async move {
                 builder
                     .progress
-                    .set_message(format!("Processing {}", builder.package.name).as_str());
+                    .set_message(Cow::from(format!("Processing {}", builder.package.name)));
                 let status = builder.run();
                 builder.progress.inc(1);
                 if let Err(error) = status {
@@ -156,7 +157,7 @@ impl Build {
                 } else {
                     builder
                         .progress
-                        .set_message(format!("Done {}", builder.package.name).as_str());
+                        .set_message(Cow::from(format!("Done {}", builder.package.name)));
 
                     if perform_archive {
                         let mut archive = b_archive_ptr.lock().unwrap();
@@ -172,10 +173,10 @@ impl Build {
                         }
                     }
                 }
-            });
+            }));
         }
 
-        threadpool.join();
+        futures::future::join_all(tasks).await;
         progress_bar.finish_and_clear();
         println!(
             "Processed {} packages in {}",
@@ -220,22 +221,23 @@ impl Build {
     }
 }
 
+#[async_trait::async_trait]
 impl CliCommand for Build {
-    fn run(&self) {
+    async fn run(&self) {
         if !self.packages.is_empty() {
-            self.build_user_specified();
+            self.build_user_specified().await;
         } else if !self.all {
             eprint!("No packages specified. Build leaves? [Y/N] [default N] ");
 
             let mut buffer = String::new();
             let _ = io::stdin().read_line(&mut buffer);
             if buffer.trim().to_lowercase() == "y" {
-                self.build(get_packages(&self.admindir, true));
+                self.build(get_packages(&self.admindir, true).await).await;
             } else {
                 eprintln!("Ok, cancelling...");
             }
         } else {
-            self.build(get_packages(&self.admindir, false));
+            self.build(get_packages(&self.admindir, false).await).await;
         }
     }
 }

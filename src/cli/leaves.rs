@@ -17,7 +17,6 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use clap::Clap;
 use std::path::PathBuf;
 
 use super::{
@@ -25,7 +24,7 @@ use super::{
     CliCommand, ADMIN_DIR,
 };
 
-#[derive(Clap)]
+#[derive(clap::Parser)]
 pub struct Leaves {
     /// Use custom dpkg <directory>.
     /// This option is used for detecting installed packages
@@ -33,9 +32,10 @@ pub struct Leaves {
     admindir: PathBuf,
 }
 
+#[async_trait::async_trait]
 impl CliCommand for Leaves {
-    fn run(&self) {
-        let mut packages = get_packages(&self.admindir, true);
+    async fn run(&self) {
+        let mut packages = get_packages(&self.admindir, true).await;
         packages.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
 
         for package in packages.iter() {
