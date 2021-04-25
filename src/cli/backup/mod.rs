@@ -21,7 +21,6 @@ pub mod export;
 pub mod import;
 
 use crate::repository::Repository;
-use clap::Clap;
 use serde::{Deserialize, Serialize};
 use std::collections::LinkedList;
 
@@ -39,7 +38,7 @@ const CLASSIC_MANAGERS: &[(&str, &str)] = &[
 ];
 
 /// Data format used for export and import commands
-#[derive(Clap, PartialEq)]
+#[derive(clap::Parser, clap::ArgEnum, PartialEq, Clone)]
 enum DataFormat {
     Json,
     Toml,
@@ -47,7 +46,7 @@ enum DataFormat {
 }
 
 /// Describes what data should be used for exporting or importing
-#[derive(Clap, PartialEq, Debug)]
+#[derive(clap::Parser, clap::ArgEnum, PartialEq, Debug, Clone)]
 enum DataType {
     Packages,
     Repositories,

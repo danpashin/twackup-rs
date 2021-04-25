@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use clap::Clap;
+use clap::Parser;
 use std::fs;
 
 mod build;
@@ -32,18 +32,19 @@ const ADMIN_DIR: &str = "/var/lib/dpkg";
 const TARGET_DIR: &str = "/var/mobile/Documents/twackup";
 const LICENSE_PATH: &str = "/usr/share/doc/ru.danpashin.twackup/LICENSE";
 
+#[async_trait::async_trait]
 trait CliCommand {
-    fn run(&self);
+    async fn run(&self);
 }
 
-#[derive(Clap)]
+#[derive(clap::Parser)]
 #[clap(about, version)]
 struct Options {
     #[clap(subcommand)]
     subcmd: Command,
 }
 
-#[derive(Clap)]
+#[derive(clap::Parser)]
 #[clap(version)]
 enum Command {
     /// Just prints installed packages to stdout.
@@ -85,18 +86,18 @@ enum Command {
 }
 
 /// Starts parsing CLI arguments and runs actions for them
-pub fn run() {
+pub async fn run() {
     let options = Options::parse();
     match options.subcmd {
-        Command::List(cmd) => cmd.run(),
-        Command::Leaves(cmd) => cmd.run(),
-        Command::Build(cmd) => cmd.run(),
+        Command::List(cmd) => cmd.run().await,
+        Command::Leaves(cmd) => cmd.run().await,
+        Command::Build(cmd) => cmd.run().await,
 
         #[cfg(any(target_os = "ios", debug_assertions))]
-        Command::Export(cmd) => cmd.run(),
+        Command::Export(cmd) => cmd.run().await,
 
         #[cfg(any(target_os = "ios", debug_assertions))]
-        Command::Import(cmd) => cmd.run(),
+        Command::Import(cmd) => cmd.run().await,
 
         Command::ShowLicense => {
             let license = fs::read_to_string(LICENSE_PATH).expect("Can't open license file");

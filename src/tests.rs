@@ -27,11 +27,17 @@ use std::{
 
 use crate::{kvparser::*, package::*, repository::*};
 
+fn tokio_runtime() -> tokio::runtime::Runtime {
+    tokio::runtime::Builder::new_multi_thread()
+        .build()
+        .expect("Can't build tokio runtime")
+}
+
 #[test]
 fn parser_valid_database() {
     let database = env::current_dir().unwrap().join("assets/database/valid");
     let parser = Parser::new(database.as_path()).unwrap();
-    let packages = parser.parse::<Package>();
+    let packages = tokio_runtime().block_on(parser.parse::<Package>());
     assert_eq!(packages.len(), 3);
 }
 
@@ -41,7 +47,7 @@ fn parser_partially_valid_database() {
         .unwrap()
         .join("assets/database/partially_valid");
     let parser = Parser::new(database.as_path()).unwrap();
-    let packages = parser.parse::<Package>();
+    let packages = tokio_runtime().block_on(parser.parse::<Package>());
     assert_ne!(packages.len(), 3);
 }
 
@@ -52,11 +58,14 @@ fn parser_multiline() {
         .join("assets/database/multiline");
     let parser = Parser::new(database.as_path()).unwrap();
 
-    let packages: HashMap<String, Package> = parser
-        .parse::<Package>()
-        .iter()
-        .map(|pkg| (pkg.id.clone(), pkg.clone()))
-        .collect();
+    let packages: HashMap<String, Package> = tokio_runtime().block_on(async {
+        parser
+            .parse::<Package>()
+            .await
+            .into_iter()
+            .map(|pkg| (pkg.id.clone(), pkg))
+            .collect()
+    });
 
     let package = packages.get("valid-package-1").unwrap();
     let description = package.get_field(&Field::Description).unwrap();
@@ -121,11 +130,14 @@ fn non_valid_package_get_files() {
 fn parser_modern_repository() {
     let database = env::current_dir().unwrap().join("assets/sources_db/modern");
     let parser = Parser::new(database.as_path()).unwrap();
-    let repositories: HashMap<String, Repository> = parser
-        .parse::<Repository>()
-        .iter()
-        .map(|repo| (repo.url.clone(), repo.clone()))
-        .collect();
+    let repositories: HashMap<String, Repository> = tokio_runtime().block_on(async {
+        parser
+            .parse::<Repository>()
+            .await
+            .into_iter()
+            .map(|repo| (repo.url.clone(), repo))
+            .collect()
+    });
 
     assert_eq!(repositories.len(), 3);
 

@@ -17,7 +17,6 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use clap::Clap;
 use std::path::PathBuf;
 
 use super::{
@@ -25,7 +24,7 @@ use super::{
     CliCommand, ADMIN_DIR,
 };
 
-#[derive(Clap)]
+#[derive(clap::Parser)]
 #[clap(version)]
 pub struct List {
     /// Use custom dpkg <directory>.
@@ -34,9 +33,10 @@ pub struct List {
     admindir: PathBuf,
 }
 
+#[async_trait::async_trait]
 impl CliCommand for List {
-    fn run(&self) {
-        let mut packages = get_packages(&self.admindir, false);
+    async fn run(&self) {
+        let mut packages = get_packages(&self.admindir, false).await;
         packages.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
 
         for (position, package) in packages.into_iter().enumerate() {

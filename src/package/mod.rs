@@ -149,12 +149,12 @@ impl Package {
     pub fn is_dependency_of(&self, pkg: &Package) -> bool {
         let id = &self.id;
         if let Some(depends) = pkg.get_field(&Field::Depends) {
-            if self.parse_dependencies(&depends).contains(&id) {
+            if self.parse_dependencies(depends).contains(id) {
                 return true;
             }
         }
         if let Some(depends) = pkg.get_field(&Field::PreDepends) {
-            if self.parse_dependencies(&depends).contains(&id) {
+            if self.parse_dependencies(depends).contains(id) {
                 return true;
             }
         }

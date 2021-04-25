@@ -19,14 +19,13 @@
 
 use super::{super::*, *};
 use crate::process;
-use clap::Clap;
 use std::{
     fs::File,
     io::{self, BufWriter, Write},
     process::{exit, Command, Stdio},
 };
 
-#[derive(Clap)]
+#[derive(clap::Parser)]
 pub struct Import {
     /// Use another input format
     /// (e.g. when it was processed with third-party parser like jq)
@@ -38,8 +37,9 @@ pub struct Import {
     input: String,
 }
 
+#[async_trait::async_trait]
 impl CliCommand for Import {
-    fn run(&self) {
+    async fn run(&self) {
         if !utils::is_root() {
             eprintln!("{}", utils::non_root_warn_msg());
             eprintln!(
@@ -53,7 +53,7 @@ impl CliCommand for Import {
 
         if let Some(repositories) = data.repositories {
             for repo_group in repositories.iter() {
-                if let Err(error) = self.import_repo_group(&repo_group) {
+                if let Err(error) = self.import_repo_group(repo_group) {
                     eprint!(
                         "Can't import sources for {}. {}",
                         repo_group.executable, error

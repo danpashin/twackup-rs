@@ -17,15 +17,15 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use deque::{Stealer, Stolen};
 use memmap::Mmap;
 use std::{
     collections::{HashMap, LinkedList},
     fs::File,
     io::{self, BufRead},
     marker::Send,
+    ops::Range,
     path::Path,
-    thread,
+    sync::Arc,
 };
 
 pub trait Parsable {
@@ -35,17 +35,12 @@ pub trait Parsable {
 
 pub struct Parser {
     file: File,
-    mmap: Mmap,
-}
-
-enum ChunkWorkerState {
-    Process(usize, usize),
-    Quit,
+    mmap: Arc<Mmap>,
 }
 
 struct ChunkWorker {
-    file: Mmap,
-    stealer: Stealer<ChunkWorkerState>,
+    file: Arc<Mmap>,
+    range: Range<usize>,
 }
 
 impl Parser {
@@ -55,44 +50,30 @@ impl Parser {
     /// or file is empty
     pub fn new<P: AsRef<Path>>(file_path: P) -> io::Result<Self> {
         let file = File::open(file_path.as_ref())?;
-        let mmap = unsafe { Mmap::map(&file) }?;
+        let mmap = Arc::new(unsafe { Mmap::map(&file) }?);
         Ok(Self { file, mmap })
     }
 
     /// This method will parse file with key-value syntax on separate lines.
-    pub fn parse<P: Parsable<Output = P> + 'static + Send>(&self) -> LinkedList<P> {
-        let mut workers = Vec::new();
-        let (workq, stealer) = deque::new();
-        for _ in 0..num_cpus::get() {
-            if let Ok(worker) = ChunkWorker::new(&self.file, stealer.clone()) {
-                workers.push(thread::spawn(move || worker.run()));
-            }
-        }
-        let workers_count = workers.len();
-        if workers_count == 0 {
-            return LinkedList::new();
-        }
+    pub async fn parse<P: Parsable<Output = P> + 'static + Send>(&self) -> LinkedList<P> {
+        let mut workers = LinkedList::new();
 
         let mut last_nl_pos = 0;
         let file_len = self.get_file_len();
         for pos in 0..file_len - 1 {
             if self.mmap[pos] ^ b'\n' == 0 && self.mmap[pos + 1] ^ b'\n' == 0 {
-                workq.push(ChunkWorkerState::Process(last_nl_pos, pos));
+                let worker = ChunkWorker::new(self.mmap.clone(), last_nl_pos..pos);
+                workers.push_back(tokio::spawn(worker.run()));
                 last_nl_pos = pos;
             }
         }
 
-        for _ in 0..workers_count {
-            workq.push(ChunkWorkerState::Quit);
-        }
-
         let mut models = LinkedList::new();
         for worker in workers {
-            if let Ok(worker_models) = worker.join() {
-                models.extend(worker_models);
+            if let Ok(Some(worker_models)) = worker.await {
+                models.push_back(worker_models);
             }
         }
-
         models
     }
 
@@ -106,33 +87,20 @@ impl Parser {
 
 impl ChunkWorker {
     /// Prepares environment and creates parser instance
-    fn new(file: &File, stealer: Stealer<ChunkWorkerState>) -> io::Result<Self> {
-        let file = unsafe { Mmap::map(file)? };
-        Ok(Self { file, stealer })
+    fn new(file: Arc<Mmap>, range: Range<usize>) -> Self {
+        Self { file, range }
     }
 
     /// Parses chunk to model
-    fn run<P: Parsable<Output = P>>(&self) -> LinkedList<P> {
-        let mut models = LinkedList::new();
-        loop {
-            match self.stealer.steal() {
-                Stolen::Empty | Stolen::Abort => continue,
-                Stolen::Data(ChunkWorkerState::Quit) => break,
-                Stolen::Data(ChunkWorkerState::Process(start, end)) => {
-                    let fields = self.parse_chunk(&self.file[start..end]);
-                    if let Some(model) = P::new(self.parse_fields(fields)) {
-                        models.push_back(model);
-                    }
-                }
-            }
-        }
-
-        models
+    async fn run<P: Parsable<Output = P>>(self) -> Option<P> {
+        let chunk = &self.file[self.range.start..self.range.end];
+        let fields = self.parse_chunk(chunk);
+        P::new(self.parse_fields(fields))
     }
 
     /// Converts raw chunk bytes to list of lines with multi-line syntax support
     fn parse_chunk(&self, chunk: &[u8]) -> LinkedList<String> {
-        let mut fields = LinkedList::new();
+        let mut fields: LinkedList<String> = LinkedList::new();
 
         // Now we'll process each line of chunk
         for line in chunk.lines().flatten() {
