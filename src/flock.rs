@@ -4,9 +4,11 @@
  *
  */
 
-use std::fs::File;
-use std::io::{Error, Result};
-use std::os::unix::io::AsRawFd;
+use std::{
+    fs::File,
+    io::{Error, Result},
+    os::unix::io::AsRawFd,
+};
 
 pub fn lock_exclusive(file: &File) -> Result<()> {
     flock(file, libc::LOCK_EX)

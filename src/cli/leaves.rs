@@ -17,12 +17,11 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use std::path::PathBuf;
-
 use super::{
     utils::{get_packages, section_color},
     CliCommand, ADMIN_DIR,
 };
+use std::path::PathBuf;
 
 #[derive(clap::Parser)]
 pub struct Leaves {
