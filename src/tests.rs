@@ -17,6 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use crate::{kvparser::*, package::*, repository::*};
 use std::{
     collections::HashMap,
     env,
@@ -24,8 +25,6 @@ use std::{
     io::{self, BufRead, BufReader, Write},
     os::unix::fs::PermissionsExt,
 };
-
-use crate::{kvparser::*, package::*, repository::*};
 
 fn tokio_runtime() -> tokio::runtime::Runtime {
     tokio::runtime::Builder::new_multi_thread()

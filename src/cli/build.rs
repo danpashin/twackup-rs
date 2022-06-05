@@ -17,23 +17,22 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use ansi_term::Colour;
-use chrono::Local;
-use gethostname::gethostname;
-use std::{
-    fs, io,
-    path::{Path, PathBuf},
-    sync::{Arc, Mutex},
-    time::Instant,
-    borrow::Cow,
-    collections::LinkedList,
-};
-
 use super::{
     utils::{self, get_packages},
     CliCommand, ADMIN_DIR, TARGET_DIR,
 };
 use crate::{builder::*, package::*};
+use ansi_term::Colour;
+use chrono::Local;
+use gethostname::gethostname;
+use std::{
+    borrow::Cow,
+    collections::LinkedList,
+    fs, io,
+    path::{Path, PathBuf},
+    sync::{Arc, Mutex},
+    time::Instant,
+};
 
 const DEFAULT_ARCHIVE_NAME: &str = "%host%_%date%.tar.gz";
 
