@@ -134,7 +134,7 @@ impl Package {
     fn parse_dependencies(&self, dependencies: &str) -> LinkedList<String> {
         // Flat all possible dependencies
         dependencies
-            .split(&[',', '|'][..])
+            .split([',', '|'])
             .map(|dependency| {
                 // Remove version condition
                 if let (Some(cond_start), Some(_)) = (dependency.find('('), dependency.find(')')) {

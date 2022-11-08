@@ -29,7 +29,7 @@ use std::{
 pub struct Import {
     /// Use another input format
     /// (e.g. when it was processed with third-party parser like jq)
-    #[clap(short, long, arg_enum, default_value = "json")]
+    #[clap(short, long, value_enum, default_value = "json")]
     format: DataFormat,
 
     /// Input file, stdin if equal to '-'

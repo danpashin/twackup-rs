@@ -23,7 +23,7 @@ use std::os::raw::c_int;
 // Taken from sysinfo crate
 #[allow(dead_code)]
 #[repr(C)]
-#[derive(Clone, PartialEq, PartialOrd, Debug, Copy)]
+#[derive(Clone, PartialEq, Eq, PartialOrd, Debug, Copy)]
 pub enum Signal {
     /// Hangup detected on controlling terminal or death of controlling process.
     Hangup = 1,
