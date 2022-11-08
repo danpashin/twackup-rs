@@ -18,7 +18,7 @@
  */
 
 use libproc::libproc::proc_pid;
-use std::os::raw::c_int;
+use std::{collections::HashSet, os::raw::c_int};
 
 // Taken from sysinfo crate
 #[allow(dead_code)]
@@ -93,16 +93,16 @@ pub enum Signal {
     Sys = 31,
 }
 
-pub fn send_signal_to_multiple(executables: Vec<String>, signal: Signal) {
-    if let Ok(pids) = proc_pid::listpids(proc_pid::ProcType::ProcAllPIDS) {
-        for pid in pids {
-            if let Ok(name) = proc_pid::name(pid as i32) {
-                if executables.contains(&name) {
-                    self::send_signal(pid as i32, &signal);
-                }
-            }
-        }
-    }
+pub fn send_signal_to_multiple<'a>(executables: impl Iterator<Item = &'a str>, signal: Signal) {
+    let executables: HashSet<&str> = executables.collect();
+
+    let pids = proc_pid::listpids(proc_pid::ProcType::ProcAllPIDS).unwrap_or_default();
+    pids.into_iter()
+        .filter_map(|pid| Some(pid).zip(proc_pid::name(pid as i32).ok()))
+        .filter(|(_, name)| executables.contains(&name.as_str()))
+        .for_each(|(pid, _)| {
+            send_signal(pid as i32, &signal);
+        });
 }
 
 #[inline]

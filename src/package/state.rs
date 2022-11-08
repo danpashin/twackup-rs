@@ -27,18 +27,17 @@ pub enum State {
 
 impl State {
     pub fn from_dpkg(string: Option<&String>) -> Self {
-        if let Some(status) = string {
-            let mut components = status.split_whitespace();
-            if let Some(state) = components.next() {
-                return match state.to_lowercase().as_str() {
-                    "install" => Self::Install,
-                    "deinstall" => Self::Remove,
-                    "hold" => Self::Hold,
-                    _ => Self::Unknown,
-                };
-            }
-        }
+        let status = match string {
+            Some(status) => status,
+            None => return Self::Unknown,
+        };
 
-        Self::Unknown
+        let mut components = status.split_whitespace();
+        match components.next() {
+            Some(state) if state == "install" => Self::Install,
+            Some(state) if state == "deinstall" => Self::Remove,
+            Some(state) if state == "hold" => Self::Hold,
+            _ => Self::Unknown,
+        }
     }
 }

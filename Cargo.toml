@@ -57,3 +57,4 @@ plist = { version = "1.0", default-features = false }
 tokio = { version = "1.5", features = ["rt-multi-thread", "sync", "macros"] }
 futures = "0.3"
 async-trait = "0.1"
+thiserror = "1.0"

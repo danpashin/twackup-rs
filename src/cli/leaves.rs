@@ -17,10 +17,8 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{
-    utils::{get_packages, section_color},
-    CliCommand, ADMIN_DIR,
-};
+use super::{context::Context, CliCommand, ADMIN_DIR};
+use crate::error::Result;
 use std::path::PathBuf;
 
 #[derive(clap::Parser)]
@@ -33,12 +31,11 @@ pub struct Leaves {
 
 #[async_trait::async_trait]
 impl CliCommand for Leaves {
-    async fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
-        let mut packages = get_packages(&self.admindir, true).await;
-        packages.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+    async fn run(&self, context: Context) -> Result<()> {
+        let packages = context.packages(&self.admindir, true).await?;
 
-        for package in packages {
-            let section_sym = section_color(&package.section).paint("▶︎");
+        for (_, package) in packages {
+            let section_sym = package.section.color().paint("▶︎");
             println!("{} {} - {}", section_sym, package.name, package.id);
         }
 

@@ -18,15 +18,18 @@
  */
 
 use clap::Parser;
+use context::Context;
 use std::fs;
 
 mod build;
+mod context;
 mod leaves;
 mod list;
-mod utils;
 
 #[cfg(any(target_os = "ios", debug_assertions))]
 mod backup;
+
+use crate::error::Result;
 
 const ADMIN_DIR: &str = "/var/lib/dpkg";
 const TARGET_DIR: &str = "/var/mobile/Documents/twackup";
@@ -34,7 +37,7 @@ const LICENSE_PATH: &str = "/usr/share/doc/ru.danpashin.twackup/LICENSE";
 
 #[async_trait::async_trait]
 trait CliCommand {
-    async fn run(&self) -> Result<(), Box<dyn std::error::Error>>;
+    async fn run(&self, context: Context) -> Result<()>;
 }
 
 #[derive(clap::Parser)]
@@ -86,18 +89,20 @@ enum Command {
 }
 
 /// Starts parsing CLI arguments and runs actions for them
-pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
+pub async fn run() -> Result<()> {
+    let context = Context::new();
+
     let options = Options::parse();
     match options.subcmd {
-        Command::List(cmd) => cmd.run().await,
-        Command::Leaves(cmd) => cmd.run().await,
-        Command::Build(cmd) => cmd.run().await,
+        Command::List(cmd) => cmd.run(context).await,
+        Command::Leaves(cmd) => cmd.run(context).await,
+        Command::Build(cmd) => cmd.run(context).await,
 
         #[cfg(any(target_os = "ios", debug_assertions))]
-        Command::Export(cmd) => cmd.run().await,
+        Command::Export(cmd) => cmd.run(context).await,
 
         #[cfg(any(target_os = "ios", debug_assertions))]
-        Command::Import(cmd) => cmd.run().await,
+        Command::Import(cmd) => cmd.run(context).await,
 
         Command::ShowLicense => {
             let license = fs::read_to_string(LICENSE_PATH).expect("Can't open license file");

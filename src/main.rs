@@ -19,6 +19,7 @@
 
 mod builder;
 mod cli;
+mod error;
 mod flock;
 mod kvparser;
 mod package;
@@ -28,7 +29,9 @@ mod repository;
 #[cfg(test)]
 mod tests;
 
+use error::Result;
+
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<()> {
     cli::run().await
 }

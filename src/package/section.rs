@@ -17,6 +17,8 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use ansi_term::Colour;
+
 #[derive(Clone, PartialEq, Eq)]
 pub enum Section {
     Other(String),
@@ -54,6 +56,21 @@ impl Section {
         match value {
             Some(value) => Self::from_string(value),
             None => Section::Unknown,
+        }
+    }
+
+    pub fn color(&self) -> Colour {
+        match self {
+            Self::System => Colour::Fixed(9),  // bright red
+            Self::Tweaks => Colour::Fixed(11), // bright yellow
+            Self::Utilities | Section::Packaging => Colour::Fixed(14), // bright cyan
+            Self::Development => Colour::Fixed(130), // more like orange with pink
+            Self::Themes => Colour::Fixed(12), // bright blue
+            Self::TerminalSupport => Colour::Fixed(10), // bright green
+            Self::Networking => Colour::Fixed(112), // bright green with some cyan
+            Self::Archiving => Colour::Fixed(216), // peach?
+            Self::TextEditors => Colour::Fixed(162), // between red and magenta. Raspberry?
+            _ => Colour::Fixed(8),             // bright grey
         }
     }
 }

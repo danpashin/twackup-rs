@@ -18,20 +18,25 @@
  */
 
 use super::{
-    utils::{self, get_packages},
+    context::{self, Context},
     CliCommand, ADMIN_DIR, TARGET_DIR,
 };
-use crate::{builder::*, package::*};
-use ansi_term::Colour;
+use crate::{
+    builder::{
+        deb::{DebTarArchive, TarArchive},
+        Preferences, Worker,
+    },
+    error::Result,
+    package::*,
+};
 use chrono::Local;
 use gethostname::gethostname;
 use std::{
-    borrow::Cow,
     collections::LinkedList,
     fs, io,
-    path::{Path, PathBuf},
+    iter::Iterator,
+    path::PathBuf,
     sync::{Arc, Mutex},
-    time::Instant,
 };
 
 const DEFAULT_ARCHIVE_NAME: &str = "%host%_%date%.tar.gz";
@@ -66,7 +71,7 @@ pub struct Build {
     destination: PathBuf,
 
     /// Packs all rebuilded DEB's to single archive
-    #[clap(short = 'A', long)]
+    #[clap(short = 'A', long, default_value_t = false)]
     archive: bool,
 
     /// Name of archive if --archive is set. Supports only .tar.gz archives for now.
@@ -74,132 +79,104 @@ pub struct Build {
     archive_name: String,
 
     /// Removes all DEB's after adding to archive. Makes sense only if --archive is set.
-    #[clap(short = 'R', long)]
+    #[clap(long, short = 'R', default_value_t = false)]
     remove_after: bool,
+
+    /// DEB Compression level. 0 means no compression while 9 - strongest. Default is 6
+    #[clap(long, short = 'c', default_value_t = 6)]
+    compression_level: u32,
 }
 
 impl Build {
-    async fn build_user_specified(&self) -> Result<(), Box<dyn std::error::Error>> {
-        let mut all_packages = get_packages(&self.admindir, false).await;
-        all_packages.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+    async fn build_user_specified(&self, context: Context) -> Result<()> {
+        let all_packages = context.packages(&self.admindir, false).await?;
 
-        let mut to_build: Vec<Package> = Vec::with_capacity(self.packages.len());
+        // Try to detect if user package is numeric or not
+        let packages: LinkedList<_> = self
+            .packages
+            .iter()
+            .map(|identifier| identifier.parse::<usize>().map_err(|_| identifier))
+            .collect();
 
-        for package_id in self.packages.iter() {
-            if let Ok(human_pos) = package_id.parse::<usize>() {
-                match all_packages.get(human_pos - 1) {
-                    Some(pkg) => to_build.push(pkg.clone()),
-                    None => match all_packages.iter().find(|pkg| pkg.id == *package_id) {
-                        Some(pkg) => to_build.push(pkg.clone()),
-                        None => {
-                            eprintln!("Can't find any package with name or index {}", package_id)
-                        }
-                    },
+        // If numeric - add package by its index
+        let numeric_packages = packages
+            .iter()
+            .filter_map(|id| id.as_ref().ok())
+            .filter_map(|&id| match all_packages.iter().nth(id - 1) {
+                Some((_, package)) => Some(package.clone()),
+                None => {
+                    eprintln!("Can't find any package at index {}", id);
+                    None
                 }
-            } else {
-                match all_packages.iter().find(|pkg| pkg.id == *package_id) {
-                    Some(pkg) => to_build.push(pkg.clone()),
-                    None => eprintln!("Can't find any package with name or index {}", package_id),
-                }
-            }
-        }
+            });
 
-        self.build(to_build).await
+        // If not numeric - add by its identifier
+        let alphabetic_packages =
+            packages
+                .iter()
+                .filter_map(|x| x.as_ref().err())
+                .filter_map(|&id| match all_packages.get(id) {
+                    Some(package) => Some(package.clone()),
+                    None => {
+                        eprintln!("Can't find any package with identifier {}", id);
+                        None
+                    }
+                });
+
+        let to_build = numeric_packages.chain(alphabetic_packages).collect();
+        self.build(to_build, context).await
     }
 
-    async fn build(&self, packages: Vec<Package>) -> Result<(), Box<dyn std::error::Error>> {
-        let started = Instant::now();
-        self.create_dir_if_needed();
-        let mut tasks = LinkedList::new();
+    async fn build(&self, packages: LinkedList<Package>, context: Context) -> Result<()> {
+        self.create_dir_if_needed()?;
 
-        let all_count = packages.len();
-        let pb = indicatif::ProgressBar::new(all_count as u64);
-        pb.set_style(
-            indicatif::ProgressStyle::default_bar()
-                .template("{pos}/{len} [{wide_bar:.cyan/blue}] {msg}")
-                .unwrap()
-                .progress_chars("##-"),
-        );
-        let progress_bar = Arc::new(pb);
+        let all_count = packages.len() as u64;
+        let progress = context.progress_bar(all_count);
 
-        if !utils::is_root() {
-            progress_bar.println(utils::non_root_warn_msg().to_string());
+        if !context.is_root() {
+            progress.println(context::non_root_warn_msg().to_string());
         }
 
         let archive = self.create_archive_if_needed();
-        let archive_ptr = Arc::new(Mutex::new(archive));
 
-        for package in packages {
-            let builder = BuildWorker::new(
-                &self.admindir,
-                package,
-                &self.destination,
-                Arc::clone(&progress_bar),
-            );
-            let b_archive_ptr = Arc::clone(&archive_ptr);
-            let perform_archive = self.archive;
-            let remove_deb = self.remove_after;
-            tasks.push_back(tokio::spawn(async move {
-                builder
-                    .progress
-                    .set_message(Cow::from(format!("Processing {}", builder.package.name)));
-                let status = builder.run();
-                builder.progress.inc(1);
-                if let Err(error) = status {
-                    builder.progress.println(
-                        Colour::Red
-                            .paint(format!(
-                                "Building {} error. {}",
-                                builder.package.name, error
-                            ))
-                            .to_string(),
-                    );
-                } else {
-                    builder
-                        .progress
-                        .set_message(Cow::from(format!("Done {}", builder.package.name)));
+        let mut preferences = Preferences::new(&self.admindir, &self.destination);
+        preferences.remove_deb = self.remove_after;
+        preferences.compression_level = self.compression_level;
 
-                    if perform_archive {
-                        let mut archive = b_archive_ptr.lock().unwrap();
-                        let file = status.unwrap();
-                        let abs_file = Path::new(".").join(file.file_name().unwrap());
-                        let result = archive
-                            .as_mut()
-                            .unwrap()
-                            .get_mut()
-                            .append_path_with_name(&file, &abs_file);
-                        if result.is_ok() && remove_deb {
-                            let _ = fs::remove_file(file);
-                        }
-                    }
-                }
-            }));
-        }
+        futures::future::join_all(packages.into_iter().map(|package| {
+            let progress = progress.clone();
+            let archive = archive.clone();
+            let preferences = preferences.clone();
 
-        futures::future::join_all(tasks).await;
-        progress_bar.finish_and_clear();
+            tokio::spawn(async move {
+                let builder = Worker::new(package, progress, archive, preferences);
+                builder.work().await
+            })
+        }))
+        .await;
+
+        progress.finish_and_clear();
         println!(
             "Processed {} packages in {}",
             all_count,
-            indicatif::HumanDuration(started.elapsed())
+            indicatif::HumanDuration(context.elapsed())
         );
 
         Ok(())
     }
 
-    fn create_archive_if_needed(&self) -> Option<deb::DebTarArchive> {
+    fn create_archive_if_needed(&self) -> Option<Arc<Mutex<DebTarArchive>>> {
         if !self.archive {
             return None;
         }
 
-        let filename = if self.archive_name == DEFAULT_ARCHIVE_NAME {
-            format!(
+        let filename = match &*self.archive_name {
+            DEFAULT_ARCHIVE_NAME => format!(
                 "{}_{}.tar.gz",
-                gethostname().to_str().unwrap(),
+                gethostname().to_str().unwrap_or_default(),
                 Local::now().format("%v_%T")
-            )
-        } else {
-            self.archive_name.clone()
+            ),
+            _ => self.archive_name.clone(),
         };
 
         let filepath = self.destination.join(&filename);
@@ -207,27 +184,24 @@ impl Build {
         let compression = flate2::Compression::default();
         let encoder = flate2::write::GzEncoder::new(file, compression);
 
-        Some(deb::TarArchive::new(encoder))
+        let archive = TarArchive::new(encoder);
+        Some(Arc::new(Mutex::new(archive)))
     }
 
-    fn create_dir_if_needed(&self) {
-        if let Ok(metadata) = fs::metadata(&self.destination) {
-            if !metadata.is_dir() {
-                fs::remove_file(&self.destination).expect("Failed to remove working dir");
-            }
-
-            return;
+    fn create_dir_if_needed(&self) -> Result<()> {
+        match fs::metadata(&self.destination) {
+            Ok(metadata) if metadata.is_dir() => Ok(fs::remove_file(&self.destination)?),
+            Ok(_) => Ok(()),
+            Err(_) => Ok(fs::create_dir_all(&self.destination)?),
         }
-
-        fs::create_dir_all(&self.destination).expect("Failed to create working dir");
     }
 }
 
 #[async_trait::async_trait]
 impl CliCommand for Build {
-    async fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
+    async fn run(&self, context: Context) -> Result<()> {
         if !self.packages.is_empty() {
-            return self.build_user_specified().await;
+            return self.build_user_specified(context).await;
         }
 
         let mut leaves_only = false;
@@ -243,7 +217,8 @@ impl CliCommand for Build {
             }
         }
 
-        let packages = get_packages(&self.admindir, leaves_only).await;
-        self.build(packages).await
+        let packages = context.packages(&self.admindir, leaves_only).await?;
+        let packages = packages.into_iter().map(|(_, pkg)| pkg).collect();
+        self.build(packages, context).await
     }
 }

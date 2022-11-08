@@ -4,7 +4,7 @@ BUILD_DIR=build
 RUSTFLAGS=
 OUTPUT_DIR=packages
 
-IOS_ARCHS=aarch64-apple-ios armv7-apple-ios
+IOS_ARCHS=aarch64-apple-ios
 NATIVE_ARCH=$(shell basename $(shell dirname $(shell rustc --print target-libdir)))
 ALL_ARCHS=$(shell rustc --print target-list)
 

@@ -18,6 +18,7 @@
  */
 
 pub mod builder;
+pub mod error;
 pub mod flock;
 #[allow(dead_code)]
 pub mod kvparser;
