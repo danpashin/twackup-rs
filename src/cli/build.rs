@@ -54,7 +54,7 @@ pub struct Build {
 
     /// Use custom dpkg <directory>.
     /// This option is used for detecting installed packages
-    #[clap(long, default_value = ADMIN_DIR, parse(from_os_str))]
+    #[clap(long, default_value = ADMIN_DIR, value_parser)]
     admindir: PathBuf,
 
     /// Package identifier or number from the list command.
@@ -62,7 +62,7 @@ pub struct Build {
     packages: Vec<String>,
 
     /// Use custom destination <directory>.
-    #[clap(long, short, default_value = TARGET_DIR, parse(from_os_str))]
+    #[clap(long, short, default_value = TARGET_DIR, value_parser)]
     destination: PathBuf,
 
     /// Packs all rebuilded DEB's to single archive
@@ -117,6 +117,7 @@ impl Build {
         pb.set_style(
             indicatif::ProgressStyle::default_bar()
                 .template("{pos}/{len} [{wide_bar:.cyan/blue}] {msg}")
+                .unwrap()
                 .progress_chars("##-"),
         );
         let progress_bar = Arc::new(pb);

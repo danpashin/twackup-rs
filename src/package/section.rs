@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq)]
 pub enum Section {
     Other(String),
     Unknown,

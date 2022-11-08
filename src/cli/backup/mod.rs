@@ -38,7 +38,7 @@ const CLASSIC_MANAGERS: &[(&str, &str)] = &[
 ];
 
 /// Data format used for export and import commands
-#[derive(clap::Parser, clap::ArgEnum, PartialEq, Clone)]
+#[derive(clap::Parser, clap::ValueEnum, PartialEq, Clone)]
 enum DataFormat {
     Json,
     Toml,
@@ -46,7 +46,7 @@ enum DataFormat {
 }
 
 /// Describes what data should be used for exporting or importing
-#[derive(clap::Parser, clap::ArgEnum, PartialEq, Debug, Clone)]
+#[derive(clap::Parser, clap::ValueEnum, PartialEq, Debug, Clone)]
 enum DataType {
     Packages,
     Repositories,

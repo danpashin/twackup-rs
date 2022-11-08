@@ -28,7 +28,7 @@ use std::path::PathBuf;
 pub struct List {
     /// Use custom dpkg <directory>.
     /// This option is used for detecting installed packages
-    #[clap(long, default_value = ADMIN_DIR, parse(from_os_str))]
+    #[clap(long, default_value = ADMIN_DIR, value_parser)]
     admindir: PathBuf,
 }
 
