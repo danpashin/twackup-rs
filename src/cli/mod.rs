@@ -34,7 +34,7 @@ const LICENSE_PATH: &str = "/usr/share/doc/ru.danpashin.twackup/LICENSE";
 
 #[async_trait::async_trait]
 trait CliCommand {
-    async fn run(&self);
+    async fn run(&self) -> Result<(), Box<dyn std::error::Error>>;
 }
 
 #[derive(clap::Parser)]
@@ -86,7 +86,7 @@ enum Command {
 }
 
 /// Starts parsing CLI arguments and runs actions for them
-pub async fn run() {
+pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let options = Options::parse();
     match options.subcmd {
         Command::List(cmd) => cmd.run().await,
@@ -102,6 +102,8 @@ pub async fn run() {
         Command::ShowLicense => {
             let license = fs::read_to_string(LICENSE_PATH).expect("Can't open license file");
             println!("\n{}\n", license);
+
+            Ok(())
         }
     }
 }

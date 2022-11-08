@@ -50,7 +50,7 @@ pub struct Export {
 
 #[async_trait::async_trait]
 impl CliCommand for Export {
-    async fn run(&self) {
+    async fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
         eprintln!("Exporting data for {:?}...", self.data);
         let data = match self.data {
             DataType::Packages => DataLayout {
@@ -83,6 +83,8 @@ impl CliCommand for Export {
         }
 
         eprintln!("Successfully exported {:?} data!", self.data);
+
+        Ok(())
     }
 }
 

@@ -34,7 +34,7 @@ pub struct List {
 
 #[async_trait::async_trait]
 impl CliCommand for List {
-    async fn run(&self) {
+    async fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
         let mut packages = get_packages(&self.admindir, false).await;
         packages.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
 
@@ -48,5 +48,7 @@ impl CliCommand for List {
                 package.id
             );
         }
+
+        Ok(())
     }
 }

@@ -79,7 +79,7 @@ pub struct Build {
 }
 
 impl Build {
-    async fn build_user_specified(&self) {
+    async fn build_user_specified(&self) -> Result<(), Box<dyn std::error::Error>> {
         let mut all_packages = get_packages(&self.admindir, false).await;
         all_packages.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
 
@@ -104,10 +104,10 @@ impl Build {
             }
         }
 
-        self.build(to_build).await;
+        self.build(to_build).await
     }
 
-    async fn build(&self, packages: Vec<Package>) {
+    async fn build(&self, packages: Vec<Package>) -> Result<(), Box<dyn std::error::Error>> {
         let started = Instant::now();
         self.create_dir_if_needed();
         let mut tasks = LinkedList::new();
@@ -183,6 +183,8 @@ impl Build {
             all_count,
             indicatif::HumanDuration(started.elapsed())
         );
+
+        Ok(())
     }
 
     fn create_archive_if_needed(&self) -> Option<deb::DebTarArchive> {
@@ -223,21 +225,25 @@ impl Build {
 
 #[async_trait::async_trait]
 impl CliCommand for Build {
-    async fn run(&self) {
+    async fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
         if !self.packages.is_empty() {
-            self.build_user_specified().await;
-        } else if !self.all {
+            return self.build_user_specified().await;
+        }
+
+        let mut leaves_only = false;
+        if !self.all {
             eprint!("No packages specified. Build leaves? [Y/N] [default N] ");
 
             let mut buffer = String::new();
             let _ = io::stdin().read_line(&mut buffer);
             if buffer.trim().to_lowercase() == "y" {
-                self.build(get_packages(&self.admindir, true).await).await;
+                leaves_only = true;
             } else {
                 eprintln!("Ok, cancelling...");
             }
-        } else {
-            self.build(get_packages(&self.admindir, false).await).await;
         }
+
+        let packages = get_packages(&self.admindir, leaves_only).await;
+        self.build(packages).await
     }
 }

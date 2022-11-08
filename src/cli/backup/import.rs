@@ -39,7 +39,7 @@ pub struct Import {
 
 #[async_trait::async_trait]
 impl CliCommand for Import {
-    async fn run(&self) {
+    async fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
         if !utils::is_root() {
             eprintln!("{}", utils::non_root_warn_msg());
             eprintln!(
@@ -85,6 +85,8 @@ impl CliCommand for Import {
             self.run_apt(install_args)
                 .expect("Failed to run install subcommand");
         }
+
+        Ok(())
     }
 }
 
