@@ -33,13 +33,15 @@ pub struct Leaves {
 
 #[async_trait::async_trait]
 impl CliCommand for Leaves {
-    async fn run(&self) {
+    async fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
         let mut packages = get_packages(&self.admindir, true).await;
         packages.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
 
-        for package in packages.iter() {
+        for package in packages {
             let section_sym = section_color(&package.section).paint("▶︎");
             println!("{} {} - {}", section_sym, package.name, package.id);
         }
+
+        Ok(())
     }
 }
