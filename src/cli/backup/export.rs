@@ -18,7 +18,7 @@
  */
 
 use super::{super::*, *};
-use crate::kvparser::Parser;
+use crate::{error::Result, kvparser::Parser};
 use std::{
     collections::LinkedList,
     fs::File,
@@ -50,11 +50,11 @@ pub struct Export {
 
 #[async_trait::async_trait]
 impl CliCommand for Export {
-    async fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
+    async fn run(&self, context: Context) -> Result<()> {
         eprintln!("Exporting data for {:?}...", self.data);
         let data = match self.data {
             DataType::Packages => DataLayout {
-                packages: Some(self.get_packages().await),
+                packages: Some(self.get_packages(context).await?),
                 repositories: None,
             },
             DataType::Repositories => DataLayout {
@@ -62,7 +62,7 @@ impl CliCommand for Export {
                 repositories: Some(self.get_repos().await),
             },
             DataType::All => {
-                let packages = self.get_packages().await;
+                let packages = self.get_packages(context).await?;
                 let repos = self.get_repos().await;
                 DataLayout {
                     packages: Some(packages),
@@ -75,7 +75,7 @@ impl CliCommand for Export {
             .expect("Unsupported format");
 
         if let Some(path) = &self.output {
-            let file = File::create(path).expect("Can't open fd for writing");
+            let file = File::create(path)?;
             serde_any::to_writer(file, &data, format).unwrap();
         } else {
             serde_any::to_writer(io::stdout(), &data, format).unwrap();
@@ -89,12 +89,13 @@ impl CliCommand for Export {
 }
 
 impl Export {
-    async fn get_packages(&self) -> LinkedList<String> {
-        utils::get_packages(&self.admindir, true)
-            .await
+    async fn get_packages(&self, context: Context) -> Result<LinkedList<String>> {
+        let packages = context.packages(&self.admindir, true).await?;
+
+        Ok(packages
             .into_iter()
-            .map(|pkg| pkg.id)
-            .collect()
+            .map(|(identifier, _)| identifier)
+            .collect())
     }
 
     async fn get_repos(&self) -> LinkedList<RepoGroup> {

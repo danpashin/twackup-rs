@@ -97,11 +97,7 @@ impl Package {
     /// Creates canonical DEB filename in format of id_version_arch
     #[inline]
     pub fn canonical_name(&self) -> String {
-        let arch = self
-            .fields
-            .get(&Field::Architecture)
-            .unwrap_or(&String::new())
-            .to_string();
+        let arch = self.get_field(Field::Architecture).unwrap_or_default();
         format!("{}_{}_{}", self.id, self.version, arch)
     }
 
@@ -132,15 +128,12 @@ impl Package {
     }
 
     fn parse_dependencies(&self, dependencies: &str) -> LinkedList<String> {
-        // Flat all possible dependencies
+        // Flat all possible dependencies and remove version condition
         dependencies
             .split([',', '|'])
-            .map(|dependency| {
-                // Remove version condition
-                if let (Some(cond_start), Some(_)) = (dependency.find('('), dependency.find(')')) {
-                    return dependency[0..cond_start].trim().to_string();
-                }
-                return dependency.trim().to_string();
+            .map(|dep| match dep.find('(').zip(dep.find(')')) {
+                Some((start, _)) => dep[0..start].trim().to_string(),
+                _ => dep.trim().to_string(),
             })
             .collect()
     }
@@ -148,12 +141,12 @@ impl Package {
     /// Returns true if this package us a dependency of other.
     pub fn is_dependency_of(&self, pkg: &Package) -> bool {
         let id = &self.id;
-        if let Some(depends) = pkg.get_field(&Field::Depends) {
+        if let Some(depends) = pkg.get_field(Field::Depends) {
             if self.parse_dependencies(depends).contains(id) {
                 return true;
             }
         }
-        if let Some(depends) = pkg.get_field(&Field::PreDepends) {
+        if let Some(depends) = pkg.get_field(Field::PreDepends) {
             if self.parse_dependencies(depends).contains(id) {
                 return true;
             }
@@ -163,7 +156,7 @@ impl Package {
     }
 
     #[inline]
-    pub fn get_field(&self, field: &Field) -> Option<&String> {
-        self.fields.get(field)
+    pub fn get_field(&self, field: Field) -> Option<&str> {
+        self.fields.get(&field).map(|value| value.as_str())
     }
 }

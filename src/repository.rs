@@ -74,21 +74,19 @@ impl Parsable for Repository {
     /// Performs parsing repo model in DEB822 format
     /// #### Doesn't support options
     fn new(fields: HashMap<String, String>) -> Option<Self::Output> {
-        let category = Category::from_str(fields.get("Types")?);
-        if category.is_err() {
-            return None;
-        }
-
         Some(Self {
-            category: category.unwrap(),
+            category: Category::from_str(fields.get("Types")?).ok()?,
             url: fields.get("URIs")?.to_string(),
             distribution: fields.get("Suites")?.to_string(),
             components: fields
                 .get("Components")
-                .unwrap_or(&"".to_string())
-                .split_ascii_whitespace()
-                .map(|str| str.to_string())
-                .collect(),
+                .map(|components| {
+                    components
+                        .split_ascii_whitespace()
+                        .map(|x| x.to_string())
+                        .collect()
+                })
+                .unwrap_or_default(),
         })
     }
 }
@@ -104,17 +102,12 @@ impl Repository {
             return None;
         }
 
-        let _type = Category::from_str(components[0]);
-        if _type.is_err() {
-            return None;
-        }
-
         Some(Self {
-            category: _type.unwrap(),
+            category: Category::from_str(components[0]).ok()?,
             url: components[1].to_string(),
             distribution: components[2].to_string(),
             components: components
-                .iter()
+                .into_iter()
                 .skip(3)
                 .map(|str| str.to_string())
                 .collect(),

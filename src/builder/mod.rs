@@ -17,79 +17,99 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::package::Package;
+pub mod deb;
+
+use crate::{error::Result, package::Package};
+use ansi_term::Colour;
+use deb::{Deb, DebTarArchive};
+use indicatif::ProgressBar;
 use std::{
     fs, io,
     os::unix::ffi::OsStringExt,
     path::{Path, PathBuf},
-    sync::Arc,
+    sync::{Arc, Mutex},
 };
 
-use indicatif::ProgressBar;
-pub mod deb;
-use deb::*;
-
-const DEB_COMPRESSION_LEVEL: u32 = 6;
-
-/// Creates DEB from filesystem contents
-pub struct BuildWorker {
-    pub package: Package,
-    pub progress: Arc<ProgressBar>,
-    admin_dir: PathBuf,
-    destination: PathBuf,
-    working_dir: PathBuf,
+#[derive(Clone)]
+pub struct Preferences {
+    pub remove_deb: bool,
+    pub admin_dir: PathBuf,
+    pub destination: PathBuf,
+    pub compression_level: u32,
 }
 
-impl BuildWorker {
-    pub fn new<P: AsRef<Path>, D: AsRef<Path>>(
-        admin_dir: P,
-        pkg: Package,
-        destination: D,
-        progress: Arc<ProgressBar>,
-    ) -> Self {
-        let name = pkg.canonical_name();
+/// Creates DEB from filesystem contents
+pub struct Worker {
+    pub package: Package,
+    pub progress: ProgressBar,
+    pub archive: Option<Arc<Mutex<DebTarArchive>>>,
+    pub preferences: Preferences,
+    pub working_dir: PathBuf,
+}
+
+impl Preferences {
+    pub fn new<A: AsRef<Path>, D: AsRef<Path>>(admin_dir: A, destination: D) -> Self {
         Self {
-            package: pkg,
-            progress,
+            remove_deb: true,
             admin_dir: admin_dir.as_ref().to_path_buf(),
             destination: destination.as_ref().to_path_buf(),
-            working_dir: destination.as_ref().join(name),
+            compression_level: 0,
+        }
+    }
+}
+
+impl Worker {
+    pub fn new(
+        package: Package,
+        progress: ProgressBar,
+        archive: Option<Arc<Mutex<DebTarArchive>>>,
+        preferences: Preferences,
+    ) -> Self {
+        let name = package.canonical_name();
+        let working_dir = preferences.destination.join(name);
+
+        Self {
+            package,
+            progress,
+            archive,
+            preferences,
+            working_dir,
         }
     }
 
     /// Runs worker. Should be executed in a single thread usually
     pub fn run(&self) -> io::Result<PathBuf> {
+        let w_dir = &self.working_dir;
+
         // Removing all dir contents
-        let _ = fs::remove_dir_all(&self.working_dir);
-        fs::create_dir(&self.working_dir)?;
+        let _ = fs::remove_dir_all(w_dir);
+        fs::create_dir(w_dir)?;
 
         let deb_name = format!("{}.deb", self.package.canonical_name());
-        let deb_path = self.destination.join(deb_name);
+        let deb_path = self.preferences.destination.join(deb_name);
 
-        let mut deb = Deb::new(&self.working_dir, &deb_path, DEB_COMPRESSION_LEVEL)?;
+        let mut deb = Deb::new(w_dir, &deb_path, self.preferences.compression_level)?;
         self.archive_files(deb.data_mut_ref())?;
         self.archive_metadata(deb.control_mut_ref())?;
         deb.package()?;
 
-        let _ = fs::remove_dir_all(&self.working_dir);
+        let _ = fs::remove_dir_all(w_dir);
 
         Ok(deb_path)
     }
 
     /// Archives package files and compresses in a single archive
     fn archive_files(&self, archiver: &mut DebTarArchive) -> io::Result<()> {
-        let files = self.package.get_installed_files(&self.admin_dir)?;
+        let files = self
+            .package
+            .get_installed_files(&self.preferences.admin_dir)?;
 
         for file in files {
             // Remove root slash because tars don't contain absolute paths
             let name = file.trim_start_matches('/');
             let res = archiver.get_mut().append_path_with_name(&file, name);
             if let Err(error) = res {
-                self.progress.println(format!(
-                    "[{}] {}",
-                    self.package.id,
-                    ansi_term::Colour::Yellow.paint(format!("{}", error))
-                ));
+                self.print_warning(error);
             }
         }
 
@@ -105,7 +125,7 @@ impl BuildWorker {
         // Then add every matching metadata file in dpkg database dir
         let pid_len = self.package.id.len();
         let package_id = self.package.id.as_bytes();
-        for entry in fs::read_dir(self.admin_dir.join("info"))?.flatten() {
+        for entry in fs::read_dir(self.preferences.admin_dir.join("info"))?.flatten() {
             let file_name = entry.file_name().into_vec();
 
             // Reject every file not starting with package id + dot
@@ -123,11 +143,45 @@ impl BuildWorker {
 
             let res = archiver.get_mut().append_path_with_name(entry.path(), ext);
             if let Err(error) = res {
-                self.progress.println(format!(
-                    "[{}] {}",
-                    self.package.id,
-                    ansi_term::Colour::Yellow.paint(format!("{}", error))
-                ));
+                self.print_warning(error);
+            }
+        }
+
+        Ok(())
+    }
+
+    fn print_warning<T: std::fmt::Display>(&self, error: T) {
+        self.progress.println(format!(
+            "[{}] {}",
+            self.package.id,
+            Colour::Yellow.paint(error.to_string())
+        ));
+    }
+
+    pub async fn work(&self) -> Result<()> {
+        let progress = format!("Processing {}", self.package.name);
+        self.progress.set_message(progress);
+
+        let result = self.run();
+        self.progress.inc(1);
+
+        match result {
+            Ok(file) => {
+                let progress = format!("Done {}", self.package.name);
+                self.progress.set_message(progress);
+
+                if let Some(archive) = &self.archive {
+                    let mut archive = archive.lock().unwrap();
+                    let abs_file = Path::new(".").join(file.file_name().unwrap());
+                    let result = archive.get_mut().append_path_with_name(&file, &abs_file);
+                    if result.is_ok() && self.preferences.remove_deb {
+                        let _ = fs::remove_file(file);
+                    }
+                }
+            }
+            Err(error) => {
+                let error = format!("Building {} error. {}", self.package.name, error);
+                self.progress.println(Colour::Red.paint(error).to_string());
             }
         }
 

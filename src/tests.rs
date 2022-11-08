@@ -67,15 +67,12 @@ fn parser_multiline() {
     });
 
     let package = packages.get("valid-package-1").unwrap();
-    let description = package.get_field(&Field::Description).unwrap();
-    assert_eq!(
-        description.as_str(),
-        "First Line\n Second Line\n  Third Line"
-    );
+    let description = package.get_field(Field::Description).unwrap();
+    assert_eq!(description, "First Line\n Second Line\n  Third Line");
 
     let package = packages.get("valid-package-2").unwrap();
-    let description = package.get_field(&Field::Description).unwrap();
-    assert_eq!(description.as_str(), "First Line");
+    let description = package.get_field(Field::Description).unwrap();
+    assert_eq!(description, "First Line");
 }
 
 #[test]

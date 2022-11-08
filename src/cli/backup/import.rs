@@ -17,12 +17,19 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{super::*, *};
-use crate::process;
+use super::{DataFormat, DataLayout, RepoGroup, RepoGroupFormat};
+use crate::{
+    cli::{
+        context::{self, Context},
+        CliCommand,
+    },
+    error::{Error, Result},
+    process,
+};
 use std::{
     fs::File,
     io::{self, BufWriter, Write},
-    process::{exit, Command, Stdio},
+    process::{Command, Stdio},
 };
 
 #[derive(clap::Parser)]
@@ -39,14 +46,10 @@ pub struct Import {
 
 #[async_trait::async_trait]
 impl CliCommand for Import {
-    async fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
-        if !utils::is_root() {
-            eprintln!("{}", utils::non_root_warn_msg());
-            eprintln!(
-                "Importing requires executing apt command. \
-                Please, consider switching to root user."
-            );
-            exit(1);
+    async fn run(&self, context: Context) -> Result<()> {
+        if !context.is_root() {
+            eprintln!("{}", context::non_root_warn_msg());
+            return Err(Error::NotRunningAsRoot);
         }
 
         let data = self.deserialize_input().expect("Can't deserialize input");
@@ -55,16 +58,13 @@ impl CliCommand for Import {
             for repo_group in repositories.iter() {
                 if let Err(error) = self.import_repo_group(repo_group) {
                     eprint!(
-                        "Can't import sources for {}. {}",
+                        "Can't import sources for {}. {:?}",
                         repo_group.executable, error
                     );
                 }
             }
 
-            let executables = repositories
-                .iter()
-                .map(|src| src.executable.clone())
-                .collect();
+            let executables = repositories.iter().map(|src| src.executable.as_str());
             process::send_signal_to_multiple(executables, process::Signal::Kill);
         }
 
@@ -92,7 +92,7 @@ impl CliCommand for Import {
 
 impl Import {
     #[inline]
-    fn deserialize_input(&self) -> Result<DataLayout, serde_any::error::Error> {
+    fn deserialize_input(&self) -> std::result::Result<DataLayout, serde_any::error::Error> {
         let format = self.format.to_serde();
         match self.input.as_str() {
             "-" => serde_any::from_reader(io::stdin(), format),
@@ -100,7 +100,7 @@ impl Import {
         }
     }
 
-    fn import_repo_group(&self, repo_group: &RepoGroup) -> io::Result<()> {
+    fn import_repo_group(&self, repo_group: &RepoGroup) -> Result<()> {
         eprintln!(
             "Importing {} source(s) for {}",
             repo_group.sources.len(),
@@ -123,32 +123,29 @@ impl Import {
             "Triggering post-import hooks for {}...",
             repo_group.executable
         );
-        let hook_res = match repo_group.executable.as_str() {
+        let hook_res: Result<_> = match repo_group.executable.as_str() {
             "Zebra" => std::fs::remove_file(
                 "/var/mobile/Library/Application Support/xyz.willy.Zebra/zebra.db",
-            ),
+            )
+            .map_err(|error| error.into()),
             "Cydia" => self.cydia_post_import_hook(repo_group),
             _ => Ok(()),
         };
+
         if let Err(error) = hook_res {
-            eprintln!("Post-import hook completed with error: {}", error);
+            eprintln!("Post-import hook completed with error: {:?}", error);
         }
 
         Ok(())
     }
 
-    fn cydia_post_import_hook(&self, repo_group: &RepoGroup) -> io::Result<()> {
+    fn cydia_post_import_hook(&self, repo_group: &RepoGroup) -> Result<()> {
         let prefs_path = "/var/mobile/Library/Preferences/com.saurik.Cydia.plist";
-        let prefs = plist::Value::from_file(prefs_path);
-        if prefs.is_err() {
-            return Err(io::Error::from(io::ErrorKind::InvalidInput));
-        }
-        let mut prefs = prefs.unwrap();
+        let mut prefs = plist::Value::from_file(prefs_path)?;
 
-        let prefs_dict = prefs.as_dictionary_mut();
-        if prefs_dict.is_none() {
-            return Err(io::Error::from(io::ErrorKind::InvalidInput));
-        }
+        let prefs_dict = prefs
+            .as_dictionary_mut()
+            .ok_or_else(|| io::Error::from(io::ErrorKind::InvalidInput))?;
 
         let sources: plist::Dictionary = repo_group
             .sources
@@ -156,16 +153,12 @@ impl Import {
             .map(|src| (src.to_cydia_key(), plist::Value::Dictionary(src.to_dict())))
             .collect();
 
-        prefs_dict.unwrap().insert(
+        prefs_dict.insert(
             "CydiaSources".to_string(),
             plist::Value::Dictionary(sources),
         );
 
-        if prefs.to_file_binary(prefs_path).is_err() {
-            return Err(io::Error::from(io::ErrorKind::WriteZero));
-        }
-
-        Ok(())
+        Ok(prefs.to_file_binary(prefs_path)?)
     }
 
     fn run_apt(&self, args: Vec<&str>) -> Option<()> {
