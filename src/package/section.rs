@@ -17,6 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#[cfg(feature = "cli")]
 use ansi_term::Colour;
 
 #[derive(Clone, PartialEq, Eq)]
@@ -59,6 +60,7 @@ impl Section {
         }
     }
 
+    #[cfg(feature = "cli")]
     pub fn color(&self) -> Colour {
         match self {
             Self::System => Colour::Fixed(9),  // bright red

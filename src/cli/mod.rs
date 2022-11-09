@@ -17,79 +17,35 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use clap::Parser;
-use context::Context;
-use std::fs;
-
-mod build;
+mod commands;
 mod context;
-mod leaves;
-mod list;
-
-#[cfg(any(target_os = "ios", debug_assertions))]
-mod backup;
+mod logger;
+mod progress_bar;
 
 use crate::error::Result;
+use clap::Parser;
+use commands::{CliCommand, Command};
+use context::Context;
+use std::fs;
 
 const ADMIN_DIR: &str = "/var/lib/dpkg";
 const TARGET_DIR: &str = "/var/mobile/Documents/twackup";
 const LICENSE_PATH: &str = "/usr/share/doc/ru.danpashin.twackup/LICENSE";
 
-#[async_trait::async_trait]
-trait CliCommand {
-    async fn run(&self, context: Context) -> Result<()>;
-}
+const ROOT_WARN_MESSAGE: &str =
+    "You seem not to be a root user. It is highly recommended to use root, \
+    in other case some operations can fail.";
 
-#[derive(clap::Parser)]
+#[derive(Parser)]
 #[clap(about, version)]
-struct Options {
+pub(crate) struct Options {
     #[clap(subcommand)]
     subcmd: Command,
 }
 
-#[derive(clap::Parser)]
-#[clap(version)]
-enum Command {
-    /// Just prints installed packages to stdout.
-    /// Skips "virtual" packages mostly used by all iOS package managers.
-    List(list::List),
-
-    /// Detects packages that are not dependencies of others and prints them to stdout
-    ///
-    /// If you know homebrew, you should know similar command. This does the same thing.
-    ///
-    Leaves(leaves::Leaves),
-
-    /// Collects package from files in the filesystem and packages them to DEB.
-    /// Skips "virtual" packages mostly used by all iOS package managers.
-    ///
-    /// Note, this command can fail in finding some files
-    /// (e.g. when they were moved by post-installation or another script),
-    /// so it can't be used for "backing up" all packages you have.
-    /// For backups, please, use export and import commands.
-    Build(build::Build),
-
-    /// Exports packages and repositories to file.
-    /// Skips "virtual" packages mostly used by all iOS package managers.
-    ///
-    /// Can be used for backing up data for to restore in another jailbreak
-    /// or after restoring system itself.
-    #[cfg(any(target_os = "ios", debug_assertions))]
-    Export(backup::export::Export),
-
-    /// Performs importing packages and repositories from file created by export command.
-    ///
-    /// Useful when you want to restore packages from your old device or another jailbreak.
-    #[cfg(any(target_os = "ios", debug_assertions))]
-    Import(backup::import::Import),
-
-    /// Shows license under Twackup is being distributed
-    #[clap(aliases = &["w", "c"])]
-    ShowLicense,
-}
-
 /// Starts parsing CLI arguments and runs actions for them
-pub async fn run() -> Result<()> {
+pub(crate) async fn run() -> Result<()> {
+    logger::Logger::init();
     let context = Context::new();
 
     let options = Options::parse();
@@ -98,14 +54,14 @@ pub async fn run() -> Result<()> {
         Command::Leaves(cmd) => cmd.run(context).await,
         Command::Build(cmd) => cmd.run(context).await,
 
-        #[cfg(any(target_os = "ios", debug_assertions))]
+        #[cfg(feature = "ios")]
         Command::Export(cmd) => cmd.run(context).await,
 
-        #[cfg(any(target_os = "ios", debug_assertions))]
+        #[cfg(feature = "ios")]
         Command::Import(cmd) => cmd.run(context).await,
 
         Command::ShowLicense => {
-            let license = fs::read_to_string(LICENSE_PATH).expect("Can't open license file");
+            let license = fs::read_to_string(LICENSE_PATH)?;
             println!("\n{}\n", license);
 
             Ok(())

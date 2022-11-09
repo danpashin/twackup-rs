@@ -17,17 +17,18 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-mod builder;
-mod cli;
-mod error;
-mod flock;
-mod kvparser;
-mod package;
-mod process;
-mod progress;
-mod repository;
+pub trait Progress {
+    fn new(total: u64) -> Self;
 
-#[tokio::main]
-async fn main() -> error::Result<()> {
-    cli::run().await
+    fn increment(&self, delta: u64);
+
+    fn finish(&self);
+
+    fn print<M: AsRef<str>>(&self, message: M);
+
+    fn print_warning<M: AsRef<str>>(&self, message: M);
+
+    fn print_error<M: AsRef<str>>(&self, message: M);
+
+    fn set_message<M: AsRef<str>>(&self, message: M);
 }

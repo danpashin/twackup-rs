@@ -143,3 +143,116 @@ impl ChunkWorker {
         fields_map
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Parser;
+    use crate::{
+        package::{Field, Package},
+        repository::Repository,
+    };
+    use std::{
+        collections::HashMap,
+        env,
+        fs::{self, File},
+        io::{self, BufRead, BufReader, Write},
+        os::unix::fs::PermissionsExt,
+    };
+
+    #[tokio::test]
+    async fn valid_database() {
+        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/database/valid");
+        let parser = Parser::new(database).unwrap();
+        let packages = parser.parse::<Package>().await;
+        assert_eq!(packages.len(), 3);
+    }
+
+    #[tokio::test]
+    async fn partially_valid_database() {
+        let database = concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/assets/database/partially_valid"
+        );
+        let parser = Parser::new(database).unwrap();
+        let packages = parser.parse::<Package>().await;
+        assert_ne!(packages.len(), 3);
+    }
+
+    #[tokio::test]
+    async fn multiline() {
+        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/database/multiline");
+        let parser = Parser::new(database).unwrap();
+
+        let packages = parser.parse::<Package>().await;
+        let packages: HashMap<String, Package> = packages
+            .into_iter()
+            .map(|pkg| (pkg.id.clone(), pkg))
+            .collect();
+
+        let package = packages.get("valid-package-1").unwrap();
+        let description = package.get_field(Field::Description).unwrap();
+        assert_eq!(description, "First Line\n Second Line\n  Third Line");
+
+        let package = packages.get("valid-package-2").unwrap();
+        let description = package.get_field(Field::Description).unwrap();
+        assert_eq!(description, "First Line");
+    }
+
+    #[test]
+    fn no_permissions_database() {
+        let database = env::temp_dir().join("twackup-no-permissions");
+        let mut file = File::create(&database).unwrap();
+        file.write("This contents will never be read".as_bytes())
+            .unwrap();
+        fs::set_permissions(&database, fs::Permissions::from_mode(0o333)).unwrap();
+
+        let parser = Parser::new(database.as_path());
+        assert_eq!(parser.is_err(), true);
+        assert_eq!(
+            io::Error::last_os_error().kind(),
+            io::ErrorKind::PermissionDenied
+        );
+
+        fs::remove_file(&database).unwrap();
+    }
+
+    #[tokio::test]
+    async fn modern_repository() {
+        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/sources_db/modern");
+
+        let parser = Parser::new(database).unwrap();
+
+        let repositories = parser.parse::<Repository>().await;
+        let repositories: HashMap<String, Repository> = repositories
+            .into_iter()
+            .map(|repo| (repo.url.clone(), repo))
+            .collect();
+
+        assert_eq!(repositories.len(), 3);
+
+        let repo = repositories.get("https://apt1.example.com/").unwrap();
+        assert_eq!(repo.components.as_slice(), &["main", "orig"]);
+    }
+
+    #[test]
+    fn classic_repository() {
+        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/sources_db/classic");
+        let reader = BufReader::new(File::open(database).unwrap());
+
+        let repositories: HashMap<String, Repository> = reader
+            .lines()
+            .map(|line| {
+                let line = line.expect("Can't unwrap line");
+                eprintln!("{}", line);
+                let repo = Repository::from_one_line(line.as_str()).expect("Parsing repo failed");
+                (repo.url.clone(), repo)
+            })
+            .collect();
+
+        assert_eq!(repositories.len(), 3);
+
+        let repo = repositories.get("https://apt1.example.com/").unwrap();
+        assert_eq!(repo.distribution.as_str(), "stable");
+        assert_eq!(repo.components.as_slice(), &["main", "orig"]);
+    }
+}

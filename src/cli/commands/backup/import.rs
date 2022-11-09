@@ -19,10 +19,7 @@
 
 use super::{DataFormat, DataLayout, RepoGroup, RepoGroupFormat};
 use crate::{
-    cli::{
-        context::{self, Context},
-        CliCommand,
-    },
+    cli::{commands::CliCommand, context::Context, ROOT_WARN_MESSAGE},
     error::{Error, Result},
     process,
 };
@@ -33,7 +30,7 @@ use std::{
 };
 
 #[derive(clap::Parser)]
-pub struct Import {
+pub(crate) struct Import {
     /// Use another input format
     /// (e.g. when it was processed with third-party parser like jq)
     #[clap(short, long, value_enum, default_value = "json")]
@@ -48,7 +45,7 @@ pub struct Import {
 impl CliCommand for Import {
     async fn run(&self, context: Context) -> Result<()> {
         if !context.is_root() {
-            eprintln!("{}", context::non_root_warn_msg());
+            log::error!("{}", ROOT_WARN_MESSAGE);
             return Err(Error::NotRunningAsRoot);
         }
 
@@ -69,7 +66,7 @@ impl CliCommand for Import {
         }
 
         if let Some(packages) = data.packages {
-            eprintln!("Importing packages...");
+            log::info!("Importing packages...");
             self.run_apt(vec![
                 "update",
                 "--allow-unauthenticated",
@@ -101,7 +98,7 @@ impl Import {
     }
 
     fn import_repo_group(&self, repo_group: &RepoGroup) -> Result<()> {
-        eprintln!(
+        log::info!(
             "Importing {} source(s) for {}",
             repo_group.sources.len(),
             repo_group.executable
@@ -119,7 +116,7 @@ impl Import {
             writer.flush()?;
         }
 
-        eprintln!(
+        log::info!(
             "Triggering post-import hooks for {}...",
             repo_group.executable
         );
@@ -171,7 +168,7 @@ impl Import {
             .expect("apt command failed to start");
 
         if !apt_cmd.success() {
-            eprintln!(
+            log::error!(
                 "Apt exited with status: {}. See stderr for more info.",
                 apt_cmd
             );
