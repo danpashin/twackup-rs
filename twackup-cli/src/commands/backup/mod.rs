@@ -20,9 +20,9 @@
 pub(crate) mod export;
 pub(crate) mod import;
 
-use crate::repository::Repository;
 use serde::{Deserialize, Serialize};
 use std::collections::LinkedList;
+use twackup::repository::Repository;
 
 const MODERN_MANAGERS: &[(&str, &str)] = &[("Sileo", "/etc/apt/sources.list.d/sileo.sources")];
 

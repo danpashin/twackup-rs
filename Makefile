@@ -1,5 +1,6 @@
 CARGO_FLAGS=--release
 TARGET=twackup
+CARGO_TARGET=$(TARGET)-cli
 BUILD_DIR=build
 RUSTFLAGS=
 OUTPUT_DIR=packages
@@ -17,7 +18,7 @@ endif
 IOS_BINARIES=$(addsuffix /$(CONFIGURATION)/${TARGET},$(addprefix ${BUILD_DIR}/,${IOS_ARCHS}))
 NATIVE_BINARY=$(addsuffix /$(CONFIGURATION)/${TARGET},$(addprefix ${BUILD_DIR}/,${NATIVE_ARCH}))
 
-PKG_METADATA:='$(shell cargo metadata --format-version 1 | jq -r '.packages[] | select(.name == "$(TARGET)")')'
+PKG_METADATA:='$(shell cargo metadata --format-version 1 | jq -r '.packages[] | select(.name == "$(CARGO_TARGET)")')'
 DEB_IDENTIFIER:=$(shell echo $(PKG_METADATA) | jq -r '.metadata.deb_pkg.identifier')
 DEB_VERSION:=$(shell echo $(PKG_METADATA) | jq -r '.version')
 DEB_NAME:=$(shell echo $(PKG_METADATA) | jq -r '.metadata.deb_pkg.name')

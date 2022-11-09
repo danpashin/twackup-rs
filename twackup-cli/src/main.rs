@@ -22,11 +22,11 @@ mod context;
 mod logger;
 mod progress_bar;
 
-use crate::error::Result;
 use clap::Parser;
 use commands::{CliCommand, Command};
 use context::Context;
 use std::fs;
+use twackup::error::Result;
 
 const ADMIN_DIR: &str = "/var/lib/dpkg";
 const TARGET_DIR: &str = "/var/mobile/Documents/twackup";
@@ -44,7 +44,8 @@ pub(crate) struct Options {
 }
 
 /// Starts parsing CLI arguments and runs actions for them
-pub(crate) async fn run() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     logger::Logger::init();
     let context = Context::new();
 

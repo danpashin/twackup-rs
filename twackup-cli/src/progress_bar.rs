@@ -17,10 +17,10 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::progress::Progress;
 use ansi_term::Colour;
 use indicatif::ProgressBar as ProgressBarImpl;
 use std::mem;
+use twackup::progress::Progress;
 
 pub(crate) static mut PROGRESS_BAR: Option<&'static ProgressBar> = None;
 
