@@ -1,33 +1,5 @@
-[package]
-name = "twackup"
-version = "1.0.0"
-description = "Safe and fast iOS CLI utility for rebuilding DEBs and backing up packages"
-authors = ["DanP"]
-edition = "2021"
-publish = false
-license = "GPL-3.0-only"
-
-[lib]
-crate-type = ["cdylib", "staticlib", "rlib"]
-
-[[bin]]
-name = "twackup"
-required-features = ["cli"]
-
-[package.metadata.deb_pkg]
-name = "Twackup (CLI)"
-identifier = "ru.danpashin.twackup"
-section = "Utilities"
-priority = "optional"
-architecture = "iphoneos-arm"
-depends = "firmware (>= 3.0)"
-changelog = "changelog"
-homepage = ""
-assets = [
-    ["build/twackup-ios", "/usr/bin/twackup"],
-    ["COPYING", "/usr/share/doc/ru.danpashin.twackup/LICENSE"],
-]
-license_type = "GPL-3.0"
+[workspace]
+members = ["twackup", "twackup-cli"]
 
 [profile.release]
 opt-level = 's'
@@ -42,47 +14,3 @@ opt-level = 's'
 codegen-units = 1
 debug = 0
 debug-assertions = false
-
-[dependencies]
-
-# Core
-async-trait = "0.1"
-chrono = { version = "0.4", default-features = false, features = ["clock"] }
-futures = "0.3"
-tokio = { version = "1.5", features = ["rt-multi-thread", "sync", "macros"] }
-
-# Archiving
-ar = "0.9"
-flate2 = { version = "1.0", features = ["zlib"], default-features = false }
-tar = { version = "0.4", default-features = false }
-
-# Serializing
-plist = { version = "1.0", default-features = false }
-serde = { version = "1.0", features = ["derive"] }
-serde_any = { version = "0.5", default-features = false, features = ["yaml", "toml", "json"] }
-
-# Logging
-log = "0.4"
-thiserror = "1.0"
-
-# Misc
-gethostname = "0.4"
-libc = "0.2"
-libproc = { git = "https://github.com/danpashin/libproc-rs", branch = "0.12.0-ios", default-features = false }
-memmap = "0.7"
-
-# CLI dependencies
-ansi_term = { version = "0.12", default-features = false, features = [], optional = true }
-indicatif = { version = "0.17", default-features = false, features = [], optional = true }
-stderrlog = { version = "0.5", default-features = false, features = [], optional = true }
-
-[dependencies.clap]
-version = "4.0"
-default-features = false
-features = ["derive", "std", "help", "usage", "error-context"]
-optional = true
-
-[features]
-default = ["cli", "ios"]
-cli = ["dep:ansi_term", "dep:clap", "dep:indicatif", "dep:stderrlog"]
-ios = []

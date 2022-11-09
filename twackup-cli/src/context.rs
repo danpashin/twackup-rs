@@ -18,17 +18,17 @@
  */
 
 use super::progress_bar::ProgressBar;
-use crate::{
-    error::Result,
-    flock::{lock_exclusive, unlock},
-    kvparser::Parser,
-    package::{Package, Priority, Section},
-};
 use std::{
     collections::BTreeMap,
     fs,
     path::Path,
     time::{Duration, Instant},
+};
+use twackup::{
+    error::Result,
+    flock::{lock_exclusive, unlock},
+    kvparser::Parser,
+    package::{Package, Priority, Section},
 };
 
 pub(crate) struct Context {

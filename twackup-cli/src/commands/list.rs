@@ -18,11 +18,13 @@
  */
 
 use super::{CliCommand, Context};
-use crate::{cli::ADMIN_DIR, error::Result};
+use crate::ADMIN_DIR;
 use std::path::PathBuf;
+use twackup::error::Result;
 
 #[derive(clap::Parser)]
-pub(crate) struct Leaves {
+#[clap(version)]
+pub(crate) struct List {
     /// Use custom dpkg <directory>.
     /// This option is used for detecting installed packages
     #[clap(long, default_value = ADMIN_DIR, value_parser)]
@@ -30,13 +32,19 @@ pub(crate) struct Leaves {
 }
 
 #[async_trait::async_trait]
-impl CliCommand for Leaves {
+impl CliCommand for List {
     async fn run(&self, context: Context) -> Result<()> {
-        let packages = context.packages(&self.admindir, true).await?;
+        let packages = context.packages(&self.admindir, false).await?;
 
-        for (_, package) in packages {
+        for (position, (_, package)) in packages.into_iter().enumerate() {
             let section_sym = package.section.color().paint("▶︎");
-            println!("{} {} - {}", section_sym, package.name, package.id);
+            println!(
+                "{:3}: {} {} - {}",
+                position + 1,
+                section_sym,
+                package.name,
+                package.id
+            );
         }
 
         Ok(())
