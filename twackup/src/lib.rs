@@ -18,9 +18,8 @@
  */
 
 pub mod builder;
+pub mod dpkg;
 pub mod error;
-pub mod flock;
-#[allow(dead_code)]
 pub mod kvparser;
 pub mod package;
 pub mod process;
