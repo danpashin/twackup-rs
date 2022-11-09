@@ -19,7 +19,6 @@
 
 use ansi_term::Colour;
 use indicatif::ProgressBar as ProgressBarImpl;
-use std::mem;
 use twackup::progress::Progress;
 
 pub(crate) static mut PROGRESS_BAR: Option<&'static ProgressBar> = None;
@@ -43,7 +42,8 @@ impl ProgressBar {
     fn drop_pb(&self) {
         unsafe {
             if let Some(progress_bar) = PROGRESS_BAR {
-                let progress_bar: *mut ProgressBar = mem::transmute(progress_bar);
+                let progress_bar: *mut ProgressBar = progress_bar as *const _ as *mut _;
+                let progress_bar = Box::from_raw(progress_bar);
                 drop(progress_bar);
 
                 PROGRESS_BAR = None;

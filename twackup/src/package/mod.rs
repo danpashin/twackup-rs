@@ -25,7 +25,7 @@ mod state;
 pub use self::{field::Field, priority::Priority, section::Section, state::State};
 use crate::kvparser::Parsable;
 use std::{
-    collections::{HashMap, LinkedList},
+    collections::HashMap,
     fs::File,
     io::{self, BufRead, BufReader},
     path::Path,
@@ -127,32 +127,20 @@ impl Package {
         control
     }
 
-    fn parse_dependencies(&self, dependencies: &str) -> LinkedList<String> {
-        // Flat all possible dependencies and remove version condition
-        dependencies
-            .split([',', '|'])
-            .map(|dep| match dep.find('(').zip(dep.find(')')) {
-                Some((start, _)) => dep[0..start].trim().to_string(),
-                _ => dep.trim().to_string(),
-            })
-            .collect()
-    }
-
-    /// Returns true if this package us a dependency of other.
-    pub fn is_dependency_of(&self, pkg: &Package) -> bool {
-        let id = &self.id;
-        if let Some(depends) = pkg.get_field(Field::Depends) {
-            if self.parse_dependencies(depends).contains(id) {
-                return true;
-            }
-        }
-        if let Some(depends) = pkg.get_field(Field::PreDepends) {
-            if self.parse_dependencies(depends).contains(id) {
-                return true;
-            }
+    pub fn dependencies(&self) -> impl Iterator<Item = &str> {
+        fn parse(string: &str) -> impl Iterator<Item = &str> {
+            string
+                .split([',', '|'])
+                .map(|dep| match dep.find('(').zip(dep.find(')')) {
+                    Some((start, _)) => dep[0..start].trim(),
+                    _ => dep.trim(),
+                })
         }
 
-        false
+        let depends = self.get_field(Field::Depends).unwrap_or_default();
+        let predepends = self.get_field(Field::Depends).unwrap_or_default();
+
+        parse(depends).chain(parse(predepends))
     }
 
     #[inline]

@@ -20,16 +20,10 @@
 use super::progress_bar::ProgressBar;
 use std::{
     collections::BTreeMap,
-    fs,
     path::Path,
     time::{Duration, Instant},
 };
-use twackup::{
-    error::Result,
-    flock::{lock_exclusive, unlock},
-    kvparser::Parser,
-    package::{Package, Priority, Section},
-};
+use twackup::{dpkg::Dpkg, error::Result, package::Package};
 
 pub(crate) struct Context {
     start_time: Instant,
@@ -70,52 +64,6 @@ impl Context {
         admin_dir: P,
         leaves_only: bool,
     ) -> Result<BTreeMap<String, Package>> {
-        // lock database as it can be modified while parsing
-        let lock_file_path = admin_dir.as_ref().join("lock");
-        let lock_file = fs::File::create(&lock_file_path)?;
-        lock_exclusive(&lock_file)?;
-
-        let status_file = admin_dir.as_ref().join("status");
-        let parser = Parser::new(status_file)?;
-
-        let packages = parser.parse::<Package>().await;
-
-        // remove database lock as it is not needed anymore
-        let _ = unlock(&lock_file);
-        let _ = fs::remove_file(lock_file_path);
-
-        if !leaves_only {
-            return Ok(packages
-                .into_iter()
-                .map(|pkg| (pkg.id.clone(), pkg))
-                .collect());
-        }
-
-        let mut leaves_indexes = Vec::with_capacity(packages.len());
-        for (index, package) in packages.iter().enumerate() {
-            // Skip package if it is system
-            if package.section == Section::System || package.priority == Priority::Required {
-                continue;
-            }
-            // Skip this package if it is the dependency of other
-            let mut is_dependency = false;
-            for pkg in packages.iter() {
-                if package.is_dependency_of(pkg) {
-                    is_dependency = true;
-                    break;
-                }
-            }
-            // Save index to filter packages in further
-            if !is_dependency {
-                leaves_indexes.push(index);
-            }
-        }
-
-        Ok(packages
-            .into_iter()
-            .enumerate()
-            .filter(|(index, _)| leaves_indexes.contains(index))
-            .map(|(_, pkg)| (pkg.id.clone(), pkg))
-            .collect())
+        Dpkg::new(admin_dir, true).packages(leaves_only).await
     }
 }
