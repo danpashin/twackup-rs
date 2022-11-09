@@ -19,10 +19,8 @@
 
 pub mod deb;
 
-use crate::{error::Result, package::Package};
-use ansi_term::Colour;
+use crate::{error::Result, package::Package, progress::Progress};
 use deb::{Deb, DebTarArchive};
-use indicatif::ProgressBar;
 use std::{
     fs, io,
     os::unix::ffi::OsStringExt,
@@ -39,9 +37,9 @@ pub struct Preferences {
 }
 
 /// Creates DEB from filesystem contents
-pub struct Worker {
+pub struct Worker<T: Progress> {
     pub package: Package,
-    pub progress: ProgressBar,
+    pub progress: T,
     pub archive: Option<Arc<Mutex<DebTarArchive>>>,
     pub preferences: Preferences,
     pub working_dir: PathBuf,
@@ -58,10 +56,10 @@ impl Preferences {
     }
 }
 
-impl Worker {
+impl<T: Progress> Worker<T> {
     pub fn new(
         package: Package,
-        progress: ProgressBar,
+        progress: T,
         archive: Option<Arc<Mutex<DebTarArchive>>>,
         preferences: Preferences,
     ) -> Self {
@@ -109,7 +107,7 @@ impl Worker {
             let name = file.trim_start_matches('/');
             let res = archiver.get_mut().append_path_with_name(&file, name);
             if let Err(error) = res {
-                self.print_warning(error);
+                log::warn!("[{}] {}", self.package.id, error);
             }
         }
 
@@ -143,19 +141,11 @@ impl Worker {
 
             let res = archiver.get_mut().append_path_with_name(entry.path(), ext);
             if let Err(error) = res {
-                self.print_warning(error);
+                log::warn!("[{}] {}", self.package.id, error);
             }
         }
 
         Ok(())
-    }
-
-    fn print_warning<T: std::fmt::Display>(&self, error: T) {
-        self.progress.println(format!(
-            "[{}] {}",
-            self.package.id,
-            Colour::Yellow.paint(error.to_string())
-        ));
     }
 
     pub async fn work(&self) -> Result<()> {
@@ -163,7 +153,7 @@ impl Worker {
         self.progress.set_message(progress);
 
         let result = self.run();
-        self.progress.inc(1);
+        self.progress.increment(1);
 
         match result {
             Ok(file) => {
@@ -180,8 +170,7 @@ impl Worker {
                 }
             }
             Err(error) => {
-                let error = format!("Building {} error. {}", self.package.name, error);
-                self.progress.println(Colour::Red.paint(error).to_string());
+                log::error!("Building {} error. {}", self.package.name, error)
             }
         }
 

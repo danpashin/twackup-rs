@@ -24,7 +24,5 @@ pub mod flock;
 pub mod kvparser;
 pub mod package;
 pub mod process;
+pub mod progress;
 pub mod repository;
-
-#[cfg(test)]
-mod tests;

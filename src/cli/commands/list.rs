@@ -17,13 +17,13 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{context::Context, CliCommand, ADMIN_DIR};
-use crate::error::Result;
+use super::{CliCommand, Context};
+use crate::{cli::ADMIN_DIR, error::Result};
 use std::path::PathBuf;
 
 #[derive(clap::Parser)]
 #[clap(version)]
-pub struct List {
+pub(crate) struct List {
     /// Use custom dpkg <directory>.
     /// This option is used for detecting installed packages
     #[clap(long, default_value = ADMIN_DIR, value_parser)]

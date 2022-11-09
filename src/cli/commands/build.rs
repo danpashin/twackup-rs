@@ -17,17 +17,16 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{
-    context::{self, Context},
-    CliCommand, ADMIN_DIR, TARGET_DIR,
-};
+use super::CliCommand;
 use crate::{
     builder::{
         deb::{DebTarArchive, TarArchive},
         Preferences, Worker,
     },
+    cli::{context::Context, ADMIN_DIR, ROOT_WARN_MESSAGE, TARGET_DIR},
     error::Result,
     package::*,
+    progress::Progress,
 };
 use chrono::Local;
 use gethostname::gethostname;
@@ -45,13 +44,13 @@ const DEFAULT_ARCHIVE_NAME: &str = "%host%_%date%.tar.gz";
 #[clap(
     version,
     after_help = "
-Beware, this command doesn't guarantee to copy all files to the final DEB! \
+Beware, this command doesn't guarantee to copy all files to the final DEB!
 Some files can be skipped because of being renamed or removed in the installation process.
-If you see yellow warnings, it means the final deb will miss some contents \
+If you see yellow warnings, it means the final deb will miss some contents
 and may not work properly anymore.
 "
 )]
-pub struct Build {
+pub(crate) struct Build {
     /// By default twackup rebuilds only that packages which are not dependencies of others.
     /// This flag disables this restriction - command will rebuild all found packages.
     #[clap(short, long)]
@@ -105,7 +104,7 @@ impl Build {
             .filter_map(|&id| match all_packages.iter().nth(id - 1) {
                 Some((_, package)) => Some(package.clone()),
                 None => {
-                    eprintln!("Can't find any package at index {}", id);
+                    log::warn!("Can't find any package at index {}", id);
                     None
                 }
             });
@@ -118,7 +117,7 @@ impl Build {
                 .filter_map(|&id| match all_packages.get(id) {
                     Some(package) => Some(package.clone()),
                     None => {
-                        eprintln!("Can't find any package with identifier {}", id);
+                        log::warn!("Can't find any package with identifier {}", id);
                         None
                     }
                 });
@@ -134,7 +133,7 @@ impl Build {
         let progress = context.progress_bar(all_count);
 
         if !context.is_root() {
-            progress.println(context::non_root_warn_msg().to_string());
+            progress.print_warning(ROOT_WARN_MESSAGE);
         }
 
         let archive = self.create_archive_if_needed();
@@ -155,8 +154,8 @@ impl Build {
         }))
         .await;
 
-        progress.finish_and_clear();
-        println!(
+        progress.finish();
+        log::info!(
             "Processed {} packages in {}",
             all_count,
             indicatif::HumanDuration(context.elapsed())
@@ -190,10 +189,11 @@ impl Build {
 
     fn create_dir_if_needed(&self) -> Result<()> {
         match fs::metadata(&self.destination) {
-            Ok(metadata) if metadata.is_dir() => Ok(fs::remove_file(&self.destination)?),
-            Ok(_) => Ok(()),
-            Err(_) => Ok(fs::create_dir_all(&self.destination)?),
+            Ok(metadata) if !metadata.is_dir() => fs::remove_file(&self.destination)?,
+            _ => {}
         }
+
+        Ok(fs::create_dir_all(&self.destination)?)
     }
 }
 

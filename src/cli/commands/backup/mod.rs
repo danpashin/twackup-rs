@@ -17,8 +17,8 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-pub mod export;
-pub mod import;
+pub(crate) mod export;
+pub(crate) mod import;
 
 use crate::repository::Repository;
 use serde::{Deserialize, Serialize};

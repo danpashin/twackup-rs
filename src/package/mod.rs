@@ -160,3 +160,39 @@ impl Package {
         self.fields.get(&field).map(|value| value.as_str())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Package;
+    use crate::kvparser::Parsable;
+    use std::{collections::HashMap, path::Path};
+
+    #[test]
+    fn valid_package_get_files() {
+        let mut package_info: HashMap<String, String> = HashMap::new();
+        package_info.insert("Package".to_string(), "valid-package".to_string());
+        package_info.insert("Version".to_string(), "1.0.0".to_string());
+        package_info.insert("Architecture".to_string(), "all".to_string());
+
+        let package = Package::new(package_info).unwrap();
+
+        let path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/packages");
+        let files = package.get_installed_files(Path::new(path));
+        assert_eq!(files.is_err(), false);
+        assert_eq!(files.unwrap().len(), 3);
+    }
+
+    #[test]
+    fn non_valid_package_get_files() {
+        let mut package_info = HashMap::new();
+        package_info.insert("Package".to_string(), "non-valid-package".to_string());
+        package_info.insert("Version".to_string(), "1.0.0".to_string());
+        package_info.insert("Architecture".to_string(), "all".to_string());
+
+        let package = Package::new(package_info).unwrap();
+
+        let path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/packages");
+        let files = package.get_installed_files(Path::new(path));
+        assert_eq!(files.is_err(), true);
+    }
+}

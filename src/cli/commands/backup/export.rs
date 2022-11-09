@@ -17,8 +17,15 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{super::*, *};
-use crate::{error::Result, kvparser::Parser};
+use super::{
+    DataFormat, DataLayout, DataType, RepoGroup, RepoGroupFormat, CLASSIC_MANAGERS, MODERN_MANAGERS,
+};
+use crate::{
+    cli::{commands::CliCommand, Context, ADMIN_DIR},
+    error::Result,
+    kvparser::Parser,
+    repository::Repository,
+};
 use std::{
     collections::LinkedList,
     fs::File,
@@ -27,7 +34,7 @@ use std::{
 };
 
 #[derive(clap::Parser)]
-pub struct Export {
+pub(crate) struct Export {
     /// Use custom dpkg <directory>.
     /// This option is used for detecting installed packages
     #[clap(long, default_value = ADMIN_DIR, value_parser)]
@@ -51,7 +58,7 @@ pub struct Export {
 #[async_trait::async_trait]
 impl CliCommand for Export {
     async fn run(&self, context: Context) -> Result<()> {
-        eprintln!("Exporting data for {:?}...", self.data);
+        log::info!("Exporting data for {:?}...", self.data);
         let data = match self.data {
             DataType::Packages => DataLayout {
                 packages: Some(self.get_packages(context).await?),
@@ -82,7 +89,7 @@ impl CliCommand for Export {
             println!();
         }
 
-        eprintln!("Successfully exported {:?} data!", self.data);
+        log::info!("Successfully exported {:?} data!", self.data);
 
         Ok(())
     }
