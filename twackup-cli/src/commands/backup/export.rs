@@ -120,7 +120,7 @@ impl Export {
             if let Ok(file) = File::open(path) {
                 let mut repos = LinkedList::new();
                 for line in BufReader::new(file).lines().flatten() {
-                    if let Some(repo) = Repository::from_one_line(line.as_str()) {
+                    if let Ok(repo) = Repository::from_one_line(line.as_str()) {
                         repos.push_back(repo);
                     }
                 }

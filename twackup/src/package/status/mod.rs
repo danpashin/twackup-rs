@@ -22,7 +22,7 @@ pub mod state;
 pub mod want;
 
 pub use self::{eflag::EFlag, state::State, want::Want};
-use crate::error::Error;
+use super::PackageError;
 use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -45,19 +45,19 @@ impl Display for Status {
 }
 
 impl TryFrom<&str> for Status {
-    type Error = Error;
+    type Error = PackageError;
 
     fn try_from(string: &str) -> Result<Self, Self::Error> {
         let mut components = string.split_whitespace();
         let want = components
             .next()
-            .ok_or_else(|| Error::UnknownState(string.to_string()))?;
+            .ok_or_else(|| PackageError::UnknownState(string.to_string()))?;
         let eflag = components
             .next()
-            .ok_or_else(|| Error::UnknownState(string.to_string()))?;
+            .ok_or_else(|| PackageError::UnknownState(string.to_string()))?;
         let status = components
             .next()
-            .ok_or_else(|| Error::UnknownState(string.to_string()))?;
+            .ok_or_else(|| PackageError::UnknownState(string.to_string()))?;
 
         Ok(Self {
             want: want.try_into()?,

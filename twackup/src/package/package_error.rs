@@ -17,24 +17,25 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::{package::PackageError, repository::RepoError};
-
-pub type Result<T> = std::result::Result<T, Error>;
+use super::FieldName;
 
 #[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error("IOError({0})")]
-    Io(#[from] std::io::Error),
+pub enum PackageError {
+    #[error("Unknown package priority")]
+    UnknownPriority(String),
 
-    #[error("This action requires root permissions.")]
-    NotRunningAsRoot,
+    #[error("Unknown package eflag field")]
+    UnknownEFlag(String),
 
-    #[error("PlistError({0})")]
-    Plist(#[from] plist::Error),
+    #[error("Unknown package state")]
+    UnknownState(String),
 
-    #[error("PackageError({0})")]
-    PackageError(PackageError),
+    #[error("Unknown package want field")]
+    UnknownWant(String),
 
-    #[error("RepoError({0})")]
-    RepoError(RepoError),
+    #[error("Field is missed")]
+    MissingField(FieldName),
+
+    #[error("This package is virtual")]
+    VirtualPackage,
 }

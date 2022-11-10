@@ -17,40 +17,38 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::package::PackageError;
+use super::RepoError;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Want {
-    Unknown,
-    Install,
-    Hold,
-    DeInstall,
-    Purge,
+#[derive(Clone, Serialize, Deserialize, Debug)]
+pub enum Category {
+    /// Used for distributing binaries only
+    Binary,
+    /// This is used for distributing sources only
+    Source,
+    /// Supported only in DEB822 format
+    Both,
 }
 
-impl Want {
+impl Category {
     pub fn as_str(&self) -> &str {
         match self {
-            Self::Unknown => "unknown",
-            Self::Install => "install",
-            Self::Hold => "hold",
-            Self::DeInstall => "deinstall",
-            Self::Purge => "purge",
+            Self::Binary => "deb",
+            Self::Source => "deb-src",
+            Self::Both => "deb deb-src",
         }
     }
 }
 
-impl TryFrom<&str> for Want {
-    type Error = PackageError;
+impl TryFrom<&str> for Category {
+    type Error = RepoError;
 
-    fn try_from(string: &str) -> Result<Self, Self::Error> {
-        match string {
-            "unknown" => Ok(Self::Unknown),
-            "install" => Ok(Self::Install),
-            "hold" => Ok(Self::Hold),
-            "deinstall" => Ok(Self::DeInstall),
-            "purge" => Ok(Self::Purge),
-            _ => Err(PackageError::UnknownState(string.to_string())),
+    fn try_from(s: &str) -> Result<Self, Self::Error> {
+        match s.trim() {
+            "deb" => Ok(Self::Binary),
+            "deb-src" => Ok(Self::Source),
+            "deb deb-src" | "deb-src deb" => Ok(Self::Both),
+            _ => Err(RepoError::MissingField(s.to_string())),
         }
     }
 }

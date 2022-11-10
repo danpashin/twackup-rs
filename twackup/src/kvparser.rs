@@ -28,9 +28,10 @@ use std::{
     sync::Arc,
 };
 
-pub trait Parsable {
-    type Output;
-    fn new(key_values: HashMap<String, String>) -> Option<Self::Output>;
+pub trait Parsable: Send + Sized {
+    type Error: Send;
+
+    fn new(key_values: HashMap<String, String>) -> Result<Self, Self::Error>;
 }
 
 pub struct Parser {
@@ -55,13 +56,13 @@ impl Parser {
     }
 
     /// This method will parse file with key-value syntax on separate lines.
-    pub async fn parse<P: Parsable<Output = P> + 'static + Send>(&self) -> LinkedList<P> {
+    pub async fn parse<P: Parsable + 'static>(&self) -> LinkedList<P> {
         let mut workers = LinkedList::new();
 
         let mut last_nl_pos = 0;
         let file_len = self.get_file_len();
         for pos in 0..file_len - 1 {
-            if self.mmap[pos] ^ b'\n' == 0 && self.mmap[pos + 1] ^ b'\n' == 0 {
+            if self.mmap[pos] == b'\n' && self.mmap[pos + 1] == b'\n' {
                 let worker = ChunkWorker::new(self.mmap.clone(), last_nl_pos..pos);
                 workers.push_back(tokio::spawn(worker.run()));
                 last_nl_pos = pos;
@@ -70,7 +71,7 @@ impl Parser {
 
         let mut models = LinkedList::new();
         for worker in workers {
-            if let Ok(Some(worker_models)) = worker.await {
+            if let Ok(Ok(worker_models)) = worker.await {
                 models.push_back(worker_models);
             }
         }
@@ -92,7 +93,7 @@ impl ChunkWorker {
     }
 
     /// Parses chunk to model
-    async fn run<P: Parsable<Output = P>>(self) -> Option<P> {
+    async fn run<P: Parsable>(self) -> Result<P, P::Error> {
         let chunk = &self.file[self.range.start..self.range.end];
         let fields = self.parse_chunk(chunk);
         P::new(self.parse_fields(fields))

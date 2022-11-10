@@ -17,7 +17,10 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use std::str::FromStr;
+use std::{
+    fmt::{Display, Formatter},
+    str::FromStr,
+};
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub enum FieldName {
@@ -126,5 +129,11 @@ impl FromStr for FieldName {
 impl AsRef<FieldName> for FieldName {
     fn as_ref(&self) -> &FieldName {
         self
+    }
+}
+
+impl Display for FieldName {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }

@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::error::Error;
+use crate::package::PackageError;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum State {
@@ -47,7 +47,7 @@ impl State {
 }
 
 impl TryFrom<&str> for State {
-    type Error = Error;
+    type Error = PackageError;
 
     fn try_from(string: &str) -> Result<Self, Self::Error> {
         match string {
@@ -59,7 +59,7 @@ impl TryFrom<&str> for State {
             "triggers-awaited" => Ok(Self::TriggersAwaited),
             "triggers-pending" => Ok(Self::TriggersPending),
             "installed" => Ok(Self::Installed),
-            _ => Err(Error::UnknownState(string.to_string())),
+            _ => Err(PackageError::UnknownState(string.to_string())),
         }
     }
 }
