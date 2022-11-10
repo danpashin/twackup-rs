@@ -25,7 +25,7 @@ use std::{
     process::{Command, Stdio},
 };
 use twackup::{
-    error::{Error, Result},
+    error::{GenericError, Result},
     process,
 };
 
@@ -46,7 +46,7 @@ impl CliCommand for Import {
     async fn run(&self, context: Context) -> Result<()> {
         if !context.is_root() {
             log::error!("{}", ROOT_WARN_MESSAGE);
-            return Err(Error::NotRunningAsRoot);
+            return Err(GenericError::NotRunningAsRoot);
         }
 
         let data = self.deserialize_input().expect("Can't deserialize input");

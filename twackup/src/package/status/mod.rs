@@ -32,18 +32,6 @@ pub struct Status {
     state: State,
 }
 
-impl Display for Status {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{} {} {}",
-            self.want.as_str(),
-            self.e_flag.as_str(),
-            self.state.as_str()
-        )
-    }
-}
-
 impl TryFrom<&str> for Status {
     type Error = PackageError;
 
@@ -64,5 +52,11 @@ impl TryFrom<&str> for Status {
             e_flag: eflag.try_into()?,
             state: status.try_into()?,
         })
+    }
+}
+
+impl Display for Status {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {} {}", self.want, self.e_flag, self.state)
     }
 }

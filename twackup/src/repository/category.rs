@@ -44,7 +44,7 @@ impl TryFrom<&str> for Category {
     type Error = RepoError;
 
     fn try_from(s: &str) -> Result<Self, Self::Error> {
-        match s.trim() {
+        match s {
             "deb" => Ok(Self::Binary),
             "deb-src" => Ok(Self::Source),
             "deb deb-src" | "deb-src deb" => Ok(Self::Both),
