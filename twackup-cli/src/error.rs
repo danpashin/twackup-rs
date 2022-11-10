@@ -21,15 +21,15 @@ pub(crate) type Result<T> = std::result::Result<T, CLIError>;
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum CLIError {
-    #[error("Io({0})")]
+    #[error("IO: {0}")]
     Io(#[from] std::io::Error),
 
-    #[error("Twackup({0})")]
+    #[error("GenericError: {0}")]
     Twackup(#[from] twackup::error::GenericError),
 
-    #[error("Serde({0})")]
+    #[error("SerdeSupport: {0}")]
     Serde(#[from] crate::serde::SerdeError),
 
-    #[error("PlistError({0})")]
+    #[error("Plist: {0}")]
     Plist(#[from] plist::Error),
 }

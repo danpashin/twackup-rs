@@ -23,7 +23,7 @@ pub type Result<T> = std::result::Result<T, GenericError>;
 
 #[derive(thiserror::Error, Debug)]
 pub enum GenericError {
-    #[error("IOError({0})")]
+    #[error("IO: {0}")]
     Io(#[from] std::io::Error),
 
     #[error("This action requires root permissions.")]
@@ -32,9 +32,9 @@ pub enum GenericError {
     #[error("PlistError({0})")]
     Plist(#[from] plist::Error),
 
-    #[error("PackageError({0})")]
+    #[error("PackageError: {0}")]
     PackageError(#[from] PackageError),
 
-    #[error("RepoError({0})")]
+    #[error("RepoError: {0}")]
     RepoError(#[from] RepoError),
 }

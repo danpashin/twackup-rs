@@ -37,11 +37,11 @@ impl Logger {
 }
 
 impl Log for Logger {
-    fn enabled(&self, _metadata: &Metadata) -> bool {
+    fn enabled(&self, _metadata: &Metadata<'_>) -> bool {
         true
     }
 
-    fn log(&self, record: &Record) {
+    fn log(&self, record: &Record<'_>) {
         match unsafe { PROGRESS_BAR } {
             Some(progress_bar) => progress_bar.0.suspend(|| self.0.log(record)),
             None => self.0.log(record),

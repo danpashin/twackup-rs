@@ -17,6 +17,8 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#![warn(rust_2018_idioms)]
+
 pub mod builder;
 pub mod dpkg;
 pub mod error;

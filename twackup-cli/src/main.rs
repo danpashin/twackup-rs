@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
+#![warn(rust_2018_idioms)]
 
 mod commands;
 mod context;
@@ -34,10 +35,6 @@ const ADMIN_DIR: &str = "/var/lib/dpkg";
 const TARGET_DIR: &str = "/var/mobile/Documents/twackup";
 const LICENSE_PATH: &str = "/usr/share/doc/ru.danpashin.twackup/LICENSE";
 
-const ROOT_WARN_MESSAGE: &str =
-    "You seem not to be a root user. It is highly recommended to use root, \
-    in other case some operations can fail.";
-
 #[derive(Parser)]
 #[clap(about, version)]
 pub(crate) struct Options {
@@ -45,10 +42,16 @@ pub(crate) struct Options {
     subcmd: Command,
 }
 
-/// Starts parsing CLI arguments and runs actions for them
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() {
     logger::Logger::init();
+    if let Err(error) = _run().await {
+        log::error!("{}", error);
+    }
+}
+
+/// Starts parsing CLI arguments and runs actions for them
+async fn _run() -> Result<()> {
     let context = Context::new();
 
     let options = Options::parse();
