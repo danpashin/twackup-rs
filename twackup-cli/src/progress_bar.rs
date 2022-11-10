@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use ansi_term::Colour;
+use console::style;
 use indicatif::ProgressBar as ProgressBarImpl;
 use twackup::progress::Progress;
 
@@ -71,11 +71,11 @@ impl Progress for ProgressBar {
     }
 
     fn print_warning<M: AsRef<str>>(&self, message: M) {
-        self.print(Colour::Yellow.paint(message.as_ref()).to_string())
+        self.print(style(message.as_ref()).yellow().to_string())
     }
 
     fn print_error<M: AsRef<str>>(&self, message: M) {
-        self.print(Colour::Red.paint(message.as_ref()).to_string())
+        self.print(style(message.as_ref()).red().to_string())
     }
 
     fn set_message<M: AsRef<str>>(&self, message: M) {

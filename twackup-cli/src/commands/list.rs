@@ -36,7 +36,7 @@ impl CliCommand for List {
         let packages = context.packages(&self.admindir, false).await?;
 
         for (position, (_, package)) in packages.into_iter().enumerate() {
-            let section_sym = package.section.color().paint("▶︎");
+            let section_sym = package.section.color().apply_to("▶︎");
             println!(
                 "{:3}: {} {} - {}",
                 position + 1,

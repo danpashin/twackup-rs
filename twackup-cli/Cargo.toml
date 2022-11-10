@@ -50,7 +50,7 @@ log = "0.4"
 thiserror = "1.0"
 
 # CLI Utils
-ansi_term = { version = "0.12", default-features = false, features = [] }
+console = { version = "0.15", default-features = false, features = [] }
 indicatif = { version = "0.17", default-features = false, features = [] }
 stderrlog = { version = "0.5", default-features = false, features = [] }
 

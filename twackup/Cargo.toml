@@ -34,9 +34,9 @@ libproc = { git = "https://github.com/danpashin/libproc-rs", branch = "0.12.0-io
 memmap2 = "0.5"
 
 # CLI Utils
-ansi_term = { version = "0.12", default-features = false, features = [], optional = true }
+console = { version = "0.15", default-features = false, features = [], optional = true }
 
 [features]
 default = []
-cli = ["dep:ansi_term"]
+cli = ["console"]
 ios = []
