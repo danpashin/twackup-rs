@@ -18,7 +18,7 @@
  */
 
 #[cfg(feature = "cli")]
-use ansi_term::Colour;
+use console::{Color, Style};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Section {
@@ -53,19 +53,21 @@ impl Section {
     }
 
     #[cfg(feature = "cli")]
-    pub fn color(&self) -> Colour {
-        match self {
-            Self::Archiving => Colour::Fixed(216),      // peach?
-            Self::Development => Colour::Fixed(130),    // more like orange with pink
-            Self::Networking => Colour::Fixed(112),     // bright green with some cyan
-            Self::System => Colour::Fixed(9),           // bright red
-            Self::TerminalSupport => Colour::Fixed(10), // bright green
-            Self::TextEditors => Colour::Fixed(162),    // between red and magenta. Raspberry?
-            Self::Themes => Colour::Fixed(12),          // bright blue
-            Self::Tweaks => Colour::Fixed(11),          // bright yellow
-            Self::Utilities | Self::Packaging => Colour::Fixed(14), // bright cyan
-            _ => Colour::Fixed(8),                      // bright grey
-        }
+    pub fn color(&self) -> Style {
+        let color = match self {
+            Self::Archiving => Color::Color256(216),      // peach?
+            Self::Development => Color::Color256(130),    // more like orange with pink
+            Self::Networking => Color::Color256(112),     // bright green with some cyan
+            Self::System => Color::Color256(9),           // bright red
+            Self::TerminalSupport => Color::Color256(10), // bright green
+            Self::TextEditors => Color::Color256(162),    // between red and magenta. Raspberry?
+            Self::Themes => Color::Color256(12),          // bright blue
+            Self::Tweaks => Color::Color256(11),          // bright yellow
+            Self::Utilities | Self::Packaging => Color::Color256(14), // bright cyan
+            _ => Color::Color256(8),                      // bright grey
+        };
+
+        Style::new().fg(color)
     }
 }
 
