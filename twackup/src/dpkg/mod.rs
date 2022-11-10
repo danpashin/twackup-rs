@@ -68,17 +68,17 @@ impl Dpkg {
 
         // Collect all identifiers package depends on
         // Skip system and required
-        let mut ids: HashSet<&str> = HashSet::new();
+        let mut ids: HashSet<_> = HashSet::new();
         for pkg in packages.iter() {
-            if pkg.section != Section::System && pkg.priority != Priority::Required {
-                ids.extend(pkg.dependencies());
-            }
+            ids.extend(pkg.dependencies());
         }
 
         // Detect leaves - packages that are not depends of others
         let mut leaves_identifiers: HashSet<String> = packages
             .iter()
-            .filter(|pkg| pkg.section != Section::System && pkg.priority != Priority::Required)
+            .filter(|pkg| {
+                pkg.section != Section::System && pkg.priority != Some(Priority::Required)
+            })
             .filter(|pkg| !ids.contains(pkg.id.as_str()))
             .map(|pkg| pkg.id.clone())
             .collect();

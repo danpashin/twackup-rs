@@ -29,4 +29,16 @@ pub enum Error {
 
     #[error("plist error")]
     Plist(#[from] plist::Error),
+
+    #[error("Unknown package priority")]
+    UnknownPriority(String),
+
+    #[error("Unknown package eflag field")]
+    UnknownEFlag(String),
+
+    #[error("Unknown package state")]
+    UnknownState(String),
+
+    #[error("Unknown package want field")]
+    UnknownWant(String),
 }
