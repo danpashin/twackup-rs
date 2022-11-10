@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use memmap::Mmap;
+use memmap2::Mmap;
 use std::{
     collections::{HashMap, LinkedList},
     fs::File,

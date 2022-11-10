@@ -17,17 +17,15 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{
-    DataFormat, DataLayout, DataType, RepoGroup, RepoGroupFormat, CLASSIC_MANAGERS, MODERN_MANAGERS,
-};
-use crate::{commands::CliCommand, Context, ADMIN_DIR};
+use super::{DataLayout, DataType, RepoGroup, RepoGroupFormat, CLASSIC_MANAGERS, MODERN_MANAGERS};
+use crate::{commands::CliCommand, error::Result, serde::Format, Context, ADMIN_DIR};
 use std::{
     collections::LinkedList,
     fs::File,
     io::{self, BufRead, BufReader},
     path::PathBuf,
 };
-use twackup::{error::Result, kvparser::Parser, repository::Repository};
+use twackup::{kvparser::Parser, repository::Repository};
 
 #[derive(clap::Parser)]
 pub(crate) struct Export {
@@ -39,7 +37,7 @@ pub(crate) struct Export {
     /// Use another output format
     /// (e.g. for using output with third-party parser like jq)
     #[clap(short, long, value_enum, default_value = "json")]
-    format: DataFormat,
+    format: Format,
 
     /// Data to export
     /// (e.g. if you want to export only packages)
@@ -55,7 +53,25 @@ pub(crate) struct Export {
 impl CliCommand for Export {
     async fn run(&self, context: Context) -> Result<()> {
         log::info!("Exporting data for {:?}...", self.data);
-        let data = match self.data {
+
+        let data = self.construct_data(context).await?;
+        if let Some(path) = &self.output {
+            let file = File::create(path)?;
+            self.format.ser_to_writer(file, &data)?;
+        } else {
+            self.format.ser_to_writer(io::stdout(), &data)?;
+            println!();
+        }
+
+        log::info!("Successfully exported {:?} data!", self.data);
+
+        Ok(())
+    }
+}
+
+impl Export {
+    async fn construct_data(&self, context: Context) -> Result<DataLayout> {
+        Ok(match self.data {
             DataType::Packages => DataLayout {
                 packages: Some(self.get_packages(context).await?),
                 repositories: None,
@@ -72,26 +88,9 @@ impl CliCommand for Export {
                     repositories: Some(repos),
                 }
             }
-        };
-
-        let format = serde_any::guess_format_from_extension(self.format.as_str())
-            .expect("Unsupported format");
-
-        if let Some(path) = &self.output {
-            let file = File::create(path)?;
-            serde_any::to_writer(file, &data, format).unwrap();
-        } else {
-            serde_any::to_writer(io::stdout(), &data, format).unwrap();
-            println!();
-        }
-
-        log::info!("Successfully exported {:?} data!", self.data);
-
-        Ok(())
+        })
     }
-}
 
-impl Export {
     async fn get_packages(&self, context: Context) -> Result<LinkedList<String>> {
         let packages = context.packages(&self.admindir, true).await?;
 

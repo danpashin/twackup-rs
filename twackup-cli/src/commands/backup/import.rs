@@ -17,24 +17,23 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{DataFormat, DataLayout, RepoGroup, RepoGroupFormat};
-use crate::{commands::CliCommand, context::Context, ROOT_WARN_MESSAGE};
+use super::{DataLayout, RepoGroup, RepoGroupFormat};
+use crate::{
+    commands::CliCommand, context::Context, error::Result, serde::Format, ROOT_WARN_MESSAGE,
+};
 use std::{
     fs::File,
     io::{self, BufWriter, Write},
     process::{Command, Stdio},
 };
-use twackup::{
-    error::{GenericError, Result},
-    process,
-};
+use twackup::{error::GenericError, process};
 
 #[derive(clap::Parser)]
 pub(crate) struct Import {
     /// Use another input format
     /// (e.g. when it was processed with third-party parser like jq)
     #[clap(short, long, value_enum, default_value = "json")]
-    format: DataFormat,
+    format: Format,
 
     /// Input file, stdin if equal to '-'
     #[clap(name = "file")]
@@ -46,7 +45,7 @@ impl CliCommand for Import {
     async fn run(&self, context: Context) -> Result<()> {
         if !context.is_root() {
             log::error!("{}", ROOT_WARN_MESSAGE);
-            return Err(GenericError::NotRunningAsRoot);
+            Err(GenericError::NotRunningAsRoot)?;
         }
 
         let data = self.deserialize_input().expect("Can't deserialize input");
@@ -89,12 +88,11 @@ impl CliCommand for Import {
 
 impl Import {
     #[inline]
-    fn deserialize_input(&self) -> std::result::Result<DataLayout, serde_any::error::Error> {
-        let format = self.format.to_serde();
-        match self.input.as_str() {
-            "-" => serde_any::from_reader(io::stdin(), format),
-            _ => serde_any::from_reader(File::open(&self.input)?, format),
-        }
+    fn deserialize_input(&self) -> Result<DataLayout> {
+        Ok(match self.input.as_str() {
+            "-" => self.format.de_from_reader(io::stdin())?,
+            _ => self.format.de_from_reader(File::open(&self.input)?)?,
+        })
     }
 
     fn import_repo_group(&self, repo_group: &RepoGroup) -> Result<()> {
