@@ -20,59 +20,69 @@
 #[cfg(feature = "cli")]
 use ansi_term::Colour;
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Section {
-    Other(String),
-    Unknown,
+    Archiving,
+    Development,
+    Networking,
+    Packaging,
     System,
+    TerminalSupport,
+    TextEditors,
+    Themes,
     Tweaks,
     Utilities,
-    Packaging,
-    Development,
-    TerminalSupport,
-    Themes,
-    Archiving,
-    Networking,
-    TextEditors,
+    Other(String),
 }
 
 impl Section {
-    pub fn from_string(value: &str) -> Section {
-        match value.to_lowercase().as_str() {
-            "system" => Section::System,
-            "tweaks" => Section::Tweaks,
-            "utilities" => Section::Utilities,
-            "packaging" => Section::Packaging,
-            "development" => Section::Development,
-            "themes" => Section::Themes,
-            "terminal_support" | "terminal support" => Section::TerminalSupport,
-            "networking" => Section::Networking,
-            "archiving" => Section::Archiving,
-            "text_editors" => Section::TextEditors,
-            _ => Section::Other(value.to_string()),
-        }
-    }
-
-    pub fn from_string_opt(value: Option<&String>) -> Section {
-        match value {
-            Some(value) => Self::from_string(value),
-            None => Section::Unknown,
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Archiving => "Archiving",
+            Self::Development => "Development",
+            Self::Networking => "Networking",
+            Self::Packaging => "Packaging",
+            Self::System => "System",
+            Self::TerminalSupport => "Terminal Support",
+            Self::TextEditors => "Text Editors",
+            Self::Themes => "Themes",
+            Self::Tweaks => "Tweaks",
+            Self::Utilities => "Utilities",
+            Self::Other(section) => section.as_str(),
         }
     }
 
     #[cfg(feature = "cli")]
     pub fn color(&self) -> Colour {
         match self {
-            Self::System => Colour::Fixed(9),  // bright red
-            Self::Tweaks => Colour::Fixed(11), // bright yellow
-            Self::Utilities | Section::Packaging => Colour::Fixed(14), // bright cyan
-            Self::Development => Colour::Fixed(130), // more like orange with pink
-            Self::Themes => Colour::Fixed(12), // bright blue
+            Self::Archiving => Colour::Fixed(216),      // peach?
+            Self::Development => Colour::Fixed(130),    // more like orange with pink
+            Self::Networking => Colour::Fixed(112),     // bright green with some cyan
+            Self::System => Colour::Fixed(9),           // bright red
             Self::TerminalSupport => Colour::Fixed(10), // bright green
-            Self::Networking => Colour::Fixed(112), // bright green with some cyan
-            Self::Archiving => Colour::Fixed(216), // peach?
-            Self::TextEditors => Colour::Fixed(162), // between red and magenta. Raspberry?
-            _ => Colour::Fixed(8),             // bright grey
+            Self::TextEditors => Colour::Fixed(162),    // between red and magenta. Raspberry?
+            Self::Themes => Colour::Fixed(12),          // bright blue
+            Self::Tweaks => Colour::Fixed(11),          // bright yellow
+            Self::Utilities | Self::Packaging => Colour::Fixed(14), // bright cyan
+            _ => Colour::Fixed(8),                      // bright grey
+        }
+    }
+}
+
+impl From<&str> for Section {
+    fn from(value: &str) -> Self {
+        match value.to_lowercase().as_str() {
+            "archiving" => Self::Archiving,
+            "development" => Self::Development,
+            "networking" => Self::Networking,
+            "packaging" => Self::Packaging,
+            "system" => Self::System,
+            "terminal_support" | "terminal support" => Self::TerminalSupport,
+            "text_editors" => Self::TextEditors,
+            "themes" => Self::Themes,
+            "tweaks" => Self::Tweaks,
+            "utilities" => Self::Utilities,
+            _ => Self::Other(value.to_string()),
         }
     }
 }

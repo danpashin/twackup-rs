@@ -37,7 +37,7 @@ impl CliCommand for Leaves {
 
         for (_, package) in packages {
             let section_sym = package.section.color().paint("▶︎");
-            println!("{} {} - {}", section_sym, package.name, package.id);
+            println!("{} {} - {}", section_sym, package.human_name(), package.id);
         }
 
         Ok(())

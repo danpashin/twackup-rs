@@ -149,7 +149,7 @@ impl<T: Progress> Worker<T> {
     }
 
     pub async fn work(&self) -> Result<()> {
-        let progress = format!("Processing {}", self.package.name);
+        let progress = format!("Processing {}", self.package.human_name());
         self.progress.set_message(progress);
 
         let result = self.run();
@@ -157,7 +157,7 @@ impl<T: Progress> Worker<T> {
 
         match result {
             Ok(file) => {
-                let progress = format!("Done {}", self.package.name);
+                let progress = format!("Done {}", self.package.human_name());
                 self.progress.set_message(progress);
 
                 if let Some(archive) = &self.archive {
@@ -170,7 +170,7 @@ impl<T: Progress> Worker<T> {
                 }
             }
             Err(error) => {
-                log::error!("Building {} error. {}", self.package.name, error)
+                log::error!("Building {} error. {}", self.package.human_name(), error)
             }
         }
 

@@ -20,113 +20,173 @@
 mod field;
 mod priority;
 mod section;
-mod state;
+mod status;
 
-pub use self::{field::Field, priority::Priority, section::Section, state::State};
+pub use self::{field::FieldName, priority::Priority, section::Section, status::Status};
 use crate::kvparser::Parsable;
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     fs::File,
     io::{self, BufRead, BufReader},
     path::Path,
     str::FromStr,
 };
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Package {
     /// The name of the binary package. This field MUST NOT be empty.
     pub id: String,
 
     /// Name of package that displays in every package manager.
     /// If this field is empty, identifier will be used.
-    pub name: String,
+    pub name: Option<String>,
 
     /// Version of package. This field MUST NOT be empty.
     pub version: String,
 
     /// State of package as it was marked by dpkg itself.
     /// If this field is empty, Unknown state must be used.
-    pub state: State,
+    pub status: Status,
 
     /// This field specifies an application area into which
     /// the package has been classified
     pub section: Section,
 
-    pub priority: Priority,
+    pub priority: Option<Priority>,
 
-    fields: HashMap<Field, String>,
+    other_fields: HashMap<FieldName, String>,
 }
 
 impl Parsable for Package {
     type Output = Self;
 
     fn new(fields: HashMap<String, String>) -> Option<Self::Output> {
-        let fields: HashMap<Field, String> = fields
+        let mut fields: HashMap<_, _> = fields
             .into_iter()
             .map(|(key, value)| {
                 // Safe to unwrap because from_str doesn't return error
-                (Field::from_str(key.as_str()).unwrap(), value)
+                (FieldName::from_str(key.as_str()).unwrap(), value)
             })
             .collect();
 
-        let package_id = fields.get(&Field::Package)?;
-        // Ignore virtual packages
-        if package_id.starts_with("gsc.") || package_id.starts_with("cy+") {
-            return None;
+        let package_id = fields.remove(&FieldName::Package)?;
+
+        #[cfg(feature = "ios")]
+        {
+            // Ignore virtual packages
+            if package_id.starts_with("gsc.") || package_id.starts_with("cy+") {
+                return None;
+            }
         }
 
+        let name = fields.remove(&FieldName::Name);
+        let priority = fields
+            .remove(&FieldName::Priority)
+            .and_then(|priority| Priority::try_from(priority.as_str()).ok());
+
+        let status = fields
+            .remove(&FieldName::Status)
+            .and_then(|status| Status::try_from(status.as_str()).ok())?;
+
+        let section = fields
+            .remove(&FieldName::Section)
+            .map(|section| Section::from(section.as_str()))?;
+
         Some(Self {
-            id: package_id.to_string(),
-            name: fields.get(&Field::Name).unwrap_or(package_id).to_string(),
-            version: fields.get(&Field::Version)?.to_string(),
-            state: State::from_dpkg(fields.get(&Field::Status)),
-            section: Section::from_string_opt(fields.get(&Field::Section)),
-            priority: Priority::from_string_opt(fields.get(&Field::Priority)),
-            fields,
+            id: package_id,
+            name,
+            version: fields.remove(&FieldName::Version)?,
+            status,
+            section,
+            priority,
+            other_fields: fields,
         })
     }
 }
 
 impl Package {
+    /// Searches for installed files
+    ///
+    /// # todo!("REFACTOR THIS")
     #[inline]
     pub fn get_installed_files(&self, dpkg_dir: &Path) -> io::Result<Vec<String>> {
         let file = File::open(dpkg_dir.join(format!("info/{}.list", self.id)))?;
         BufReader::new(file).lines().collect()
     }
 
-    /// Creates canonical DEB filename in format of id_version_arch
+    /// Creates canonical DEB filename in format of **id_version_arch**
     #[inline]
     pub fn canonical_name(&self) -> String {
-        let arch = self.get_field(Field::Architecture).unwrap_or_default();
+        let arch = self.get(FieldName::Architecture).unwrap_or_default();
         format!("{}_{}_{}", self.id, self.version, arch)
     }
 
-    /// Converts model to DEB control file
+    /// Constructs control file of DEB archive.
+    /// Respects fields order.
     pub fn to_control(&self) -> String {
-        let mut fields_len = 0;
-        for (key, value) in self.fields.iter() {
-            if *key == Field::Status {
-                continue;
-            }
-            fields_len += key.as_str().len() + value.len() + 3;
-        }
+        let get = |name: FieldName| self.get(name).unwrap_or_default();
 
-        let mut control = String::with_capacity(fields_len);
+        let header_fields = [
+            (FieldName::Package, self.id.as_str()),
+            (FieldName::Name, self.human_name()),
+            (FieldName::Version, self.version.as_str()),
+            (FieldName::Description, get(FieldName::Description)),
+            (FieldName::Author, get(FieldName::Author)),
+            (FieldName::Section, get(FieldName::Section)),
+            (FieldName::Architecture, get(FieldName::Architecture)),
+            (FieldName::Depiction, get(FieldName::Depiction)),
+        ];
 
-        for (key, value) in self.fields.iter() {
-            // Skip status field. It is invalid in control
-            if *key == Field::Status {
-                continue;
-            }
-            control.push_str(key.as_str());
+        // 3 bytes - ": " and '\n'
+        let between_kv_length = 3;
+
+        let control_length = header_fields.iter().fold(0, |mut sum, (name, value)| {
+            sum += name.as_str().len() + value.len() + between_kv_length;
+            sum
+        });
+
+        let important_fields: HashSet<_> =
+            header_fields.iter().map(|(name, _)| name.clone()).collect();
+
+        let other_fields = self
+            .other_fields
+            .iter()
+            .filter(|(name, _)| !important_fields.contains(name));
+
+        // Count total control length to effectively allocate memory
+        let control_length = other_fields
+            .clone()
+            .fold(control_length, |mut sum, (name, value)| {
+                sum += name.as_str().len() + value.len() + between_kv_length;
+                sum
+            });
+
+        // Build header with important fields
+        let control = String::with_capacity(control_length);
+        let control = header_fields
+            .iter()
+            .fold(control, |mut control, (name, value)| {
+                control.push_str(name.as_str());
+                control.push_str(": ");
+                control.push_str(value);
+                control.push('\n');
+
+                control
+            });
+
+        // And build other fields
+        other_fields.fold(control, |mut control, (name, value)| {
+            control.push_str(name.as_str());
             control.push_str(": ");
             control.push_str(value);
             control.push('\n');
-        }
 
-        control
+            control
+        })
     }
 
+    /// Searches any package identifiers this package depends on.
+    /// Ignores version or any other dependency modifiers
     pub fn dependencies(&self) -> impl Iterator<Item = &str> {
         fn parse(string: &str) -> impl Iterator<Item = &str> {
             string
@@ -137,15 +197,35 @@ impl Package {
                 })
         }
 
-        let depends = self.get_field(Field::Depends).unwrap_or_default();
-        let predepends = self.get_field(Field::Depends).unwrap_or_default();
+        let depends = self.get(FieldName::Depends).unwrap_or_default();
+        let predepends = self.get(FieldName::Depends).unwrap_or_default();
 
         parse(depends).chain(parse(predepends))
     }
 
-    #[inline]
-    pub fn get_field(&self, field: Field) -> Option<&str> {
-        self.fields.get(&field).map(|value| value.as_str())
+    /// Fetches value associated with this field.
+    ///
+    /// # Returns
+    /// None if there's no field
+    pub fn get<N: AsRef<FieldName>>(&self, field: N) -> Option<&str> {
+        match field.as_ref() {
+            FieldName::Package => Some(self.id.as_str()),
+            FieldName::Name => self.name.as_deref(),
+            FieldName::Version => Some(self.version.as_str()),
+            FieldName::Section => Some(self.section.as_str()),
+            _ => self
+                .other_fields
+                .get(field.as_ref())
+                .map(|value| value.as_str()),
+        }
+    }
+
+    /// Returns package name or identifier if there's no such
+    pub fn human_name(&self) -> &str {
+        match &self.name {
+            Some(name) => name.as_str(),
+            None => self.id.as_str(),
+        }
     }
 }
 
@@ -161,6 +241,7 @@ mod tests {
         package_info.insert("Package".to_string(), "valid-package".to_string());
         package_info.insert("Version".to_string(), "1.0.0".to_string());
         package_info.insert("Architecture".to_string(), "all".to_string());
+        package_info.insert("Status".to_string(), "install ok installed".to_string());
 
         let package = Package::new(package_info).unwrap();
 
@@ -176,6 +257,7 @@ mod tests {
         package_info.insert("Package".to_string(), "non-valid-package".to_string());
         package_info.insert("Version".to_string(), "1.0.0".to_string());
         package_info.insert("Architecture".to_string(), "all".to_string());
+        package_info.insert("Status".to_string(), "install ok installed".to_string());
 
         let package = Package::new(package_info).unwrap();
 

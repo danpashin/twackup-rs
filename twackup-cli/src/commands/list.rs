@@ -42,7 +42,7 @@ impl CliCommand for List {
                 "{:3}: {} {} - {}",
                 position + 1,
                 section_sym,
-                package.name,
+                package.human_name(),
                 package.id
             );
         }

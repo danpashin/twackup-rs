@@ -20,40 +20,37 @@
 use crate::error::Error;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Priority {
-    Optional,
-    Required,
-    Important,
-    Standard,
-    Extra,
+pub enum Want {
     Unknown,
+    Install,
+    Hold,
+    DeInstall,
+    Purge,
 }
 
-impl Priority {
+impl Want {
     pub fn as_str(&self) -> &str {
         match self {
-            Self::Optional => "optional",
-            Self::Required => "required",
-            Self::Important => "important",
-            Self::Standard => "standard",
-            Self::Extra => "extra",
             Self::Unknown => "unknown",
+            Self::Install => "install",
+            Self::Hold => "hold",
+            Self::DeInstall => "deinstall",
+            Self::Purge => "purge",
         }
     }
 }
 
-impl TryFrom<&str> for Priority {
+impl TryFrom<&str> for Want {
     type Error = Error;
 
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        match value {
-            "optional" => Ok(Self::Optional),
-            "required" => Ok(Self::Required),
-            "important" => Ok(Self::Important),
-            "standard" => Ok(Self::Standard),
-            "extra" => Ok(Self::Extra),
+    fn try_from(string: &str) -> Result<Self, Self::Error> {
+        match string {
             "unknown" => Ok(Self::Unknown),
-            _ => Err(Error::UnknownPriority(value.to_string())),
+            "install" => Ok(Self::Install),
+            "hold" => Ok(Self::Hold),
+            "deinstall" => Ok(Self::DeInstall),
+            "purge" => Ok(Self::Purge),
+            _ => Err(Error::UnknownState(string.to_string())),
         }
     }
 }

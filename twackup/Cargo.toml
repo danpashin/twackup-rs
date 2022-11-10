@@ -39,3 +39,4 @@ ansi_term = { version = "0.12", default-features = false, features = [], optiona
 [features]
 default = []
 cli = ["dep:ansi_term"]
+ios = []

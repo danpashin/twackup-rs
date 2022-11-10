@@ -62,4 +62,4 @@ features = ["derive", "std", "help", "usage", "error-context"]
 
 [features]
 default = ["ios"]
-ios = []
+ios = ["twackup/ios"]

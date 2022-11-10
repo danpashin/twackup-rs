@@ -17,27 +17,31 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#[derive(Clone, PartialEq, Eq)]
-pub enum State {
-    Unknown,
-    Install,
-    Remove,
-    Hold,
+use crate::error::Error;
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum EFlag {
+    Ok,
+    ReInstallRequest,
 }
 
-impl State {
-    pub fn from_dpkg(string: Option<&String>) -> Self {
-        let status = match string {
-            Some(status) => status,
-            None => return Self::Unknown,
-        };
+impl EFlag {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Ok => "ok",
+            Self::ReInstallRequest => "reinstreq",
+        }
+    }
+}
 
-        let mut components = status.split_whitespace();
-        match components.next() {
-            Some(state) if state == "install" => Self::Install,
-            Some(state) if state == "deinstall" => Self::Remove,
-            Some(state) if state == "hold" => Self::Hold,
-            _ => Self::Unknown,
+impl TryFrom<&str> for EFlag {
+    type Error = Error;
+
+    fn try_from(string: &str) -> Result<Self, Self::Error> {
+        match string {
+            "ok" => Ok(Self::Ok),
+            "reinstreq" => Ok(Self::ReInstallRequest),
+            _ => Err(Error::UnknownEFlag(string.to_string())),
         }
     }
 }
