@@ -18,7 +18,7 @@
  */
 
 use super::CliCommand;
-use crate::{context::Context, ADMIN_DIR, ROOT_WARN_MESSAGE, TARGET_DIR};
+use crate::{context::Context, error::Result, ADMIN_DIR, ROOT_WARN_MESSAGE, TARGET_DIR};
 use chrono::Local;
 use gethostname::gethostname;
 use std::{
@@ -33,7 +33,6 @@ use twackup::{
         deb::{DebTarArchive, TarArchive},
         Preferences, Worker,
     },
-    error::Result,
     package::*,
     progress::Progress,
 };

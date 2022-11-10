@@ -25,7 +25,7 @@ mod list;
 mod backup;
 
 use super::Context;
-use twackup::error::Result;
+use crate::error::Result;
 
 #[async_trait::async_trait]
 pub(crate) trait CliCommand {

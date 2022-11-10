@@ -19,14 +19,16 @@
 
 mod commands;
 mod context;
+mod error;
 mod logger;
 mod progress_bar;
+mod serde;
 
 use clap::Parser;
 use commands::{CliCommand, Command};
 use context::Context;
+use error::Result;
 use std::fs;
-use twackup::error::Result;
 
 const ADMIN_DIR: &str = "/var/lib/dpkg";
 const TARGET_DIR: &str = "/var/mobile/Documents/twackup";

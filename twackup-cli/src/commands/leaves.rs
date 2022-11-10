@@ -18,9 +18,8 @@
  */
 
 use super::{CliCommand, Context};
-use crate::ADMIN_DIR;
+use crate::{error::Result, ADMIN_DIR};
 use std::path::PathBuf;
-use twackup::error::Result;
 
 #[derive(clap::Parser)]
 pub(crate) struct Leaves {

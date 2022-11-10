@@ -37,14 +37,6 @@ const CLASSIC_MANAGERS: &[(&str, &str)] = &[
     ),
 ];
 
-/// Data format used for export and import commands
-#[derive(clap::Parser, clap::ValueEnum, PartialEq, Clone)]
-enum DataFormat {
-    Json,
-    Toml,
-    Yaml,
-}
-
 /// Describes what data should be used for exporting or importing
 #[derive(clap::Parser, clap::ValueEnum, PartialEq, Debug, Clone)]
 enum DataType {
@@ -75,22 +67,4 @@ struct RepoGroup {
 struct DataLayout {
     packages: Option<LinkedList<String>>,
     repositories: Option<LinkedList<RepoGroup>>,
-}
-
-impl DataFormat {
-    fn as_str(&self) -> &'static str {
-        match self {
-            Self::Json => "json",
-            Self::Toml => "toml",
-            Self::Yaml => "yaml",
-        }
-    }
-
-    fn to_serde(&self) -> serde_any::Format {
-        match self {
-            Self::Json => serde_any::Format::Json,
-            Self::Toml => serde_any::Format::Toml,
-            Self::Yaml => serde_any::Format::Yaml,
-        }
-    }
 }
