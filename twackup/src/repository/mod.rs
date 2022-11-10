@@ -17,19 +17,13 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+mod category;
+mod repo_error;
+
+pub use self::{category::Category, repo_error::RepoError};
 use crate::kvparser::Parsable;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, io, str::FromStr, string::ToString};
-
-#[derive(Clone, Serialize, Deserialize, Debug)]
-pub enum Category {
-    /// Used for distributing binaries only
-    Binary,
-    /// This is used for distributing sources only
-    Source,
-    /// Supported only in DEB822 format
-    Both,
-}
+use std::{collections::HashMap, string::ToString};
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Repository {
@@ -45,41 +39,24 @@ pub struct Repository {
     pub components: Vec<String>,
 }
 
-impl FromStr for Category {
-    type Err = io::Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.trim() {
-            "deb" => Ok(Self::Binary),
-            "deb-src" => Ok(Self::Source),
-            "deb deb-src" | "deb-src deb" => Ok(Self::Both),
-            _ => Err(io::Error::from(io::ErrorKind::InvalidInput)),
-        }
-    }
-}
-
-impl Category {
-    fn as_str(&self) -> &'static str {
-        match self {
-            Self::Binary => "deb",
-            Self::Source => "deb-src",
-            Self::Both => "deb deb-src",
-        }
-    }
-}
-
 impl Parsable for Repository {
-    type Output = Self;
+    type Error = RepoError;
 
     /// Performs parsing repo model in DEB822 format
     /// #### Doesn't support options
-    fn new(fields: HashMap<String, String>) -> Option<Self::Output> {
-        Some(Self {
-            category: Category::from_str(fields.get("Types")?).ok()?,
-            url: fields.get("URIs")?.to_string(),
-            distribution: fields.get("Suites")?.to_string(),
-            components: fields
-                .get("Components")
+    fn new(fields: HashMap<String, String>) -> Result<Self, Self::Error> {
+        let mut fields = fields;
+        let mut fetch_field = |field: &str| -> Result<String, RepoError> {
+            fields
+                .remove(field)
+                .ok_or_else(|| RepoError::MissingField(field.to_string()))
+        };
+
+        Ok(Self {
+            category: Category::try_from(fetch_field("Types")?.as_str())?,
+            url: fetch_field("URIs")?,
+            distribution: fetch_field("Suites")?,
+            components: fetch_field("Components")
                 .map(|components| {
                     components
                         .split_ascii_whitespace()
@@ -95,15 +72,15 @@ impl Repository {
     /// Performs parsing model from one-line style.
     ///
     /// #### This func doesn't support options as they aren't used in iOS.
-    pub fn from_one_line(line: &str) -> Option<Self> {
+    pub fn from_one_line(line: &str) -> Result<Self, RepoError> {
         let components: Vec<&str> = line.split_ascii_whitespace().collect();
         // type, uri and suite are required, so break if they don't exist
         if components.len() < 3 {
-            return None;
+            return Err(RepoError::InvalidRepoLine(line.to_string()));
         }
 
-        Some(Self {
-            category: Category::from_str(components[0]).ok()?,
+        Ok(Self {
+            category: Category::try_from(components[0])?,
             url: components[1].to_string(),
             distribution: components[2].to_string(),
             components: components

@@ -17,24 +17,14 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::{package::PackageError, repository::RepoError};
-
-pub type Result<T> = std::result::Result<T, Error>;
-
 #[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error("IOError({0})")]
-    Io(#[from] std::io::Error),
+pub enum RepoError {
+    #[error("Missed field `{0}`")]
+    MissingField(String),
 
-    #[error("This action requires root permissions.")]
-    NotRunningAsRoot,
+    #[error("Category {0} is invalid")]
+    InvalidCategory(String),
 
-    #[error("PlistError({0})")]
-    Plist(#[from] plist::Error),
-
-    #[error("PackageError({0})")]
-    PackageError(PackageError),
-
-    #[error("RepoError({0})")]
-    RepoError(RepoError),
+    #[error("Repo line {0} is invalid")]
+    InvalidRepoLine(String),
 }

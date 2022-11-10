@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::error::Error;
+use crate::package::PackageError;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum EFlag {
@@ -35,13 +35,13 @@ impl EFlag {
 }
 
 impl TryFrom<&str> for EFlag {
-    type Error = Error;
+    type Error = PackageError;
 
     fn try_from(string: &str) -> Result<Self, Self::Error> {
         match string {
             "ok" => Ok(Self::Ok),
             "reinstreq" => Ok(Self::ReInstallRequest),
-            _ => Err(Error::UnknownEFlag(string.to_string())),
+            _ => Err(PackageError::UnknownEFlag(string.to_string())),
         }
     }
 }

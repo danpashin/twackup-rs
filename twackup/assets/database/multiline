@@ -2,6 +2,7 @@ Package: valid-package-1
 Version: 1.0.0
 Architecture: all
 Status: install ok installed
+Section: Tweaks
 Description: First Line
  Second Line
   Third Line
@@ -10,6 +11,7 @@ Package: valid-package-2
 Version: 1.0.0
 Architecture: all
 Status: install ok installed
+Section: Tweaks
 Description: First Line
 Second Line
 

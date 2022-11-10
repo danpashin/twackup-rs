@@ -18,11 +18,15 @@
  */
 
 mod field;
+mod package_error;
 mod priority;
 mod section;
 mod status;
 
-pub use self::{field::FieldName, priority::Priority, section::Section, status::Status};
+pub use self::{
+    field::FieldName, package_error::PackageError, priority::Priority, section::Section,
+    status::Status,
+};
 use crate::kvparser::Parsable;
 use std::{
     collections::{HashMap, HashSet},
@@ -58,9 +62,9 @@ pub struct Package {
 }
 
 impl Parsable for Package {
-    type Output = Self;
+    type Error = PackageError;
 
-    fn new(fields: HashMap<String, String>) -> Option<Self::Output> {
+    fn new(fields: HashMap<String, String>) -> Result<Self, Self::Error> {
         let mut fields: HashMap<_, _> = fields
             .into_iter()
             .map(|(key, value)| {
@@ -69,36 +73,31 @@ impl Parsable for Package {
             })
             .collect();
 
-        let package_id = fields.remove(&FieldName::Package)?;
+        let mut fetch_field = |field: FieldName| -> Result<String, PackageError> {
+            fields
+                .remove(&field)
+                .ok_or(PackageError::MissingField(field))
+        };
+
+        let package_id = fetch_field(FieldName::Package)?;
 
         #[cfg(feature = "ios")]
         {
             // Ignore virtual packages
             if package_id.starts_with("gsc.") || package_id.starts_with("cy+") {
-                return None;
+                return Err(PackageError::VirtualPackage);
             }
         }
 
-        let name = fields.remove(&FieldName::Name);
-        let priority = fields
-            .remove(&FieldName::Priority)
-            .and_then(|priority| Priority::try_from(priority.as_str()).ok());
-
-        let status = fields
-            .remove(&FieldName::Status)
-            .and_then(|status| Status::try_from(status.as_str()).ok())?;
-
-        let section = fields
-            .remove(&FieldName::Section)
-            .map(|section| Section::from(section.as_str()))?;
-
-        Some(Self {
+        Ok(Self {
             id: package_id,
-            name,
-            version: fields.remove(&FieldName::Version)?,
-            status,
-            section,
-            priority,
+            name: fetch_field(FieldName::Name).ok(),
+            version: fetch_field(FieldName::Version)?,
+            status: Status::try_from(fetch_field(FieldName::Status)?.as_str())?,
+            section: Section::from(fetch_field(FieldName::Section)?.as_str()),
+            priority: fetch_field(FieldName::Priority)
+                .and_then(|priority| Priority::try_from(priority.as_str()))
+                .ok(),
             other_fields: fields,
         })
     }
@@ -242,6 +241,7 @@ mod tests {
         package_info.insert("Version".to_string(), "1.0.0".to_string());
         package_info.insert("Architecture".to_string(), "all".to_string());
         package_info.insert("Status".to_string(), "install ok installed".to_string());
+        package_info.insert("Section".to_string(), "Tweaks".to_string());
 
         let package = Package::new(package_info).unwrap();
 
@@ -258,6 +258,7 @@ mod tests {
         package_info.insert("Version".to_string(), "1.0.0".to_string());
         package_info.insert("Architecture".to_string(), "all".to_string());
         package_info.insert("Status".to_string(), "install ok installed".to_string());
+        package_info.insert("Section".to_string(), "Tweaks".to_string());
 
         let package = Package::new(package_info).unwrap();
 
