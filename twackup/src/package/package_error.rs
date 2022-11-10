@@ -21,19 +21,19 @@ use super::FieldName;
 
 #[derive(thiserror::Error, Debug)]
 pub enum PackageError {
-    #[error("Unknown package priority")]
+    #[error("Unknown package priority: `{0}`")]
     UnknownPriority(String),
 
-    #[error("Unknown package eflag field")]
+    #[error("Unknown package eflag field: `{0}`")]
     UnknownEFlag(String),
 
-    #[error("Unknown package state")]
+    #[error("Unknown package state: `{0}`")]
     UnknownState(String),
 
-    #[error("Unknown package want field")]
+    #[error("Unknown package want field `{0}`")]
     UnknownWant(String),
 
-    #[error("Field is missed")]
+    #[error("Field is missed: `{0}`")]
     MissingField(FieldName),
 
     #[error("This package is virtual")]

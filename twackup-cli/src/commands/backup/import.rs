@@ -18,9 +18,7 @@
  */
 
 use super::{DataLayout, RepoGroup, RepoGroupFormat};
-use crate::{
-    commands::CliCommand, context::Context, error::Result, serde::Format, ROOT_WARN_MESSAGE,
-};
+use crate::{commands::CliCommand, context::Context, error::Result, serde::Format};
 use std::{
     fs::File,
     io::{self, BufWriter, Write},
@@ -44,7 +42,6 @@ pub(crate) struct Import {
 impl CliCommand for Import {
     async fn run(&self, context: Context) -> Result<()> {
         if !context.is_root() {
-            log::error!("{}", ROOT_WARN_MESSAGE);
             Err(GenericError::NotRunningAsRoot)?;
         }
 

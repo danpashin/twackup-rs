@@ -18,7 +18,7 @@
  */
 
 use super::CliCommand;
-use crate::{context::Context, error::Result, ADMIN_DIR, ROOT_WARN_MESSAGE, TARGET_DIR};
+use crate::{context::Context, error::Result, ADMIN_DIR, TARGET_DIR};
 use chrono::Local;
 use gethostname::gethostname;
 use std::{
@@ -33,6 +33,7 @@ use twackup::{
         deb::{DebTarArchive, TarArchive},
         Preferences, Worker,
     },
+    error::GenericError,
     package::*,
     progress::Progress,
 };
@@ -132,7 +133,7 @@ impl Build {
         let progress = context.progress_bar(all_count);
 
         if !context.is_root() {
-            progress.print_warning(ROOT_WARN_MESSAGE);
+            log::warn!("{}", GenericError::NotRunningAsRoot);
         }
 
         let archive = self.create_archive_if_needed();

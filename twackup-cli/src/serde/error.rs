@@ -21,18 +21,18 @@ pub(crate) type Result<T> = std::result::Result<T, SerdeError>;
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum SerdeError {
-    #[error("Io({0})")]
+    #[error("IO: {0}")]
     Io(#[from] std::io::Error),
 
-    #[error("JSON({0})")]
+    #[error("JSON: {0}")]
     Json(#[from] serde_json::Error),
 
-    #[error("TomlSerialize({0})")]
+    #[error("TomlSerialize: {0}")]
     TomlSerialize(#[from] toml::ser::Error),
 
-    #[error("TomlDeserialize({0})")]
+    #[error("TomlDeserialize: {0}")]
     TomlDeserialize(#[from] toml::de::Error),
 
-    #[error("Yaml({0})")]
+    #[error("Yaml: {0}")]
     Yaml(#[from] serde_yaml::Error),
 }
