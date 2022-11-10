@@ -54,7 +54,7 @@ impl Dpkg {
         let status_file = self.dpkg_dir.join("status");
         let parser = Parser::new(status_file)?;
 
-        let packages = parser.parse::<Package>().await;
+        let packages = parser.parse::<Package>().await?;
 
         // remove database lock as it is not needed
         drop(lock);

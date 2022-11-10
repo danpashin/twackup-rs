@@ -19,10 +19,10 @@
 
 use crate::{package::PackageError, repository::RepoError};
 
-pub type Result<T> = std::result::Result<T, Error>;
+pub type Result<T> = std::result::Result<T, GenericError>;
 
 #[derive(thiserror::Error, Debug)]
-pub enum Error {
+pub enum GenericError {
     #[error("IOError({0})")]
     Io(#[from] std::io::Error),
 
@@ -33,8 +33,8 @@ pub enum Error {
     Plist(#[from] plist::Error),
 
     #[error("PackageError({0})")]
-    PackageError(PackageError),
+    PackageError(#[from] PackageError),
 
     #[error("RepoError({0})")]
-    RepoError(RepoError),
+    RepoError(#[from] RepoError),
 }

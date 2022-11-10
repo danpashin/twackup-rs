@@ -18,6 +18,7 @@
  */
 
 use crate::package::PackageError;
+use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum EFlag {
@@ -43,5 +44,11 @@ impl TryFrom<&str> for EFlag {
             "reinstreq" => Ok(Self::ReInstallRequest),
             _ => Err(PackageError::UnknownEFlag(string.to_string())),
         }
+    }
+}
+
+impl Display for EFlag {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }

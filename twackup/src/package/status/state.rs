@@ -18,6 +18,7 @@
  */
 
 use crate::package::PackageError;
+use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum State {
@@ -61,5 +62,11 @@ impl TryFrom<&str> for State {
             "installed" => Ok(Self::Installed),
             _ => Err(PackageError::UnknownState(string.to_string())),
         }
+    }
+}
+
+impl Display for State {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }

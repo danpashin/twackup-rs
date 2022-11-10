@@ -18,6 +18,7 @@
  */
 
 use crate::package::PackageError;
+use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Want {
@@ -52,5 +53,11 @@ impl TryFrom<&str> for Want {
             "purge" => Ok(Self::Purge),
             _ => Err(PackageError::UnknownState(string.to_string())),
         }
+    }
+}
+
+impl Display for Want {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }

@@ -206,16 +206,21 @@ impl Package {
     ///
     /// # Returns
     /// None if there's no field
-    pub fn get<N: AsRef<FieldName>>(&self, field: N) -> Option<&str> {
-        match field.as_ref() {
-            FieldName::Package => Some(self.id.as_str()),
-            FieldName::Name => self.name.as_deref(),
-            FieldName::Version => Some(self.version.as_str()),
-            FieldName::Section => Some(self.section.as_str()),
+    pub fn get<N: AsRef<FieldName>>(&self, field: N) -> Result<&str, PackageError> {
+        let field = field.as_ref();
+        match field {
+            FieldName::Package => Ok(self.id.as_str()),
+            FieldName::Name => self
+                .name
+                .as_deref()
+                .ok_or(PackageError::MissingField(FieldName::Name)),
+            FieldName::Version => Ok(self.version.as_str()),
+            FieldName::Section => Ok(self.section.as_str()),
             _ => self
                 .other_fields
-                .get(field.as_ref())
-                .map(|value| value.as_str()),
+                .get(field)
+                .map(|value| value.as_str())
+                .ok_or_else(|| PackageError::MissingField(field.clone())),
         }
     }
 
@@ -231,11 +236,11 @@ impl Package {
 #[cfg(test)]
 mod tests {
     use super::Package;
-    use crate::kvparser::Parsable;
+    use crate::{error::Result, kvparser::Parsable};
     use std::{collections::HashMap, path::Path};
 
     #[test]
-    fn valid_package_get_files() {
+    fn valid_package_get_files() -> Result<()> {
         let mut package_info: HashMap<String, String> = HashMap::new();
         package_info.insert("Package".to_string(), "valid-package".to_string());
         package_info.insert("Version".to_string(), "1.0.0".to_string());
@@ -243,16 +248,17 @@ mod tests {
         package_info.insert("Status".to_string(), "install ok installed".to_string());
         package_info.insert("Section".to_string(), "Tweaks".to_string());
 
-        let package = Package::new(package_info).unwrap();
+        let package = Package::new(package_info)?;
 
         let path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/packages");
-        let files = package.get_installed_files(Path::new(path));
-        assert_eq!(files.is_err(), false);
-        assert_eq!(files.unwrap().len(), 3);
+        let files = package.get_installed_files(Path::new(path))?;
+        assert_eq!(files.len(), 3);
+
+        Ok(())
     }
 
     #[test]
-    fn non_valid_package_get_files() {
+    fn non_valid_package_get_files() -> Result<()> {
         let mut package_info = HashMap::new();
         package_info.insert("Package".to_string(), "non-valid-package".to_string());
         package_info.insert("Version".to_string(), "1.0.0".to_string());
@@ -260,10 +266,12 @@ mod tests {
         package_info.insert("Status".to_string(), "install ok installed".to_string());
         package_info.insert("Section".to_string(), "Tweaks".to_string());
 
-        let package = Package::new(package_info).unwrap();
+        let package = Package::new(package_info)?;
 
         let path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/packages");
         let files = package.get_installed_files(Path::new(path));
         assert_eq!(files.is_err(), true);
+
+        Ok(())
     }
 }

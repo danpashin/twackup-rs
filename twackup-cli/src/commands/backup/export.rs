@@ -62,11 +62,11 @@ impl CliCommand for Export {
             },
             DataType::Repositories => DataLayout {
                 packages: None,
-                repositories: Some(self.get_repos().await),
+                repositories: Some(self.get_repos().await?),
             },
             DataType::All => {
                 let packages = self.get_packages(context).await?;
-                let repos = self.get_repos().await;
+                let repos = self.get_repos().await?;
                 DataLayout {
                     packages: Some(packages),
                     repositories: Some(repos),
@@ -101,12 +101,12 @@ impl Export {
             .collect())
     }
 
-    async fn get_repos(&self) -> LinkedList<RepoGroup> {
+    async fn get_repos(&self) -> Result<LinkedList<RepoGroup>> {
         let mut sources = LinkedList::new();
 
         for (name, path) in MODERN_MANAGERS {
             if let Ok(parser) = Parser::new(path) {
-                let repos = parser.parse::<Repository>().await.into_iter().collect();
+                let repos = parser.parse::<Repository>().await?.into_iter().collect();
                 sources.push_back(RepoGroup {
                     format: RepoGroupFormat::Modern,
                     path: path.to_string(),
@@ -133,6 +133,6 @@ impl Export {
             }
         }
 
-        sources
+        Ok(sources)
     }
 }
