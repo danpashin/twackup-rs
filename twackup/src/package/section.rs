@@ -36,6 +36,7 @@ pub enum Section {
 }
 
 impl Section {
+    #[must_use]
     pub fn as_str(&self) -> &str {
         match self {
             Self::Archiving => "Archiving",
@@ -53,6 +54,7 @@ impl Section {
     }
 
     #[cfg(feature = "cli")]
+    #[must_use]
     pub fn color(&self) -> Style {
         let color = match self {
             Self::Archiving => Color::Color256(216),      // peach?
@@ -64,7 +66,7 @@ impl Section {
             Self::Themes => Color::Color256(12),          // bright blue
             Self::Tweaks => Color::Color256(11),          // bright yellow
             Self::Utilities | Self::Packaging => Color::Color256(14), // bright cyan
-            _ => Color::Color256(8),                      // bright grey
+            Self::Other(_) => Color::Color256(8),         // bright grey
         };
 
         Style::new().fg(color)

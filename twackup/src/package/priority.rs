@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::PackageError;
+use super::package_error::Error;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Priority {
@@ -30,6 +30,7 @@ pub enum Priority {
 }
 
 impl Priority {
+    #[must_use]
     pub fn as_str(&self) -> &str {
         match self {
             Self::Optional => "optional",
@@ -43,7 +44,7 @@ impl Priority {
 }
 
 impl TryFrom<&str> for Priority {
-    type Error = PackageError;
+    type Error = Error;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
@@ -53,7 +54,7 @@ impl TryFrom<&str> for Priority {
             "standard" => Ok(Self::Standard),
             "extra" => Ok(Self::Extra),
             "unknown" => Ok(Self::Unknown),
-            _ => Err(PackageError::UnknownPriority(value.to_string())),
+            _ => Err(Error::UnknownPriority(value.to_string())),
         }
     }
 }

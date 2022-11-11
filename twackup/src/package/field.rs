@@ -23,7 +23,7 @@ use std::{
 };
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
-pub enum FieldName {
+pub enum Field {
     // main info fields
     Package,
     Name,
@@ -58,7 +58,8 @@ pub enum FieldName {
     Custom(String),
 }
 
-impl FieldName {
+impl Field {
+    #[must_use]
     pub fn as_str(&self) -> &str {
         match self {
             Self::Package => "Package",
@@ -78,7 +79,7 @@ impl FieldName {
             Self::Recommends => "Recommends",
             Self::Suggests => "Suggests",
             Self::Conflicts => "Conflicts",
-            Self::Breaks => "Conflicts",
+            Self::Breaks => "Breaks",
             Self::Provides => "Provides",
             Self::Replaces => "Replaces",
             Self::InstalledSize => "Installed-Size",
@@ -91,7 +92,7 @@ impl FieldName {
     }
 }
 
-impl FromStr for FieldName {
+impl FromStr for Field {
     type Err = ();
 
     fn from_str(str: &str) -> Result<Self, Self::Err> {
@@ -126,13 +127,13 @@ impl FromStr for FieldName {
     }
 }
 
-impl AsRef<FieldName> for FieldName {
-    fn as_ref(&self) -> &FieldName {
+impl AsRef<Field> for Field {
+    fn as_ref(&self) -> &Field {
         self
     }
 }
 
-impl Display for FieldName {
+impl Display for Field {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.as_str())
     }

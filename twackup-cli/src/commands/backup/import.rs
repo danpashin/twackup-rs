@@ -24,7 +24,7 @@ use std::{
     io::{self, BufWriter, Write},
     process::{Command, Stdio},
 };
-use twackup::{error::GenericError, process};
+use twackup::{error::Generic as GenericError, process};
 
 #[derive(clap::Parser)]
 pub(crate) struct Import {
@@ -48,7 +48,7 @@ impl CliCommand for Import {
         let data = self.deserialize_input().expect("Can't deserialize input");
 
         if let Some(repositories) = data.repositories {
-            for repo_group in repositories.iter() {
+            for repo_group in &repositories {
                 if let Err(error) = self.import_repo_group(repo_group) {
                     eprint!(
                         "Can't import sources for {}. {:?}",
@@ -74,7 +74,7 @@ impl CliCommand for Import {
 
             let mut install_args =
                 vec!["install", "-y", "--allow-unauthenticated", "--fix-missing"];
-            install_args.extend(packages.iter().map(|pkg| pkg.as_str()));
+            install_args.extend(packages.iter().map(String::as_str));
             self.run_apt(install_args)
                 .expect("Failed to run install subcommand");
         }
@@ -99,7 +99,7 @@ impl Import {
             repo_group.executable
         );
         let mut writer = BufWriter::new(File::create(&repo_group.path)?);
-        for source in repo_group.sources.iter() {
+        for source in &repo_group.sources {
             match repo_group.format {
                 RepoGroupFormat::Classic => writer.write(source.to_one_line().as_bytes())?,
                 RepoGroupFormat::Modern => {
@@ -119,7 +119,7 @@ impl Import {
             "Zebra" => std::fs::remove_file(
                 "/var/mobile/Library/Application Support/xyz.willy.Zebra/zebra.db",
             )
-            .map_err(|error| error.into()),
+            .map_err(Into::into),
             "Cydia" => self.cydia_post_import_hook(repo_group),
             _ => Ok(()),
         };

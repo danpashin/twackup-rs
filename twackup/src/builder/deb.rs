@@ -27,12 +27,12 @@ use std::{
 };
 use tar::Builder;
 
-pub type DebTarArchive = TarArchive<GzEncoder<File>>;
+pub type DebianTarArchive = TarArchive<GzEncoder<File>>;
 
 pub struct Deb {
     output: PathBuf,
-    control: DebTarArchive,
-    data: DebTarArchive,
+    control: DebianTarArchive,
+    data: DebianTarArchive,
     control_path: PathBuf,
     data_path: PathBuf,
 }
@@ -42,6 +42,10 @@ pub struct TarArchive<W: Write> {
 }
 
 impl Deb {
+    /// Constructs debian archive instance
+    ///
+    /// # Errors
+    /// Returns IO error if temp dir is not writable
     pub fn new<T: AsRef<Path>, O: AsRef<Path>>(
         temp_dir: T,
         output: O,
@@ -64,14 +68,18 @@ impl Deb {
         })
     }
 
-    pub fn data_mut_ref(&mut self) -> &mut DebTarArchive {
+    pub fn data_mut_ref(&mut self) -> &mut DebianTarArchive {
         self.data.borrow_mut()
     }
 
-    pub fn control_mut_ref(&mut self) -> &mut DebTarArchive {
+    pub fn control_mut_ref(&mut self) -> &mut DebianTarArchive {
         self.control.borrow_mut()
     }
 
+    /// Construct debian package
+    ///
+    /// # Errors
+    /// Returns IO error if temp dir is not writable
     pub fn package(&mut self) -> io::Result<()> {
         self.control.builder.finish()?;
         self.control.builder.get_mut().try_finish()?;
@@ -86,7 +94,7 @@ impl Deb {
         // The latest one is 2.0 so we'll use this
         let version = "2.0\n".as_bytes();
         let mut header = ar::Header::new(b"debian-binary".to_vec(), version.len() as u64);
-        header.set_mode(0o100644); // o=rw,g=r,o=r
+        header.set_mode(0o100_644); // o=rw,g=r,o=r
         header.set_mtime(current_timestamp()); // modify time
         builder.append(&header, version)?;
 
@@ -101,11 +109,15 @@ impl Deb {
         Ok(())
     }
 
+    /// Creates header for specified path
+    ///
+    /// # Errors
+    /// Returns error if file doesn't exists or current user has no permissions to read it
     fn prepare_path<P: AsRef<Path>>(&self, path: P, name: &str) -> io::Result<(ar::Header, File)> {
         let file = File::open(path)?;
         let metadata = file.metadata()?;
         let mut header = ar::Header::from_metadata(name.as_bytes().to_vec(), &metadata);
-        header.set_mode(0o100644); // o=rw,g=r,o=r
+        header.set_mode(0o100_644); // o=rw,g=r,o=r
         header.set_uid(0); // root
         header.set_gid(0); // root
 
@@ -125,9 +137,12 @@ impl<W: Write> TarArchive<W> {
     }
 
     /// Appends non-existing on the filesystem file to archive
+    ///
+    /// # Errors
+    /// Returns error if file couldn't be added to archive
     pub fn append_new_file<P: AsRef<Path>>(&mut self, path: P, contents: &[u8]) -> io::Result<()> {
         let mut header = tar::Header::new_old();
-        header.set_mode(0o100644); // o=rw,g=r,o=r
+        header.set_mode(0o100_644); // o=rw,g=r,o=r
         header.set_uid(0);
         header.set_gid(0);
         header.set_size(contents.len() as u64);

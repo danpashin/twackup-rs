@@ -17,6 +17,8 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 #![warn(rust_2018_idioms)]
+#![deny(clippy::pedantic)]
+#![allow(clippy::single_match_else, clippy::linkedlist, clippy::unused_self)]
 
 mod commands;
 mod context;

@@ -24,8 +24,7 @@ mod section;
 mod status;
 
 pub use self::{
-    field::FieldName, package_error::PackageError, priority::Priority, section::Section,
-    status::Status,
+    field::Field, package_error::Error, priority::Priority, section::Section, status::Status,
 };
 use crate::kvparser::Parsable;
 use std::{
@@ -58,44 +57,42 @@ pub struct Package {
 
     pub priority: Option<Priority>,
 
-    other_fields: HashMap<FieldName, String>,
+    other_fields: HashMap<Field, String>,
 }
 
 impl Parsable for Package {
-    type Error = PackageError;
+    type Error = Error;
 
     fn new(fields: HashMap<String, String>) -> Result<Self, Self::Error> {
         let mut fields: HashMap<_, _> = fields
             .into_iter()
             .map(|(key, value)| {
                 // Safe to unwrap because from_str doesn't return error
-                (FieldName::from_str(key.as_str()).unwrap(), value)
+                (Field::from_str(key.as_str()).unwrap(), value)
             })
             .collect();
 
-        let mut fetch_field = |field: FieldName| -> Result<String, PackageError> {
-            fields
-                .remove(&field)
-                .ok_or(PackageError::MissingField(field))
+        let mut fetch_field = |field: Field| -> Result<String, Error> {
+            fields.remove(&field).ok_or(Error::MissingField(field))
         };
 
-        let package_id = fetch_field(FieldName::Package)?;
+        let package_id = fetch_field(Field::Package)?;
 
         #[cfg(feature = "ios")]
         {
             // Ignore virtual packages
             if package_id.starts_with("gsc.") || package_id.starts_with("cy+") {
-                return Err(PackageError::VirtualPackage);
+                return Err(Error::VirtualPackage);
             }
         }
 
         Ok(Self {
             id: package_id,
-            name: fetch_field(FieldName::Name).ok(),
-            version: fetch_field(FieldName::Version)?,
-            status: Status::try_from(fetch_field(FieldName::Status)?.as_str())?,
-            section: Section::from(fetch_field(FieldName::Section)?.as_str()),
-            priority: fetch_field(FieldName::Priority)
+            name: fetch_field(Field::Name).ok(),
+            version: fetch_field(Field::Version)?,
+            status: Status::try_from(fetch_field(Field::Status)?.as_str())?,
+            section: Section::from(fetch_field(Field::Section)?.as_str()),
+            priority: fetch_field(Field::Priority)
                 .and_then(|priority| Priority::try_from(priority.as_str()))
                 .ok(),
             other_fields: fields,
@@ -106,34 +103,37 @@ impl Parsable for Package {
 impl Package {
     /// Searches for installed files
     ///
-    /// # todo!("REFACTOR THIS")
+    /// # Errors
+    /// Returns error if dpkg directory couldn't be read or package is not installed
     #[inline]
     pub fn get_installed_files(&self, dpkg_dir: &Path) -> io::Result<Vec<String>> {
         let file = File::open(dpkg_dir.join(format!("info/{}.list", self.id)))?;
         BufReader::new(file).lines().collect()
     }
 
-    /// Creates canonical DEB filename in format of **id_version_arch**
+    /// Creates canonical DEB filename in format of `id_version_arch`
     #[inline]
+    #[must_use]
     pub fn canonical_name(&self) -> String {
-        let arch = self.get(FieldName::Architecture).unwrap_or_default();
+        let arch = self.get(Field::Architecture).unwrap_or_default();
         format!("{}_{}_{}", self.id, self.version, arch)
     }
 
     /// Constructs control file of DEB archive.
     /// Respects fields order.
+    #[must_use]
     pub fn to_control(&self) -> String {
-        let get = |name: FieldName| self.get(name).unwrap_or_default();
+        let get = |name: Field| self.get(name).unwrap_or_default();
 
         let header_fields = [
-            (FieldName::Package, self.id.as_str()),
-            (FieldName::Name, self.human_name()),
-            (FieldName::Version, self.version.as_str()),
-            (FieldName::Description, get(FieldName::Description)),
-            (FieldName::Author, get(FieldName::Author)),
-            (FieldName::Section, get(FieldName::Section)),
-            (FieldName::Architecture, get(FieldName::Architecture)),
-            (FieldName::Depiction, get(FieldName::Depiction)),
+            (Field::Package, self.id.as_str()),
+            (Field::Name, self.human_name()),
+            (Field::Version, self.version.as_str()),
+            (Field::Description, get(Field::Description)),
+            (Field::Author, get(Field::Author)),
+            (Field::Section, get(Field::Section)),
+            (Field::Architecture, get(Field::Architecture)),
+            (Field::Depiction, get(Field::Depiction)),
         ];
 
         // 3 bytes - ": " and '\n'
@@ -196,35 +196,33 @@ impl Package {
                 })
         }
 
-        let depends = self.get(FieldName::Depends).unwrap_or_default();
-        let predepends = self.get(FieldName::Depends).unwrap_or_default();
+        let depends = self.get(Field::Depends).unwrap_or_default();
+        let predepends = self.get(Field::Depends).unwrap_or_default();
 
         parse(depends).chain(parse(predepends))
     }
 
     /// Fetches value associated with this field.
     ///
-    /// # Returns
-    /// None if there's no field
-    pub fn get<N: AsRef<FieldName>>(&self, field: N) -> Result<&str, PackageError> {
+    /// # Errors
+    /// Returns error if there's not such field
+    pub fn get<N: AsRef<Field>>(&self, field: N) -> Result<&str, Error> {
         let field = field.as_ref();
         match field {
-            FieldName::Package => Ok(self.id.as_str()),
-            FieldName::Name => self
-                .name
-                .as_deref()
-                .ok_or(PackageError::MissingField(FieldName::Name)),
-            FieldName::Version => Ok(self.version.as_str()),
-            FieldName::Section => Ok(self.section.as_str()),
+            Field::Package => Ok(self.id.as_str()),
+            Field::Name => self.name.as_deref().ok_or(Error::MissingField(Field::Name)),
+            Field::Version => Ok(self.version.as_str()),
+            Field::Section => Ok(self.section.as_str()),
             _ => self
                 .other_fields
                 .get(field)
-                .map(|value| value.as_str())
-                .ok_or_else(|| PackageError::MissingField(field.clone())),
+                .map(String::as_str)
+                .ok_or_else(|| Error::MissingField(field.clone())),
         }
     }
 
     /// Returns package name or identifier if there's no such
+    #[must_use]
     pub fn human_name(&self) -> &str {
         match &self.name {
             Some(name) => name.as_str(),

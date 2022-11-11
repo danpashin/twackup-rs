@@ -18,6 +18,14 @@
  */
 
 #![warn(rust_2018_idioms)]
+#![deny(clippy::pedantic)]
+#![allow(
+    clippy::single_match_else,
+    clippy::linkedlist,
+    clippy::unused_self,
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap
+)]
 
 pub mod builder;
 pub mod dpkg;

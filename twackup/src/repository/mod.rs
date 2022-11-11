@@ -60,7 +60,7 @@ impl Parsable for Repository {
                 .map(|components| {
                     components
                         .split_ascii_whitespace()
-                        .map(|x| x.to_string())
+                        .map(ToString::to_string)
                         .collect()
                 })
                 .unwrap_or_default(),
@@ -70,8 +70,10 @@ impl Parsable for Repository {
 
 impl Repository {
     /// Performs parsing model from one-line style.
+    /// **Doesn't support options as they aren't used in iOS.**
     ///
-    /// #### This func doesn't support options as they aren't used in iOS.
+    /// # Errors
+    /// Return error if line doesn't consist of three or more components
     pub fn from_one_line(line: &str) -> Result<Self, RepoError> {
         let components: Vec<&str> = line.split_ascii_whitespace().collect();
         // type, uri and suite are required, so break if they don't exist
@@ -86,13 +88,14 @@ impl Repository {
             components: components
                 .into_iter()
                 .skip(3)
-                .map(|str| str.to_string())
+                .map(ToString::to_string)
                 .collect(),
         })
     }
 
     /// Performs fields formatting in the one-line style.
     /// #### Doesn't support options
+    #[must_use]
     pub fn to_one_line(&self) -> String {
         format!(
             "{} {} {} {}",
@@ -107,6 +110,7 @@ impl Repository {
 
     /// Performs fields formatting in multiple-lines style. (Also known as DEB822 Style)
     /// #### Doesn't support options
+    #[must_use]
     pub fn to_deb822(&self) -> String {
         format!(
             "Types: {}\nURIs: {}\nSuites: {}\nComponents: {}",
@@ -119,6 +123,7 @@ impl Repository {
         .to_string()
     }
 
+    #[must_use]
     pub fn to_cydia_key(&self) -> String {
         format!(
             "{}:{}:{}",
@@ -128,6 +133,7 @@ impl Repository {
         )
     }
 
+    #[must_use]
     pub fn to_dict(&self) -> plist::Dictionary {
         let mut dict = plist::Dictionary::new();
         dict.insert(

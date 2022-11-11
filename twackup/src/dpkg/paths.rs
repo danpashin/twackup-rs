@@ -17,25 +17,25 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::Field;
+use std::path::{Path, PathBuf};
 
-#[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error("Unknown package priority: `{0}`")]
-    UnknownPriority(String),
+#[derive(Clone, Debug)]
+pub struct Paths(PathBuf);
 
-    #[error("Unknown package eflag field: `{0}`")]
-    UnknownEFlag(String),
+impl Paths {
+    pub fn new<P: AsRef<Path>>(dpkg_dir: P) -> Self {
+        Self(dpkg_dir.as_ref().to_path_buf())
+    }
 
-    #[error("Unknown package state: `{0}`")]
-    UnknownState(String),
+    pub fn status_file(&self) -> PathBuf {
+        self.0.join("status")
+    }
 
-    #[error("Unknown package want field `{0}`")]
-    UnknownWant(String),
+    pub fn info_dir(&self) -> PathBuf {
+        self.0.join("info")
+    }
 
-    #[error("Field is missed: `{0}`")]
-    MissingField(Field),
-
-    #[error("This package is virtual")]
-    VirtualPackage,
+    pub fn lock_file(&self) -> PathBuf {
+        self.0.join("lock")
+    }
 }

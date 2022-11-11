@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::package::PackageError;
+use crate::package::Error;
 use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -36,13 +36,13 @@ impl EFlag {
 }
 
 impl TryFrom<&str> for EFlag {
-    type Error = PackageError;
+    type Error = Error;
 
     fn try_from(string: &str) -> Result<Self, Self::Error> {
         match string {
             "ok" => Ok(Self::Ok),
             "reinstreq" => Ok(Self::ReInstallRequest),
-            _ => Err(PackageError::UnknownEFlag(string.to_string())),
+            _ => Err(Error::UnknownEFlag(string.to_string())),
         }
     }
 }

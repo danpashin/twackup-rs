@@ -19,8 +19,9 @@
 
 pub mod deb;
 
+use crate::error::Generic;
 use crate::{error::Result, package::Package, progress::Progress};
-use deb::{Deb, DebTarArchive};
+use deb::{Deb, DebianTarArchive};
 use std::{
     fs, io,
     os::unix::ffi::OsStringExt,
@@ -40,7 +41,7 @@ pub struct Preferences {
 pub struct Worker<T: Progress> {
     pub package: Package,
     pub progress: T,
-    pub archive: Option<Arc<Mutex<DebTarArchive>>>,
+    pub archive: Option<Arc<Mutex<DebianTarArchive>>>,
     pub preferences: Preferences,
     pub working_dir: PathBuf,
 }
@@ -60,7 +61,7 @@ impl<T: Progress> Worker<T> {
     pub fn new(
         package: Package,
         progress: T,
-        archive: Option<Arc<Mutex<DebTarArchive>>>,
+        archive: Option<Arc<Mutex<DebianTarArchive>>>,
         preferences: Preferences,
     ) -> Self {
         let name = package.canonical_name();
@@ -75,12 +76,15 @@ impl<T: Progress> Worker<T> {
         }
     }
 
-    /// Runs worker. Should be executed in a single thread usually
+    /// Runs worker
+    ///
+    /// # Errors
+    /// Returns error if temp dir creation or any of underlying package operation failed
     pub fn run(&self) -> io::Result<PathBuf> {
         let w_dir = &self.working_dir;
 
         // Removing all dir contents
-        let _ = fs::remove_dir_all(w_dir);
+        fs::remove_dir_all(w_dir).ok();
         fs::create_dir(w_dir)?;
 
         let deb_name = format!("{}.deb", self.package.canonical_name());
@@ -91,13 +95,16 @@ impl<T: Progress> Worker<T> {
         self.archive_metadata(deb.control_mut_ref())?;
         deb.package()?;
 
-        let _ = fs::remove_dir_all(w_dir);
+        fs::remove_dir_all(w_dir).ok();
 
         Ok(deb_path)
     }
 
     /// Archives package files and compresses in a single archive
-    fn archive_files(&self, archiver: &mut DebTarArchive) -> io::Result<()> {
+    ///
+    /// # Errros
+    /// Returns error if dpkg directory couldn't be read or any of underlying operation failed
+    fn archive_files(&self, archiver: &mut DebianTarArchive) -> io::Result<()> {
         let files = self
             .package
             .get_installed_files(&self.preferences.admin_dir)?;
@@ -116,7 +123,10 @@ impl<T: Progress> Worker<T> {
 
     /// Collects package metadata such as install scripts,
     /// creates control and packages all this together
-    fn archive_metadata(&self, archiver: &mut DebTarArchive) -> io::Result<()> {
+    ///
+    /// # Errors
+    /// Returns error if dpkg directory couldn't be read or any of underlying operation failed
+    fn archive_metadata(&self, archiver: &mut DebianTarArchive) -> io::Result<()> {
         // Order in this archive doesn't matter. So we'll add control at first
         archiver.append_new_file("control", self.package.to_control().as_bytes())?;
 
@@ -148,29 +158,38 @@ impl<T: Progress> Worker<T> {
         Ok(())
     }
 
-    pub async fn work(&self) -> Result<()> {
+    /// Creates package debian archive and optionally add it to shared TAR archive
+    ///
+    /// # Errors
+    /// Returns error if any of underlying operations failed
+    pub fn work(&self) -> Result<()> {
         let progress = format!("Processing {}", self.package.human_name());
         self.progress.set_message(progress);
 
-        let result = self.run();
+        let file = self.run()?;
         self.progress.increment(1);
 
-        match result {
-            Ok(file) => {
-                let progress = format!("Done {}", self.package.human_name());
-                self.progress.set_message(progress);
+        let progress = format!("Done {}", self.package.human_name());
+        self.progress.set_message(progress);
 
-                if let Some(archive) = &self.archive {
-                    let mut archive = archive.lock().unwrap();
-                    let abs_file = Path::new(".").join(file.file_name().unwrap());
-                    let result = archive.get_mut().append_path_with_name(&file, &abs_file);
-                    if result.is_ok() && self.preferences.remove_deb {
-                        let _ = fs::remove_file(file);
-                    }
-                }
-            }
-            Err(error) => {
-                log::error!("Building {} error. {}", self.package.human_name(), error)
+        self.add_to_archive(file)?;
+
+        Ok(())
+    }
+
+    /// Adds already assembled package to common TAR archive
+    ///
+    /// # Errors
+    /// Returns error if any of underlying operations failed
+    fn add_to_archive(&self, file: PathBuf) -> Result<()> {
+        if let Some(archive) = &self.archive {
+            let mut archive = archive.try_lock().map_err(|_| Generic::LockError)?;
+
+            let abs_file = Path::new(".").join(file.file_name().unwrap());
+            archive.get_mut().append_path_with_name(&file, &abs_file)?;
+
+            if self.preferences.remove_deb {
+                fs::remove_file(file).ok();
             }
         }
 

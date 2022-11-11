@@ -17,12 +17,10 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::{package::PackageError, repository::RepoError};
-
-pub type Result<T> = std::result::Result<T, GenericError>;
+pub type Result<T> = std::result::Result<T, Generic>;
 
 #[derive(thiserror::Error, Debug)]
-pub enum GenericError {
+pub enum Generic {
     #[error("IO: {0}")]
     Io(#[from] std::io::Error),
 
@@ -33,8 +31,11 @@ pub enum GenericError {
     Plist(#[from] plist::Error),
 
     #[error("PackageError: {0}")]
-    PackageError(#[from] PackageError),
+    PackageError(#[from] crate::package::Error),
 
     #[error("RepoError: {0}")]
-    RepoError(#[from] RepoError),
+    RepoError(#[from] crate::repository::RepoError),
+
+    #[error("LockError")]
+    LockError,
 }
