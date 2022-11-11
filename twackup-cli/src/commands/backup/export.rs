@@ -105,11 +105,11 @@ impl Export {
 
         for (name, path) in MODERN_MANAGERS {
             if let Ok(parser) = Parser::new(path) {
-                let repos = parser.parse::<Repository>().await?.into_iter().collect();
+                let repos = parser.parse::<Repository>().await.into_iter().collect();
                 sources.push_back(RepoGroup {
                     format: RepoGroupFormat::Modern,
-                    path: path.to_string(),
-                    executable: name.to_string(),
+                    path: (*path).to_string(),
+                    executable: (*name).to_string(),
                     sources: repos,
                 });
             }
@@ -125,8 +125,8 @@ impl Export {
                 }
                 sources.push_back(RepoGroup {
                     format: RepoGroupFormat::Classic,
-                    path: path.to_string(),
-                    executable: name.to_string(),
+                    path: (*path).to_string(),
+                    executable: (*name).to_string(),
                     sources: repos,
                 });
             }

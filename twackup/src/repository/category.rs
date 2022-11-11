@@ -31,6 +31,7 @@ pub enum Category {
 }
 
 impl Category {
+    #[must_use]
     pub fn as_str(&self) -> &str {
         match self {
             Self::Binary => "deb",

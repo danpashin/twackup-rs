@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::package::PackageError;
+use crate::package::Error;
 use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -48,7 +48,7 @@ impl State {
 }
 
 impl TryFrom<&str> for State {
-    type Error = PackageError;
+    type Error = Error;
 
     fn try_from(string: &str) -> Result<Self, Self::Error> {
         match string {
@@ -60,7 +60,7 @@ impl TryFrom<&str> for State {
             "triggers-awaited" => Ok(Self::TriggersAwaited),
             "triggers-pending" => Ok(Self::TriggersPending),
             "installed" => Ok(Self::Installed),
-            _ => Err(PackageError::UnknownState(string.to_string())),
+            _ => Err(Error::UnknownState(string.to_string())),
         }
     }
 }

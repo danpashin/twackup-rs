@@ -49,6 +49,6 @@ impl Log for Logger {
     }
 
     fn flush(&self) {
-        self.0.flush()
+        self.0.flush();
     }
 }

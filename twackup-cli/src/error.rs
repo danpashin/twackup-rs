@@ -25,7 +25,7 @@ pub(crate) enum CLIError {
     Io(#[from] std::io::Error),
 
     #[error("GenericError: {0}")]
-    Twackup(#[from] twackup::error::GenericError),
+    Twackup(#[from] twackup::error::Generic),
 
     #[error("SerdeSupport: {0}")]
     Serde(#[from] crate::serde::SerdeError),

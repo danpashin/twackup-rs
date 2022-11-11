@@ -18,7 +18,9 @@
  */
 
 mod lock;
+mod paths;
 
+use crate::dpkg::paths::Paths;
 use crate::{
     error::Result,
     kvparser::Parser,
@@ -27,34 +29,40 @@ use crate::{
 use lock::Lock;
 use std::{
     collections::{BTreeMap, HashSet},
-    path::{Path, PathBuf},
+    path::Path,
 };
 
+#[derive(Clone, Debug)]
 pub struct Dpkg {
-    dpkg_dir: PathBuf,
+    pub paths: Paths,
     should_lock: bool,
 }
 
 impl Dpkg {
     pub fn new<P: AsRef<Path>>(dpkg_dir: P, should_lock: bool) -> Self {
         Self {
-            dpkg_dir: dpkg_dir.as_ref().to_path_buf(),
+            paths: Paths::new(dpkg_dir),
             should_lock,
         }
     }
 
+    /// Fetches packages from dpkg database
+    ///
+    /// # Parameters
+    /// - `leaves_only` - if packages that aren't dependencies of others should be returned
+    ///
+    /// # Errors
+    /// Returns error if parsing database failed or dpkg directory lock failed
     pub async fn packages(&self, leaves_only: bool) -> Result<BTreeMap<String, Package>> {
         // lock database as it can be modified while parsing
         let lock = if self.should_lock {
-            Some(Lock::new(&self.dpkg_dir))
+            Some(Lock::new(&self.paths)?)
         } else {
             None
         };
 
-        let status_file = self.dpkg_dir.join("status");
-        let parser = Parser::new(status_file)?;
-
-        let packages = parser.parse::<Package>().await?;
+        let parser = Parser::new(self.paths.status_file())?;
+        let packages = parser.parse::<Package>().await;
 
         // remove database lock as it is not needed
         drop(lock);
@@ -69,7 +77,7 @@ impl Dpkg {
         // Collect all identifiers package depends on
         // Skip system and required
         let mut ids: HashSet<_> = HashSet::new();
-        for pkg in packages.iter() {
+        for pkg in &packages {
             ids.extend(pkg.dependencies());
         }
 

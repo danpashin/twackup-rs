@@ -17,11 +17,12 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use super::paths::Paths;
 use std::{
     fs::{self, File},
     io,
     os::unix::io::AsRawFd,
-    path::{Path, PathBuf},
+    path::PathBuf,
 };
 
 pub(crate) struct Lock {
@@ -30,8 +31,8 @@ pub(crate) struct Lock {
 }
 
 impl Lock {
-    pub(crate) fn new<P: AsRef<Path>>(path: P) -> io::Result<Self> {
-        let path = path.as_ref().join("lock");
+    pub(crate) fn new(paths: &Paths) -> io::Result<Self> {
+        let path = paths.lock_file();
         let file = File::create(&path)?;
         flock(&file, libc::LOCK_EX)?;
 
@@ -41,12 +42,12 @@ impl Lock {
 
 impl Drop for Lock {
     fn drop(&mut self) {
-        let _ = flock(&self.file, libc::LOCK_UN);
-        let _ = fs::remove_file(&self.path);
+        flock(&self.file, libc::LOCK_UN).ok();
+        fs::remove_file(&self.path).ok();
     }
 }
 
-fn flock(file: &File, flag: libc::c_int) -> std::io::Result<()> {
+fn flock(file: &File, flag: libc::c_int) -> io::Result<()> {
     let ret = unsafe { libc::flock(file.as_raw_fd(), flag) };
     if ret < 0 {
         Err(io::Error::last_os_error())

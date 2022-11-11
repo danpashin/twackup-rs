@@ -28,14 +28,19 @@ use std::{
     sync::Arc,
 };
 
+/// Common trait for any struct that can be parsed in key-value mode
 pub trait Parsable: Send + Sized {
-    type Error: Send;
+    type Error: Send + std::error::Error;
 
+    /// Should process lines and return result
+    ///
+    /// # Errors
+    /// If return error, it will be logged as warning
     fn new(key_values: HashMap<String, String>) -> Result<Self, Self::Error>;
 }
 
 pub struct Parser {
-    file: File,
+    length: usize,
     mmap: Arc<Mmap>,
 }
 
@@ -47,22 +52,24 @@ struct ChunkWorker {
 impl Parser {
     /// Prepares environment and creates parser instance
     ///
+    /// # Errors
     /// Will return error when user has no permissions to read
     /// or file is empty
     pub fn new<P: AsRef<Path>>(file_path: P) -> io::Result<Self> {
         let file = File::open(file_path.as_ref())?;
+        let length = file.metadata()?.len() as usize;
         let mmap = Arc::new(unsafe { Mmap::map(&file) }?);
-        Ok(Self { file, mmap })
+
+        Ok(Self { length, mmap })
     }
 
     /// This method will parse file with key-value syntax on separate lines.
-    pub async fn parse<P: Parsable + 'static>(&self) -> io::Result<LinkedList<P>> {
+    pub async fn parse<P: Parsable + 'static>(&self) -> LinkedList<P> {
         let mut workers = LinkedList::new();
 
         let mut last_nl_pos = 0;
-        let file_len = self.file.metadata()?.len() as usize;
 
-        for pos in 0..file_len - 1 {
+        for pos in 0..self.length - 1 {
             if self.mmap[pos] == b'\n' && self.mmap[pos + 1] == b'\n' {
                 let worker = ChunkWorker::new(self.mmap.clone(), last_nl_pos..pos);
                 workers.push_back(tokio::spawn(async { worker.run() }));
@@ -72,12 +79,14 @@ impl Parser {
 
         let mut models = LinkedList::new();
         for worker in workers {
-            if let Ok(Ok(worker_models)) = worker.await {
-                models.push_back(worker_models);
+            match worker.await {
+                Ok(Ok(worker_models)) => models.push_back(worker_models),
+                Ok(Err(_)) => {}
+                Err(error) => log::warn!("Worker join error: {:?}", error),
             }
         }
 
-        Ok(models)
+        models
     }
 }
 
@@ -135,7 +144,7 @@ mod tests {
     use super::Parser;
     use crate::{
         error::Result,
-        package::{FieldName, Package},
+        package::{Field, Package},
         repository::Repository,
     };
     use std::{
@@ -150,7 +159,7 @@ mod tests {
     async fn valid_database() -> Result<()> {
         let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/database/valid");
         let parser = Parser::new(database)?;
-        let packages = parser.parse::<Package>().await?;
+        let packages = parser.parse::<Package>().await;
         assert_eq!(packages.len(), 3);
 
         Ok(())
@@ -163,7 +172,7 @@ mod tests {
             "/assets/database/partially_valid"
         );
         let parser = Parser::new(database)?;
-        let packages = parser.parse::<Package>().await?;
+        let packages = parser.parse::<Package>().await;
         assert_ne!(packages.len(), 3);
 
         Ok(())
@@ -174,18 +183,18 @@ mod tests {
         let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/database/multiline");
         let parser = Parser::new(database)?;
 
-        let packages = parser.parse::<Package>().await?;
+        let packages = parser.parse::<Package>().await;
         let packages: HashMap<String, Package> = packages
             .into_iter()
             .map(|pkg| (pkg.id.clone(), pkg))
             .collect();
 
         let package = packages.get("valid-package-1").unwrap();
-        let description = package.get(FieldName::Description)?;
+        let description = package.get(Field::Description)?;
         assert_eq!(description, "First Line\n Second Line\n  Third Line");
 
         let package = packages.get("valid-package-2").unwrap();
-        let description = package.get(FieldName::Description)?;
+        let description = package.get(Field::Description)?;
         assert_eq!(description, "First Line");
 
         Ok(())
@@ -216,7 +225,7 @@ mod tests {
 
         let parser = Parser::new(database)?;
 
-        let repositories = parser.parse::<Repository>().await?;
+        let repositories = parser.parse::<Repository>().await;
         let repositories: HashMap<String, Repository> = repositories
             .into_iter()
             .map(|repo| (repo.url.clone(), repo))

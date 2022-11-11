@@ -30,11 +30,11 @@ use std::{
 };
 use twackup::{
     builder::{
-        deb::{DebTarArchive, TarArchive},
+        deb::{DebianTarArchive, TarArchive},
         Preferences, Worker,
     },
-    error::GenericError,
-    package::*,
+    error::Generic as GenericError,
+    package::Package,
     progress::Progress,
 };
 
@@ -149,7 +149,7 @@ impl Build {
 
             tokio::spawn(async move {
                 let builder = Worker::new(package, progress, archive, preferences);
-                builder.work().await
+                builder.work()
             })
         }))
         .await;
@@ -164,7 +164,7 @@ impl Build {
         Ok(())
     }
 
-    fn create_archive_if_needed(&self) -> Option<Arc<Mutex<DebTarArchive>>> {
+    fn create_archive_if_needed(&self) -> Option<Arc<Mutex<DebianTarArchive>>> {
         if !self.archive {
             return None;
         }
@@ -209,7 +209,7 @@ impl CliCommand for Build {
             eprint!("No packages specified. Build leaves? [Y/N] [default N] ");
 
             let mut buffer = String::new();
-            let _ = io::stdin().read_line(&mut buffer);
+            io::stdin().read_line(&mut buffer)?;
             if buffer.trim().to_lowercase() == "y" {
                 leaves_only = true;
             } else {
