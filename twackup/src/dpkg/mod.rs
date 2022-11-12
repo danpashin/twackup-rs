@@ -29,7 +29,8 @@ use lock::Lock;
 pub use paths::Paths;
 use std::{
     collections::{BTreeMap, HashSet},
-    path::Path,
+    fs,
+    path::{Path, PathBuf},
 };
 
 #[derive(Clone, Debug)]
@@ -98,5 +99,19 @@ impl Dpkg {
             .collect();
 
         Ok(leaves)
+    }
+
+    /// Fetches packages info directory contents
+    ///
+    /// # Errors
+    /// Returns error if dpkg directory read failed
+    pub fn info_dir_contents(&self) -> Result<HashSet<PathBuf>> {
+        Ok(fs::read_dir(self.paths.info_dir())?
+            .flatten()
+            .filter_map(|entry| match entry.metadata() {
+                Ok(metadata) if !metadata.is_dir() => Some(entry.path()),
+                _ => None,
+            })
+            .collect())
     }
 }
