@@ -33,6 +33,7 @@ use twackup::{
         deb::{DebianTarArchive, TarArchive},
         Preferences, Worker,
     },
+    dpkg::Dpkg,
     error::Generic as GenericError,
     package::Package,
     progress::Progress,
@@ -142,13 +143,17 @@ impl Build {
         preferences.remove_deb = self.remove_after;
         preferences.compression_level = self.compression_level;
 
+        let contents = Dpkg::new(&self.admindir, false).info_dir_contents()?;
+        let contents = Arc::new(contents);
+
         futures::future::join_all(packages.into_iter().map(|package| {
             let progress = progress.clone();
             let archive = archive.clone();
             let preferences = preferences.clone();
+            let contents = contents.clone();
 
             tokio::spawn(async move {
-                let builder = Worker::new(package, progress, archive, preferences);
+                let builder = Worker::new(package, progress, archive, preferences, contents);
                 builder.work()
             })
         }))

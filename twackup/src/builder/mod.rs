@@ -27,8 +27,8 @@ use crate::{
 };
 use deb::{Deb, DebianTarArchive};
 use std::{
+    collections::HashSet,
     fs, io,
-    os::unix::ffi::OsStrExt,
     path::{Path, PathBuf},
     sync::{Arc, Mutex},
 };
@@ -48,6 +48,7 @@ pub struct Worker<T: Progress> {
     pub archive: Option<Arc<Mutex<DebianTarArchive>>>,
     pub preferences: Preferences,
     pub working_dir: PathBuf,
+    pub dpkg_contents: Arc<HashSet<PathBuf>>,
 }
 
 impl Preferences {
@@ -67,6 +68,7 @@ impl<T: Progress> Worker<T> {
         progress: T,
         archive: Option<Arc<Mutex<DebianTarArchive>>>,
         preferences: Preferences,
+        dpkg_contents: Arc<HashSet<PathBuf>>,
     ) -> Self {
         let name = package.canonical_name();
         let working_dir = preferences.destination.join(name);
@@ -77,6 +79,7 @@ impl<T: Progress> Worker<T> {
             archive,
             preferences,
             working_dir,
+            dpkg_contents,
         }
     }
 
@@ -129,36 +132,38 @@ impl<T: Progress> Worker<T> {
     /// creates control and packages all this together
     ///
     /// # Errors
-    /// Returns error if dpkg directory couldn't be read or any of underlying operation failed
+    /// Returns error if control file couldn't be appended
     fn archive_metadata(&self, archiver: &mut DebianTarArchive) -> io::Result<()> {
         // Order in this archive doesn't matter. So we'll add control at first
         archiver.append_new_file("control", self.package.to_control().as_bytes())?;
 
-        // Then add every matching metadata file in dpkg database dir
-        let pid_len = self.package.id.len();
-        let package_id = self.package.id.as_bytes();
-        for entry in fs::read_dir(self.preferences.paths.info_dir())?.flatten() {
-            let file_name = entry.file_name();
-            let file_name = file_name.as_bytes();
+        let possible_extensions = [
+            "md5sums",
+            "preinst",
+            "postinst",
+            "prerm",
+            "postrm",
+            "extrainst_",
+        ];
 
-            // Reject every file not starting with package id + dot
-            if file_name.len() <= pid_len + 1 {
-                continue;
-            }
-            if &file_name[..pid_len] != package_id || file_name[pid_len] != b'.' {
-                continue;
-            }
-            let ext = unsafe { std::str::from_utf8_unchecked(&file_name[pid_len + 1..]) };
-            // And skip .list file as it contains package files list
-            if ext == "list" {
-                continue;
-            }
-
-            let res = archiver.get_mut().append_path_with_name(entry.path(), ext);
-            if let Err(error) = res {
-                log::warn!("[{}] {}", self.package.id, error);
-            }
-        }
+        self.dpkg_contents
+            .iter()
+            .filter_map(|entry| {
+                let file_name = entry.file_name()?.to_str()?;
+                let rem = file_name.strip_prefix(&self.package.id)?;
+                let rem = rem.strip_prefix('.')?;
+                if possible_extensions.contains(&rem) {
+                    Some((entry, rem))
+                } else {
+                    None
+                }
+            })
+            .for_each(|(entry, extension)| {
+                let res = archiver.get_mut().append_path_with_name(entry, extension);
+                if let Err(error) = res {
+                    log::warn!("[{}] {}", self.package.id, error);
+                }
+            });
 
         Ok(())
     }
