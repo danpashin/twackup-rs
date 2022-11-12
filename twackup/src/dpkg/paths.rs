@@ -27,15 +27,24 @@ impl Paths {
         Self(dpkg_dir.as_ref().to_path_buf())
     }
 
+    #[must_use]
     pub fn status_file(&self) -> PathBuf {
         self.0.join("status")
     }
 
+    #[must_use]
     pub fn info_dir(&self) -> PathBuf {
         self.0.join("info")
     }
 
+    #[must_use]
     pub fn lock_file(&self) -> PathBuf {
         self.0.join("lock")
+    }
+}
+
+impl AsRef<PathBuf> for Paths {
+    fn as_ref(&self) -> &PathBuf {
+        &self.0
     }
 }

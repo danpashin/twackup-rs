@@ -36,21 +36,15 @@ impl TryFrom<&str> for Status {
     type Error = Error;
 
     fn try_from(string: &str) -> Result<Self, Self::Error> {
-        let mut components = string.split_whitespace();
-        let want = components
-            .next()
-            .ok_or_else(|| Error::UnknownState(string.to_string()))?;
-        let eflag = components
-            .next()
-            .ok_or_else(|| Error::UnknownState(string.to_string()))?;
-        let status = components
-            .next()
-            .ok_or_else(|| Error::UnknownState(string.to_string()))?;
+        let components: Vec<_> = string.split_whitespace().collect();
+        if components.len() != 3 {
+            return Err(Error::UnknownState(string.to_string()));
+        }
 
         Ok(Self {
-            want: want.try_into()?,
-            e_flag: eflag.try_into()?,
-            state: status.try_into()?,
+            want: components[0].try_into()?,
+            e_flag: components[1].try_into()?,
+            state: components[2].try_into()?,
         })
     }
 }

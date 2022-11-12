@@ -12,5 +12,4 @@ Section: Tweaks
 Package: valid-package-3
 Version: 1.0.0
 Architecture: all
-Status: install ok installed
 Section: Tweaks

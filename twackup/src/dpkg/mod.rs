@@ -20,13 +20,13 @@
 mod lock;
 mod paths;
 
-use crate::dpkg::paths::Paths;
 use crate::{
     error::Result,
-    kvparser::Parser,
     package::{Package, Priority, Section},
+    parser::Parser,
 };
 use lock::Lock;
+pub use paths::Paths;
 use std::{
     collections::{BTreeMap, HashSet},
     path::Path,

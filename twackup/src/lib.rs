@@ -30,8 +30,8 @@
 pub mod builder;
 pub mod dpkg;
 pub mod error;
-pub mod kvparser;
 pub mod package;
+pub mod parser;
 pub mod process;
 pub mod progress;
 pub mod repository;

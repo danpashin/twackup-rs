@@ -17,20 +17,22 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+mod iterators;
+
+use crate::parser::iterators::UnOwnedLine;
 use memmap2::Mmap;
 use std::{
     collections::{HashMap, LinkedList},
     fs::File,
-    io::{self, BufRead},
+    io::{self},
     marker::Send,
-    ops::Range,
     path::Path,
-    sync::Arc,
+    ptr::slice_from_raw_parts,
 };
 
 /// Common trait for any struct that can be parsed in key-value mode
 pub trait Parsable: Send + Sized {
-    type Error: Send + std::error::Error;
+    type Error: Send;
 
     /// Should process lines and return result
     ///
@@ -40,13 +42,12 @@ pub trait Parsable: Send + Sized {
 }
 
 pub struct Parser {
-    length: usize,
-    mmap: Arc<Mmap>,
+    mmap: Mmap,
 }
 
 struct ChunkWorker {
-    file: Arc<Mmap>,
-    range: Range<usize>,
+    ptr: usize,
+    length: usize,
 }
 
 impl Parser {
@@ -56,25 +57,19 @@ impl Parser {
     /// Will return error when user has no permissions to read
     /// or file is empty
     pub fn new<P: AsRef<Path>>(file_path: P) -> io::Result<Self> {
-        let file = File::open(file_path.as_ref())?;
-        let length = file.metadata()?.len() as usize;
-        let mmap = Arc::new(unsafe { Mmap::map(&file) }?);
+        let file = File::open(file_path)?;
+        let mmap = unsafe { Mmap::map(&file) }?;
 
-        Ok(Self { length, mmap })
+        Ok(Self { mmap })
     }
 
     /// This method will parse file with key-value syntax on separate lines.
     pub async fn parse<P: Parsable + 'static>(&self) -> LinkedList<P> {
         let mut workers = LinkedList::new();
 
-        let mut last_nl_pos = 0;
-
-        for pos in 0..self.length - 1 {
-            if self.mmap[pos] == b'\n' && self.mmap[pos + 1] == b'\n' {
-                let worker = ChunkWorker::new(self.mmap.clone(), last_nl_pos..pos);
-                workers.push_back(tokio::spawn(async { worker.run() }));
-                last_nl_pos = pos;
-            }
+        for chunk in UnOwnedLine::double_line(&self.mmap[..]) {
+            let worker = ChunkWorker::new(chunk.as_ptr() as usize, chunk.len());
+            workers.push_back(tokio::spawn(async { worker.run::<P>() }));
         }
 
         let mut models = LinkedList::new();
@@ -92,23 +87,27 @@ impl Parser {
 
 impl ChunkWorker {
     /// Prepares environment and creates parser instance
-    fn new(file: Arc<Mmap>, range: Range<usize>) -> Self {
-        Self { file, range }
+    fn new(ptr: usize, length: usize) -> Self {
+        Self { ptr, length }
     }
 
     /// Parses chunk to model
     fn run<P: Parsable>(self) -> Result<P, P::Error> {
-        let chunk = &self.file[self.range.start..self.range.end];
+        // Fucking hacks. This is the only way to pass slice without ARC
+        let chunk = unsafe { &*slice_from_raw_parts(self.ptr as *const u8, self.length) };
+
         let fields = self.parse_chunk(chunk);
         P::new(fields)
     }
 
     /// Converts raw chunk bytes to list of lines with multi-line syntax support
     fn parse_chunk(&self, chunk: &[u8]) -> HashMap<String, String> {
-        let mut fields: LinkedList<String> = LinkedList::new();
+        let mut fields: LinkedList<Vec<_>> = LinkedList::new();
+
+        let line_iter = UnOwnedLine::single_line(chunk).flat_map(std::str::from_utf8);
 
         // Now we'll process each line of chunk
-        for line in chunk.lines().flatten() {
+        for line in line_iter {
             // If line is empty (but it shouldn't) - skip
             if line.is_empty() {
                 continue;
@@ -117,23 +116,49 @@ impl ChunkWorker {
             // Keys can have multi-line syntax starting with single space
             // So we'll process them and concat with previous line in list
             if line.starts_with(' ') {
-                let prev_line = fields.pop_back().unwrap_or_default();
-                fields.push_back(format!("{}\n{}", prev_line, line));
+                let mut prev_lines = fields.pop_back().unwrap_or_default();
+
+                prev_lines.push(line);
+                fields.push_back(prev_lines);
             } else {
-                fields.push_back(line);
+                fields.push_back(vec![line]);
             }
         }
 
         fields
-            .into_iter()
-            .filter_map(|field| {
-                // Dpkg uses key-value syntax, so firstly, we'll find delimiter
-                // Every line without delimiter is invalid and will be skipped
-                field.split_once(':').map(|(key, value)| {
-                    // Then we'll split line into two ones and trim the result
-                    // to remove linebreaks and spaces
-                    (key.to_string(), value.trim().to_string())
-                })
+            .iter()
+            .filter_map(|field_lines| {
+                // Find delimiter in first line
+                let (key, first_val) = field_lines.first()?.split_once(':')?;
+                let key = key.to_string();
+
+                // Count total length to effectively allocate space
+                let total_len = field_lines
+                    .iter()
+                    .skip(1)
+                    .fold(0, |sum, line| sum + line.len() + 1);
+                let total_len = total_len + first_val.len();
+
+                // Create copy for the first line
+                let mut value = String::with_capacity(total_len);
+                value.push_str(first_val.trim_start());
+
+                // And for other lines
+                let value = field_lines.iter().skip(1).enumerate().fold(
+                    value,
+                    |mut value, (index, line)| {
+                        value.push('\n');
+                        // If this is the last line - trim it from the end
+                        if index == field_lines.len() - 1 {
+                            value.push_str(line.trim_end());
+                        } else {
+                            value.push_str(line);
+                        }
+                        value
+                    },
+                );
+
+                Some((key, value))
             })
             .collect()
     }
@@ -193,9 +218,7 @@ mod tests {
         let description = package.get(Field::Description)?;
         assert_eq!(description, "First Line\n Second Line\n  Third Line");
 
-        let package = packages.get("valid-package-2").unwrap();
-        let description = package.get(Field::Description)?;
-        assert_eq!(description, "First Line");
+        assert!(packages.get("invalid-package-1").is_none());
 
         Ok(())
     }

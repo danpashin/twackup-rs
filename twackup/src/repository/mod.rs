@@ -21,7 +21,7 @@ mod category;
 mod repo_error;
 
 pub use self::{category::Category, repo_error::RepoError};
-use crate::kvparser::Parsable;
+use crate::parser::Parsable;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, string::ToString};
 

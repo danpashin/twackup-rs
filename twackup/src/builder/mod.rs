@@ -19,12 +19,16 @@
 
 pub mod deb;
 
-use crate::error::Generic;
-use crate::{error::Result, package::Package, progress::Progress};
+use crate::{
+    dpkg::Paths,
+    error::{Generic, Result},
+    package::Package,
+    progress::Progress,
+};
 use deb::{Deb, DebianTarArchive};
 use std::{
     fs, io,
-    os::unix::ffi::OsStringExt,
+    os::unix::ffi::OsStrExt,
     path::{Path, PathBuf},
     sync::{Arc, Mutex},
 };
@@ -32,7 +36,7 @@ use std::{
 #[derive(Clone)]
 pub struct Preferences {
     pub remove_deb: bool,
-    pub admin_dir: PathBuf,
+    pub paths: Paths,
     pub destination: PathBuf,
     pub compression_level: u32,
 }
@@ -50,7 +54,7 @@ impl Preferences {
     pub fn new<A: AsRef<Path>, D: AsRef<Path>>(admin_dir: A, destination: D) -> Self {
         Self {
             remove_deb: true,
-            admin_dir: admin_dir.as_ref().to_path_buf(),
+            paths: Paths::new(admin_dir),
             destination: destination.as_ref().to_path_buf(),
             compression_level: 0,
         }
@@ -102,12 +106,12 @@ impl<T: Progress> Worker<T> {
 
     /// Archives package files and compresses in a single archive
     ///
-    /// # Errros
+    /// # Errors
     /// Returns error if dpkg directory couldn't be read or any of underlying operation failed
     fn archive_files(&self, archiver: &mut DebianTarArchive) -> io::Result<()> {
         let files = self
             .package
-            .get_installed_files(&self.preferences.admin_dir)?;
+            .get_installed_files(self.preferences.paths.as_ref())?;
 
         for file in files {
             // Remove root slash because tars don't contain absolute paths
@@ -133,8 +137,9 @@ impl<T: Progress> Worker<T> {
         // Then add every matching metadata file in dpkg database dir
         let pid_len = self.package.id.len();
         let package_id = self.package.id.as_bytes();
-        for entry in fs::read_dir(self.preferences.admin_dir.join("info"))?.flatten() {
-            let file_name = entry.file_name().into_vec();
+        for entry in fs::read_dir(self.preferences.paths.info_dir())?.flatten() {
+            let file_name = entry.file_name();
+            let file_name = file_name.as_bytes();
 
             // Reject every file not starting with package id + dot
             if file_name.len() <= pid_len + 1 {
