@@ -23,7 +23,6 @@
     clippy::single_match_else,
     clippy::linkedlist,
     clippy::unused_self,
-    clippy::cast_possible_truncation,
     clippy::cast_possible_wrap
 )]
 
@@ -32,6 +31,5 @@ pub mod dpkg;
 pub mod error;
 pub mod package;
 pub mod parser;
-pub mod process;
 pub mod progress;
 pub mod repository;

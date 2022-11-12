@@ -18,12 +18,18 @@
  */
 #![warn(rust_2018_idioms)]
 #![deny(clippy::pedantic)]
-#![allow(clippy::single_match_else, clippy::linkedlist, clippy::unused_self)]
+#![allow(
+    clippy::single_match_else,
+    clippy::linkedlist,
+    clippy::unused_self,
+    clippy::cast_possible_wrap
+)]
 
 mod commands;
 mod context;
 mod error;
 mod logger;
+mod process;
 mod progress_bar;
 mod serde;
 

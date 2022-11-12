@@ -18,13 +18,13 @@
  */
 
 use super::{DataLayout, RepoGroup, RepoGroupFormat};
-use crate::{commands::CliCommand, context::Context, error::Result, serde::Format};
+use crate::{commands::CliCommand, context::Context, error::Result, process, serde::Format};
 use std::{
     fs::File,
     io::{self, BufWriter, Write},
     process::{Command, Stdio},
 };
-use twackup::{error::Generic as GenericError, process};
+use twackup::error::Generic as GenericError;
 
 #[derive(clap::Parser)]
 pub(crate) struct Import {

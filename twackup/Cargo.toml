@@ -23,8 +23,8 @@ flate2 = { version = "1.0", default-features = false, features = ["zlib"] }
 tar = { version = "0.4", default-features = false }
 
 # Serializing
-plist = { version = "1.0", default-features = false }
-serde = { version = "1.0", features = ["derive"] }
+plist = { version = "1.0", default-features = false, optional = true}
+serde = { version = "1.0", features = ["derive"], optional = true }
 
 # Logging
 log = "0.4"
@@ -32,7 +32,6 @@ thiserror = "1.0"
 
 # Misc
 libc = "0.2"
-libproc = { git = "https://github.com/danpashin/libproc-rs", branch = "0.12.0-ios", default-features = false }
 
 # CLI Utils
 console = { version = "0.15", default-features = false, features = [], optional = true }
@@ -41,3 +40,4 @@ console = { version = "0.15", default-features = false, features = [], optional 
 default = []
 cli = ["console"]
 ios = []
+with_serde = ["plist", "serde"]

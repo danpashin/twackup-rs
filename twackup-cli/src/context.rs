@@ -56,7 +56,7 @@ impl Context {
     /// Returns true if the `Uid` represents privileged user - root. (If it equals zero.)
     #[inline]
     pub(crate) fn is_root(&self) -> bool {
-        unsafe { libc::getuid() == 0 }
+        libproc::libproc::proc_pid::am_root()
     }
 
     pub(crate) async fn packages<P: AsRef<Path>>(
