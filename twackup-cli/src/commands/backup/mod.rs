@@ -21,7 +21,6 @@ pub(crate) mod export;
 pub(crate) mod import;
 
 use serde::{Deserialize, Serialize};
-use std::collections::LinkedList;
 use twackup::repository::Repository;
 
 const MODERN_MANAGERS: &[(&str, &str)] = &[("Sileo", "/etc/apt/sources.list.d/sileo.sources")];
@@ -60,11 +59,11 @@ struct RepoGroup {
     format: RepoGroupFormat,
     path: String,
     executable: String,
-    sources: LinkedList<Repository>,
+    sources: Vec<Repository>,
 }
 
 #[derive(Serialize, Deserialize)]
 struct DataLayout {
-    packages: Option<LinkedList<String>>,
-    repositories: Option<LinkedList<RepoGroup>>,
+    packages: Option<Vec<String>>,
+    repositories: Option<Vec<RepoGroup>>,
 }
