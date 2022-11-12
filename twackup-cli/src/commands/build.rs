@@ -102,9 +102,10 @@ impl Build {
         let numeric_packages = packages
             .iter()
             .filter_map(|id| id.as_ref().ok())
-            .filter_map(|&id| match all_packages.iter().nth(id - 1) {
-                Some((_, package)) => Some(package.clone()),
-                None => {
+            .filter_map(|&id| {
+                if let Some((_, package)) = all_packages.iter().nth(id - 1) {
+                    Some(package.clone())
+                } else {
                     log::warn!("Can't find any package at index {}", id);
                     None
                 }
@@ -115,9 +116,10 @@ impl Build {
             packages
                 .iter()
                 .filter_map(|x| x.as_ref().err())
-                .filter_map(|&id| match all_packages.get(id) {
-                    Some(package) => Some(package.clone()),
-                    None => {
+                .filter_map(|&id| {
+                    if let Some(package) = all_packages.get(id) {
+                        Some(package.clone())
+                    } else {
                         log::warn!("Can't find any package with identifier {}", id);
                         None
                     }
@@ -127,7 +129,7 @@ impl Build {
         self.build(to_build, context).await
     }
 
-    async fn build(&self, packages: LinkedList<Package>, context: Context) -> Result<()> {
+    async fn build(&self, packages: Vec<Package>, context: Context) -> Result<()> {
         self.create_dir_if_needed()?;
 
         let all_count = packages.len() as u64;

@@ -36,18 +36,6 @@ impl ProgressBar {
             pb
         }
     }
-
-    fn drop_pb(&self) {
-        unsafe {
-            if let Some(progress_bar) = PROGRESS_BAR {
-                let progress_bar: *mut ProgressBar = progress_bar as *const _ as *mut _;
-                let progress_bar = Box::from_raw(progress_bar);
-                drop(progress_bar);
-
-                PROGRESS_BAR = None;
-            }
-        }
-    }
 }
 
 impl Progress for ProgressBar {
@@ -61,7 +49,16 @@ impl Progress for ProgressBar {
 
     fn finish(&self) {
         self.0.finish_and_clear();
-        self.drop_pb();
+
+        unsafe {
+            if let Some(progress_bar) = PROGRESS_BAR {
+                let progress_bar: *mut ProgressBar = progress_bar as *const _ as *mut _;
+                let progress_bar = Box::from_raw(progress_bar);
+                drop(progress_bar);
+
+                PROGRESS_BAR = None;
+            }
+        }
     }
 
     fn print<M: AsRef<str>>(&self, message: M) {

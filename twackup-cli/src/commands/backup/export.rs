@@ -20,7 +20,6 @@
 use super::{DataLayout, DataType, RepoGroup, RepoGroupFormat, CLASSIC_MANAGERS, MODERN_MANAGERS};
 use crate::{commands::CliCommand, error::Result, serde::Format, Context, ADMIN_DIR};
 use std::{
-    collections::LinkedList,
     fs::File,
     io::{self, BufRead, BufReader},
     path::PathBuf,
@@ -91,7 +90,7 @@ impl Export {
         })
     }
 
-    async fn get_packages(&self, context: Context) -> Result<LinkedList<String>> {
+    async fn get_packages(&self, context: Context) -> Result<Vec<String>> {
         let packages = context.packages(&self.admindir, true).await?;
 
         Ok(packages
@@ -100,13 +99,14 @@ impl Export {
             .collect())
     }
 
-    async fn get_repos(&self) -> Result<LinkedList<RepoGroup>> {
-        let mut sources = LinkedList::new();
+    async fn get_repos(&self) -> Result<Vec<RepoGroup>> {
+        let capacity = MODERN_MANAGERS.len() + CLASSIC_MANAGERS.len();
+        let mut sources = Vec::with_capacity(capacity);
 
         for (name, path) in MODERN_MANAGERS {
             if let Ok(parser) = Parser::new(path) {
                 let repos = parser.parse::<Repository>().await.into_iter().collect();
-                sources.push_back(RepoGroup {
+                sources.push(RepoGroup {
                     format: RepoGroupFormat::Modern,
                     path: (*path).to_string(),
                     executable: (*name).to_string(),
@@ -117,13 +117,13 @@ impl Export {
 
         for (name, path) in CLASSIC_MANAGERS {
             if let Ok(file) = File::open(path) {
-                let mut repos = LinkedList::new();
+                let mut repos = Vec::new();
                 for line in BufReader::new(file).lines().flatten() {
                     if let Ok(repo) = Repository::from_one_line(line.as_str()) {
-                        repos.push_back(repo);
+                        repos.push(repo);
                     }
                 }
-                sources.push_back(RepoGroup {
+                sources.push(RepoGroup {
                     format: RepoGroupFormat::Classic,
                     path: (*path).to_string(),
                     executable: (*name).to_string(),

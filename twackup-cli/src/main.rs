@@ -16,9 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
-#![warn(rust_2018_idioms)]
-#![deny(clippy::pedantic)]
-#![allow(
+#![deny(rust_2018_idioms, clippy::pedantic)]
+#![warn(
     clippy::single_match_else,
     clippy::linkedlist,
     clippy::unused_self,
