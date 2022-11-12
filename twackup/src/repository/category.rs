@@ -18,9 +18,12 @@
  */
 
 use super::RepoError;
+
+#[cfg(feature = "with_serde")]
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Debug)]
+#[cfg_attr(feature = "with_serde", derive(Serialize, Deserialize))]
 pub enum Category {
     /// Used for distributing binaries only
     Binary,

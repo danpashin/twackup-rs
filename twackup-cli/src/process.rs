@@ -24,6 +24,7 @@ use std::{collections::HashSet, os::raw::c_int};
 #[allow(dead_code)]
 #[repr(C)]
 #[derive(Clone, PartialEq, Eq, PartialOrd, Debug, Copy)]
+#[allow(clippy::upper_case_acronyms)]
 pub enum Signal {
     /// Hangup detected on controlling terminal or death of controlling process.
     Hangup = 1,
@@ -101,11 +102,11 @@ pub fn send_signal_to_multiple<'a>(executables: impl Iterator<Item = &'a str>, s
         .filter_map(|pid| Some(pid).zip(proc_pid::name(pid as i32).ok()))
         .filter(|(_, name)| executables.contains(&name.as_str()))
         .for_each(|(pid, _)| {
-            send_signal(pid as i32, &signal);
+            send_signal(pid as i32, signal);
         });
 }
 
 #[inline]
-pub fn send_signal(pid: i32, signal: &Signal) {
-    unsafe { libc::kill(pid as i32, *signal as c_int) };
+fn send_signal(pid: i32, signal: Signal) {
+    unsafe { libc::kill(pid as i32, signal as c_int) };
 }

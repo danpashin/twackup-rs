@@ -27,6 +27,7 @@ pub enum Generic {
     #[error("This action requires root permissions.")]
     NotRunningAsRoot,
 
+    #[cfg(feature = "with_serde")]
     #[error("PlistError({0})")]
     Plist(#[from] plist::Error),
 

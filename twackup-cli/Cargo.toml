@@ -27,7 +27,7 @@ assets = [
 license_type = "GPL-3.0"
 
 [dependencies]
-twackup = { path = "../twackup", features = ["cli"] }
+twackup = { path = "../twackup", features = ["cli", "with_serde"] }
 
 # Core
 async-trait = "0.1"
@@ -57,6 +57,7 @@ stderrlog = { version = "0.5", default-features = false, features = [] }
 # Misc
 libc = "0.2"
 gethostname = "0.4"
+libproc = { path = "./libproc", default-features = false, features = [] }
 
 [dependencies.clap]
 version = "4.0"

@@ -22,10 +22,13 @@ mod repo_error;
 
 pub use self::{category::Category, repo_error::RepoError};
 use crate::parser::Parsable;
-use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, string::ToString};
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[cfg(feature = "with_serde")]
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug)]
+#[cfg_attr(feature = "with_serde", derive(Serialize, Deserialize))]
 pub struct Repository {
     /// specifies type of repo packages - Binary or Source
     pub category: Category,
@@ -134,6 +137,7 @@ impl Repository {
     }
 
     #[must_use]
+    #[cfg(feature = "with_serde")]
     pub fn to_dict(&self) -> plist::Dictionary {
         let mut dict = plist::Dictionary::new();
         dict.insert(
