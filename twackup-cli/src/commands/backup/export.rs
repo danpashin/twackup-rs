@@ -25,7 +25,7 @@ use std::{
     io::{self, BufRead, BufReader},
     path::PathBuf,
 };
-use twackup::{kvparser::Parser, repository::Repository};
+use twackup::{parser::Parser, repository::Repository};
 
 #[derive(clap::Parser)]
 pub(crate) struct Export {

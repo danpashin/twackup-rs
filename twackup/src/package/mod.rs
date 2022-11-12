@@ -26,7 +26,7 @@ mod status;
 pub use self::{
     field::Field, package_error::Error, priority::Priority, section::Section, status::Status,
 };
-use crate::kvparser::Parsable;
+use crate::parser::Parsable;
 use std::{
     collections::{HashMap, HashSet},
     fs::File,
@@ -139,9 +139,8 @@ impl Package {
         // 3 bytes - ": " and '\n'
         let between_kv_length = 3;
 
-        let control_length = header_fields.iter().fold(0, |mut sum, (name, value)| {
-            sum += name.as_str().len() + value.len() + between_kv_length;
-            sum
+        let control_length = header_fields.iter().fold(0, |sum, (name, value)| {
+            sum + name.as_str().len() + value.len() + between_kv_length
         });
 
         let important_fields: HashSet<_> =
@@ -155,9 +154,8 @@ impl Package {
         // Count total control length to effectively allocate memory
         let control_length = other_fields
             .clone()
-            .fold(control_length, |mut sum, (name, value)| {
-                sum += name.as_str().len() + value.len() + between_kv_length;
-                sum
+            .fold(control_length, |sum, (name, value)| {
+                sum + name.as_str().len() + value.len() + between_kv_length
             });
 
         // Build header with important fields
@@ -234,7 +232,7 @@ impl Package {
 #[cfg(test)]
 mod tests {
     use super::Package;
-    use crate::{error::Result, kvparser::Parsable};
+    use crate::{error::Result, parser::Parsable};
     use std::{collections::HashMap, path::Path};
 
     #[test]
