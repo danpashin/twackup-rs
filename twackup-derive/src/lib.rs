@@ -17,15 +17,16 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use twackup_derive::StrEnumWithError;
+mod enum_derive;
 
-#[derive(Clone, Debug, PartialEq, Eq, StrEnumWithError)]
-#[twackup(convert_all = "lower")]
-pub enum Priority {
-    Optional,
-    Required,
-    Important,
-    Standard,
-    Extra,
-    Unknown,
+use proc_macro::TokenStream;
+
+#[proc_macro_derive(StrEnumWithDefault, attributes(twackup))]
+pub fn enum_with_default_field(input: TokenStream) -> TokenStream {
+    enum_derive::with_default_field::derive(input)
+}
+
+#[proc_macro_derive(StrEnumWithError, attributes(twackup))]
+pub fn enum_with_error(input: TokenStream) -> TokenStream {
+    enum_derive::with_error::derive(input)
 }

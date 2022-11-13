@@ -32,7 +32,6 @@ use std::{
     fs::File,
     io::{self, BufRead, BufReader},
     path::Path,
-    str::FromStr,
 };
 
 #[derive(Clone, Debug)]
@@ -66,10 +65,7 @@ impl Parsable for Package {
     fn new(fields: HashMap<String, String>) -> Result<Self, Self::Error> {
         let mut fields: HashMap<_, _> = fields
             .into_iter()
-            .map(|(key, value)| {
-                // Safe to unwrap because from_str doesn't return error
-                (Field::from_str(key.as_str()).unwrap(), value)
-            })
+            .map(|(key, value)| (Field::from(key.as_str()), value))
             .collect();
 
         let mut fetch_field = |field: Field| -> Result<String, Error> {
@@ -93,8 +89,8 @@ impl Parsable for Package {
             status: Status::try_from(fetch_field(Field::Status)?.as_str())?,
             section: Section::from(fetch_field(Field::Section)?.as_str()),
             priority: fetch_field(Field::Priority)
-                .and_then(|priority| Priority::try_from(priority.as_str()))
-                .ok(),
+                .ok()
+                .and_then(|priority| Priority::try_from(priority.as_str()).ok()),
             other_fields: fields,
         })
     }

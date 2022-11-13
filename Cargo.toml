@@ -1,5 +1,5 @@
 [workspace]
-members = ["twackup", "twackup-cli"]
+members = ["twackup", "twackup-cli", "twackup-derive"]
 
 [profile.release]
 opt-level = 's'
