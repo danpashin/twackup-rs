@@ -17,6 +17,8 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#![deny(rust_2018_idioms, clippy::pedantic)]
+
 mod enum_derive;
 
 use proc_macro::TokenStream;

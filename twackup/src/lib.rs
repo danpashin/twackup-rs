@@ -18,7 +18,7 @@
  */
 
 #![deny(rust_2018_idioms, clippy::pedantic)]
-#![warn(clippy::linkedlist, clippy::unused_self)]
+#![warn(clippy::unused_self)]
 
 pub mod builder;
 pub mod dpkg;

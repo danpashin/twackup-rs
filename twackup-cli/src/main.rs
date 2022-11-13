@@ -19,7 +19,6 @@
 #![deny(rust_2018_idioms, clippy::pedantic)]
 #![warn(
     clippy::single_match_else,
-    clippy::linkedlist,
     clippy::unused_self,
     clippy::cast_possible_wrap
 )]

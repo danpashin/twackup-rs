@@ -40,7 +40,7 @@ pub(crate) fn enum_field_name(variant: &Variant, convert_form: Option<&String>) 
         _ => None,
     });
     name.unwrap_or_else(|| {
-        convert_string(variant.ident.to_string(), convert_form.map(|x| x.as_str()))
+        convert_string(variant.ident.to_string(), convert_form.map(String::as_str))
     })
 }
 
