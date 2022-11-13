@@ -20,7 +20,10 @@
 #[cfg(feature = "cli")]
 use console::{Color, Style};
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+use twackup_derive::StrEnumWithDefault;
+
+#[derive(Clone, Debug, PartialEq, Eq, StrEnumWithDefault)]
+#[twackup(convert_all = "title")]
 pub enum Section {
     Archiving,
     Development,
@@ -36,23 +39,6 @@ pub enum Section {
 }
 
 impl Section {
-    #[must_use]
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Archiving => "Archiving",
-            Self::Development => "Development",
-            Self::Networking => "Networking",
-            Self::Packaging => "Packaging",
-            Self::System => "System",
-            Self::TerminalSupport => "Terminal Support",
-            Self::TextEditors => "Text Editors",
-            Self::Themes => "Themes",
-            Self::Tweaks => "Tweaks",
-            Self::Utilities => "Utilities",
-            Self::Other(section) => section.as_str(),
-        }
-    }
-
     #[cfg(feature = "cli")]
     #[must_use]
     pub fn color(&self) -> Style {
@@ -70,23 +56,5 @@ impl Section {
         };
 
         Style::new().fg(color)
-    }
-}
-
-impl From<&str> for Section {
-    fn from(value: &str) -> Self {
-        match value.to_lowercase().as_str() {
-            "archiving" => Self::Archiving,
-            "development" => Self::Development,
-            "networking" => Self::Networking,
-            "packaging" => Self::Packaging,
-            "system" => Self::System,
-            "terminal_support" | "terminal support" => Self::TerminalSupport,
-            "text_editors" => Self::TextEditors,
-            "themes" => Self::Themes,
-            "tweaks" => Self::Tweaks,
-            "utilities" => Self::Utilities,
-            _ => Self::Other(value.to_string()),
-        }
     }
 }

@@ -17,43 +17,17 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::package::Error;
 use std::fmt::{Display, Formatter};
+use twackup_derive::StrEnumWithError;
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, StrEnumWithError)]
+#[twackup(convert_all = "lower")]
 pub enum Want {
     Unknown,
     Install,
     Hold,
     DeInstall,
     Purge,
-}
-
-impl Want {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Unknown => "unknown",
-            Self::Install => "install",
-            Self::Hold => "hold",
-            Self::DeInstall => "deinstall",
-            Self::Purge => "purge",
-        }
-    }
-}
-
-impl TryFrom<&str> for Want {
-    type Error = Error;
-
-    fn try_from(string: &str) -> Result<Self, Self::Error> {
-        match string {
-            "unknown" => Ok(Self::Unknown),
-            "install" => Ok(Self::Install),
-            "hold" => Ok(Self::Hold),
-            "deinstall" => Ok(Self::DeInstall),
-            "purge" => Ok(Self::Purge),
-            _ => Err(Error::UnknownState(string.to_string())),
-        }
-    }
 }
 
 impl Display for Want {

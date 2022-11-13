@@ -17,15 +17,6 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use twackup_derive::StrEnumWithError;
-
-#[derive(Clone, Debug, PartialEq, Eq, StrEnumWithError)]
-#[twackup(convert_all = "lower")]
-pub enum Priority {
-    Optional,
-    Required,
-    Important,
-    Standard,
-    Extra,
-    Unknown,
-}
+pub(crate) mod utils;
+pub(crate) mod with_default_field;
+pub(crate) mod with_error;

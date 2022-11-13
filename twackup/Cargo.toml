@@ -13,6 +13,7 @@ crate-type = ["staticlib", "rlib"]
 [dependencies]
 
 # Core
+twackup-derive = { path = "../twackup-derive" }
 tokio = { version = "1.5", features = ["rt-multi-thread", "sync", "macros"] }
 memmem = "0.1"
 memmap2 = "0.5"

@@ -42,9 +42,9 @@ impl TryFrom<&str> for Status {
         }
 
         Ok(Self {
-            want: components[0].try_into()?,
-            e_flag: components[1].try_into()?,
-            state: components[2].try_into()?,
+            want: components[0].try_into().map_err(Error::UnknownWant)?,
+            e_flag: components[1].try_into().map_err(Error::UnknownEFlag)?,
+            state: components[2].try_into().map_err(Error::UnknownState)?,
         })
     }
 }

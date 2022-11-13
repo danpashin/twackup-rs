@@ -17,34 +17,15 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::package::Error;
 use std::fmt::{Display, Formatter};
+use twackup_derive::StrEnumWithError;
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, StrEnumWithError)]
+#[twackup(convert_all = "lower")]
 pub enum EFlag {
     Ok,
+    #[twackup(rename = "reinstreq")]
     ReInstallRequest,
-}
-
-impl EFlag {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Ok => "ok",
-            Self::ReInstallRequest => "reinstreq",
-        }
-    }
-}
-
-impl TryFrom<&str> for EFlag {
-    type Error = Error;
-
-    fn try_from(string: &str) -> Result<Self, Self::Error> {
-        match string {
-            "ok" => Ok(Self::Ok),
-            "reinstreq" => Ok(Self::ReInstallRequest),
-            _ => Err(Error::UnknownEFlag(string.to_string())),
-        }
-    }
 }
 
 impl Display for EFlag {
