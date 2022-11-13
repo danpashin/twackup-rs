@@ -67,9 +67,10 @@ fn as_str_iterator<'a>(
 ) -> impl Iterator<Item = impl quote::ToTokens> + 'a {
     data_enum.variants.iter().map(move |variant| {
         let name = &variant.ident;
-        if variant.fields.len() > 1 {
-            panic!("Enum variant has more than 1 field")
-        }
+        assert!(
+            variant.fields.len() <= 1,
+            "Enum variant has more than 1 field"
+        );
 
         let string_name = enum_field_name(variant, convert_all_form);
 
@@ -88,9 +89,10 @@ fn from_str_iterator<'a>(
 ) -> impl Iterator<Item = impl quote::ToTokens> + 'a {
     data_enum.variants.iter().map(move |variant| {
         let name = &variant.ident;
-        if variant.fields.len() > 1 {
-            panic!("Enum variant has more than 1 field")
-        }
+        assert!(
+            variant.fields.len() <= 1,
+            "Enum variant has more than 1 field"
+        );
 
         if variant.fields.is_empty() {
             let string_name = enum_field_name(variant, convert_all_form);
