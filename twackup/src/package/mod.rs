@@ -88,9 +88,11 @@ impl Parsable for Package {
             version: fetch_field(Field::Version)?,
             status: Status::try_from(fetch_field(Field::Status)?.as_str())?,
             section: Section::from(fetch_field(Field::Section)?.as_str()),
-            priority: fetch_field(Field::Priority)
-                .ok()
-                .and_then(|priority| Priority::try_from(priority.as_str()).ok()),
+            priority: if let Ok(priority) = fetch_field(Field::Priority) {
+                Some(Priority::try_from(priority.as_str()).map_err(Error::UnknownPriority)?)
+            } else {
+                None
+            },
             other_fields: fields,
         })
     }

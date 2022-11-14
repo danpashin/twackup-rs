@@ -14,14 +14,14 @@ crate-type = ["staticlib", "rlib"]
 
 # Core
 twackup-derive = { path = "../twackup-derive" }
-tokio = { version = "1.5", features = ["rt-multi-thread", "sync", "macros"] }
+tokio = { version = "1.5", features = ["rt-multi-thread", "sync", "macros", "fs"] }
 memmem = "0.1"
 memmap2 = "0.5"
 
 # Archiving
 ar = "0.9"
-flate2 = { version = "1.0", default-features = false, features = ["zlib"] }
-tar = { version = "0.4", default-features = false }
+async-compression = { version = "0.3", features = ["gzip", "tokio"] }
+tokio-tar = "0.3"
 
 # Serializing
 plist = { version = "1.0", default-features = false, optional = true}

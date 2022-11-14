@@ -27,18 +27,18 @@ impl Logger {
     pub(crate) fn init() {
         let mut logger = stderrlog::new();
         logger.show_level(true);
-        logger.verbosity(LogLevelNum::Trace);
+        logger.verbosity(LogLevelNum::Warn);
 
         let logger = Self(logger);
 
-        log::set_max_level(LevelFilter::Trace);
+        log::set_max_level(LevelFilter::Warn);
         log::set_boxed_logger(Box::new(logger)).expect("Logger failed");
     }
 }
 
 impl Log for Logger {
-    fn enabled(&self, _metadata: &Metadata<'_>) -> bool {
-        true
+    fn enabled(&self, metadata: &Metadata<'_>) -> bool {
+        self.0.enabled(metadata)
     }
 
     fn log(&self, record: &Record<'_>) {
