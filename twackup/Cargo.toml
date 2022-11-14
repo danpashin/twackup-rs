@@ -20,8 +20,10 @@ memmap2 = "0.5"
 
 # Archiving
 ar = "0.9"
-async-compression = { version = "0.3", features = ["gzip", "tokio"] }
+flate2 = "1.0"
+bzip2 = "0.4"
 tokio-tar = "0.3"
+xz2 = "0.1"
 
 # Serializing
 plist = { version = "1.0", default-features = false, optional = true}

@@ -21,6 +21,7 @@
 #![warn(clippy::unused_self)]
 
 pub mod builder;
+pub mod compression;
 pub mod dpkg;
 pub mod error;
 pub mod package;

@@ -18,13 +18,18 @@
  */
 
 use super::CliCommand;
-use crate::{context::Context, error::Result, ADMIN_DIR, TARGET_DIR};
+use crate::{
+    context::Context,
+    error::{CLIError, Result},
+    ADMIN_DIR, TARGET_DIR,
+};
 use chrono::Local;
 use gethostname::gethostname;
 use std::{collections::LinkedList, fs, io, iter::Iterator, path::PathBuf, sync::Arc};
 use tokio::sync::Mutex;
 use twackup::{
     builder::{deb::TarArchive, AllPackagesArchive, Preferences, Worker},
+    compression::{CompressionLevel, CompressionType},
     dpkg::Dpkg,
     error::Generic as GenericError,
     package::Package,
@@ -75,8 +80,12 @@ pub(crate) struct Build {
     remove_after: bool,
 
     /// DEB Compression level. 0 means no compression while 9 - strongest. Default is 6
-    #[clap(long, short = 'c', default_value_t = 6)]
+    #[clap(long, short = 'l', default_value_t = 6)]
     compression_level: u32,
+
+    /// DEB Compression type
+    #[clap(long, short = 'c', default_value = "gzip")]
+    compression_type: String,
 }
 
 impl Build {
@@ -135,7 +144,9 @@ impl Build {
 
         let mut preferences = Preferences::new(&self.admindir, &self.destination);
         preferences.remove_deb = self.remove_after;
-        preferences.compression_level = self.compression_level;
+        preferences.compression.level = CompressionLevel::Custom(self.compression_level);
+        preferences.compression.r#type = CompressionType::try_from(self.compression_type.as_str())
+            .map_err(|error| CLIError::UnknownCompressionLevel(error))?;
 
         let contents = Dpkg::new(&self.admindir, false).info_dir_contents()?;
         let contents = Arc::new(contents);
