@@ -25,7 +25,7 @@ use std::{collections::LinkedList, fs, io, iter::Iterator, path::PathBuf, sync::
 use tokio::sync::Mutex;
 use twackup::{
     builder::{deb::TarArchive, AllPackagesArchive, Preferences, Worker},
-    compression::CompressionLevel,
+    compression::Level as CompressionLevel,
     dpkg::Dpkg,
     error::Generic as GenericError,
     package::Package,
@@ -34,22 +34,19 @@ use twackup::{
 
 const DEFAULT_ARCHIVE_NAME: &str = "%host%_%date%.tar.gz";
 
-#[derive(clap::Parser, clap::ValueEnum, Debug, Copy, Clone, Default)]
+#[derive(clap::Parser, clap::ValueEnum, Debug, Copy, Clone)]
 enum CompressionType {
-    Deflate,
-    #[default]
     Gzip,
-    Bzip2,
     Xz,
+    Zst,
 }
 
-impl From<CompressionType> for twackup::compression::CompressionType {
+impl From<CompressionType> for twackup::compression::Type {
     fn from(value: CompressionType) -> Self {
         match value {
-            CompressionType::Deflate => Self::Deflate,
             CompressionType::Gzip => Self::Gz,
-            CompressionType::Bzip2 => Self::Bzip2,
             CompressionType::Xz => Self::Xz,
+            CompressionType::Zst => Self::Zst,
         }
     }
 }
@@ -96,7 +93,7 @@ pub(crate) struct Build {
     remove_after: bool,
 
     /// DEB Compression level. 0 means no compression while 9 - strongest. Default is 6
-    #[clap(long, short = 'l', default_value_t = 6, value_parser = clap::value_parser!(u32).range(1..9))]
+    #[clap(long, short = 'l', default_value_t = 6, value_parser = clap::value_parser!(u32).range(0..=9))]
     compression_level: u32,
 
     /// DEB Compression type
@@ -152,7 +149,7 @@ impl Build {
         let all_count = packages.len() as u64;
         let progress = context.progress_bar(all_count);
 
-        if !context.is_root() {
+        if !context.is_root {
             log::warn!("{}", GenericError::NotRunningAsRoot);
         }
 

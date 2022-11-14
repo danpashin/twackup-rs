@@ -137,6 +137,9 @@ impl<T: Progress> Worker<T> {
             "prerm",
             "postrm",
             "extrainst_",
+            "conffiles",
+            "config",
+            "shlibs",
         ];
 
         let contents = self.dpkg_contents.iter().filter_map(|entry| {

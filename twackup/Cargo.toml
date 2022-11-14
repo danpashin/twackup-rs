@@ -19,10 +19,10 @@ memmap2 = "0.5"
 
 # Archiving
 ar = "0.9"
-flate2 = "1.0"
-bzip2 = "0.4"
 tokio-tar = "0.3"
+flate2 = "1.0"
 xz2 = "0.1"
+zstd = "0.11.2"
 
 # Serializing
 plist = { version = "1.0", default-features = false, optional = true}
@@ -42,4 +42,4 @@ console = { version = "0.15", default-features = false, features = [], optional 
 default = []
 cli = ["console"]
 ios = []
-with_serde = ["plist", "serde"]
+with-serde = ["plist", "serde"]

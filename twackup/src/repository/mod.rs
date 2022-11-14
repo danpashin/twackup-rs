@@ -24,11 +24,8 @@ pub use self::{category::Category, repo_error::RepoError};
 use crate::parser::Parsable;
 use std::{collections::HashMap, string::ToString};
 
-#[cfg(feature = "with_serde")]
-use serde::{Deserialize, Serialize};
-
 #[derive(Clone, Debug)]
-#[cfg_attr(feature = "with_serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "with-serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Repository {
     /// specifies type of repo packages - Binary or Source
     pub category: Category,
@@ -137,7 +134,7 @@ impl Repository {
     }
 
     #[must_use]
-    #[cfg(feature = "with_serde")]
+    #[cfg(feature = "with-serde")]
     pub fn to_dict(&self) -> plist::Dictionary {
         let mut dict = plist::Dictionary::new();
         dict.insert(

@@ -41,7 +41,7 @@ pub(crate) struct Import {
 #[async_trait::async_trait]
 impl CliCommand for Import {
     async fn run(&self, context: Context) -> Result<()> {
-        if !context.is_root() {
+        if !context.is_root {
             Err(GenericError::NotRunningAsRoot)?;
         }
 
