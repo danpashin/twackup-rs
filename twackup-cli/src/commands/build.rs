@@ -18,18 +18,14 @@
  */
 
 use super::CliCommand;
-use crate::{
-    context::Context,
-    error::{CLIError, Result},
-    ADMIN_DIR, TARGET_DIR,
-};
+use crate::{context::Context, error::Result, ADMIN_DIR, TARGET_DIR};
 use chrono::Local;
 use gethostname::gethostname;
 use std::{collections::LinkedList, fs, io, iter::Iterator, path::PathBuf, sync::Arc};
 use tokio::sync::Mutex;
 use twackup::{
     builder::{deb::TarArchive, AllPackagesArchive, Preferences, Worker},
-    compression::{CompressionLevel, CompressionType},
+    compression::CompressionLevel,
     dpkg::Dpkg,
     error::Generic as GenericError,
     package::Package,
@@ -38,13 +34,33 @@ use twackup::{
 
 const DEFAULT_ARCHIVE_NAME: &str = "%host%_%date%.tar.gz";
 
+#[derive(clap::Parser, clap::ValueEnum, Debug, Copy, Clone, Default)]
+enum CompressionType {
+    Deflate,
+    #[default]
+    Gzip,
+    Bzip2,
+    Xz,
+}
+
+impl From<CompressionType> for twackup::compression::CompressionType {
+    fn from(value: CompressionType) -> Self {
+        match value {
+            CompressionType::Deflate => Self::Deflate,
+            CompressionType::Gzip => Self::Gz,
+            CompressionType::Bzip2 => Self::Bzip2,
+            CompressionType::Xz => Self::Xz,
+        }
+    }
+}
+
 #[derive(clap::Parser)]
 #[clap(
     version,
     after_help = "
 Beware, this command doesn't guarantee to copy all files to the final DEB!
 Some files can be skipped because of being renamed or removed in the installation process.
-If you see yellow warnings, it means the final deb will miss some contents
+If you see warnings, it means the final deb misses some contents
 and may not work properly anymore.
 "
 )]
@@ -80,12 +96,12 @@ pub(crate) struct Build {
     remove_after: bool,
 
     /// DEB Compression level. 0 means no compression while 9 - strongest. Default is 6
-    #[clap(long, short = 'l', default_value_t = 6)]
+    #[clap(long, short = 'l', default_value_t = 6, value_parser = clap::value_parser!(u32).range(1..9))]
     compression_level: u32,
 
     /// DEB Compression type
     #[clap(long, short = 'c', default_value = "gzip")]
-    compression_type: String,
+    compression_type: CompressionType,
 }
 
 impl Build {
@@ -145,8 +161,7 @@ impl Build {
         let mut preferences = Preferences::new(&self.admindir, &self.destination);
         preferences.remove_deb = self.remove_after;
         preferences.compression.level = CompressionLevel::Custom(self.compression_level);
-        preferences.compression.r#type = CompressionType::try_from(self.compression_type.as_str())
-            .map_err(|error| CLIError::UnknownCompressionLevel(error))?;
+        preferences.compression.r#type = self.compression_type.into();
 
         let contents = Dpkg::new(&self.admindir, false).info_dir_contents()?;
         let contents = Arc::new(contents);
@@ -224,6 +239,7 @@ impl CliCommand for Build {
                 leaves_only = true;
             } else {
                 eprintln!("Ok, cancelling...");
+                return Ok(());
             }
         }
 
