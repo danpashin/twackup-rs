@@ -21,18 +21,10 @@ use super::CliCommand;
 use crate::{context::Context, error::Result, ADMIN_DIR, TARGET_DIR};
 use chrono::Local;
 use gethostname::gethostname;
-use std::{
-    collections::LinkedList,
-    fs, io,
-    iter::Iterator,
-    path::PathBuf,
-    sync::{Arc, Mutex},
-};
+use std::{collections::LinkedList, fs, io, iter::Iterator, path::PathBuf, sync::Arc};
+use tokio::sync::Mutex;
 use twackup::{
-    builder::{
-        deb::{DebianTarArchive, TarArchive},
-        Preferences, Worker,
-    },
+    builder::{deb::TarArchive, AllPackagesArchive, Preferences, Worker},
     dpkg::Dpkg,
     error::Generic as GenericError,
     package::Package,
@@ -139,7 +131,7 @@ impl Build {
             log::warn!("{}", GenericError::NotRunningAsRoot);
         }
 
-        let archive = self.create_archive_if_needed();
+        let archive = self.create_archive_if_needed().await;
 
         let mut preferences = Preferences::new(&self.admindir, &self.destination);
         preferences.remove_deb = self.remove_after;
@@ -156,7 +148,7 @@ impl Build {
 
             tokio::spawn(async move {
                 let builder = Worker::new(package, progress, archive, preferences, contents);
-                builder.work()
+                builder.work().await
             })
         }))
         .await;
@@ -171,7 +163,7 @@ impl Build {
         Ok(())
     }
 
-    fn create_archive_if_needed(&self) -> Option<Arc<Mutex<DebianTarArchive>>> {
+    async fn create_archive_if_needed(&self) -> Option<AllPackagesArchive> {
         if !self.archive {
             return None;
         }
@@ -186,11 +178,11 @@ impl Build {
         };
 
         let filepath = self.destination.join(&filename);
-        let file = fs::File::create(filepath).expect("Can't open archive file");
-        let compression = flate2::Compression::default();
-        let encoder = flate2::write::GzEncoder::new(file, compression);
+        let file = tokio::fs::File::create(filepath)
+            .await
+            .expect("Can't open archive file");
 
-        let archive = TarArchive::new(encoder);
+        let archive = TarArchive::new(file);
         Some(Arc::new(Mutex::new(archive)))
     }
 

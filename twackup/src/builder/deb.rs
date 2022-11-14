@@ -17,28 +17,27 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use flate2::{write::GzEncoder, Compression};
+use async_compression::tokio::write::GzipEncoder;
+use async_compression::Level;
 use std::{
     borrow::BorrowMut,
-    fs::File,
-    io::{self, Write},
+    io::{self},
     path::{Path, PathBuf},
     time::SystemTime,
 };
-use tar::Builder;
+use tokio::io::AsyncWriteExt;
+use tokio_tar::Builder as Tar;
 
-pub type DebianTarArchive = TarArchive<GzEncoder<File>>;
+pub type DebianTarArchive = TarArchive<GzipEncoder<Vec<u8>>>;
 
 pub struct Deb {
     output: PathBuf,
     control: DebianTarArchive,
     data: DebianTarArchive,
-    control_path: PathBuf,
-    data_path: PathBuf,
 }
 
-pub struct TarArchive<W: Write> {
-    builder: Builder<W>,
+pub struct TarArchive<W: tokio::io::AsyncWrite + Unpin + Send + Sync + 'static> {
+    builder: Tar<W>,
 }
 
 impl Deb {
@@ -46,26 +45,15 @@ impl Deb {
     ///
     /// # Errors
     /// Returns IO error if temp dir is not writable
-    pub fn new<T: AsRef<Path>, O: AsRef<Path>>(
-        temp_dir: T,
-        output: O,
-        compression: u32,
-    ) -> io::Result<Self> {
-        let control_path = temp_dir.as_ref().join("control.tar.gz");
-        let data_path = temp_dir.as_ref().join("data.tar.gz");
+    pub fn new<O: AsRef<Path>>(output: O, compression: u32) -> Self {
+        let control_file = GzipEncoder::with_quality(vec![], Level::Precise(compression));
+        let data_file = GzipEncoder::with_quality(vec![], Level::Precise(compression));
 
-        let control_file =
-            GzEncoder::new(File::create(&control_path)?, Compression::new(compression));
-
-        let data_file = GzEncoder::new(File::create(&data_path)?, Compression::new(compression));
-
-        Ok(Self {
+        Self {
             output: output.as_ref().to_path_buf(),
             control: TarArchive::new(control_file),
             data: TarArchive::new(data_file),
-            control_path,
-            data_path,
-        })
+        }
     }
 
     pub fn data_mut_ref(&mut self) -> &mut DebianTarArchive {
@@ -80,59 +68,47 @@ impl Deb {
     ///
     /// # Errors
     /// Returns IO error if temp dir is not writable
-    pub fn package(&mut self) -> io::Result<()> {
-        self.control.builder.finish()?;
-        self.control.builder.get_mut().try_finish()?;
-        self.data.builder.finish()?;
-        self.data.builder.get_mut().try_finish()?;
+    pub async fn build(self) -> io::Result<()> {
+        let mut builder = ar::Builder::new(std::fs::File::create(&self.output)?);
 
-        // Now combine all files together
-        let mut builder = ar::Builder::new(File::create(&self.output)?);
+        let mtime = current_timestamp();
 
-        // First file is debian-binary.
-        // It contains just a version of dpkg used for deb creation
-        // The latest one is 2.0 so we'll use this
+        let mut append_data = |name: Vec<u8>, data: &[u8]| {
+            let mut header = ar::Header::new(name, data.len() as u64);
+            header.set_mode(0o100_644); // o=rw,g=r,o=r
+            header.set_mtime(mtime); // modify time
+            header.set_uid(0); // root
+            header.set_gid(0); // root
+            builder.append(&header, data)
+        };
+
         let version = "2.0\n".as_bytes();
-        let mut header = ar::Header::new(b"debian-binary".to_vec(), version.len() as u64);
-        header.set_mode(0o100_644); // o=rw,g=r,o=r
-        header.set_mtime(current_timestamp()); // modify time
-        builder.append(&header, version)?;
+        append_data(b"debian-binary".to_vec(), version)?;
 
-        // Second file is control archive. It is compressed with gzip and packed with tar
-        let data = self.prepare_path(&self.control_path, "control.tar.gz")?;
-        builder.append(&data.0, data.1)?;
+        let mut control_encoder = self.control.builder.into_inner().await?;
+        control_encoder.shutdown().await?;
 
-        // Third - main archive with data. Compressed and package same way as control
-        let data = self.prepare_path(&self.data_path, "data.tar.gz")?;
-        builder.append(&data.0, data.1)?;
+        let control = control_encoder.into_inner();
+        append_data(b"control.tar.gz".to_vec(), control.as_slice())?;
+
+        let mut data_encoder = self.data.builder.into_inner().await?;
+        data_encoder.shutdown().await?;
+
+        let control = data_encoder.into_inner();
+        append_data(b"data.tar.gz".to_vec(), control.as_slice())?;
 
         Ok(())
     }
-
-    /// Creates header for specified path
-    ///
-    /// # Errors
-    /// Returns error if file doesn't exists or current user has no permissions to read it
-    fn prepare_path<P: AsRef<Path>>(&self, path: P, name: &str) -> io::Result<(ar::Header, File)> {
-        let file = File::open(path)?;
-        let metadata = file.metadata()?;
-        let mut header = ar::Header::from_metadata(name.as_bytes().to_vec(), &metadata);
-        header.set_mode(0o100_644); // o=rw,g=r,o=r
-        header.set_uid(0); // root
-        header.set_gid(0); // root
-
-        Ok((header, file))
-    }
 }
 
-impl<W: Write> TarArchive<W> {
+impl<W: tokio::io::AsyncWrite + Unpin + Send + Sync> TarArchive<W> {
     pub fn new(writer: W) -> Self {
-        let mut builder = Builder::new(writer);
+        let mut builder = Tar::new(writer);
         builder.follow_symlinks(false);
         Self { builder }
     }
 
-    pub fn get_mut(&mut self) -> &mut Builder<W> {
+    pub fn get_mut(&mut self) -> &mut Tar<W> {
         &mut self.builder
     }
 
@@ -140,16 +116,24 @@ impl<W: Write> TarArchive<W> {
     ///
     /// # Errors
     /// Returns error if file couldn't be added to archive
-    pub fn append_new_file<P: AsRef<Path>>(&mut self, path: P, contents: &[u8]) -> io::Result<()> {
-        let mut header = tar::Header::new_old();
+    pub async fn append_new_file<P: AsRef<Path>>(
+        &mut self,
+        path: P,
+        contents: &[u8],
+    ) -> io::Result<()> {
+        let mut header = tokio_tar::Header::new_old();
         header.set_mode(0o100_644); // o=rw,g=r,o=r
         header.set_uid(0);
         header.set_gid(0);
         header.set_size(contents.len() as u64);
         header.set_mtime(current_timestamp()); // modify time
-        header.set_cksum();
 
-        self.builder.append_data(&mut header, path, contents)
+        self.builder
+            .append_data(&mut header, path, contents)
+            .await
+            .expect("append failed");
+
+        Ok(())
     }
 }
 

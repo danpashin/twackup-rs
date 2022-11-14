@@ -25,13 +25,16 @@ use crate::{
     package::Package,
     progress::Progress,
 };
-use deb::{Deb, DebianTarArchive};
+use deb::{Deb, DebianTarArchive, TarArchive};
 use std::{
     collections::HashSet,
     fs, io,
     path::{Path, PathBuf},
-    sync::{Arc, Mutex},
+    sync::Arc,
 };
+use tokio::{fs::File, sync::Mutex};
+
+pub type AllPackagesArchive = Arc<Mutex<TarArchive<File>>>;
 
 #[derive(Clone)]
 pub struct Preferences {
@@ -45,9 +48,8 @@ pub struct Preferences {
 pub struct Worker<T: Progress> {
     pub package: Package,
     pub progress: T,
-    pub archive: Option<Arc<Mutex<DebianTarArchive>>>,
+    pub archive: Option<AllPackagesArchive>,
     pub preferences: Preferences,
-    pub working_dir: PathBuf,
     pub dpkg_contents: Arc<HashSet<PathBuf>>,
 }
 
@@ -66,19 +68,15 @@ impl<T: Progress> Worker<T> {
     pub fn new(
         package: Package,
         progress: T,
-        archive: Option<Arc<Mutex<DebianTarArchive>>>,
+        archive: Option<AllPackagesArchive>,
         preferences: Preferences,
         dpkg_contents: Arc<HashSet<PathBuf>>,
     ) -> Self {
-        let name = package.canonical_name();
-        let working_dir = preferences.destination.join(name);
-
         Self {
             package,
             progress,
             archive,
             preferences,
-            working_dir,
             dpkg_contents,
         }
     }
@@ -87,22 +85,14 @@ impl<T: Progress> Worker<T> {
     ///
     /// # Errors
     /// Returns error if temp dir creation or any of underlying package operation failed
-    pub fn run(&self) -> io::Result<PathBuf> {
-        let w_dir = &self.working_dir;
-
-        // Removing all dir contents
-        fs::remove_dir_all(w_dir).ok();
-        fs::create_dir(w_dir)?;
-
+    pub async fn run(&self) -> io::Result<PathBuf> {
         let deb_name = format!("{}.deb", self.package.canonical_name());
         let deb_path = self.preferences.destination.join(deb_name);
 
-        let mut deb = Deb::new(w_dir, &deb_path, self.preferences.compression_level)?;
-        self.archive_files(deb.data_mut_ref())?;
-        self.archive_metadata(deb.control_mut_ref())?;
-        deb.package()?;
-
-        fs::remove_dir_all(w_dir).ok();
+        let mut deb = Deb::new(&deb_path, self.preferences.compression_level);
+        self.archive_files(deb.data_mut_ref()).await?;
+        self.archive_metadata(deb.control_mut_ref()).await?;
+        deb.build().await?;
 
         Ok(deb_path)
     }
@@ -111,7 +101,7 @@ impl<T: Progress> Worker<T> {
     ///
     /// # Errors
     /// Returns error if dpkg directory couldn't be read or any of underlying operation failed
-    fn archive_files(&self, archiver: &mut DebianTarArchive) -> io::Result<()> {
+    async fn archive_files(&self, archiver: &mut DebianTarArchive) -> io::Result<()> {
         let files = self
             .package
             .get_installed_files(self.preferences.paths.as_ref())?;
@@ -119,7 +109,7 @@ impl<T: Progress> Worker<T> {
         for file in files {
             // Remove root slash because tars don't contain absolute paths
             let name = file.trim_start_matches('/');
-            let res = archiver.get_mut().append_path_with_name(&file, name);
+            let res = archiver.get_mut().append_path_with_name(&file, name).await;
             if let Err(error) = res {
                 log::warn!("[{}] {}", self.package.id, error);
             }
@@ -133,9 +123,11 @@ impl<T: Progress> Worker<T> {
     ///
     /// # Errors
     /// Returns error if control file couldn't be appended
-    fn archive_metadata(&self, archiver: &mut DebianTarArchive) -> io::Result<()> {
+    async fn archive_metadata(&self, archiver: &mut DebianTarArchive) -> io::Result<()> {
         // Order in this archive doesn't matter. So we'll add control at first
-        archiver.append_new_file("control", self.package.to_control().as_bytes())?;
+        archiver
+            .append_new_file("control", self.package.to_control().as_bytes())
+            .await?;
 
         let possible_extensions = [
             "md5sums",
@@ -146,24 +138,23 @@ impl<T: Progress> Worker<T> {
             "extrainst_",
         ];
 
-        self.dpkg_contents
-            .iter()
-            .filter_map(|entry| {
-                let file_name = entry.file_name()?.to_str()?;
-                let rem = file_name.strip_prefix(&self.package.id)?;
-                let rem = rem.strip_prefix('.')?;
-                if possible_extensions.contains(&rem) {
-                    Some((entry, rem))
-                } else {
-                    None
-                }
-            })
-            .for_each(|(entry, extension)| {
-                let res = archiver.get_mut().append_path_with_name(entry, extension);
-                if let Err(error) = res {
-                    log::warn!("[{}] {}", self.package.id, error);
-                }
-            });
+        let contents = self.dpkg_contents.iter().filter_map(|entry| {
+            let file_name = entry.file_name()?.to_str()?;
+            let rem = file_name.strip_prefix(&self.package.id)?;
+            let rem = rem.strip_prefix('.')?;
+            if possible_extensions.contains(&rem) {
+                Some((entry, rem))
+            } else {
+                None
+            }
+        });
+
+        for (path, ext) in contents {
+            let res = archiver.get_mut().append_path_with_name(path, ext).await;
+            if let Err(error) = res {
+                log::warn!("[{}] {}", self.package.id, error);
+            }
+        }
 
         Ok(())
     }
@@ -172,17 +163,17 @@ impl<T: Progress> Worker<T> {
     ///
     /// # Errors
     /// Returns error if any of underlying operations failed
-    pub fn work(&self) -> Result<()> {
+    pub async fn work(&self) -> Result<()> {
         let progress = format!("Processing {}", self.package.human_name());
         self.progress.set_message(progress);
 
-        let file = self.run()?;
+        let file = self.run().await?;
         self.progress.increment(1);
 
         let progress = format!("Done {}", self.package.human_name());
         self.progress.set_message(progress);
 
-        self.add_to_archive(file)?;
+        self.add_to_archive(file).await?;
 
         Ok(())
     }
@@ -191,12 +182,15 @@ impl<T: Progress> Worker<T> {
     ///
     /// # Errors
     /// Returns error if any of underlying operations failed
-    fn add_to_archive(&self, file: PathBuf) -> Result<()> {
+    async fn add_to_archive(&self, file: PathBuf) -> Result<()> {
         if let Some(archive) = &self.archive {
             let mut archive = archive.try_lock().map_err(|_| Generic::LockError)?;
 
             let abs_file = Path::new(".").join(file.file_name().unwrap());
-            archive.get_mut().append_path_with_name(&file, &abs_file)?;
+            archive
+                .get_mut()
+                .append_path_with_name(&file, &abs_file)
+                .await?;
 
             if self.preferences.remove_deb {
                 fs::remove_file(file).ok();
