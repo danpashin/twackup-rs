@@ -33,7 +33,7 @@ use xz2::write::XzEncoder;
 pub enum CompressionType {
     Deflate,
     #[default]
-    Gzip,
+    Gz,
     Bzip2,
     Xz,
 }
@@ -76,7 +76,7 @@ impl From<CompressionLevel> for u32 {
 impl<T: Write> Encoder<T> {
     pub fn new(inner: T, compression: Compression) -> Self {
         match compression.r#type {
-            CompressionType::Gzip => Self::Gzip(GzEncoder::new(
+            CompressionType::Gz => Self::Gzip(GzEncoder::new(
                 inner,
                 flate2::Compression::new(compression.level.into()),
             )),

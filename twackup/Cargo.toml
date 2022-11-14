@@ -2,7 +2,6 @@
 name = "twackup"
 version = "1.0.0"
 description = "Safe and fast iOS CLI utility for rebuilding DEBs and backing up packages"
-authors = ["DanP"]
 edition = "2021"
 publish = false
 license = "GPL-3.0-only"

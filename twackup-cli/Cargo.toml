@@ -2,7 +2,6 @@
 name = "twackup-cli"
 version = "1.0.0"
 description = "Safe and fast iOS CLI utility for rebuilding DEBs and backing up packages"
-authors = ["DanP"]
 edition = "2021"
 publish = false
 license = "GPL-3.0-only"
@@ -62,7 +61,7 @@ libproc = { path = "./libproc", default-features = false, features = [] }
 [dependencies.clap]
 version = "4.0"
 default-features = false
-features = ["derive", "std", "help", "usage", "error-context"]
+features = ["derive", "std", "color", "help", "usage", "error-context"]
 
 [features]
 default = ["ios"]

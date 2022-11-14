@@ -27,11 +27,11 @@ impl Logger {
     pub(crate) fn init() {
         let mut logger = stderrlog::new();
         logger.show_level(true);
-        logger.verbosity(LogLevelNum::Warn);
+        logger.verbosity(LogLevelNum::Info);
 
         let logger = Self(logger);
 
-        log::set_max_level(LevelFilter::Warn);
+        log::set_max_level(LevelFilter::Info);
         log::set_boxed_logger(Box::new(logger)).expect("Logger failed");
     }
 }
