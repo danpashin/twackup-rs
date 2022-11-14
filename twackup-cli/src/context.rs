@@ -26,13 +26,15 @@ use std::{
 use twackup::{dpkg::Dpkg, error::Result, package::Package};
 
 pub(crate) struct Context {
-    start_time: Instant,
+    pub(crate) start_time: Instant,
+    pub(crate) is_root: bool,
 }
 
 impl Context {
     pub(crate) fn new() -> Self {
         Self {
             start_time: Instant::now(),
+            is_root: libproc::libproc::proc_pid::am_root(),
         }
     }
 
@@ -51,12 +53,6 @@ impl Context {
 
         let progress_bar = ProgressBar(progress_bar);
         progress_bar.make_static()
-    }
-
-    /// Returns true if the `Uid` represents privileged user - root. (If it equals zero.)
-    #[inline]
-    pub(crate) fn is_root(&self) -> bool {
-        libproc::libproc::proc_pid::am_root()
     }
 
     pub(crate) async fn packages<P: AsRef<Path>>(
