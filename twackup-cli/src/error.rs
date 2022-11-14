@@ -32,4 +32,7 @@ pub(crate) enum CLIError {
 
     #[error("Plist: {0}")]
     Plist(#[from] plist::Error),
+
+    #[error("UnknownCompressionLevel: {0}")]
+    UnknownCompressionLevel(String),
 }

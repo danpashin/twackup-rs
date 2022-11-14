@@ -17,8 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use async_compression::tokio::write::GzipEncoder;
-use async_compression::Level;
+use crate::compression::{Compression, Encoder};
 use std::{
     borrow::BorrowMut,
     io::{self},
@@ -28,9 +27,10 @@ use std::{
 use tokio::io::AsyncWriteExt;
 use tokio_tar::Builder as Tar;
 
-pub type DebianTarArchive = TarArchive<GzipEncoder<Vec<u8>>>;
+pub type DebianTarArchive = TarArchive<Encoder<Vec<u8>>>;
 
 pub struct Deb {
+    compression: Compression,
     output: PathBuf,
     control: DebianTarArchive,
     data: DebianTarArchive,
@@ -45,11 +45,12 @@ impl Deb {
     ///
     /// # Errors
     /// Returns IO error if temp dir is not writable
-    pub fn new<O: AsRef<Path>>(output: O, compression: u32) -> Self {
-        let control_file = GzipEncoder::with_quality(vec![], Level::Precise(compression));
-        let data_file = GzipEncoder::with_quality(vec![], Level::Precise(compression));
+    pub fn new<O: AsRef<Path>>(output: O, compression: Compression) -> Self {
+        let control_file = Encoder::new(vec![], compression);
+        let data_file = Encoder::new(vec![], compression);
 
         Self {
+            compression,
             output: output.as_ref().to_path_buf(),
             control: TarArchive::new(control_file),
             data: TarArchive::new(data_file),
@@ -85,17 +86,23 @@ impl Deb {
         let version = "2.0\n".as_bytes();
         append_data(b"debian-binary".to_vec(), version)?;
 
+        let compression_str = self.compression.r#type.as_str();
+
         let mut control_encoder = self.control.builder.into_inner().await?;
         control_encoder.shutdown().await?;
 
-        let control = control_encoder.into_inner();
-        append_data(b"control.tar.gz".to_vec(), control.as_slice())?;
+        let control = control_encoder.into_inner()?;
+        let mut control_name = String::from("control.tar.");
+        control_name.push_str(compression_str);
+        append_data(control_name.into_bytes(), control.as_slice())?;
 
         let mut data_encoder = self.data.builder.into_inner().await?;
         data_encoder.shutdown().await?;
 
-        let control = data_encoder.into_inner();
-        append_data(b"data.tar.gz".to_vec(), control.as_slice())?;
+        let control = data_encoder.into_inner()?;
+        let mut data_name = String::from("data.tar.");
+        data_name.push_str(compression_str);
+        append_data(data_name.into_bytes(), control.as_slice())?;
 
         Ok(())
     }

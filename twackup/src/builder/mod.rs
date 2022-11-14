@@ -20,6 +20,7 @@
 pub mod deb;
 
 use crate::{
+    compression::Compression,
     dpkg::Paths,
     error::{Generic, Result},
     package::Package,
@@ -41,7 +42,7 @@ pub struct Preferences {
     pub remove_deb: bool,
     pub paths: Paths,
     pub destination: PathBuf,
-    pub compression_level: u32,
+    pub compression: Compression,
 }
 
 /// Creates DEB from filesystem contents
@@ -59,7 +60,7 @@ impl Preferences {
             remove_deb: true,
             paths: Paths::new(admin_dir),
             destination: destination.as_ref().to_path_buf(),
-            compression_level: 0,
+            compression: Compression::default(),
         }
     }
 }
@@ -89,7 +90,7 @@ impl<T: Progress> Worker<T> {
         let deb_name = format!("{}.deb", self.package.canonical_name());
         let deb_path = self.preferences.destination.join(deb_name);
 
-        let mut deb = Deb::new(&deb_path, self.preferences.compression_level);
+        let mut deb = Deb::new(&deb_path, self.preferences.compression);
         self.archive_files(deb.data_mut_ref()).await?;
         self.archive_metadata(deb.control_mut_ref()).await?;
         deb.build().await?;
