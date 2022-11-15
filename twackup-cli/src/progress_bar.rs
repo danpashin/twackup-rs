@@ -27,6 +27,19 @@ pub(crate) static mut PROGRESS_BAR: Option<&'static ProgressBar> = None;
 pub(crate) struct ProgressBar(pub(crate) ProgressBarImpl);
 
 impl ProgressBar {
+    pub(crate) fn default(length: u64) -> &'static ProgressBar {
+        let progress_bar = indicatif::ProgressBar::new(length);
+        progress_bar.set_style(
+            indicatif::ProgressStyle::default_bar()
+                .template("{pos}/{len} [{wide_bar:.cyan/blue}] {msg}")
+                .expect("Progress bar template error!")
+                .progress_chars("##-"),
+        );
+
+        let progress_bar = ProgressBar(progress_bar);
+        progress_bar.make_static()
+    }
+
     pub(crate) fn make_static(self) -> &'static Self {
         unsafe {
             assert!(PROGRESS_BAR.is_none(), "progress bar is already set!");

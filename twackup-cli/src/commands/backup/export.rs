@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{DataLayout, DataType, RepoGroup, RepoGroupFormat, CLASSIC_MANAGERS, MODERN_MANAGERS};
+use super::{DataType, ExportData, RepoGroup, RepoGroupFormat, CLASSIC_MANAGERS, MODERN_MANAGERS};
 use crate::{
     commands::{CliCommand, GlobalOptions},
     error::Result,
@@ -29,7 +29,7 @@ use std::{
     io::{self, BufRead, BufReader},
     path::PathBuf,
 };
-use twackup::{repository::Repository, PackagesSort, Parser};
+use twackup::{repository::Repository, Parser};
 
 #[derive(clap::Parser)]
 pub(crate) struct Export {
@@ -72,37 +72,25 @@ impl CliCommand for Export {
 }
 
 impl Export {
-    async fn construct_data(&self, _context: Context) -> Result<DataLayout> {
-        Ok(match self.data {
-            DataType::Packages => DataLayout {
-                packages: Some(self.get_packages().await?),
-                repositories: None,
-            },
-            DataType::Repositories => DataLayout {
-                packages: None,
-                repositories: Some(self.get_repos().await?),
-            },
-            DataType::All => {
-                let packages = self.get_packages().await?;
-                let repos = self.get_repos().await?;
-                DataLayout {
-                    packages: Some(packages),
-                    repositories: Some(repos),
-                }
-            }
+    async fn construct_data(&self, _context: Context) -> Result<ExportData> {
+        let (packages, repositories) = match self.data {
+            DataType::Packages => (Some(self.get_packages().await?), None),
+            DataType::Repositories => (None, Some(self.get_repos().await?)),
+            DataType::All => (
+                Some(self.get_packages().await?),
+                Some(self.get_repos().await?),
+            ),
+        };
+
+        Ok(ExportData {
+            packages,
+            repositories,
         })
     }
 
     async fn get_packages(&self) -> Result<Vec<String>> {
-        let packages = self
-            .global_options
-            .packages(false, PackagesSort::Name)
-            .await?;
-
-        Ok(packages
-            .into_iter()
-            .map(|(identifier, _)| identifier)
-            .collect())
+        let packages = self.global_options.unsorted_packages(false).await?;
+        Ok(packages.into_iter().map(|pkg| pkg.id).collect())
     }
 
     async fn get_repos(&self) -> Result<Vec<RepoGroup>> {

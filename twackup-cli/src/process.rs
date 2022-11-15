@@ -18,7 +18,7 @@
  */
 
 use libproc::libproc::proc_pid;
-use std::{collections::HashSet, os::raw::c_int};
+use std::collections::HashSet;
 
 // Taken from sysinfo crate
 #[allow(dead_code)]
@@ -99,17 +99,16 @@ pub(crate) fn send_signal_to_multiple<'a>(
     signal: Signal,
 ) {
     let executables: HashSet<&str> = executables.collect();
-
     let pids = proc_pid::listpids(proc_pid::ProcType::ProcAllPIDS).unwrap_or_default();
+
+    #[allow(clippy::cast_possible_wrap)]
     pids.into_iter()
-        .filter_map(|pid| Some(pid).zip(proc_pid::name(pid as i32).ok()))
+        .filter_map(|pid| Some(pid as i32).zip(proc_pid::name(pid as i32).ok()))
         .filter(|(_, name)| executables.contains(&name.as_str()))
-        .for_each(|(pid, _)| {
-            send_signal(pid as i32, signal);
-        });
+        .for_each(|(pid, _)| send_signal(pid, signal));
 }
 
 #[inline]
 fn send_signal(pid: i32, signal: Signal) {
-    unsafe { libc::kill(pid as i32, signal as c_int) };
+    unsafe { libc::kill(pid, signal as _) };
 }

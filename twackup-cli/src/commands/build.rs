@@ -18,12 +18,13 @@
  */
 
 use super::{CliCommand, GlobalOptions};
+use crate::progress_bar::ProgressBar;
 use crate::{context::Context, error::Result, TARGET_DIR};
 use chrono::Local;
 use console::style;
 use gethostname::gethostname;
-use std::{collections::LinkedList, fs, io, iter::Iterator, path::PathBuf, sync::Arc};
-use tokio::sync::Mutex;
+use std::{collections::LinkedList, io, iter::Iterator, path::PathBuf, sync::Arc};
+use tokio::{fs, sync::Mutex};
 use twackup::{
     archiver::Level as CompressionLevel,
     builder::{AllPackagesArchive, Preferences, Worker},
@@ -150,16 +151,16 @@ impl Build {
     }
 
     async fn build(&self, packages: Vec<Package>, context: Context) -> Result<()> {
-        self.create_dir_if_needed()?;
+        self.create_dir_if_needed().await?;
 
         let all_count = packages.len() as u64;
-        let progress = context.progress_bar(all_count);
+        let progress = ProgressBar::default(all_count);
 
         if !context.is_root {
             log::warn!("{}", GenericError::NotRunningAsRoot);
         }
 
-        let archive = self.create_archive_if_needed().await;
+        let archive = self.create_archive_if_needed().await?;
 
         let mut preferences =
             Preferences::new(&self.global_options.admin_dir, &self.destination_dir);
@@ -193,9 +194,9 @@ impl Build {
         Ok(())
     }
 
-    async fn create_archive_if_needed(&self) -> Option<AllPackagesArchive> {
+    async fn create_archive_if_needed(&self) -> Result<Option<AllPackagesArchive>> {
         if !self.archive {
-            return None;
+            return Ok(None);
         }
 
         let filename = match &*self.archive_name {
@@ -208,21 +209,19 @@ impl Build {
         };
 
         let filepath = self.destination_dir.join(&filename);
-        let file = tokio::fs::File::create(filepath)
-            .await
-            .expect("Can't open archive file");
+        let file = fs::File::create(filepath).await?;
 
         let archive = tokio_tar::Builder::new(file);
-        Some(Arc::new(Mutex::new(archive)))
+        Ok(Some(Arc::new(Mutex::new(archive))))
     }
 
-    fn create_dir_if_needed(&self) -> Result<()> {
-        match fs::metadata(&self.destination_dir) {
-            Ok(metadata) if !metadata.is_dir() => fs::remove_file(&self.destination_dir)?,
+    async fn create_dir_if_needed(&self) -> Result<()> {
+        match fs::metadata(&self.destination_dir).await {
+            Ok(metadata) if !metadata.is_dir() => fs::remove_file(&self.destination_dir).await?,
             _ => {}
         }
 
-        Ok(fs::create_dir_all(&self.destination_dir)?)
+        Ok(fs::create_dir_all(&self.destination_dir).await?)
     }
 }
 

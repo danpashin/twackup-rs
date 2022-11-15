@@ -5,9 +5,9 @@ members = ["twackup", "twackup-cli", "twackup-derive"]
 opt-level = 's'
 lto = true
 codegen-units = 1
-panic = 'abort'
 debug = 0
 debug-assertions = false
+strip = true
 
 [profile.release.package."*"]
 opt-level = 's'

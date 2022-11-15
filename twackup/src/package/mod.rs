@@ -29,7 +29,7 @@ pub use self::{
     field::Field,
     priority::Priority,
     section::Section,
-    status::{Flags, SelectionState, State, Status},
+    status::{Flags as StatusFlags, SelectionState, State, Status},
 };
 use crate::parser::Parsable;
 use std::{
@@ -256,6 +256,7 @@ impl Package {
     }
 
     /// Returns package name or identifier if there's no such
+    #[inline]
     #[must_use]
     pub fn human_name(&self) -> &str {
         match &self.name {

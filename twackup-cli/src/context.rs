@@ -17,7 +17,6 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::progress_bar::ProgressBar;
 use std::time::{Duration, Instant};
 
 pub(crate) struct Context {
@@ -35,18 +34,5 @@ impl Context {
 
     pub(crate) fn elapsed(&self) -> Duration {
         self.start_time.elapsed()
-    }
-
-    pub(crate) fn progress_bar(&self, length: u64) -> &'static ProgressBar {
-        let progress_bar = indicatif::ProgressBar::new(length);
-        progress_bar.set_style(
-            indicatif::ProgressStyle::default_bar()
-                .template("{pos}/{len} [{wide_bar:.cyan/blue}] {msg}")
-                .expect("Progress bar template error!")
-                .progress_chars("##-"),
-        );
-
-        let progress_bar = ProgressBar(progress_bar);
-        progress_bar.make_static()
     }
 }
