@@ -23,21 +23,25 @@ use std::path::{Path, PathBuf};
 pub struct Paths(PathBuf);
 
 impl Paths {
+    #[inline]
     pub fn new<P: AsRef<Path>>(dpkg_dir: P) -> Self {
         Self(dpkg_dir.as_ref().to_path_buf())
     }
 
     #[must_use]
+    #[inline]
     pub fn status_file(&self) -> PathBuf {
         self.0.join("status")
     }
 
     #[must_use]
+    #[inline]
     pub fn info_dir(&self) -> PathBuf {
         self.0.join("info")
     }
 
     #[must_use]
+    #[inline]
     pub fn lock_file(&self) -> PathBuf {
         self.0.join("lock")
     }

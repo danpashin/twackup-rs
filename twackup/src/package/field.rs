@@ -22,6 +22,7 @@ use twackup_derive::StrEnumWithDefault;
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash, StrEnumWithDefault)]
 #[twackup(convert_all = "train")]
+#[non_exhaustive]
 pub enum Field {
     // main info fields
     Package,

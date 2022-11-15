@@ -17,9 +17,10 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-pub type Result<T> = std::result::Result<T, Generic>;
+pub type Result<T> = core::result::Result<T, Generic>;
 
 #[derive(thiserror::Error, Debug)]
+#[non_exhaustive]
 pub enum Generic {
     #[error("IO: {0}")]
     Io(#[from] std::io::Error),
@@ -27,16 +28,18 @@ pub enum Generic {
     #[error("This action requires root permissions.")]
     NotRunningAsRoot,
 
-    #[cfg(feature = "with_serde")]
-    #[error("PlistError({0})")]
-    Plist(#[from] plist::Error),
-
     #[error("PackageError: {0}")]
-    PackageError(#[from] crate::package::Error),
+    Package(#[from] crate::package::Error),
 
     #[error("RepoError: {0}")]
-    RepoError(#[from] crate::repository::RepoError),
+    Repo(#[from] crate::repository::RepoError),
 
-    #[error("LockError")]
-    LockError,
+    #[error("Lock")]
+    Lock,
+
+    #[error("Path must have file ending")]
+    PathMustHaveFileEnding,
+
+    #[error("SystemTimeError")]
+    SystemTime(#[from] std::time::SystemTimeError),
 }

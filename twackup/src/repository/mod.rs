@@ -26,6 +26,7 @@ use std::{collections::HashMap, string::ToString};
 
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "with-serde", derive(serde::Serialize, serde::Deserialize))]
+#[non_exhaustive]
 pub struct Repository {
     /// specifies type of repo packages - Binary or Source
     pub category: Category,
@@ -44,12 +45,11 @@ impl Parsable for Repository {
 
     /// Performs parsing repo model in DEB822 format
     /// #### Doesn't support options
-    fn new(fields: HashMap<String, String>) -> Result<Self, Self::Error> {
-        let mut fields = fields;
+    fn new(mut fields: HashMap<String, String>) -> Result<Self, Self::Error> {
         let mut fetch_field = |field: &str| -> Result<String, RepoError> {
             fields
                 .remove(field)
-                .ok_or_else(|| RepoError::MissingField(field.to_string()))
+                .ok_or_else(|| RepoError::MissingField(field.to_owned()))
         };
 
         Ok(Self {
@@ -78,13 +78,13 @@ impl Repository {
         let components: Vec<&str> = line.split_ascii_whitespace().collect();
         // type, uri and suite are required, so break if they don't exist
         if components.len() < 3 {
-            return Err(RepoError::InvalidRepoLine(line.to_string()));
+            return Err(RepoError::InvalidRepoLine(line.to_owned()));
         }
 
         Ok(Self {
             category: Category::try_from(components[0])?,
-            url: components[1].to_string(),
-            distribution: components[2].to_string(),
+            url: components[1].to_owned(),
+            distribution: components[2].to_owned(),
             components: components
                 .into_iter()
                 .skip(3)
@@ -102,25 +102,22 @@ impl Repository {
             self.category.as_str(),
             self.url,
             self.distribution,
-            self.components.join(" ")
+            self.components.join(" ").trim_end()
         )
-        .trim()
-        .to_string()
     }
 
     /// Performs fields formatting in multiple-lines style. (Also known as DEB822 Style)
     /// #### Doesn't support options
     #[must_use]
+    #[inline]
     pub fn to_deb822(&self) -> String {
         format!(
             "Types: {}\nURIs: {}\nSuites: {}\nComponents: {}",
             self.category.as_str(),
             self.url,
             self.distribution,
-            self.components.join(" ")
+            self.components.join(" ").trim_end()
         )
-        .trim()
-        .to_string()
     }
 
     #[must_use]
@@ -138,16 +135,16 @@ impl Repository {
     pub fn to_dict(&self) -> plist::Dictionary {
         let mut dict = plist::Dictionary::new();
         dict.insert(
-            "Distribution".to_string(),
+            "Distribution".to_owned(),
             plist::Value::String(self.distribution.clone()),
         );
-        dict.insert("URI".to_string(), plist::Value::String(self.url.clone()));
+        dict.insert("URI".to_owned(), plist::Value::String(self.url.clone()));
         dict.insert(
-            "Type".to_string(),
-            plist::Value::String(self.category.as_str().to_string()),
+            "Type".to_owned(),
+            plist::Value::String(self.category.as_str().to_owned()),
         );
         dict.insert(
-            "Sections".to_string(),
+            "Sections".to_owned(),
             plist::Value::Array(
                 self.components
                     .iter()

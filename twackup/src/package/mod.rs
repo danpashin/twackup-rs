@@ -17,15 +17,12 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-mod field;
-mod package_error;
-mod priority;
-mod section;
-mod status;
+pub mod field;
+pub mod priority;
+pub mod section;
+pub mod status;
 
-pub use self::{
-    field::Field, package_error::Error, priority::Priority, section::Section, status::Status,
-};
+pub use self::{field::Field, priority::Priority, section::Section, status::Status};
 use crate::parser::Parsable;
 use std::{
     collections::{HashMap, HashSet},
@@ -33,6 +30,28 @@ use std::{
     io::{self, BufRead, BufReader},
     path::Path,
 };
+
+#[derive(thiserror::Error, Debug)]
+#[non_exhaustive]
+pub enum Error {
+    #[error("Unknown package priority: `{0}`")]
+    UnknownPriority(String),
+
+    #[error("Unknown package eflag field: `{0}`")]
+    UnknownEFlag(String),
+
+    #[error("Unknown package state: `{0}`")]
+    UnknownState(String),
+
+    #[error("Unknown package want field `{0}`")]
+    UnknownWant(String),
+
+    #[error("Field is missed: `{0}`")]
+    MissingField(Field),
+
+    #[error("This package is virtual")]
+    VirtualPackage,
+}
 
 #[derive(Clone, Debug)]
 pub struct Package {
@@ -187,7 +206,7 @@ impl Package {
             string
                 .split([',', '|'])
                 .map(|dep| match dep.find('(').zip(dep.find(')')) {
-                    Some((start, _)) => dep[0..start].trim(),
+                    Some((start, _)) => dep[..start].trim(),
                     _ => dep.trim(),
                 })
         }

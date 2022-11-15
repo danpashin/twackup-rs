@@ -21,6 +21,7 @@ use super::RepoError;
 
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "with-serde", derive(serde::Serialize, serde::Deserialize))]
+#[non_exhaustive]
 pub enum Category {
     /// Used for distributing binaries only
     Binary,
@@ -33,7 +34,7 @@ pub enum Category {
 impl Category {
     #[must_use]
     pub fn as_str(&self) -> &str {
-        match self {
+        match *self {
             Self::Binary => "deb",
             Self::Source => "deb-src",
             Self::Both => "deb deb-src",
@@ -49,7 +50,7 @@ impl TryFrom<&str> for Category {
             "deb" => Ok(Self::Binary),
             "deb-src" => Ok(Self::Source),
             "deb deb-src" | "deb-src deb" => Ok(Self::Both),
-            _ => Err(RepoError::MissingField(s.to_string())),
+            _ => Err(RepoError::MissingField(s.to_owned())),
         }
     }
 }

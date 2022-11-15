@@ -1,20 +1,21 @@
 use memmem::{Searcher, TwoWaySearcher};
 
-pub struct UnOwnedLine<'a> {
-    buf: &'a [u8],
+#[derive(Debug)]
+pub struct UnOwnedLine<'buf> {
+    buf: &'buf [u8],
     finished: bool,
     phrase_len: usize,
-    searcher: TwoWaySearcher<'a>,
+    searcher: TwoWaySearcher<'buf>,
 }
 
-impl<'a> Iterator for UnOwnedLine<'a> {
-    type Item = &'a [u8];
+impl<'buf> Iterator for UnOwnedLine<'buf> {
+    type Item = &'buf [u8];
 
     fn next(&mut self) -> Option<Self::Item> {
         let result = match self.searcher.search_in(self.buf) {
             Some(pos) => {
-                let chunk = &self.buf[..pos];
-                self.buf = &self.buf[pos + self.phrase_len..];
+                let chunk = self.buf.get(..pos)?;
+                self.buf = self.buf.get(pos + self.phrase_len..)?;
 
                 Some(chunk)
             }
@@ -25,18 +26,15 @@ impl<'a> Iterator for UnOwnedLine<'a> {
             None => None,
         };
 
-        result.and_then(|result| {
-            if !result.is_empty() && result != "\n".as_bytes() {
-                Some(result)
-            } else {
-                None
-            }
-        })
+        result
+            .and_then(|result| (!result.is_empty() && result != "\n".as_bytes()).then_some(result))
     }
 }
 
-impl<'a> UnOwnedLine<'a> {
-    pub fn search(phrase: &'a [u8], buf: &'a [u8]) -> Self {
+impl<'buf> UnOwnedLine<'buf> {
+    #[inline]
+    #[must_use]
+    pub fn search(phrase: &'buf [u8], buf: &'buf [u8]) -> Self {
         Self {
             buf,
             finished: false,
@@ -45,11 +43,15 @@ impl<'a> UnOwnedLine<'a> {
         }
     }
 
-    pub fn double_line(buf: &'a [u8]) -> Self {
+    #[inline]
+    #[must_use]
+    pub fn double_line(buf: &'buf [u8]) -> Self {
         Self::search("\n\n".as_bytes(), buf)
     }
 
-    pub fn single_line(buf: &'a [u8]) -> Self {
+    #[inline]
+    #[must_use]
+    pub fn single_line(buf: &'buf [u8]) -> Self {
         Self::search("\n".as_bytes(), buf)
     }
 }
