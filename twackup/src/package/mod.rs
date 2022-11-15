@@ -17,6 +17,9 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+//! Package module represents some package info
+//! that was parsed from dpkg database
+
 mod field;
 mod priority;
 mod section;
@@ -108,12 +111,10 @@ impl Parsable for Package {
 
         let package_id = fetch_field(Field::Package)?;
 
+        // Ignore virtual packages
         #[cfg(feature = "ios")]
-        {
-            // Ignore virtual packages
-            if package_id.starts_with("gsc.") || package_id.starts_with("cy+") {
-                return Err(Error::VirtualPackage);
-            }
+        if package_id.starts_with("gsc.") || package_id.starts_with("cy+") {
+            return Err(Error::VirtualPackage);
         }
 
         Ok(Self {
@@ -123,7 +124,10 @@ impl Parsable for Package {
             status: Status::try_from(fetch_field(Field::Status)?.as_str())?,
             section: Section::from(fetch_field(Field::Section)?.as_str()),
             priority: if let Ok(priority) = fetch_field(Field::Priority) {
-                Some(Priority::try_from(priority.as_str()).map_err(Error::UnknownPriority)?)
+                Some(
+                    Priority::try_from(priority.as_str())
+                        .map_err(|error: &str| Error::UnknownPriority(error.to_string()))?,
+                )
             } else {
                 None
             },
@@ -263,9 +267,19 @@ impl Package {
 
 #[cfg(test)]
 mod tests {
-    use super::Package;
-    use crate::{error::Result, parser::Parsable};
-    use std::{collections::HashMap, path::Path};
+    use crate::{
+        error::Result,
+        package::{Field, Package},
+        parser::{Parsable, Parser},
+    };
+    use std::{
+        collections::HashMap,
+        env,
+        fs::{self, File},
+        io::{self, Write},
+        os::unix::fs::PermissionsExt,
+        path::Path,
+    };
 
     #[test]
     fn valid_package_get_files() -> Result<()> {
@@ -299,6 +313,68 @@ mod tests {
         let path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/packages");
         let files = package.get_installed_files(Path::new(path));
         assert_eq!(files.is_err(), true);
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn valid_database() -> Result<()> {
+        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/database/valid");
+        let parser = Parser::new(database)?;
+        let packages = parser.parse::<Package>().await;
+        assert_eq!(packages.len(), 3);
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn partially_valid_database() -> Result<()> {
+        let database = concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/assets/database/partially_valid"
+        );
+        let parser = Parser::new(database)?;
+        let packages = parser.parse::<Package>().await;
+        assert_ne!(packages.len(), 3);
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn multiline() -> Result<()> {
+        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/database/multiline");
+        let parser = Parser::new(database)?;
+
+        let packages = parser.parse::<Package>().await;
+        let packages: HashMap<String, Package> = packages
+            .into_iter()
+            .map(|pkg| (pkg.id.clone(), pkg))
+            .collect();
+
+        let package = packages.get("valid-package-1").unwrap();
+        let description = package.get(Field::Description)?;
+        assert_eq!(description, "First Line\n Second Line\n  Third Line");
+
+        assert!(packages.get("invalid-package-1").is_none());
+
+        Ok(())
+    }
+
+    #[test]
+    fn no_permissions_database() -> Result<()> {
+        let database = env::temp_dir().join("twackup-no-permissions");
+        let mut file = File::create(&database)?;
+        file.write("This contents will never be read".as_bytes())?;
+        fs::set_permissions(&database, fs::Permissions::from_mode(0o333))?;
+
+        let parser = Parser::new(database.as_path());
+        assert_eq!(parser.is_err(), true);
+        assert_eq!(
+            io::Error::last_os_error().kind(),
+            io::ErrorKind::PermissionDenied
+        );
+
+        fs::remove_file(&database)?;
 
         Ok(())
     }

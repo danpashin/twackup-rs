@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-pub mod iterators;
+mod iterators;
 
 use crate::parser::iterators::UnOwnedLine;
 use memmap2::Mmap;
@@ -32,6 +32,7 @@ use std::{
 
 /// Common trait for any struct that can be parsed in key-value mode
 pub trait Parsable: Send + Sized {
+    /// Error which will be used to contain model errors
     type Error: Send;
 
     /// Should process lines and return result
@@ -41,6 +42,36 @@ pub trait Parsable: Send + Sized {
     fn new(key_values: HashMap<String, String>) -> Result<Self, Self::Error>;
 }
 
+/// Parser is a Twackup module that parses file line by line
+/// in a simple key-value way to any Rust struct
+/// that implements [Parsable] trait.
+///
+/// Moreover, it supports multi-line syntax, so file can look like this
+/// ```txt
+/// Line1: Value1
+/// Line2: Value2
+///   Continuation for line 2
+/// ```
+/// And parser will parse this without errors!
+///
+/// # Example usage
+///
+/// ```rust
+/// use twackup::{Parser, Result, package::Package};
+///
+/// #[tokio::main]
+/// async fn main() -> Result<()> {
+///     let dpkg_database = "/var/lib/dpkg/status";
+///     let parser = Parser::new(dpkg_database)?;
+///
+///     let packages = parser.parse::<Package>().await;
+///     for package in packages {
+///         println!("Package {}", package.id);
+///     }
+///
+///     Ok(())
+/// }
+/// ```
 pub struct Parser {
     mmap: Mmap,
 }
@@ -56,6 +87,7 @@ impl Parser {
     /// # Errors
     /// Will return error when user has no permissions to read
     /// or file is empty
+    #[inline]
     pub fn new<P: AsRef<Path>>(file_path: P) -> io::Result<Self> {
         let file = File::open(file_path)?;
         let mmap = unsafe { Mmap::map(&file) }?;
@@ -87,21 +119,23 @@ impl Parser {
 
 impl ChunkWorker {
     /// Prepares environment and creates parser instance
+    #[inline]
     fn new(ptr: usize, length: usize) -> Self {
         Self { ptr, length }
     }
 
     /// Parses chunk to model
+    #[inline]
     fn run<P: Parsable>(self) -> Result<P, P::Error> {
-        // Fucking hacks. This is the only way to pass slice without ARC
-        let chunk = unsafe { &*slice_from_raw_parts(self.ptr as *const u8, self.length) };
-
-        let fields = self.parse_chunk(chunk);
+        let fields = self.parse_chunk();
         P::new(fields)
     }
 
     /// Converts raw chunk bytes to list of lines with multi-line syntax support
-    fn parse_chunk(&self, chunk: &[u8]) -> HashMap<String, String> {
+    fn parse_chunk(&self) -> HashMap<String, String> {
+        // Fucking hacks. This is the only way to pass slice without ARC
+        let chunk = unsafe { &*slice_from_raw_parts(self.ptr as *const u8, self.length) };
+
         let mut fields: LinkedList<Vec<_>> = LinkedList::new();
 
         let line_iter = UnOwnedLine::single_line(chunk).flat_map(std::str::from_utf8);
@@ -161,127 +195,5 @@ impl ChunkWorker {
                 Some((key, value))
             })
             .collect()
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::Parser;
-    use crate::{
-        error::Result,
-        package::{Field, Package},
-        repository::Repository,
-    };
-    use std::{
-        collections::HashMap,
-        env,
-        fs::{self, File},
-        io::{self, BufRead, BufReader, Write},
-        os::unix::fs::PermissionsExt,
-    };
-
-    #[tokio::test]
-    async fn valid_database() -> Result<()> {
-        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/database/valid");
-        let parser = Parser::new(database)?;
-        let packages = parser.parse::<Package>().await;
-        assert_eq!(packages.len(), 3);
-
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn partially_valid_database() -> Result<()> {
-        let database = concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/assets/database/partially_valid"
-        );
-        let parser = Parser::new(database)?;
-        let packages = parser.parse::<Package>().await;
-        assert_ne!(packages.len(), 3);
-
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn multiline() -> Result<()> {
-        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/database/multiline");
-        let parser = Parser::new(database)?;
-
-        let packages = parser.parse::<Package>().await;
-        let packages: HashMap<String, Package> = packages
-            .into_iter()
-            .map(|pkg| (pkg.id.clone(), pkg))
-            .collect();
-
-        let package = packages.get("valid-package-1").unwrap();
-        let description = package.get(Field::Description)?;
-        assert_eq!(description, "First Line\n Second Line\n  Third Line");
-
-        assert!(packages.get("invalid-package-1").is_none());
-
-        Ok(())
-    }
-
-    #[test]
-    fn no_permissions_database() -> Result<()> {
-        let database = env::temp_dir().join("twackup-no-permissions");
-        let mut file = File::create(&database)?;
-        file.write("This contents will never be read".as_bytes())?;
-        fs::set_permissions(&database, fs::Permissions::from_mode(0o333))?;
-
-        let parser = Parser::new(database.as_path());
-        assert_eq!(parser.is_err(), true);
-        assert_eq!(
-            io::Error::last_os_error().kind(),
-            io::ErrorKind::PermissionDenied
-        );
-
-        fs::remove_file(&database)?;
-
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn modern_repository() -> Result<()> {
-        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/sources_db/modern");
-
-        let parser = Parser::new(database)?;
-
-        let repositories = parser.parse::<Repository>().await;
-        let repositories: HashMap<String, Repository> = repositories
-            .into_iter()
-            .map(|repo| (repo.url.clone(), repo))
-            .collect();
-
-        assert_eq!(repositories.len(), 3);
-
-        let repo = repositories.get("https://apt1.example.com/").unwrap();
-        assert_eq!(repo.components.as_slice(), &["main", "orig"]);
-
-        Ok(())
-    }
-
-    #[test]
-    fn classic_repository() -> Result<()> {
-        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/sources_db/classic");
-        let reader = BufReader::new(File::open(database)?);
-
-        let lines = reader.lines().flatten();
-        let repositories: HashMap<String, Repository> = lines
-            .filter_map(|line| {
-                Repository::from_one_line(line.as_str())
-                    .map(|repo| (repo.url.clone(), repo))
-                    .ok()
-            })
-            .collect();
-
-        assert_eq!(repositories.len(), 3);
-
-        let repo = repositories.get("https://apt1.example.com/").unwrap();
-        assert_eq!(repo.distribution.as_str(), "stable");
-        assert_eq!(repo.components.as_slice(), &["main", "orig"]);
-
-        Ok(())
     }
 }

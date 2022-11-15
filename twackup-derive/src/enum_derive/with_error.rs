@@ -20,11 +20,10 @@
 use super::utils::enum_field_name;
 use crate::enum_derive::utils::get_convert_all_attr;
 use proc_macro::TokenStream;
-use quote::{format_ident, quote, ToTokens};
-use syn::{parse_macro_input, Data, DataEnum, DeriveInput};
+use quote::{quote, ToTokens};
+use syn::{Data, DataEnum, DeriveInput};
 
-pub(crate) fn derive(input: TokenStream) -> TokenStream {
-    let input = parse_macro_input!(input as DeriveInput);
+pub(crate) fn derive(input: &DeriveInput) -> TokenStream {
     let enum_ident = &input.ident;
 
     let data_enum = match &input.data {
@@ -32,23 +31,17 @@ pub(crate) fn derive(input: TokenStream) -> TokenStream {
         _ => panic!("Only enum type is supported"),
     };
 
-    let convert_all_form = get_convert_all_attr(&input);
+    let convert_all_form = get_convert_all_attr(input);
     let convert_all_form = convert_all_form.as_ref();
 
     let as_str_content = as_str_iterator(convert_all_form, data_enum);
     let from_str_content = from_str_iterator(convert_all_form, data_enum);
 
-    let error_struct_name = format_ident!("__Twackup{}DeriveError", enum_ident);
-
     let expanded = quote! {
-
-        #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-        enum #error_struct_name<'a> {
-            UnknownValue(&'a str),
-        }
-
         #[automatically_derived]
         impl #enum_ident {
+            #[inline]
+            #[doc = "Converts self to static string or exposes internal contents"]
             pub fn as_str(&self) -> &str {
                 match self {
                     #(#as_str_content),*
@@ -57,13 +50,13 @@ pub(crate) fn derive(input: TokenStream) -> TokenStream {
         }
 
         #[automatically_derived]
-        impl TryFrom<&str> for #enum_ident {
-            type Error = String;
+        impl<'str> TryFrom<&'str str> for #enum_ident {
+            type Error = &'str str;
 
-            fn try_from(string: & str) -> ::std::result::Result<Self, Self::Error> {
+            fn try_from(string: &'str str) -> ::std::result::Result<Self, &'str str> {
                 match string {
                     #(#from_str_content),*,
-                    _ => Err(format!("Unknown value: {:?}", string))
+                    _ => Err(string)
                 }
             }
         }

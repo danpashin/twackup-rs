@@ -29,16 +29,16 @@ use std::{
 use tokio::io::AsyncWriteExt;
 use tokio_tar::Builder as Tar;
 
-pub type DebianTarArchive = TarArchive<Encoder<Vec<u8>>>;
+pub(crate) type DebianInnerTar = TarArchive<Encoder<Vec<u8>>>;
 
-pub struct Deb {
+pub(crate) struct Deb {
     compression: Compression,
     output: PathBuf,
-    control: DebianTarArchive,
-    data: DebianTarArchive,
+    control: DebianInnerTar,
+    data: DebianInnerTar,
 }
 
-pub struct TarArchive<W: tokio::io::AsyncWrite + Unpin + Send + Sync + 'static> {
+pub(crate) struct TarArchive<W: tokio::io::AsyncWrite + Unpin + Send + Sync + 'static> {
     builder: Tar<W>,
 }
 
@@ -48,7 +48,7 @@ impl Deb {
     /// # Errors
     /// Returns IO error if temp dir is not writable
     #[inline]
-    pub fn new<O: AsRef<Path>>(output: O, compression: Compression) -> Result<Self> {
+    pub(crate) fn new<O: AsRef<Path>>(output: O, compression: Compression) -> Result<Self> {
         let control_file = Encoder::new(vec![], compression)?;
         let data_file = Encoder::new(vec![], compression)?;
 
@@ -61,12 +61,12 @@ impl Deb {
     }
 
     #[inline]
-    pub fn data_mut_ref(&mut self) -> &mut DebianTarArchive {
+    pub(crate) fn data_mut_ref(&mut self) -> &mut DebianInnerTar {
         self.data.borrow_mut()
     }
 
     #[inline]
-    pub fn control_mut_ref(&mut self) -> &mut DebianTarArchive {
+    pub(crate) fn control_mut_ref(&mut self) -> &mut DebianInnerTar {
         self.control.borrow_mut()
     }
 
@@ -75,7 +75,7 @@ impl Deb {
     /// # Errors
     /// Returns IO error if temp dir is not writable
     #[inline]
-    pub async fn build(self) -> Result<()> {
+    pub(crate) async fn build(self) -> Result<()> {
         let mut builder = ar::Builder::new(std::fs::File::create(&self.output)?);
 
         let mtime = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH)?;
@@ -116,14 +116,14 @@ impl Deb {
 
 impl<W: tokio::io::AsyncWrite + Unpin + Send + Sync> TarArchive<W> {
     #[inline]
-    pub fn new(writer: W) -> Self {
+    pub(crate) fn new(writer: W) -> Self {
         let mut builder = Tar::new(writer);
         builder.follow_symlinks(false);
         Self { builder }
     }
 
     #[inline]
-    pub fn get_mut(&mut self) -> &mut Tar<W> {
+    pub(crate) fn get_mut(&mut self) -> &mut Tar<W> {
         &mut self.builder
     }
 
@@ -132,7 +132,7 @@ impl<W: tokio::io::AsyncWrite + Unpin + Send + Sync> TarArchive<W> {
     /// # Errors
     /// Returns error if file couldn't be added to archive
     #[inline]
-    pub async fn append_new_file<P: AsRef<Path>>(
+    pub(crate) async fn append_new_file<P: AsRef<Path>>(
         &mut self,
         path: P,
         contents: &[u8],

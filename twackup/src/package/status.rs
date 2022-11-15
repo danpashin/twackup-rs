@@ -118,9 +118,13 @@ impl TryFrom<&str> for Status {
         Ok(Self {
             selection_state: components[0]
                 .try_into()
-                .map_err(Error::UnknownSelectionState)?,
-            flags: components[1].try_into().map_err(Error::UnknownFlag)?,
-            state: components[2].try_into().map_err(Error::UnknownState)?,
+                .map_err(|error: &str| Error::UnknownSelectionState(error.to_string()))?,
+            flags: components[1]
+                .try_into()
+                .map_err(|error: &str| Error::UnknownFlag(error.to_string()))?,
+            state: components[2]
+                .try_into()
+                .map_err(|error: &str| Error::UnknownState(error.to_string()))?,
         })
     }
 }

@@ -21,10 +21,9 @@ use super::utils::enum_field_name;
 use crate::enum_derive::utils::get_convert_all_attr;
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, Data, DataEnum, DeriveInput};
+use syn::{Data, DataEnum, DeriveInput};
 
-pub(crate) fn derive(input: TokenStream) -> TokenStream {
-    let input = parse_macro_input!(input as DeriveInput);
+pub(crate) fn derive(input: &DeriveInput) -> TokenStream {
     let enum_name = &input.ident;
 
     let data_enum = match &input.data {
@@ -32,7 +31,7 @@ pub(crate) fn derive(input: TokenStream) -> TokenStream {
         _ => panic!("Only enum type is supported"),
     };
 
-    let convert_all_form = get_convert_all_attr(&input);
+    let convert_all_form = get_convert_all_attr(input);
     let convert_all_form = convert_all_form.as_ref();
 
     let as_str_content = as_str_iterator(convert_all_form, data_enum);
@@ -41,6 +40,8 @@ pub(crate) fn derive(input: TokenStream) -> TokenStream {
     let expanded = quote! {
         #[automatically_derived]
         impl #enum_name {
+            #[inline]
+            #[doc = "Converts self to static string or exposes internal contents"]
             pub fn as_str(&self) -> &str {
                 match self {
                     #(#as_str_content),*

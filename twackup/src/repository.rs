@@ -17,9 +17,12 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::parser::Parsable;
+//! Package module represents some repository info
+//! that was parsed from dpkg database
+
+use crate::Parsable;
 use std::{collections::HashMap, string::ToString};
-use twackup_derive::StrEnumWithError;
+use twackup_derive::StrEnumWithDefault;
 
 /// Different repo errors
 #[derive(thiserror::Error, Debug)]
@@ -39,16 +42,18 @@ pub enum Error {
 }
 
 /// Repo category type
-#[derive(Clone, Debug, StrEnumWithError)]
+#[derive(Clone, Debug, StrEnumWithDefault)]
 #[cfg_attr(feature = "with-serde", derive(serde::Serialize, serde::Deserialize))]
 #[non_exhaustive]
 pub enum Category {
     /// Used for distributing binaries only
+    #[twackup(rename = "binary")]
     Binary,
     /// This is used for distributing sources only
+    #[twackup(rename = "deb-src")]
     Source,
-    /// Supported only in DEB822 format
-    Both,
+    /// Other category types
+    Other(String),
 }
 
 /// Wrapper for default repo structure
@@ -85,8 +90,7 @@ impl Parsable for Repository {
         };
 
         Ok(Self {
-            category: Category::try_from(fetch_field("Types")?.as_str())
-                .map_err(Error::InvalidCategory)?,
+            category: Category::from(fetch_field("Types")?.as_str()),
             url: fetch_field("URIs")?,
             distribution: fetch_field("Suites")?,
             components: fetch_field("Components")
@@ -115,7 +119,7 @@ impl Repository {
         }
 
         Ok(Self {
-            category: Category::try_from(components[0]).map_err(Error::InvalidCategory)?,
+            category: Category::from(components[0]),
             url: components[1].to_owned(),
             distribution: components[2].to_owned(),
             components: components
@@ -191,5 +195,59 @@ impl Repository {
         );
 
         dict
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Repository;
+    use crate::{parser::Parser, Result};
+    use std::{
+        collections::HashMap,
+        fs::File,
+        io::{BufRead, BufReader},
+    };
+
+    #[tokio::test]
+    async fn modern_repository() -> Result<()> {
+        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/sources_db/modern");
+
+        let parser = Parser::new(database)?;
+
+        let repositories = parser.parse::<Repository>().await;
+        let repositories: HashMap<String, Repository> = repositories
+            .into_iter()
+            .map(|repo| (repo.url.clone(), repo))
+            .collect();
+
+        assert_eq!(repositories.len(), 3);
+
+        let repo = repositories.get("https://apt1.example.com/").unwrap();
+        assert_eq!(repo.components.as_slice(), &["main", "orig"]);
+
+        Ok(())
+    }
+
+    #[test]
+    fn classic_repository() -> Result<()> {
+        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/sources_db/classic");
+        let reader = BufReader::new(File::open(database)?);
+
+        let lines = reader.lines().flatten();
+        let repositories: HashMap<String, Repository> = lines
+            .map(|line| {
+                Repository::from_one_line(line.as_str())
+                    .map(|repo| (repo.url.clone(), repo))
+                    .unwrap()
+            })
+            .collect();
+
+        assert_eq!(repositories.len(), 3);
+
+        let repo = repositories.get("https://apt1.example.com/").unwrap();
+        assert_eq!(repo.distribution.as_str(), "stable");
+        assert_eq!(repo.components.as_slice(), &["main", "orig"]);
+
+        Ok(())
     }
 }

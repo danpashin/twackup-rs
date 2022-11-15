@@ -26,7 +26,7 @@ use std::{collections::LinkedList, fs, io, iter::Iterator, path::PathBuf, sync::
 use tokio::sync::Mutex;
 use twackup::{
     archiver::Level as CompressionLevel,
-    builder::{deb::TarArchive, AllPackagesArchive, Preferences, Worker},
+    builder::{AllPackagesArchive, Preferences, Worker},
     package::Package,
     progress::Progress,
     Dpkg, GenericError, PackagesSort,
@@ -212,7 +212,7 @@ impl Build {
             .await
             .expect("Can't open archive file");
 
-        let archive = TarArchive::new(file);
+        let archive = tokio_tar::Builder::new(file);
         Some(Arc::new(Mutex::new(archive)))
     }
 

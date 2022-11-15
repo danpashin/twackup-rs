@@ -17,6 +17,25 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+//! Archiver is a async wrapper module for different types of archive
+//!
+//! #### Example usage
+//!
+//! ```rust
+//! use twackup::{archiver::{Encoder, Compression}, Result};
+//!
+//! #[tokio::main]
+//! async fn main() -> Result<()> {
+//!     let compression = Compression::default();
+//!     let archiver = Encoder::new(vec![], compression)?;
+//!
+//!     // do something with archiver as it implements AsyncWrite
+//!  
+//!     Ok(())
+//! }
+//! ```
+//!
+
 use flate2::write::GzEncoder;
 use std::{
     io::{Error, Write},
