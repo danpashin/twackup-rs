@@ -17,23 +17,24 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{CliCommand, Context};
-use crate::{error::Result, ADMIN_DIR};
-use std::path::PathBuf;
+use super::{CliCommand, Context, GlobalOptions};
+use crate::error::Result;
+use twackup::dpkg::PackagesSort;
 
 #[derive(clap::Parser)]
 #[clap(version)]
 pub(crate) struct List {
-    /// Use custom dpkg <directory>.
-    /// This option is used for detecting installed packages
-    #[clap(long, default_value = ADMIN_DIR, value_parser)]
-    admindir: PathBuf,
+    #[clap(flatten)]
+    global_options: GlobalOptions,
 }
 
 #[async_trait::async_trait]
 impl CliCommand for List {
-    async fn run(&self, context: Context) -> Result<()> {
-        let packages = context.packages(&self.admindir, false).await?;
+    async fn run(&self, _context: Context) -> Result<()> {
+        let packages = self
+            .global_options
+            .packages(false, PackagesSort::Name)
+            .await?;
 
         for (position, (_, package)) in packages.into_iter().enumerate() {
             let section_sym = package.section.color().apply_to("▶︎");

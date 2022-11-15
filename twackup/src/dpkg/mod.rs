@@ -28,10 +28,16 @@ use crate::{
 use lock::Lock;
 pub use paths::Paths;
 use std::{
-    collections::{BTreeMap, HashSet},
+    collections::{BTreeMap, HashSet, LinkedList},
     fs,
     path::{Path, PathBuf},
 };
+
+#[derive(Debug)]
+pub enum PackagesSort {
+    Identifier,
+    Name,
+}
 
 #[derive(Clone, Debug)]
 pub struct Dpkg {
@@ -54,7 +60,7 @@ impl Dpkg {
     ///
     /// # Errors
     /// Returns error if parsing database failed or dpkg directory lock failed
-    pub async fn packages(&self, leaves_only: bool) -> Result<BTreeMap<String, Package>> {
+    pub async fn unsorted_packages(&self, leaves_only: bool) -> Result<LinkedList<Package>> {
         // lock database as it can be modified while parsing
         let lock = if self.should_lock {
             Some(Lock::new(&self.paths)?)
@@ -69,10 +75,7 @@ impl Dpkg {
         drop(lock);
 
         if !leaves_only {
-            return Ok(packages
-                .into_iter()
-                .map(|pkg| (pkg.id.clone(), pkg))
-                .collect());
+            return Ok(packages);
         }
 
         // Collect all identifiers package depends on
@@ -95,10 +98,36 @@ impl Dpkg {
         // Hacky solution to not call clone on leaves packages as `ids` borrows them
         let leaves = packages
             .into_iter()
-            .filter_map(|pkg| leaves_identifiers.take(&pkg.id).map(|id| (id, pkg)))
+            .filter(|pkg| leaves_identifiers.remove(&pkg.id))
             .collect();
 
         Ok(leaves)
+    }
+
+    /// Fetches packages from dpkg database
+    ///
+    /// # Parameters
+    /// - `leaves_only` - if packages that aren't dependencies of others should be returned
+    /// - `sort` - type of sorting packages
+    ///
+    /// # Errors
+    /// Returns error if parsing database failed or dpkg directory lock failed
+    pub async fn packages(
+        &self,
+        leaves_only: bool,
+        sort: PackagesSort,
+    ) -> Result<BTreeMap<String, Package>> {
+        let unsorted = self.unsorted_packages(leaves_only).await?;
+
+        let sorted = unsorted
+            .into_iter()
+            .map(|pkg| match sort {
+                PackagesSort::Identifier => (pkg.id.clone(), pkg),
+                PackagesSort::Name => (pkg.human_name().to_string(), pkg),
+            })
+            .collect();
+
+        Ok(sorted)
     }
 
     /// Fetches packages info directory contents

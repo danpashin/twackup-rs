@@ -18,21 +18,22 @@
  */
 
 use super::{CliCommand, Context};
-use crate::{error::Result, ADMIN_DIR};
-use std::path::PathBuf;
+use crate::{commands::GlobalOptions, error::Result};
+use twackup::dpkg::PackagesSort;
 
 #[derive(clap::Parser)]
 pub(crate) struct Leaves {
-    /// Use custom dpkg <directory>.
-    /// This option is used for detecting installed packages
-    #[clap(long, default_value = ADMIN_DIR, value_parser)]
-    admindir: PathBuf,
+    #[clap(flatten)]
+    global_options: GlobalOptions,
 }
 
 #[async_trait::async_trait]
 impl CliCommand for Leaves {
-    async fn run(&self, context: Context) -> Result<()> {
-        let packages = context.packages(&self.admindir, true).await?;
+    async fn run(&self, _context: Context) -> Result<()> {
+        let packages = self
+            .global_options
+            .packages(true, PackagesSort::Name)
+            .await?;
 
         for (_, package) in packages {
             let section_sym = package.section.color().apply_to("▶︎");

@@ -18,12 +18,7 @@
  */
 
 use super::progress_bar::ProgressBar;
-use std::{
-    collections::BTreeMap,
-    path::Path,
-    time::{Duration, Instant},
-};
-use twackup::{dpkg::Dpkg, error::Result, package::Package};
+use std::time::{Duration, Instant};
 
 pub(crate) struct Context {
     pub(crate) start_time: Instant,
@@ -53,13 +48,5 @@ impl Context {
 
         let progress_bar = ProgressBar(progress_bar);
         progress_bar.make_static()
-    }
-
-    pub(crate) async fn packages<P: AsRef<Path>>(
-        &self,
-        admin_dir: P,
-        leaves_only: bool,
-    ) -> Result<BTreeMap<String, Package>> {
-        Dpkg::new(admin_dir, true).packages(leaves_only).await
     }
 }
