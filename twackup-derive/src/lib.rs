@@ -17,18 +17,32 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+//! Different Twackup internal derives.
+//! Not intended to be used in any crate except Twackup
+
 #![deny(rust_2018_idioms, clippy::pedantic)]
 
 mod enum_derive;
 
 use proc_macro::TokenStream;
+use syn::{parse_macro_input, DeriveInput};
 
+/// Creates a simple wrapper over enum
+/// and implements `as_str` and `from(&str)` traits
+///
+/// Not intended to be used in any crate except Twackup
 #[proc_macro_derive(StrEnumWithDefault, attributes(twackup))]
 pub fn enum_with_default_field(input: TokenStream) -> TokenStream {
-    enum_derive::with_default_field::derive(input)
+    let input = parse_macro_input!(input as DeriveInput);
+    enum_derive::with_default_field::derive(&input)
 }
 
+/// Creates a simple wrapper over enum a
+/// and implements `as_str` and `try_from(&str)` traits
+///
+/// Not intended to be used in any crate except Twackup
 #[proc_macro_derive(StrEnumWithError, attributes(twackup))]
 pub fn enum_with_error(input: TokenStream) -> TokenStream {
-    enum_derive::with_error::derive(input)
+    let input = parse_macro_input!(input as DeriveInput);
+    enum_derive::with_error::derive(&input)
 }

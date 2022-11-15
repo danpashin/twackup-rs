@@ -20,11 +20,11 @@
 use std::fmt::{Display, Formatter};
 use twackup_derive::StrEnumWithDefault;
 
+/// Describes field type
 #[derive(Clone, Debug, Eq, PartialEq, Hash, StrEnumWithDefault)]
 #[twackup(convert_all = "train")]
 #[non_exhaustive]
 pub enum Field {
-    // main info fields
     /// The value of this field determines the package name, and
     /// is used to generate file names by most installation tools
     Package,
@@ -58,14 +58,12 @@ pub enum Field {
     /// Denotes a package that is required for proper operation of the system
     Essential,
 
-    // database status
     /// Current installation status
     Status,
     /// The approximate total size of the package's installed
     /// files, in KiB units
     InstalledSize,
 
-    // relation with other packages
     /// Sets the importance of this package in relation to the
     /// system as a whole.
     Priority,
@@ -93,7 +91,6 @@ pub enum Field {
     /// List of packages files from which this one replaces
     Replaces,
 
-    // iOS-specific fields
     /// User-readable name of the package
     Name,
     /// Meta-info as os support and etc...

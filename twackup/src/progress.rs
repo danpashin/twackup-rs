@@ -17,18 +17,33 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+//! This module represents some traits used for allowing
+//! user to see packages build progress.
+//!
+//! Should be probably refactored.
+
+#![allow(unused_variables)]
+
+/// Allow users to see progress
 pub trait Progress {
+    /// Should construct self for total packages/items
     fn new(total: u64) -> Self;
 
-    fn increment(&self, delta: u64);
+    /// Will be called when total progress is incrementing
+    fn increment(&self, delta: u64) {}
 
-    fn finish(&self);
+    /// For cleanup and finish
+    fn finish(&self) {}
 
-    fn print<M: AsRef<str>>(&self, message: M);
+    /// Prints message. Should be probably removed.
+    fn print<M: AsRef<str>>(&self, message: M) {}
 
-    fn print_warning<M: AsRef<str>>(&self, message: M);
+    /// Prints or logs warning message
+    fn print_warning<M: AsRef<str>>(&self, message: M) {}
 
-    fn print_error<M: AsRef<str>>(&self, message: M);
+    /// Prints or logs error message
+    fn print_error<M: AsRef<str>>(&self, message: M) {}
 
-    fn set_message<M: AsRef<str>>(&self, message: M);
+    /// Sets current progress message
+    fn set_message<M: AsRef<str>>(&self, message: M) {}
 }

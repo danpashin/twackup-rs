@@ -1,7 +1,7 @@
 use memmem::{Searcher, TwoWaySearcher};
 
 #[derive(Debug)]
-pub struct UnOwnedLine<'buf> {
+pub(crate) struct UnOwnedLine<'buf> {
     buf: &'buf [u8],
     finished: bool,
     phrase_len: usize,
@@ -34,7 +34,7 @@ impl<'buf> Iterator for UnOwnedLine<'buf> {
 impl<'buf> UnOwnedLine<'buf> {
     #[inline]
     #[must_use]
-    pub fn search(phrase: &'buf [u8], buf: &'buf [u8]) -> Self {
+    pub(crate) fn search(phrase: &'buf [u8], buf: &'buf [u8]) -> Self {
         Self {
             buf,
             finished: false,
@@ -45,13 +45,13 @@ impl<'buf> UnOwnedLine<'buf> {
 
     #[inline]
     #[must_use]
-    pub fn double_line(buf: &'buf [u8]) -> Self {
+    pub(crate) fn double_line(buf: &'buf [u8]) -> Self {
         Self::search("\n\n".as_bytes(), buf)
     }
 
     #[inline]
     #[must_use]
-    pub fn single_line(buf: &'buf [u8]) -> Self {
+    pub(crate) fn single_line(buf: &'buf [u8]) -> Self {
         Self::search("\n".as_bytes(), buf)
     }
 }

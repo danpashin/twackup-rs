@@ -35,7 +35,7 @@ tokio = { version = "1.5", features = ["rt-multi-thread", "sync", "macros"] }
 futures = "0.3"
 
 # Archiving
-flate2 = { version = "1.0", default-features = false, features = ["zlib"] }
+tokio-tar = "0.3"
 
 # Serializing
 plist = { version = "1.0", default-features = false }

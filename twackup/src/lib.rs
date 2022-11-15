@@ -52,9 +52,10 @@ pub mod builder;
 pub(crate) mod dpkg;
 mod error;
 pub mod package;
-pub mod parser;
+mod parser;
 pub mod progress;
 pub mod repository;
 
 pub use dpkg::{Dpkg, PackagesSort};
 pub use error::{Generic as GenericError, Result};
+pub use parser::{Parsable, Parser};
