@@ -25,7 +25,7 @@ pub(crate) enum CLIError {
     Io(#[from] std::io::Error),
 
     #[error("GenericError: {0}")]
-    Twackup(#[from] twackup::error::Generic),
+    Twackup(#[from] twackup::GenericError),
 
     #[error("Serializer: {0}")]
     Serializer(#[from] crate::serializer::SerdeError),

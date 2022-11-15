@@ -20,7 +20,7 @@
 pub mod deb;
 
 use crate::{
-    compression::Compression,
+    archiver::Compression,
     dpkg::Paths,
     error::{Generic, Result},
     package::Package,

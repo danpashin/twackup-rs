@@ -17,29 +17,39 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/// Defines common result type for all errors
 pub type Result<T> = core::result::Result<T, Generic>;
 
+/// Defines Twackup generic error
 #[derive(thiserror::Error, Debug)]
 #[non_exhaustive]
 pub enum Generic {
+    /// There was some IO error
     #[error("IO: {0}")]
     Io(#[from] std::io::Error),
 
+    /// Is needed for applying some operations that cannot be made under not-root user
     #[error("This action requires root permissions.")]
+    #[cfg(feature = "ios")]
     NotRunningAsRoot,
 
+    /// Some package parsing error
     #[error("PackageError: {0}")]
     Package(#[from] crate::package::Error),
 
+    /// Some package parsing error
     #[error("RepoError: {0}")]
-    Repo(#[from] crate::repository::RepoError),
+    Repo(#[from] crate::repository::Error),
 
+    /// Is used when dpkg database lock failed
     #[error("Lock")]
     Lock,
 
+    /// Another IO error
     #[error("Path must have file ending")]
     PathMustHaveFileEnding,
 
+    /// Is used when time is backwards
     #[error("SystemTimeError")]
     SystemTime(#[from] std::time::SystemTimeError),
 }

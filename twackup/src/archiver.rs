@@ -33,9 +33,12 @@ use zstd::Encoder as ZSTDEncoder;
 #[twackup(convert_all = "lower")]
 #[non_exhaustive]
 pub enum Type {
+    /// Old-style Gzip type
     #[default]
     Gz,
+    /// Modern-based xz type
     Xz,
+    /// Super-modern and fast zstd type
     Zst,
 }
 
@@ -44,25 +47,38 @@ pub enum Type {
 #[derive(Debug, Default, Copy, Clone)]
 #[non_exhaustive]
 pub enum Level {
+    /// Do not perform any compression, equals to 0 level
     None,
+    /// Fast but not effective by disk usage compression. Equals to 1
     Fast,
+    /// Normal compression effective by CPU and disk usage. Equals to 6
     #[default]
     Normal,
+    /// Best compression takes minimal disk space
+    /// but it takes much more CPU and RAM usage
     Best,
+    /// Custom type. Must be from 0 to 9 inclusive.
     Custom(u32),
 }
 
+/// Structure defining type and level of compression
 #[derive(Debug, Default, Copy, Clone)]
 #[non_exhaustive]
 pub struct Compression {
+    /// Type of applied compression
     pub r#type: Type,
+    /// Level of applied compression
     pub level: Level,
 }
 
+/// Wrapper on underlying encoders
 #[non_exhaustive]
 pub enum Encoder<T: Write> {
+    /// Old-style Gzip type
     Gzip(GzEncoder<T>),
+    /// Modern-based xz type
     Xz(XzEncoder<T>),
+    /// Super-modern and fast zstd type
     Zstd(Mutex<ZSTDEncoder<'static, T>>),
 }
 

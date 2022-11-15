@@ -18,7 +18,7 @@
  */
 
 use crate::{
-    compression::{Compression, Encoder},
+    archiver::{Compression, Encoder},
     error::Result,
 };
 use std::{

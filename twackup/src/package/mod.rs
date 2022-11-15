@@ -17,12 +17,17 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-pub mod field;
-pub mod priority;
-pub mod section;
-pub mod status;
+mod field;
+mod priority;
+mod section;
+mod status;
 
-pub use self::{field::Field, priority::Priority, section::Section, status::Status};
+pub use self::{
+    field::Field,
+    priority::Priority,
+    section::Section,
+    status::{Flags, SelectionState, State, Status},
+};
 use crate::parser::Parsable;
 use std::{
     collections::{HashMap, HashSet},
@@ -31,31 +36,39 @@ use std::{
     path::Path,
 };
 
+/// Different errors for package fields
 #[derive(thiserror::Error, Debug)]
 #[non_exhaustive]
 pub enum Error {
+    /// Package priority is unknown
     #[error("Unknown package priority: `{0}`")]
     UnknownPriority(String),
 
-    #[error("Unknown package eflag field: `{0}`")]
-    UnknownEFlag(String),
+    /// State flag is unknown
+    #[error("Unknown package field: `{0}`")]
+    UnknownFlag(String),
 
+    /// Installation state is unknown
     #[error("Unknown package state: `{0}`")]
     UnknownState(String),
 
-    #[error("Unknown package want field `{0}`")]
-    UnknownWant(String),
+    /// Selection state in unknown
+    #[error("Unknown package selection state `{0}`")]
+    UnknownSelectionState(String),
 
+    /// Some field is missing
     #[error("Field is missed: `{0}`")]
     MissingField(Field),
 
+    /// This package is virtual
     #[error("This package is virtual")]
     VirtualPackage,
 }
 
+/// Wrapper for dpkg database package
 #[derive(Clone, Debug)]
 pub struct Package {
-    /// The name of the binary package. This field MUST NOT be empty.
+    /// The name of the binary package.
     pub id: String,
 
     /// Name of package that displays in every package manager.
@@ -73,8 +86,10 @@ pub struct Package {
     /// the package has been classified
     pub section: Section,
 
+    /// Priority of the package
     pub priority: Option<Priority>,
 
+    /// Other parsed fields
     other_fields: HashMap<Field, String>,
 }
 

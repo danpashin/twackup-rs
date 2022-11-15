@@ -29,7 +29,7 @@ use std::{
     io::{self, BufRead, BufReader},
     path::PathBuf,
 };
-use twackup::{dpkg::PackagesSort, parser::Parser, repository::Repository};
+use twackup::{parser::Parser, repository::Repository, PackagesSort};
 
 #[derive(clap::Parser)]
 pub(crate) struct Export {

@@ -24,7 +24,7 @@ use std::{
     io::{self, BufWriter, Write},
     process::{Command, Stdio},
 };
-use twackup::error::Generic as GenericError;
+use twackup::GenericError;
 
 #[derive(clap::Parser)]
 pub(crate) struct Import {
