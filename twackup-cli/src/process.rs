@@ -25,7 +25,7 @@ use std::{collections::HashSet, os::raw::c_int};
 #[repr(C)]
 #[derive(Clone, PartialEq, Eq, PartialOrd, Debug, Copy)]
 #[allow(clippy::upper_case_acronyms)]
-pub enum Signal {
+pub(crate) enum Signal {
     /// Hangup detected on controlling terminal or death of controlling process.
     Hangup = 1,
     /// Interrupt from keyboard.
@@ -94,7 +94,10 @@ pub enum Signal {
     Sys = 31,
 }
 
-pub fn send_signal_to_multiple<'a>(executables: impl Iterator<Item = &'a str>, signal: Signal) {
+pub(crate) fn send_signal_to_multiple<'a>(
+    executables: impl Iterator<Item = &'a str>,
+    signal: Signal,
+) {
     let executables: HashSet<&str> = executables.collect();
 
     let pids = proc_pid::listpids(proc_pid::ProcType::ProcAllPIDS).unwrap_or_default();

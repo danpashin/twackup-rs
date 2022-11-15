@@ -21,10 +21,10 @@ use convert_case::{Case, Casing};
 use quote::ToTokens;
 use syn::{Attribute, DeriveInput, Lit, Meta, NestedMeta, Variant};
 
-pub const ATTRIBUTE_ROOT_NAME: &str = "twackup";
-pub const ATTRIBUTE_RENAME: &str = "rename";
-pub const ATTRIBUTE_CONVERT: &str = "convert";
-pub const ATTRIBUTE_CONVERT_ALL: &str = "convert_all";
+pub(crate) const ATTRIBUTE_ROOT_NAME: &str = "twackup";
+pub(crate) const ATTRIBUTE_RENAME: &str = "rename";
+pub(crate) const ATTRIBUTE_CONVERT: &str = "convert";
+pub(crate) const ATTRIBUTE_CONVERT_ALL: &str = "convert_all";
 
 pub(crate) fn enum_field_name(variant: &Variant, convert_form: Option<&String>) -> String {
     let meta = twackup_attributes_meta(&variant.attrs);
