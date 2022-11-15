@@ -63,7 +63,7 @@ struct RepoGroup {
 }
 
 #[derive(Serialize, Deserialize)]
-struct DataLayout {
+struct ExportData {
     packages: Option<Vec<String>>,
     repositories: Option<Vec<RepoGroup>>,
 }

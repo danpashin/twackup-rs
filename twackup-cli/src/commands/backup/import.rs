@@ -17,13 +17,15 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{DataLayout, RepoGroup, RepoGroupFormat};
+use super::{ExportData, RepoGroup, RepoGroupFormat};
 use crate::{commands::CliCommand, context::Context, error::Result, process, serializer::Format};
 use std::{
-    fs::File,
-    io::{self, BufWriter, Write},
+    fs::File as StdFile,
+    io,
     process::{Command, Stdio},
 };
+use tokio::fs::{self, File};
+use tokio::io::{AsyncWriteExt, BufWriter};
 use twackup::GenericError;
 
 #[derive(clap::Parser)]
@@ -45,14 +47,15 @@ impl CliCommand for Import {
             Err(GenericError::NotRunningAsRoot)?;
         }
 
-        let data = self.deserialize_input().expect("Can't deserialize input");
+        let data = self.deserialize_input()?;
 
         if let Some(repositories) = data.repositories {
             for repo_group in &repositories {
-                if let Err(error) = self.import_repo_group(repo_group) {
-                    eprint!(
+                if let Err(error) = self.import_repo_group(repo_group).await {
+                    log::error!(
                         "Can't import sources for {}. {:?}",
-                        repo_group.executable, error
+                        repo_group.executable,
+                        error
                     );
                 }
             }
@@ -63,20 +66,20 @@ impl CliCommand for Import {
 
         if let Some(packages) = data.packages {
             log::info!("Importing packages...");
-            self.run_apt(vec![
+            Self::run_apt(&[
                 "update",
                 "--allow-unauthenticated",
                 "--allow-insecure-repositories",
                 "-o",
                 "Acquire::Languages=none",
-            ])
-            .expect("Failed to run update subcommand");
+            ])?;
 
-            let mut install_args =
-                vec!["install", "-y", "--allow-unauthenticated", "--fix-missing"];
-            install_args.extend(packages.iter().map(String::as_str));
-            self.run_apt(install_args)
-                .expect("Failed to run install subcommand");
+            let install_args = ["install", "-y", "--allow-unauthenticated", "--fix-missing"];
+            let install_args: Vec<_> = install_args
+                .into_iter()
+                .chain(packages.iter().map(String::as_str))
+                .collect();
+            Self::run_apt(&install_args)?;
         }
 
         Ok(())
@@ -85,53 +88,52 @@ impl CliCommand for Import {
 
 impl Import {
     #[inline]
-    fn deserialize_input(&self) -> Result<DataLayout> {
+    fn deserialize_input(&self) -> Result<ExportData> {
         Ok(match self.input.as_str() {
             "-" => self.format.de_from_reader(io::stdin())?,
-            _ => self.format.de_from_reader(File::open(&self.input)?)?,
+            _ => self.format.de_from_reader(StdFile::open(&self.input)?)?,
         })
     }
 
-    fn import_repo_group(&self, repo_group: &RepoGroup) -> Result<()> {
+    async fn import_repo_group(&self, repo_group: &RepoGroup) -> Result<()> {
         log::info!(
             "Importing {} source(s) for {}",
             repo_group.sources.len(),
             repo_group.executable
         );
-        let mut writer = BufWriter::new(File::create(&repo_group.path)?);
+        let mut writer = BufWriter::new(File::create(&repo_group.path).await?);
         for source in &repo_group.sources {
             match repo_group.format {
-                RepoGroupFormat::Classic => writer.write(source.to_one_line().as_bytes())?,
+                RepoGroupFormat::Classic => {
+                    writer.write_all(source.to_one_line().as_bytes()).await?;
+                }
                 RepoGroupFormat::Modern => {
-                    writer.write_all(source.to_deb822().as_bytes())?;
-                    writer.write(b"\n")?
+                    writer.write_all(source.to_deb822().as_bytes()).await?;
+                    writer.write_all(b"\n").await?;
                 }
             };
-            writer.write_all(b"\n")?;
-            writer.flush()?;
+            writer.write_all(b"\n").await?;
         }
+        writer.flush().await?;
 
         log::info!(
             "Triggering post-import hooks for {}...",
             repo_group.executable
         );
-        let hook_res: Result<_> = match repo_group.executable.as_str() {
-            "Zebra" => std::fs::remove_file(
-                "/var/mobile/Library/Application Support/xyz.willy.Zebra/zebra.db",
-            )
-            .map_err(Into::into),
-            "Cydia" => self.cydia_post_import_hook(repo_group),
-            _ => Ok(()),
-        };
 
-        if let Err(error) = hook_res {
-            eprintln!("Post-import hook completed with error: {:?}", error);
+        match repo_group.executable.as_str() {
+            "Zebra" => {
+                let path = "/var/mobile/Library/Application Support/xyz.willy.Zebra/zebra.db";
+                fs::remove_file(path).await?;
+            }
+            "Cydia" => Self::cydia_post_import_hook(repo_group)?,
+            _ => {}
         }
 
         Ok(())
     }
 
-    fn cydia_post_import_hook(&self, repo_group: &RepoGroup) -> Result<()> {
+    fn cydia_post_import_hook(repo_group: &RepoGroup) -> Result<()> {
         let prefs_path = "/var/mobile/Library/Preferences/com.saurik.Cydia.plist";
         let mut prefs = plist::Value::from_file(prefs_path)?;
 
@@ -153,23 +155,20 @@ impl Import {
         Ok(prefs.to_file_binary(prefs_path)?)
     }
 
-    fn run_apt(&self, args: Vec<&str>) -> Option<()> {
+    fn run_apt(args: &[&str]) -> Result<()> {
         let apt_cmd = Command::new("apt")
             .args(args)
             .stdin(Stdio::inherit())
             .stdout(Stdio::inherit())
             .stderr(Stdio::inherit())
-            .status()
-            .expect("apt command failed to start");
+            .status()?;
 
-        if !apt_cmd.success() {
-            log::error!(
-                "Apt exited with status: {}. See stderr for more info.",
-                apt_cmd
-            );
-            return None;
-        }
+        assert!(
+            apt_cmd.success(),
+            "Apt exited with status: {:?}. See stderr for more info.",
+            apt_cmd
+        );
 
-        Some(())
+        Ok(())
     }
 }
