@@ -20,7 +20,7 @@
 //! Different Twackup internal derives.
 //! Not intended to be used in any crate except Twackup
 
-#![deny(rust_2018_idioms, clippy::pedantic)]
+#![deny(rust_2018_idioms, clippy::pedantic, unreachable_pub)]
 
 mod enum_derive;
 
