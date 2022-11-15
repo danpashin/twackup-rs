@@ -37,12 +37,34 @@ use context::Context;
 use error::Result;
 use std::fs;
 
+#[cfg(not(target_os = "macos"))]
 const ADMIN_DIR: &str = "/var/lib/dpkg";
+
+#[cfg(target_os = "macos")]
+const ADMIN_DIR: &str = "/usr/local/var/lib/dpkg";
+
+#[cfg(target_os = "ios")]
 const TARGET_DIR: &str = "/var/mobile/Documents/twackup";
+
+#[cfg(not(target_os = "ios"))]
+const TARGET_DIR: &str = "./twackup";
+
 const LICENSE_PATH: &str = "/usr/share/doc/ru.danpashin.twackup/LICENSE";
 
+const fn long_version_message() -> &'static str {
+    concat!(
+        env!("CARGO_PKG_VERSION"),
+        "-",
+        env!("VERGEN_CARGO_PROFILE"),
+        "\n\nBuild on ",
+        env!("VERGEN_BUILD_TIMESTAMP"),
+        "\nGit commit: ",
+        env!("VERGEN_GIT_SEMVER"),
+    )
+}
+
 #[derive(Parser)]
-#[clap(about, version)]
+#[clap(about, version, long_version = long_version_message())]
 pub(crate) struct Options {
     #[clap(subcommand)]
     subcmd: Command,
@@ -78,5 +100,16 @@ async fn _run() -> Result<()> {
 
             Ok(())
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Options;
+    use clap::CommandFactory;
+
+    #[test]
+    fn cli_generic() {
+        Options::command().debug_assert()
     }
 }

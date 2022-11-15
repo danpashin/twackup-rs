@@ -5,6 +5,7 @@ description = "Safe and fast iOS CLI utility for rebuilding DEBs and backing up 
 edition = "2021"
 publish = false
 license = "GPL-3.0-only"
+build = "build.rs"
 
 [[bin]]
 name = "twackup"
@@ -62,6 +63,9 @@ libproc = { path = "./libproc", default-features = false, features = [] }
 version = "4.0"
 default-features = false
 features = ["derive", "std", "color", "help", "usage", "error-context"]
+
+[build-dependencies]
+vergen = { version = "7.4", default-features = false, features = ["cargo", "build", "git"] }
 
 [features]
 default = ["ios"]
