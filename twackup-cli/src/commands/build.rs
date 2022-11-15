@@ -17,16 +17,17 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::CliCommand;
-use crate::{context::Context, error::Result, ADMIN_DIR, TARGET_DIR};
+use super::{CliCommand, GlobalOptions};
+use crate::{context::Context, error::Result, TARGET_DIR};
 use chrono::Local;
+use console::style;
 use gethostname::gethostname;
 use std::{collections::LinkedList, fs, io, iter::Iterator, path::PathBuf, sync::Arc};
 use tokio::sync::Mutex;
 use twackup::{
     builder::{deb::TarArchive, AllPackagesArchive, Preferences, Worker},
     compression::Level as CompressionLevel,
-    dpkg::Dpkg,
+    dpkg::{Dpkg, PackagesSort},
     error::Generic as GenericError,
     package::Package,
     progress::Progress,
@@ -62,48 +63,50 @@ and may not work properly anymore.
 "
 )]
 pub(crate) struct Build {
+    #[clap(flatten)]
+    global_options: GlobalOptions,
+
     /// By default twackup rebuilds only that packages which are not dependencies of others.
     /// This flag disables this restriction - command will rebuild all found packages.
-    #[clap(short, long)]
+    #[arg(short, long)]
     all: bool,
 
-    /// Use custom dpkg <directory>.
-    /// This option is used for detecting installed packages
-    #[clap(long, default_value = ADMIN_DIR, value_parser)]
-    admindir: PathBuf,
+    /// Use custom destination <directory>.
+    #[arg(long, short, default_value = TARGET_DIR, value_parser)]
+    destination_dir: PathBuf,
+
+    /// Packs all rebuilded DEB's to single archive
+    #[arg(short = 'A', long, default_value_t = false)]
+    archive: bool,
+
+    /// Name of archive if --archive is set. Supports only .tar.gz archives for now.
+    #[arg(long, default_value = DEFAULT_ARCHIVE_NAME)]
+    archive_name: String,
+
+    /// Removes all DEB's after adding to archive. Makes sense only if --archive is set.
+    #[arg(long, short = 'R', default_value_t = false)]
+    remove_after: bool,
+
+    /// DEB Compression level. 0 means no compression while 9 - strongest. Default is 6
+    #[arg(long, short = 'l', default_value_t = 6)]
+    #[arg(value_parser = clap::value_parser!(u32).range(0..=9))]
+    compression_level: u32,
+
+    /// DEB Compression type
+    #[arg(long, short = 'c', default_value = "gzip")]
+    compression_type: CompressionType,
 
     /// Package identifier or number from the list command.
     /// This argument can have multiple values separated by space ' '.
     packages: Vec<String>,
-
-    /// Use custom destination <directory>.
-    #[clap(long, short, default_value = TARGET_DIR, value_parser)]
-    destination: PathBuf,
-
-    /// Packs all rebuilded DEB's to single archive
-    #[clap(short = 'A', long, default_value_t = false)]
-    archive: bool,
-
-    /// Name of archive if --archive is set. Supports only .tar.gz archives for now.
-    #[clap(long, default_value = DEFAULT_ARCHIVE_NAME)]
-    archive_name: String,
-
-    /// Removes all DEB's after adding to archive. Makes sense only if --archive is set.
-    #[clap(long, short = 'R', default_value_t = false)]
-    remove_after: bool,
-
-    /// DEB Compression level. 0 means no compression while 9 - strongest. Default is 6
-    #[clap(long, short = 'l', default_value_t = 6, value_parser = clap::value_parser!(u32).range(0..=9))]
-    compression_level: u32,
-
-    /// DEB Compression type
-    #[clap(long, short = 'c', default_value = "gzip")]
-    compression_type: CompressionType,
 }
 
 impl Build {
     async fn build_user_specified(&self, context: Context) -> Result<()> {
-        let all_packages = context.packages(&self.admindir, false).await?;
+        let all_packages = self
+            .global_options
+            .packages(false, PackagesSort::Name)
+            .await?;
 
         // Try to detect if user package is numeric or not
         let packages: LinkedList<_> = self
@@ -139,7 +142,11 @@ impl Build {
                     }
                 });
 
-        let to_build = numeric_packages.chain(alphabetic_packages).collect();
+        let to_build: Vec<_> = numeric_packages.chain(alphabetic_packages).collect();
+
+        let to_build_ids: Vec<_> = to_build.iter().map(|pkg| pkg.id.as_str()).collect();
+        log::info!("Building {}...", to_build_ids.join(", "));
+
         self.build(to_build, context).await
     }
 
@@ -155,12 +162,13 @@ impl Build {
 
         let archive = self.create_archive_if_needed().await;
 
-        let mut preferences = Preferences::new(&self.admindir, &self.destination);
+        let mut preferences =
+            Preferences::new(&self.global_options.admin_dir, &self.destination_dir);
         preferences.remove_deb = self.remove_after;
         preferences.compression.level = CompressionLevel::Custom(self.compression_level);
         preferences.compression.r#type = self.compression_type.into();
 
-        let contents = Dpkg::new(&self.admindir, false).info_dir_contents()?;
+        let contents = Dpkg::new(&self.global_options.admin_dir, false).info_dir_contents()?;
         let contents = Arc::new(contents);
 
         futures::future::join_all(packages.into_iter().map(|package| {
@@ -200,7 +208,7 @@ impl Build {
             _ => self.archive_name.clone(),
         };
 
-        let filepath = self.destination.join(&filename);
+        let filepath = self.destination_dir.join(&filename);
         let file = tokio::fs::File::create(filepath)
             .await
             .expect("Can't open archive file");
@@ -210,12 +218,12 @@ impl Build {
     }
 
     fn create_dir_if_needed(&self) -> Result<()> {
-        match fs::metadata(&self.destination) {
-            Ok(metadata) if !metadata.is_dir() => fs::remove_file(&self.destination)?,
+        match fs::metadata(&self.destination_dir) {
+            Ok(metadata) if !metadata.is_dir() => fs::remove_file(&self.destination_dir)?,
             _ => {}
         }
 
-        Ok(fs::create_dir_all(&self.destination)?)
+        Ok(fs::create_dir_all(&self.destination_dir)?)
     }
 }
 
@@ -228,7 +236,10 @@ impl CliCommand for Build {
 
         let mut leaves_only = false;
         if !self.all {
-            eprint!("No packages specified. Build leaves? [Y/N] [default N] ");
+            eprint!(
+                "{} [Y/N] [default N]",
+                style("No packages specified. Build leaves?").yellow()
+            );
 
             let mut buffer = String::new();
             io::stdin().read_line(&mut buffer)?;
@@ -240,8 +251,8 @@ impl CliCommand for Build {
             }
         }
 
-        let packages = context.packages(&self.admindir, leaves_only).await?;
-        let packages = packages.into_iter().map(|(_, pkg)| pkg).collect();
+        let packages = self.global_options.unsorted_packages(leaves_only).await?;
+        let packages = packages.into_iter().collect();
         self.build(packages, context).await
     }
 }

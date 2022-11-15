@@ -18,7 +18,7 @@
  */
 
 use super::{DataLayout, RepoGroup, RepoGroupFormat};
-use crate::{commands::CliCommand, context::Context, error::Result, process, serde::Format};
+use crate::{commands::CliCommand, context::Context, error::Result, process, serializer::Format};
 use std::{
     fs::File,
     io::{self, BufWriter, Write},
@@ -30,11 +30,11 @@ use twackup::error::Generic as GenericError;
 pub(crate) struct Import {
     /// Use another input format
     /// (e.g. when it was processed with third-party parser like jq)
-    #[clap(short, long, value_enum, default_value = "json")]
+    #[arg(short, long, value_enum, default_value = "json")]
     format: Format,
 
     /// Input file, stdin if equal to '-'
-    #[clap(name = "file")]
+    #[arg(name = "file")]
     input: String,
 }
 

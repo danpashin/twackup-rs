@@ -25,7 +25,9 @@ mod list;
 mod backup;
 
 use super::Context;
-use crate::error::Result;
+use crate::{error::Result, ADMIN_DIR};
+use std::{collections::{BTreeMap, LinkedList}, path::PathBuf};
+use twackup::{dpkg::{Dpkg, PackagesSort}, package::Package};
 
 #[async_trait::async_trait]
 pub(crate) trait CliCommand {
@@ -33,16 +35,43 @@ pub(crate) trait CliCommand {
 }
 
 #[derive(clap::Parser)]
+struct GlobalOptions {
+    /// Use custom dpkg directory.
+    /// This option is used for detecting installed packages
+    #[arg(long, default_value = ADMIN_DIR, value_parser)]
+    #[arg(help_heading = "GLOBAL OPTIONS", global = true)]
+    admin_dir: PathBuf,
+}
+
+impl GlobalOptions {
+    pub(crate) async fn packages(
+        &self,
+        leaves_only: bool,
+        sort: PackagesSort,
+    ) -> Result<BTreeMap<String, Package>> {
+        let dpkg = Dpkg::new(&self.admin_dir, true);
+        Ok(dpkg.packages(leaves_only, sort).await?)
+    }
+
+    pub(crate) async fn unsorted_packages(&self, leaves_only: bool) -> Result<LinkedList<Package>> {
+        let dpkg = Dpkg::new(&self.admin_dir, true);
+        Ok(dpkg.unsorted_packages(leaves_only).await?)
+    }
+}
+
+#[derive(clap::Parser)]
 #[clap(version)]
 pub(crate) enum Command {
     /// Just prints installed packages to stdout.
     /// Skips "virtual" packages mostly used by all iOS package managers.
+    #[clap(disable_version_flag = true)]
     List(list::List),
 
     /// Detects packages that are not dependencies of others and prints them to stdout
     ///
     /// If you know homebrew, you should know similar command. This does the same thing.
     ///
+    #[clap(disable_version_flag = true)]
     Leaves(leaves::Leaves),
 
     /// Collects package from files in the filesystem and packages them to DEB.
@@ -52,6 +81,7 @@ pub(crate) enum Command {
     /// (e.g. when they were moved by post-installation or another script),
     /// so it can't be used for "backing up" all packages you have.
     /// For backups, please, use export and import commands.
+    #[clap(disable_version_flag = true)]
     Build(build::Build),
 
     /// Exports packages and repositories to file.
@@ -60,12 +90,14 @@ pub(crate) enum Command {
     /// Can be used for backing up data for to restore in another jailbreak
     /// or after restoring system itself.
     #[cfg(feature = "ios")]
+    #[clap(disable_version_flag = true)]
     Export(backup::export::Export),
 
     /// Performs importing packages and repositories from file created by export command.
     ///
     /// Useful when you want to restore packages from your old device or another jailbreak.
     #[cfg(feature = "ios")]
+    #[clap(disable_version_flag = true)]
     Import(backup::import::Import),
 
     /// Shows license under Twackup is being distributed

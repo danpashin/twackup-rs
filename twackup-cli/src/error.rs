@@ -27,8 +27,8 @@ pub(crate) enum CLIError {
     #[error("GenericError: {0}")]
     Twackup(#[from] twackup::error::Generic),
 
-    #[error("SerdeSupport: {0}")]
-    Serde(#[from] crate::serde::SerdeError),
+    #[error("Serializer: {0}")]
+    Serializer(#[from] crate::serializer::SerdeError),
 
     #[error("Plist: {0}")]
     Plist(#[from] plist::Error),

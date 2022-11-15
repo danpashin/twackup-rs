@@ -29,7 +29,7 @@ mod error;
 mod logger;
 mod process;
 mod progress_bar;
-mod serde;
+mod serializer;
 
 use clap::Parser;
 use commands::{CliCommand, Command};

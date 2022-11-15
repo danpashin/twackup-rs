@@ -18,33 +18,36 @@
  */
 
 use super::{DataLayout, DataType, RepoGroup, RepoGroupFormat, CLASSIC_MANAGERS, MODERN_MANAGERS};
-use crate::{commands::CliCommand, error::Result, serde::Format, Context, ADMIN_DIR};
+use crate::{
+    commands::{CliCommand, GlobalOptions},
+    error::Result,
+    serializer::Format,
+    Context,
+};
 use std::{
     fs::File,
     io::{self, BufRead, BufReader},
     path::PathBuf,
 };
-use twackup::{parser::Parser, repository::Repository};
+use twackup::{dpkg::PackagesSort, parser::Parser, repository::Repository};
 
 #[derive(clap::Parser)]
 pub(crate) struct Export {
-    /// Use custom dpkg <directory>.
-    /// This option is used for detecting installed packages
-    #[clap(long, default_value = ADMIN_DIR, value_parser)]
-    admindir: PathBuf,
+    #[clap(flatten)]
+    global_options: GlobalOptions,
 
     /// Use another output format
     /// (e.g. for using output with third-party parser like jq)
-    #[clap(short, long, value_enum, default_value = "json")]
+    #[arg(short, long, value_enum, default_value = "json")]
     format: Format,
 
     /// Data to export
     /// (e.g. if you want to export only packages)
-    #[clap(short, long, value_enum, default_value = "all")]
+    #[arg(short, long, value_enum, default_value = "all")]
     data: DataType,
 
     /// Output file, stdout if not present
-    #[clap(short, long)]
+    #[arg(short, long)]
     output: Option<PathBuf>,
 }
 
@@ -69,10 +72,10 @@ impl CliCommand for Export {
 }
 
 impl Export {
-    async fn construct_data(&self, context: Context) -> Result<DataLayout> {
+    async fn construct_data(&self, _context: Context) -> Result<DataLayout> {
         Ok(match self.data {
             DataType::Packages => DataLayout {
-                packages: Some(self.get_packages(context).await?),
+                packages: Some(self.get_packages().await?),
                 repositories: None,
             },
             DataType::Repositories => DataLayout {
@@ -80,7 +83,7 @@ impl Export {
                 repositories: Some(self.get_repos().await?),
             },
             DataType::All => {
-                let packages = self.get_packages(context).await?;
+                let packages = self.get_packages().await?;
                 let repos = self.get_repos().await?;
                 DataLayout {
                     packages: Some(packages),
@@ -90,8 +93,11 @@ impl Export {
         })
     }
 
-    async fn get_packages(&self, context: Context) -> Result<Vec<String>> {
-        let packages = context.packages(&self.admindir, true).await?;
+    async fn get_packages(&self) -> Result<Vec<String>> {
+        let packages = self
+            .global_options
+            .packages(false, PackagesSort::Name)
+            .await?;
 
         Ok(packages
             .into_iter()
@@ -104,32 +110,46 @@ impl Export {
         let mut sources = Vec::with_capacity(capacity);
 
         for (name, path) in MODERN_MANAGERS {
-            if let Ok(parser) = Parser::new(path) {
-                let repos = parser.parse::<Repository>().await.into_iter().collect();
-                sources.push(RepoGroup {
-                    format: RepoGroupFormat::Modern,
-                    path: (*path).to_string(),
-                    executable: (*name).to_string(),
-                    sources: repos,
-                });
-            }
+            let parser = match Parser::new(path) {
+                Ok(parser) => parser,
+                Err(error) => {
+                    log::warn!("[{}] {:?}", name, error);
+                    continue;
+                }
+            };
+
+            let repos = parser.parse::<Repository>().await.into_iter().collect();
+            sources.push(RepoGroup {
+                format: RepoGroupFormat::Modern,
+                path: (*path).to_string(),
+                executable: (*name).to_string(),
+                sources: repos,
+            });
         }
 
         for (name, path) in CLASSIC_MANAGERS {
-            if let Ok(file) = File::open(path) {
-                let mut repos = Vec::new();
-                for line in BufReader::new(file).lines().flatten() {
-                    if let Ok(repo) = Repository::from_one_line(line.as_str()) {
-                        repos.push(repo);
-                    }
+            let file = match File::open(path) {
+                Ok(file) => file,
+                Err(error) => {
+                    log::warn!("[{}] {:?}", name, error);
+                    continue;
                 }
-                sources.push(RepoGroup {
-                    format: RepoGroupFormat::Classic,
-                    path: (*path).to_string(),
-                    executable: (*name).to_string(),
-                    sources: repos,
-                });
+            };
+
+            let mut repos = Vec::new();
+            for line in BufReader::new(file).lines().flatten() {
+                match Repository::from_one_line(line.as_str()) {
+                    Ok(repo) => repos.push(repo),
+                    Err(error) => log::warn!("[{}] {:?}", name, error),
+                }
             }
+
+            sources.push(RepoGroup {
+                format: RepoGroupFormat::Classic,
+                path: (*path).to_string(),
+                executable: (*name).to_string(),
+                sources: repos,
+            });
         }
 
         Ok(sources)
