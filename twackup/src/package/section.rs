@@ -24,6 +24,7 @@ use twackup_derive::StrEnumWithDefault;
 
 #[derive(Clone, Debug, PartialEq, Eq, StrEnumWithDefault)]
 #[twackup(convert_all = "title")]
+#[non_exhaustive]
 pub enum Section {
     Archiving,
     Development,
@@ -42,7 +43,7 @@ impl Section {
     #[cfg(feature = "cli")]
     #[must_use]
     pub fn color(&self) -> Style {
-        let color = match self {
+        let color = match *self {
             Self::Archiving => Color::Color256(216),      // peach?
             Self::Development => Color::Color256(130),    // more like orange with pink
             Self::Networking => Color::Color256(112),     // bright green with some cyan

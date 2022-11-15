@@ -17,8 +17,9 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#![deny(rust_2018_idioms, clippy::pedantic)]
+#![deny(rust_2018_idioms, clippy::pedantic, unreachable_pub)]
 #![warn(clippy::unused_self)]
+// #![warn(missing_docs, clippy::missing_docs_in_private_items)]
 
 pub mod builder;
 pub mod compression;

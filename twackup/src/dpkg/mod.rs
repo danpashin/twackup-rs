@@ -34,6 +34,7 @@ use std::{
 };
 
 #[derive(Debug)]
+#[non_exhaustive]
 pub enum PackagesSort {
     Identifier,
     Name,
@@ -46,6 +47,7 @@ pub struct Dpkg {
 }
 
 impl Dpkg {
+    #[inline]
     pub fn new<P: AsRef<Path>>(dpkg_dir: P, should_lock: bool) -> Self {
         Self {
             paths: Paths::new(dpkg_dir),
@@ -123,7 +125,7 @@ impl Dpkg {
             .into_iter()
             .map(|pkg| match sort {
                 PackagesSort::Identifier => (pkg.id.clone(), pkg),
-                PackagesSort::Name => (pkg.human_name().to_string(), pkg),
+                PackagesSort::Name => (pkg.human_name().to_owned(), pkg),
             })
             .collect();
 

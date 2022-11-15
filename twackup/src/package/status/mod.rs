@@ -38,7 +38,7 @@ impl TryFrom<&str> for Status {
     fn try_from(string: &str) -> Result<Self, Self::Error> {
         let components: Vec<_> = string.split_whitespace().collect();
         if components.len() != 3 {
-            return Err(Error::UnknownState(string.to_string()));
+            return Err(Error::UnknownState(string.to_owned()));
         }
 
         Ok(Self {

@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-mod iterators;
+pub mod iterators;
 
 use crate::parser::iterators::UnOwnedLine;
 use memmap2::Mmap;
@@ -67,7 +67,7 @@ impl Parser {
     pub async fn parse<P: Parsable + 'static>(&self) -> LinkedList<P> {
         let mut workers = LinkedList::new();
 
-        for chunk in UnOwnedLine::double_line(&self.mmap[..]) {
+        for chunk in UnOwnedLine::double_line(&self.mmap) {
             let worker = ChunkWorker::new(chunk.as_ptr() as usize, chunk.len());
             workers.push_back(tokio::spawn(async { worker.run::<P>() }));
         }
@@ -130,7 +130,7 @@ impl ChunkWorker {
             .filter_map(|field_lines| {
                 // Find delimiter in first line
                 let (key, first_val) = field_lines.first()?.split_once(':')?;
-                let key = key.to_string();
+                let key = key.to_owned();
 
                 // Count total length to effectively allocate space
                 let total_len = field_lines

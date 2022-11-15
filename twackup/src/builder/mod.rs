@@ -38,6 +38,7 @@ use tokio::{fs::File, sync::Mutex};
 pub type AllPackagesArchive = Arc<Mutex<TarArchive<File>>>;
 
 #[derive(Clone)]
+#[non_exhaustive]
 pub struct Preferences {
     pub remove_deb: bool,
     pub paths: Paths,
@@ -46,15 +47,17 @@ pub struct Preferences {
 }
 
 /// Creates DEB from filesystem contents
+#[non_exhaustive]
 pub struct Worker<T: Progress> {
-    pub package: Package,
-    pub progress: T,
-    pub archive: Option<AllPackagesArchive>,
-    pub preferences: Preferences,
-    pub dpkg_contents: Arc<HashSet<PathBuf>>,
+    package: Package,
+    progress: T,
+    archive: Option<AllPackagesArchive>,
+    preferences: Preferences,
+    dpkg_contents: Arc<HashSet<PathBuf>>,
 }
 
 impl Preferences {
+    #[inline]
     pub fn new<A: AsRef<Path>, D: AsRef<Path>>(admin_dir: A, destination: D) -> Self {
         Self {
             remove_deb: true,
@@ -66,6 +69,7 @@ impl Preferences {
 }
 
 impl<T: Progress> Worker<T> {
+    #[inline]
     pub fn new(
         package: Package,
         progress: T,
@@ -86,11 +90,12 @@ impl<T: Progress> Worker<T> {
     ///
     /// # Errors
     /// Returns error if temp dir creation or any of underlying package operation failed
-    pub async fn run(&self) -> io::Result<PathBuf> {
+    #[inline]
+    pub async fn run(&self) -> Result<PathBuf> {
         let deb_name = format!("{}.deb", self.package.canonical_name());
         let deb_path = self.preferences.destination.join(deb_name);
 
-        let mut deb = Deb::new(&deb_path, self.preferences.compression);
+        let mut deb = Deb::new(&deb_path, self.preferences.compression)?;
         self.archive_files(deb.data_mut_ref()).await?;
         self.archive_metadata(deb.control_mut_ref()).await?;
         deb.build().await?;
@@ -124,7 +129,7 @@ impl<T: Progress> Worker<T> {
     ///
     /// # Errors
     /// Returns error if control file couldn't be appended
-    async fn archive_metadata(&self, archiver: &mut DebianTarArchive) -> io::Result<()> {
+    async fn archive_metadata(&self, archiver: &mut DebianTarArchive) -> Result<()> {
         // Order in this archive doesn't matter. So we'll add control at first
         archiver
             .append_new_file("control", self.package.to_control().as_bytes())
@@ -146,11 +151,7 @@ impl<T: Progress> Worker<T> {
             let file_name = entry.file_name()?.to_str()?;
             let rem = file_name.strip_prefix(&self.package.id)?;
             let rem = rem.strip_prefix('.')?;
-            if possible_extensions.contains(&rem) {
-                Some((entry, rem))
-            } else {
-                None
-            }
+            possible_extensions.contains(&rem).then_some((entry, rem))
         });
 
         for (path, ext) in contents {
@@ -167,6 +168,7 @@ impl<T: Progress> Worker<T> {
     ///
     /// # Errors
     /// Returns error if any of underlying operations failed
+    #[inline]
     pub async fn work(&self) -> Result<()> {
         let progress = format!("Processing {}", self.package.human_name());
         self.progress.set_message(progress);
@@ -187,10 +189,11 @@ impl<T: Progress> Worker<T> {
     /// # Errors
     /// Returns error if any of underlying operations failed
     async fn add_to_archive(&self, file: PathBuf) -> Result<()> {
-        if let Some(archive) = &self.archive {
-            let mut archive = archive.try_lock().map_err(|_| Generic::LockError)?;
+        if let Some(ref archive) = self.archive {
+            let mut archive = archive.try_lock().map_err(|_| Generic::Lock)?;
 
-            let abs_file = Path::new(".").join(file.file_name().unwrap());
+            let file_name = file.file_name().ok_or(Generic::PathMustHaveFileEnding)?;
+            let abs_file = Path::new(".").join(file_name);
             archive
                 .get_mut()
                 .append_path_with_name(&file, &abs_file)

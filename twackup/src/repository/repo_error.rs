@@ -18,6 +18,7 @@
  */
 
 #[derive(thiserror::Error, Debug)]
+#[non_exhaustive]
 pub enum RepoError {
     #[error("Missed field `{0}`")]
     MissingField(String),

@@ -21,6 +21,7 @@ use twackup_derive::StrEnumWithError;
 
 #[derive(Clone, Debug, PartialEq, Eq, StrEnumWithError)]
 #[twackup(convert_all = "lower")]
+#[non_exhaustive]
 pub enum Priority {
     Optional,
     Required,

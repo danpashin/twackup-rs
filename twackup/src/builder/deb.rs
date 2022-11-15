@@ -17,10 +17,12 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::compression::{Compression, Encoder};
+use crate::{
+    compression::{Compression, Encoder},
+    error::Result,
+};
 use std::{
     borrow::BorrowMut,
-    io::{self},
     path::{Path, PathBuf},
     time::SystemTime,
 };
@@ -45,22 +47,25 @@ impl Deb {
     ///
     /// # Errors
     /// Returns IO error if temp dir is not writable
-    pub fn new<O: AsRef<Path>>(output: O, compression: Compression) -> Self {
-        let control_file = Encoder::new(vec![], compression);
-        let data_file = Encoder::new(vec![], compression);
+    #[inline]
+    pub fn new<O: AsRef<Path>>(output: O, compression: Compression) -> Result<Self> {
+        let control_file = Encoder::new(vec![], compression)?;
+        let data_file = Encoder::new(vec![], compression)?;
 
-        Self {
+        Ok(Self {
             compression,
             output: output.as_ref().to_path_buf(),
             control: TarArchive::new(control_file),
             data: TarArchive::new(data_file),
-        }
+        })
     }
 
+    #[inline]
     pub fn data_mut_ref(&mut self) -> &mut DebianTarArchive {
         self.data.borrow_mut()
     }
 
+    #[inline]
     pub fn control_mut_ref(&mut self) -> &mut DebianTarArchive {
         self.control.borrow_mut()
     }
@@ -69,15 +74,16 @@ impl Deb {
     ///
     /// # Errors
     /// Returns IO error if temp dir is not writable
-    pub async fn build(self) -> io::Result<()> {
+    #[inline]
+    pub async fn build(self) -> Result<()> {
         let mut builder = ar::Builder::new(std::fs::File::create(&self.output)?);
 
-        let mtime = current_timestamp();
+        let mtime = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH)?;
 
         let mut append_data = |name: Vec<u8>, data: &[u8]| {
             let mut header = ar::Header::new(name, data.len() as u64);
             header.set_mode(0o100_644); // o=rw,g=r,o=r
-            header.set_mtime(mtime); // modify time
+            header.set_mtime(mtime.as_secs()); // modify time
             header.set_uid(0); // root
             header.set_gid(0); // root
             builder.append(&header, data)
@@ -109,12 +115,14 @@ impl Deb {
 }
 
 impl<W: tokio::io::AsyncWrite + Unpin + Send + Sync> TarArchive<W> {
+    #[inline]
     pub fn new(writer: W) -> Self {
         let mut builder = Tar::new(writer);
         builder.follow_symlinks(false);
         Self { builder }
     }
 
+    #[inline]
     pub fn get_mut(&mut self) -> &mut Tar<W> {
         &mut self.builder
     }
@@ -123,32 +131,25 @@ impl<W: tokio::io::AsyncWrite + Unpin + Send + Sync> TarArchive<W> {
     ///
     /// # Errors
     /// Returns error if file couldn't be added to archive
+    #[inline]
     pub async fn append_new_file<P: AsRef<Path>>(
         &mut self,
         path: P,
         contents: &[u8],
-    ) -> io::Result<()> {
+    ) -> Result<()> {
+        let mtime = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH)?;
+
         let mut header = tokio_tar::Header::new_old();
         header.set_mode(0o100_644); // o=rw,g=r,o=r
         header.set_uid(0);
         header.set_gid(0);
         header.set_size(contents.len() as u64);
-        header.set_mtime(current_timestamp()); // modify time
+        header.set_mtime(mtime.as_secs()); // modify time
 
         self.builder
             .append_data(&mut header, path, contents)
-            .await
-            .expect("append failed");
+            .await?;
 
         Ok(())
     }
-}
-
-/// Returns UNIX timestamp in seconds
-#[inline]
-fn current_timestamp() -> u64 {
-    SystemTime::now()
-        .duration_since(SystemTime::UNIX_EPOCH)
-        .unwrap()
-        .as_secs()
 }
