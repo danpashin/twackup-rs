@@ -26,27 +26,41 @@ use crate::{
     parser::Parser,
 };
 use lock::Lock;
-pub use paths::Paths;
+pub(crate) use paths::Paths;
 use std::{
     collections::{BTreeMap, HashSet, LinkedList},
     fs,
     path::{Path, PathBuf},
 };
 
+/// Defines how packages must be sorted
 #[derive(Debug)]
 #[non_exhaustive]
 pub enum PackagesSort {
+    /// By identifier of the package
     Identifier,
+    /// By human name of the package
     Name,
 }
 
+/// A wrapper on different dpkg-based features
 #[derive(Clone, Debug)]
 pub struct Dpkg {
+    /// Represents different paths for dpkg files and directories
     pub paths: Paths,
     should_lock: bool,
 }
 
 impl Dpkg {
+    /// Constructs dpkg wrapper
+    ///
+    /// # Parameters
+    ///
+    /// - `dpkg_dir` - directory of dpkg data, on iOS and debian based systems
+    /// it is located at **/var/lib/dpkg**
+    ///
+    /// - `should_lock` - if dpkg database should be locked while getting
+    /// packages or performing other operations
     #[inline]
     pub fn new<P: AsRef<Path>>(dpkg_dir: P, should_lock: bool) -> Self {
         Self {

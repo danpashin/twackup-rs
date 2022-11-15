@@ -18,14 +18,43 @@
  */
 
 #![deny(rust_2018_idioms, clippy::pedantic, unreachable_pub)]
-#![warn(clippy::unused_self)]
-// #![warn(missing_docs, clippy::missing_docs_in_private_items)]
+#![warn(clippy::unused_self, missing_docs)]
 
+//! A Tokio-based DPKG database parsing library.
+//!
+//! Twackup is a super-fast, reliable and can be used
+//! in jailbroken iOS/macOS as well as in any other Debian-based system.
+//!
+//! ### Example usage
+//!
+//! ```rust
+//! use twackup::{Dpkg, Result};
+//!
+//! #[tokio::main]
+//! async fn main() -> Result<()> {
+//!     let dpkg_dir = "/var/lib/dpkg";
+//!     let should_lock_dir = false;
+//!     let dpkg = Dpkg::new(dpkg_dir, should_lock_dir);
+//!
+//!     let return_leaves = true;
+//!     let packages = dpkg.unsorted_packages(return_leaves).await?;
+//!
+//!     for package in packages {
+//!         println!("Found package with name {:?}", package.human_name());
+//!     }
+//!
+//!     Ok(())
+//! }
+//! ```
+
+pub mod archiver;
 pub mod builder;
-pub mod compression;
-pub mod dpkg;
-pub mod error;
+pub(crate) mod dpkg;
+mod error;
 pub mod package;
 pub mod parser;
 pub mod progress;
 pub mod repository;
+
+pub use dpkg::{Dpkg, PackagesSort};
+pub use error::{Generic as GenericError, Result};

@@ -19,14 +19,19 @@
 
 use twackup_derive::StrEnumWithError;
 
+/// Wrapper on package priority
 #[derive(Clone, Debug, PartialEq, Eq, StrEnumWithError)]
 #[twackup(convert_all = "lower")]
 #[non_exhaustive]
 pub enum Priority {
+    /// Package is optional for installation and removal
     Optional,
+    /// Package is required for system to work
     Required,
+    /// Package is important for installed system
     Important,
+    /// Package is shipped with default priority
     Standard,
+    /// Package is important for installed system
     Extra,
-    Unknown,
 }

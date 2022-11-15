@@ -25,12 +25,11 @@ use gethostname::gethostname;
 use std::{collections::LinkedList, fs, io, iter::Iterator, path::PathBuf, sync::Arc};
 use tokio::sync::Mutex;
 use twackup::{
+    archiver::Level as CompressionLevel,
     builder::{deb::TarArchive, AllPackagesArchive, Preferences, Worker},
-    compression::Level as CompressionLevel,
-    dpkg::{Dpkg, PackagesSort},
-    error::Generic as GenericError,
     package::Package,
     progress::Progress,
+    Dpkg, GenericError, PackagesSort,
 };
 
 const DEFAULT_ARCHIVE_NAME: &str = "%host%_%date%.tar.gz";
@@ -42,7 +41,7 @@ enum CompressionType {
     Zst,
 }
 
-impl From<CompressionType> for twackup::compression::Type {
+impl From<CompressionType> for twackup::archiver::Type {
     fn from(value: CompressionType) -> Self {
         match value {
             CompressionType::Gzip => Self::Gz,

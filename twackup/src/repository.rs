@@ -17,13 +17,41 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-mod category;
-mod repo_error;
-
-pub use self::{category::Category, repo_error::RepoError};
 use crate::parser::Parsable;
 use std::{collections::HashMap, string::ToString};
+use twackup_derive::StrEnumWithError;
 
+/// Different repo errors
+#[derive(thiserror::Error, Debug)]
+#[non_exhaustive]
+pub enum Error {
+    /// Some field is missing
+    #[error("Missed field `{0}`")]
+    MissingField(String),
+
+    /// repo category is unknown
+    #[error("Category {0} is invalid")]
+    InvalidCategory(String),
+
+    /// Something is wrong with one-line repo line
+    #[error("Repo line {0} is invalid")]
+    InvalidRepoLine(String),
+}
+
+/// Repo category type
+#[derive(Clone, Debug, StrEnumWithError)]
+#[cfg_attr(feature = "with-serde", derive(serde::Serialize, serde::Deserialize))]
+#[non_exhaustive]
+pub enum Category {
+    /// Used for distributing binaries only
+    Binary,
+    /// This is used for distributing sources only
+    Source,
+    /// Supported only in DEB822 format
+    Both,
+}
+
+/// Wrapper for default repo structure
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "with-serde", derive(serde::Serialize, serde::Deserialize))]
 #[non_exhaustive]
@@ -37,23 +65,28 @@ pub struct Repository {
     /// Specifies a subdirectory in $ARCHIVE_ROOT/dists
     pub distribution: String,
 
+    /// A whitespace separated list of areas.
+    /// May also include be prefixed by parts of the path following
+    /// the directory beneath dists, if the Release file is not in a directory
+    /// directly beneath dists/
     pub components: Vec<String>,
 }
 
 impl Parsable for Repository {
-    type Error = RepoError;
+    type Error = Error;
 
     /// Performs parsing repo model in DEB822 format
     /// #### Doesn't support options
     fn new(mut fields: HashMap<String, String>) -> Result<Self, Self::Error> {
-        let mut fetch_field = |field: &str| -> Result<String, RepoError> {
+        let mut fetch_field = |field: &str| -> Result<String, Error> {
             fields
                 .remove(field)
-                .ok_or_else(|| RepoError::MissingField(field.to_owned()))
+                .ok_or_else(|| Error::MissingField(field.to_owned()))
         };
 
         Ok(Self {
-            category: Category::try_from(fetch_field("Types")?.as_str())?,
+            category: Category::try_from(fetch_field("Types")?.as_str())
+                .map_err(Error::InvalidCategory)?,
             url: fetch_field("URIs")?,
             distribution: fetch_field("Suites")?,
             components: fetch_field("Components")
@@ -74,15 +107,15 @@ impl Repository {
     ///
     /// # Errors
     /// Return error if line doesn't consist of three or more components
-    pub fn from_one_line(line: &str) -> Result<Self, RepoError> {
+    pub fn from_one_line(line: &str) -> Result<Self, Error> {
         let components: Vec<&str> = line.split_ascii_whitespace().collect();
         // type, uri and suite are required, so break if they don't exist
         if components.len() < 3 {
-            return Err(RepoError::InvalidRepoLine(line.to_owned()));
+            return Err(Error::InvalidRepoLine(line.to_owned()));
         }
 
         Ok(Self {
-            category: Category::try_from(components[0])?,
+            category: Category::try_from(components[0]).map_err(Error::InvalidCategory)?,
             url: components[1].to_owned(),
             distribution: components[2].to_owned(),
             components: components
@@ -96,6 +129,7 @@ impl Repository {
     /// Performs fields formatting in the one-line style.
     /// #### Doesn't support options
     #[must_use]
+    #[inline]
     pub fn to_one_line(&self) -> String {
         format!(
             "{} {} {} {}",
@@ -120,7 +154,9 @@ impl Repository {
         )
     }
 
+    /// Performs fields formatting for Cydia plist key
     #[must_use]
+    #[cfg(feature = "ios")]
     pub fn to_cydia_key(&self) -> String {
         format!(
             "{}:{}:{}",
@@ -130,6 +166,7 @@ impl Repository {
         )
     }
 
+    /// Performs constructing repo to Apple's plist format
     #[must_use]
     #[cfg(feature = "with-serde")]
     pub fn to_dict(&self) -> plist::Dictionary {

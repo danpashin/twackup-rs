@@ -19,7 +19,7 @@
 
 use super::{CliCommand, Context};
 use crate::{commands::GlobalOptions, error::Result};
-use twackup::dpkg::PackagesSort;
+use twackup::PackagesSort;
 
 #[derive(clap::Parser)]
 pub(crate) struct Leaves {

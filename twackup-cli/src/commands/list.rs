@@ -19,7 +19,7 @@
 
 use super::{CliCommand, Context, GlobalOptions};
 use crate::error::Result;
-use twackup::dpkg::PackagesSort;
+use twackup::PackagesSort;
 
 #[derive(clap::Parser)]
 #[clap(version)]

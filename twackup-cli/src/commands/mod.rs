@@ -26,8 +26,11 @@ mod backup;
 
 use super::Context;
 use crate::{error::Result, ADMIN_DIR};
-use std::{collections::{BTreeMap, LinkedList}, path::PathBuf};
-use twackup::{dpkg::{Dpkg, PackagesSort}, package::Package};
+use std::{
+    collections::{BTreeMap, LinkedList},
+    path::PathBuf,
+};
+use twackup::{package::Package, Dpkg, PackagesSort};
 
 #[async_trait::async_trait]
 pub(crate) trait CliCommand {

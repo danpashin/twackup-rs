@@ -22,24 +22,37 @@ use console::{Color, Style};
 
 use twackup_derive::StrEnumWithDefault;
 
+/// Different package sections
 #[derive(Clone, Debug, PartialEq, Eq, StrEnumWithDefault)]
 #[twackup(convert_all = "title")]
 #[non_exhaustive]
 pub enum Section {
+    /// Different archiving utils
     Archiving,
+    /// Developers header files and etc.
     Development,
+    /// Utils for use with network
     Networking,
+    /// Other archiving utils
     Packaging,
+    /// System packages
     System,
+    /// Terminal
     TerminalSupport,
+    /// Text editors
     TextEditors,
+    /// Themes
     Themes,
+    /// Tweaks
     Tweaks,
+    /// Different utilities
     Utilities,
+    /// Other not listed package sections
     Other(String),
 }
 
 impl Section {
+    /// Return section color
     #[cfg(feature = "cli")]
     #[must_use]
     pub fn color(&self) -> Style {
