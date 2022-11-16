@@ -293,7 +293,7 @@ mod tests {
 
         let package = Package::new(package_info)?;
 
-        let path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/packages");
+        let path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/dpkg_database_dir");
         let files = package.get_installed_files(Path::new(path))?;
         assert_eq!(files.len(), 3);
 
@@ -311,16 +311,16 @@ mod tests {
 
         let package = Package::new(package_info)?;
 
-        let path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/packages");
+        let path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/dpkg_database_dir");
         let files = package.get_installed_files(Path::new(path));
-        assert_eq!(files.is_err(), true);
+        assert!(files.is_err());
 
         Ok(())
     }
 
     #[tokio::test]
     async fn valid_database() -> Result<()> {
-        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/database/valid");
+        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/databases/valid");
         let parser = Parser::new(database)?;
         let packages = parser.parse::<Package>().await;
         assert_eq!(packages.len(), 3);
@@ -332,7 +332,7 @@ mod tests {
     async fn partially_valid_database() -> Result<()> {
         let database = concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/assets/database/partially_valid"
+            "/assets/databases/partially_valid"
         );
         let parser = Parser::new(database)?;
         let packages = parser.parse::<Package>().await;
@@ -343,7 +343,7 @@ mod tests {
 
     #[tokio::test]
     async fn multiline() -> Result<()> {
-        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/database/multiline");
+        let database = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/databases/multiline");
         let parser = Parser::new(database)?;
 
         let packages = parser.parse::<Package>().await;
@@ -369,7 +369,7 @@ mod tests {
         fs::set_permissions(&database, fs::Permissions::from_mode(0o333))?;
 
         let parser = Parser::new(database.as_path());
-        assert_eq!(parser.is_err(), true);
+        assert!(parser.is_err());
         assert_eq!(
             io::Error::last_os_error().kind(),
             io::ErrorKind::PermissionDenied
@@ -384,7 +384,7 @@ mod tests {
     async fn real_database() -> Result<()> {
         let database = concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/assets/database/real-system-632"
+            "/assets/databases/real-system-632"
         );
         let parser = Parser::new(database)?;
         let packages = parser.parse::<Package>().await;

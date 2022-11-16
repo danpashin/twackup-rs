@@ -27,7 +27,7 @@
 //!
 //! ### Example usage
 //!
-//! ```rust
+//! ```no_run
 //! use twackup::{Dpkg, Result};
 //!
 //! #[tokio::main]

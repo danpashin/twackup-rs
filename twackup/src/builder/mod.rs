@@ -22,7 +22,7 @@
 //!
 //! ### Example usage
 //!
-//! ```rust
+//! ```no_run
 //! use twackup::{builder::{Worker, Preferences}, Result, progress::Progress, Dpkg, package::Package};
 //! use std::{collections::HashSet, sync::Arc};
 //!
@@ -266,6 +266,59 @@ impl<T: Progress> Worker<T> {
                 fs::remove_file(file).ok();
             }
         }
+
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        builder::{Preferences, Worker},
+        progress::Progress,
+        Dpkg, Result,
+    };
+    use std::{fs, process::Command, sync::Arc};
+
+    struct ProgressImpl;
+
+    impl Progress for ProgressImpl {
+        fn new(_total: u64) -> Self {
+            Self
+        }
+    }
+
+    #[tokio::test]
+    async fn package_build_correctness() -> Result<()> {
+        let dpkg_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/dpkg_database_dir");
+        let dpkg = Dpkg::new(dpkg_dir, false);
+
+        let mut packages = dpkg.unsorted_packages(false).await?;
+        let package = packages.pop_back().unwrap();
+
+        let dpkg_contents = Arc::new(dpkg.info_dir_contents()?);
+        let preferences = Preferences::new(dpkg_dir, "/tmp");
+
+        let worker = Worker::new(package, ProgressImpl, None, preferences, dpkg_contents);
+        let deb_path = worker.run().await?;
+
+        let dpkg = Command::new("dpkg")
+            .args(["-I", deb_path.to_str().unwrap()])
+            .output()?;
+        let output = String::from_utf8(dpkg.stdout).unwrap();
+
+        assert!(output.contains("Package: hosts"));
+        assert!(output.contains("Version: 1.0.0"));
+        assert!(output.contains("preinst"));
+
+        let dpkg = Command::new("dpkg")
+            .args(["-c", deb_path.to_str().unwrap()])
+            .output()?;
+        let output = String::from_utf8(dpkg.stdout).unwrap();
+
+        assert!(output.contains("etc/hosts"));
+
+        fs::remove_file(deb_path)?;
 
         Ok(())
     }

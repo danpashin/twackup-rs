@@ -56,7 +56,7 @@ pub trait Parsable: Send + Sized {
 ///
 /// # Example usage
 ///
-/// ```rust
+/// ```no_run
 /// use twackup::{Parser, Result, package::Package};
 ///
 /// #[tokio::main]
