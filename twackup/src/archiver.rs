@@ -21,7 +21,7 @@
 //!
 //! #### Example usage
 //!
-//! ```rust
+//! ```no_run
 //! use twackup::{archiver::{Encoder, Compression}, Result};
 //!
 //! #[tokio::main]
