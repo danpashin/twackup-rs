@@ -4,7 +4,7 @@ use twackup::{package::Package, Parser};
 fn bench(c: &mut Criterion) {
     let database = concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/assets/database/real-system-100"
+        "/assets/databases/real-system-100"
     );
     let parser = Parser::new(database).unwrap();
     let rt = tokio::runtime::Runtime::new().unwrap();
