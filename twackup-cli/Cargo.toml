@@ -34,6 +34,7 @@ license_type = "GPL-3.0"
 twackup = { path = "../twackup", features = ["cli", "with-serde"] }
 
 # Core
+clap = { version = "4.0", features = ["derive"] }
 async-trait = "0.1"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
 tokio = { version = "1.5", features = ["rt-multi-thread", "sync", "macros"] }
@@ -62,11 +63,6 @@ stderrlog = { version = "0.5", default-features = false, features = [] }
 libc = "0.2"
 gethostname = "0.4"
 libproc = { git = "https://github.com/danpashin/libproc-rs", branch = "0.12.0-ios" }
-
-[dependencies.clap]
-version = "4.0"
-default-features = false
-features = ["derive", "std", "color", "help", "usage", "error-context"]
 
 [build-dependencies]
 vergen = { version = "7.4", default-features = false, features = ["cargo", "build", "git"] }

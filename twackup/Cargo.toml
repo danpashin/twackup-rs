@@ -15,6 +15,10 @@ cli = ["console"]
 ios = []
 with-serde = ["plist", "serde"]
 
+[[bench]]
+name = "basic"
+harness = false
+
 [dependencies]
 
 # Core
@@ -43,3 +47,6 @@ libc = "0.2"
 
 # CLI Utils
 console = { version = "0.15", default-features = false, features = [], optional = true }
+
+[dev-dependencies]
+criterion = { version = "0.4", features = ["async_tokio"] }

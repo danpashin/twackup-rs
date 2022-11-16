@@ -365,7 +365,7 @@ mod tests {
     fn no_permissions_database() -> Result<()> {
         let database = env::temp_dir().join("twackup-no-permissions");
         let mut file = File::create(&database)?;
-        file.write("This contents will never be read".as_bytes())?;
+        file.write_all("This contents will never be read".as_bytes())?;
         fs::set_permissions(&database, fs::Permissions::from_mode(0o333))?;
 
         let parser = Parser::new(database.as_path());
@@ -376,6 +376,19 @@ mod tests {
         );
 
         fs::remove_file(&database)?;
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn real_database() -> Result<()> {
+        let database = concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/assets/database/real-system-632"
+        );
+        let parser = Parser::new(database)?;
+        let packages = parser.parse::<Package>().await;
+        assert_eq!(packages.len(), 632);
 
         Ok(())
     }

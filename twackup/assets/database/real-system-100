@@ -1,0 +1,2574 @@
+Package: accountsservice
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 452
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 0.6.55-0ubuntu12~20.04.5
+Depends: dbus, libaccountsservice0 (= 0.6.55-0ubuntu12~20.04.5), libc6 (>= 2.4), libglib2.0-0 (>= 2.44), libpolkit-gobject-1-0 (>= 0.99)
+Suggests: gnome-control-center
+Conffiles:
+ /etc/dbus-1/system.d/org.freedesktop.Accounts.conf 06247d62052029ead7d9ec1ef9457f42
+Description: query and manipulate user account information
+ The AccountService project provides a set of D-Bus
+ interfaces for querying and manipulating user account
+ information and an implementation of these interfaces,
+ based on the useradd, usermod and userdel commands.
+Homepage: https://www.freedesktop.org/wiki/Software/AccountsService/
+Original-Maintainer: Debian freedesktop.org maintainers <pkg-freedesktop-maintainers@lists.alioth.debian.org>
+
+Package: adduser
+Status: install ok installed
+Priority: important
+Section: admin
+Installed-Size: 624
+Maintainer: Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 3.118ubuntu2
+Depends: passwd, debconf (>= 0.5) | debconf-2.0
+Suggests: liblocale-gettext-perl, perl, ecryptfs-utils (>= 67-1)
+Conffiles:
+ /etc/deluser.conf 773fb95e98a27947de4a95abb3d3f2a2
+Description: add and remove users and groups
+ This package includes the 'adduser' and 'deluser' commands for creating
+ and removing users.
+ .
+  - 'adduser' creates new users and groups and adds existing users to
+    existing groups;
+  - 'deluser' removes users and groups and removes users from a given
+    group.
+ .
+ Adding users with 'adduser' is much easier than adding them manually.
+ Adduser will choose appropriate UID and GID values, create a home
+ directory, copy skeletal user configuration, and automate setting
+ initial values for the user's password, real name and so on.
+ .
+ Deluser can back up and remove users' home directories
+ and mail spool or all the files they own on the system.
+ .
+ A custom script can be executed after each of the commands.
+Original-Maintainer: Debian Adduser Developers <adduser@packages.debian.org>
+
+Package: alsa-topology-conf
+Status: install ok installed
+Priority: optional
+Section: libs
+Installed-Size: 160
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 1.2.2-1
+Replaces: libasound2-data (<< 1.2.1)
+Breaks: libasound2-data (<< 1.2.1)
+Enhances: libasound2-data
+Description: ALSA topology configuration files
+ This package contains ALSA topology configuration files that can be used
+ by libasound2 for specific audio hardware.
+ .
+ ALSA is the Advanced Linux Sound Architecture.
+Original-Maintainer: Debian ALSA Maintainers <pkg-alsa-devel@lists.alioth.debian.org>
+Homepage: https://www.alsa-project.org/
+
+Package: alsa-ucm-conf
+Status: install ok installed
+Priority: optional
+Section: libs
+Installed-Size: 338
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 1.2.2-1ubuntu0.13
+Enhances: libasound2
+Description: ALSA Use Case Manager configuration files
+ This package contains ALSA Use Case Manager configuration of audio
+ input/output names and routing for specific audio hardware. They can be
+ used with the alsaucm tool.
+ .
+ ALSA is the Advanced Linux Sound Architecture.
+Original-Maintainer: Debian ALSA Maintainers <pkg-alsa-devel@lists.alioth.debian.org>
+Homepage: https://www.alsa-project.org/
+
+Package: amd64-microcode
+Status: install ok installed
+Priority: standard
+Section: non-free/admin
+Installed-Size: 76
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 3.20191218.1ubuntu1
+Recommends: initramfs-tools (>= 0.113~) | dracut (>= 044) | tiny-initramfs
+Breaks: intel-microcode (<< 2)
+Conffiles:
+ /etc/default/amd64-microcode eaa8a5fa3fb59af4f0f55e851a6e9b20
+ /etc/modprobe.d/amd64-microcode-blacklist.conf 71327241f6583b34944e638a955aba91
+Description: Processor microcode firmware for AMD CPUs
+ This package contains microcode patches for all AMD AMD64
+ processors.  AMD releases microcode patches to correct
+ processor behavior as documented in the respective processor
+ revision guides.
+ .
+ For Intel processors, please refer to the intel-microcode package.
+Original-Maintainer: Henrique de Moraes Holschuh <hmh@debian.org>
+
+Package: apparmor
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 1948
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 2.13.3-7ubuntu5.1
+Replaces: fcitx-data (<< 1:4.2.9.1-1ubuntu2)
+Depends: debconf, lsb-base, debconf (>= 0.5) | debconf-2.0, python3:any, libc6 (>= 2.17)
+Suggests: apparmor-profiles-extra, apparmor-utils
+Breaks: apparmor-profiles-extra (<< 1.21), fcitx-data (<< 1:4.2.9.1-1ubuntu2), snapd (<< 2.44.3+20.04~)
+Conffiles:
+ /etc/apparmor.d/abstractions/X c699cd4750364642adf66097473b1849
+ /etc/apparmor.d/abstractions/apache2-common 3e80c6e6f9291caac0943569691e7dd7
+ /etc/apparmor.d/abstractions/apparmor_api/change_profile 9f4c0a621f4939af15588b7fe670dfe7
+ /etc/apparmor.d/abstractions/apparmor_api/examine f3b118b0344df2bcf4d18b81b45536bd
+ /etc/apparmor.d/abstractions/apparmor_api/find_mountpoint cf9e6513e00b441c0e3fbaf57b5c5110
+ /etc/apparmor.d/abstractions/apparmor_api/introspect 4c345c7e02de097f250c3ab12a442bed
+ /etc/apparmor.d/abstractions/apparmor_api/is_enabled 782acb0a48722a79a57d04bfb36b7c96
+ /etc/apparmor.d/abstractions/aspell fdcbf54106fd1ee376d4ade77e720488
+ /etc/apparmor.d/abstractions/audio 1f5ee9faece9e2d724682f182490f25c
+ /etc/apparmor.d/abstractions/authentication 4ca6d1cf0d2d782f23059939670643c2
+ /etc/apparmor.d/abstractions/base 7964cbd90b842f177643cf39399b90f6
+ /etc/apparmor.d/abstractions/bash 4a5f51dc0fe10de2eba86b22351ae092
+ /etc/apparmor.d/abstractions/consoles c7e6e00c4845e9afb877359691946386
+ /etc/apparmor.d/abstractions/cups-client ea86b52242df406f0bc955039f990006
+ /etc/apparmor.d/abstractions/dbus db5bb2211ee5ecf1d2d4eb72c0e52617
+ /etc/apparmor.d/abstractions/dbus-accessibility 1a9829023057d91f2f709b49ded37c87
+ /etc/apparmor.d/abstractions/dbus-accessibility-strict 0e07c997566b1d71b9287c0a3dcb1292
+ /etc/apparmor.d/abstractions/dbus-session e9dabe52be01410c4e4c9a9e8ef9779d
+ /etc/apparmor.d/abstractions/dbus-session-strict 1b337318faff3bd439f86dfc4b040d1d
+ /etc/apparmor.d/abstractions/dbus-strict d2a901e0369ab95a244828e2d296276e
+ /etc/apparmor.d/abstractions/dconf 02249fe91402fccef01161a61c557098
+ /etc/apparmor.d/abstractions/dovecot-common 78e81f03910bca0e407c16a1d8169861
+ /etc/apparmor.d/abstractions/dri-common 34153e13046d1f556a7f1de0c3e4f247
+ /etc/apparmor.d/abstractions/dri-enumerate c01f5e3c4134ecd67acb00bcffde358b
+ /etc/apparmor.d/abstractions/enchant a1ac9629b466be8a41cb5f87757f3363
+ /etc/apparmor.d/abstractions/fcitx 3c43cb38623c123d8a64a02aae42b452
+ /etc/apparmor.d/abstractions/fcitx-strict dbf5ff5b2fcbaa30bd47eb6789190485
+ /etc/apparmor.d/abstractions/fonts a8aea67b64e9ecca72c915e3b30ffd8c
+ /etc/apparmor.d/abstractions/freedesktop.org f7fa00fc74e581bbe8e6d3269c696cad
+ /etc/apparmor.d/abstractions/gnome 5e5ba75cc31ec32f1dea13d60fcfcb39
+ /etc/apparmor.d/abstractions/gnupg 7cde476e7fc1b5e3ae1ff8a15f0bd524
+ /etc/apparmor.d/abstractions/ibus f6ab74526ffb752cd96f5064a628bae6
+ /etc/apparmor.d/abstractions/kde f2e06a5967e321262ca9b37288cfbc12
+ /etc/apparmor.d/abstractions/kde-globals-write e8235948f44b2064ef48ee379eb061b5
+ /etc/apparmor.d/abstractions/kde-icon-cache-write 8cc2941ba1fe9989a90abc547f507bb5
+ /etc/apparmor.d/abstractions/kde-language-write 9bd64008a5bb3a805d4697a95de373a2
+ /etc/apparmor.d/abstractions/kerberosclient 2876e3432eb194ac59eac076fc7cc43a
+ /etc/apparmor.d/abstractions/ldapclient 1c716468c119347de654f8a5a108a68e
+ /etc/apparmor.d/abstractions/libpam-systemd fdeb09a6c1f0d201abfd5cd12262a3b7
+ /etc/apparmor.d/abstractions/likewise eda6f01c5c1f1f09bc85a7f3a1d3ebaf
+ /etc/apparmor.d/abstractions/mdns dd0657e93128f0ac6147886969acd45f
+ /etc/apparmor.d/abstractions/mesa d98378540dc8d796f548c8d1e649259c
+ /etc/apparmor.d/abstractions/mir d40c45b5284efa1e7aa8e473bf3eaa63
+ /etc/apparmor.d/abstractions/mozc fde97592da93e4b4ec9667cc0a38cd11
+ /etc/apparmor.d/abstractions/mysql be34db29008a5c06387c6928b0536ecc
+ /etc/apparmor.d/abstractions/nameservice 82c73cf4a24eab44afec42c1de788768
+ /etc/apparmor.d/abstractions/nis b2a829a4e26dd3ae92ec2f67536edc20
+ /etc/apparmor.d/abstractions/nvidia 00f22073707d7a662517afda1590d229
+ /etc/apparmor.d/abstractions/opencl 34d7e0766eec3db8b394f205dc20f44f
+ /etc/apparmor.d/abstractions/opencl-common 8f40763dcf90c692082cc2bd85046470
+ /etc/apparmor.d/abstractions/opencl-intel b5134bd9b5922602f80051baab3d40c5
+ /etc/apparmor.d/abstractions/opencl-mesa 58b8d60a9048eedcd516474ce3e10732
+ /etc/apparmor.d/abstractions/opencl-nvidia 2019459bd137008b07d6cfcdc6c68017
+ /etc/apparmor.d/abstractions/opencl-pocl d0ebd9e1ee14039d7309756e7417e10d
+ /etc/apparmor.d/abstractions/openssl 774ca398a166520a1cdb84d8b8a7b7dc
+ /etc/apparmor.d/abstractions/orbit2 98b6459f02e5c68e6ef83dced628ea5f
+ /etc/apparmor.d/abstractions/p11-kit dc059947c11d3f353c380ca7547390ce
+ /etc/apparmor.d/abstractions/perl 2efc405658e3cbcfdca9e95bfdecdcff
+ /etc/apparmor.d/abstractions/php 130943526b6654357cf5098e4a810d15
+ /etc/apparmor.d/abstractions/php5 491c7cb0bc6d38adbe874d782359ca33
+ /etc/apparmor.d/abstractions/postfix-common 50b568a8598ea7b5190bf1a436dc1578
+ /etc/apparmor.d/abstractions/private-files 16339bf6bb6f98586eebe898ec2be0ef
+ /etc/apparmor.d/abstractions/private-files-strict d74950f8fd6025b2984bc5840b5c8b3c
+ /etc/apparmor.d/abstractions/python e8bbefbe3a82e90b64018ca43bcc10a5
+ /etc/apparmor.d/abstractions/qt5 2eb345ae49c5fa21df45ef3bab82594e
+ /etc/apparmor.d/abstractions/qt5-compose-cache-write c73696619d59db6b48712e1cc20fba9f
+ /etc/apparmor.d/abstractions/qt5-settings-write 003e0e979a78f0842934cb7ab5b8586c
+ /etc/apparmor.d/abstractions/recent-documents-write be66dcdeafa30f11b8c499e52913fe13
+ /etc/apparmor.d/abstractions/ruby 2747c396fa14819b92683e23e8f5a889
+ /etc/apparmor.d/abstractions/samba 4cf477e098b91331621dfb729cf0c22e
+ /etc/apparmor.d/abstractions/smbpass b4d3be08dff2a9e3b4f1a18ddb65c63c
+ /etc/apparmor.d/abstractions/ssl_certs 3bdba09464a2609bc0e648c131af2814
+ /etc/apparmor.d/abstractions/ssl_keys 11c1a0c7b12e9b00963c75cfc2a5fce3
+ /etc/apparmor.d/abstractions/svn-repositories 8bc8a123d9ce516c53b818b8a4fc0ed1
+ /etc/apparmor.d/abstractions/ubuntu-bittorrent-clients 1398edfc93d57694774bcad9b83e6764
+ /etc/apparmor.d/abstractions/ubuntu-browsers 1ea182fb18a5fd3c717d475b3255dc32
+ /etc/apparmor.d/abstractions/ubuntu-browsers.d/java 8d317346861631f470d1f7e9bc92105f
+ /etc/apparmor.d/abstractions/ubuntu-browsers.d/kde 15541761a5dbdc5ccd12e85e2afe4094
+ /etc/apparmor.d/abstractions/ubuntu-browsers.d/mailto e60b3e4611a14d835d8b6fe0ffe27fc2
+ /etc/apparmor.d/abstractions/ubuntu-browsers.d/multimedia 2e6813ca1ab6d86167d0da78e76d7e8c
+ /etc/apparmor.d/abstractions/ubuntu-browsers.d/plugins-common 07e327f4e32e2333db1f609c87831b65
+ /etc/apparmor.d/abstractions/ubuntu-browsers.d/productivity dd54584ceece9aa1ee9c3c71418cd9ae
+ /etc/apparmor.d/abstractions/ubuntu-browsers.d/text-editors 006c96f21261b0c15e2f453527136973
+ /etc/apparmor.d/abstractions/ubuntu-browsers.d/ubuntu-integration a3146cbc94bc1d8172fa09135fb82d7c
+ /etc/apparmor.d/abstractions/ubuntu-browsers.d/ubuntu-integration-xul a6d33002626e1d9a81a490e2f61509fa
+ /etc/apparmor.d/abstractions/ubuntu-browsers.d/user-files 3e31dcbbf3c77dc50d31245357ad2c4c
+ /etc/apparmor.d/abstractions/ubuntu-console-browsers d560f0509cdc8ffcdfa1dc115eee88f1
+ /etc/apparmor.d/abstractions/ubuntu-console-email 1ebfacc8ac5cfba7f3d59baceae52af8
+ /etc/apparmor.d/abstractions/ubuntu-email d26f79efcadae3acb5f26ec693da011d
+ /etc/apparmor.d/abstractions/ubuntu-feed-readers b8eb233df01672f4941357487b39cda9
+ /etc/apparmor.d/abstractions/ubuntu-gnome-terminal 886de107666e17033b11aa3abb1ce054
+ /etc/apparmor.d/abstractions/ubuntu-helpers b28b05afe5f014e585fefe86b1c75225
+ /etc/apparmor.d/abstractions/ubuntu-konsole 2ba4958d99c66160f118b5cda90b26c7
+ /etc/apparmor.d/abstractions/ubuntu-media-players ff25e51b62d2bf5146134ae3c6530c6b
+ /etc/apparmor.d/abstractions/ubuntu-unity7-base 9adb20c938466802c326a75667d06a3f
+ /etc/apparmor.d/abstractions/ubuntu-unity7-launcher 96f03042c5465f46ddadf15691507414
+ /etc/apparmor.d/abstractions/ubuntu-unity7-messaging 4b9196db0bc697cb80f7e211edc78ae0
+ /etc/apparmor.d/abstractions/ubuntu-xterm bef5766269999b9e73ad6e11dd7930bd
+ /etc/apparmor.d/abstractions/user-download 87e37fbec5bf0c055db102d71205e2a0
+ /etc/apparmor.d/abstractions/user-mail c9951880d0b3d64365a870320fbc4d50
+ /etc/apparmor.d/abstractions/user-manpages c59f25e289e9a426807ab5830136aa42
+ /etc/apparmor.d/abstractions/user-tmp 93247b3296a7f0bff353eb9ee11fba06
+ /etc/apparmor.d/abstractions/user-write 5d5f3787434d3723fde32929c1496e49
+ /etc/apparmor.d/abstractions/video 0074a8698dbf6469986df3bdf5cdef6d
+ /etc/apparmor.d/abstractions/vulkan 3b93e4afbd664b52f34eba4f80ab1353
+ /etc/apparmor.d/abstractions/wayland ba356d31c77b2505149d3635464f1f48
+ /etc/apparmor.d/abstractions/web-data 36eb024800c81ef69733027f1a27a907
+ /etc/apparmor.d/abstractions/winbind 3b37bfd8193e84c6d08809750346e7c1
+ /etc/apparmor.d/abstractions/wutmp 3cb05ef8e125c7c3edf00a505dd9e68f
+ /etc/apparmor.d/abstractions/xad 0b2fdc7be71e977e240d77338f414ec7
+ /etc/apparmor.d/abstractions/xdg-desktop d891f70210acc01e42c525012a1c3fc6
+ /etc/apparmor.d/local/README b2c6b40577b4099c584cdf731f5aeb0b
+ /etc/apparmor.d/lsb_release 43cc19e943da1e2c0b23803096fc5932
+ /etc/apparmor.d/nvidia_modprobe 24fbec2e0874828e12a24843c87b01ad
+ /etc/apparmor.d/tunables/alias 45dca5dd72a6c862d27caa936e6c00ad
+ /etc/apparmor.d/tunables/apparmorfs 5797c1a5b267c3f51d983ab8daf8f587
+ /etc/apparmor.d/tunables/dovecot 1b0d5ec63a9c87387142bdb2c94e7ede
+ /etc/apparmor.d/tunables/global 30051273dfdb88155135f0890579293a
+ /etc/apparmor.d/tunables/home ec0b11e815b30dc6fbf4d05a41aff9f5
+ /etc/apparmor.d/tunables/home.d/site.local 3b274206fb06833ee3e151e351dad51b
+ /etc/apparmor.d/tunables/kernelvars 5d30bf3c3c6e33927ba26784985ed8ab
+ /etc/apparmor.d/tunables/multiarch 6ebecd63690d4a53f3e7ff6ae48941ca
+ /etc/apparmor.d/tunables/multiarch.d/site.local 3c9eef1fbfb41fc452060086262e7bcb
+ /etc/apparmor.d/tunables/proc ffaa055ceb36031c973ffaece22a5fc0
+ /etc/apparmor.d/tunables/securityfs 45d73edb5f03d141634ec6a5ba2b10f3
+ /etc/apparmor.d/tunables/share a15f039c6615aa63acbec04b313f08f2
+ /etc/apparmor.d/tunables/sys 30f2fdf4695c26642ea02b5a2063cfbc
+ /etc/apparmor.d/tunables/xdg-user-dirs 602eaa969d2dfa00a0ec16eed9b60b7f
+ /etc/apparmor/parser.conf c31a8d900d9da8c496c246b2d2680b3b
+ /etc/init.d/apparmor 42e157dc91f6554abefa2160c2bc42db
+Description: user-space parser utility for AppArmor
+ apparmor provides the system initialization scripts needed to use the
+ AppArmor Mandatory Access Control system, including the AppArmor Parser
+ which is required to convert AppArmor text profiles into machine-readable
+ policies that are loaded into the kernel for use with the AppArmor Linux
+ Security Module.
+Homepage: http://apparmor.net/
+Original-Maintainer: Debian AppArmor Team <pkg-apparmor-team@lists.alioth.debian.org>
+
+Package: apport
+Status: install ok installed
+Priority: optional
+Section: utils
+Installed-Size: 792
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Version: 2.20.11-0ubuntu27.24
+Replaces: core-dump-handler, python-apport (<< 2.2-0ubuntu1)
+Provides: core-dump-handler
+Depends: python3, python3-apport (>= 2.20.11-0ubuntu27.24), lsb-base (>= 3.0-6), python3-gi, gir1.2-glib-2.0 (>= 1.29.17)
+Recommends: apport-symptoms, python3-systemd
+Suggests: apport-gtk | apport-kde, policykit-1
+Breaks: python-apport (<< 2.2-0ubuntu1)
+Conflicts: core-dump-handler
+Conffiles:
+ /etc/apport/blacklist.d/README.blacklist c2ed1eb9a17ec2550747b4960cf4b73c
+ /etc/apport/blacklist.d/apport 44503501302b80099552bac0204a45c1
+ /etc/apport/crashdb.conf 4202dae3eccfa5bbb33a0a9acfcd3724
+ /etc/bash_completion.d/apport_completion dfe766d9328bb5c895038b44185133f9
+ /etc/cron.daily/apport df5d3bc9ab3a67b58156376318077304
+ /etc/default/apport 3446c6cac185f44237f59786e006ebe4
+ /etc/init.d/apport 3d51dc9135014bb49b4a19ff8dab61f1
+ /etc/logrotate.d/apport fa54dab59ef899b48d5455c976008df4
+Description: automatically generate crash reports for debugging
+ apport automatically collects data from crashed processes and
+ compiles a problem report in /var/crash/. This utilizes the crashdump
+ helper hook provided by the Ubuntu kernel.
+ .
+ This package also provides a command line frontend for browsing and
+ handling the crash reports. For desktops, you should consider
+ installing the GTK+ or Qt user interface (apport-gtk or apport-kde).
+Homepage: https://wiki.ubuntu.com/Apport
+
+Package: apport-symptoms
+Status: install ok installed
+Priority: optional
+Section: utils
+Installed-Size: 61
+Maintainer: Ubuntu Developers <ubuntu-motu@lists.ubuntu.com>
+Architecture: all
+Version: 0.23
+Recommends: apport
+Description: symptom scripts for apport
+ Apport intercepts program crashes, collects debugging information about the
+ crash and the operating system environment, and sends it to bug trackers in a
+ standardized form. It also offers the user to report a bug about a package,
+ with again collecting as much information about it as possible.
+ .
+ This package extends Apport by some "symptom" scripts, so that bug reporters
+ do not have to guess the correct package, but report problems based on
+ symptoms that they have (like "sound problem"), through an interactive process.
+Homepage: https://wiki.ubuntu.com/Apport
+
+Package: apt
+Status: install ok installed
+Priority: important
+Section: admin
+Installed-Size: 4207
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 2.0.9
+Replaces: apt-transport-https (<< 1.5~alpha4~), apt-utils (<< 1.3~exp2~)
+Provides: apt-transport-https (= 2.0.9)
+Depends: adduser, gpgv | gpgv2 | gpgv1, libapt-pkg6.0 (>= 2.0.9), ubuntu-keyring, libc6 (>= 2.15), libgcc-s1 (>= 3.0), libgnutls30 (>= 3.6.12), libseccomp2 (>= 2.4.2), libstdc++6 (>= 9), libsystemd0
+Recommends: ca-certificates
+Suggests: apt-doc, aptitude | synaptic | wajig, dpkg-dev (>= 1.17.2), gnupg | gnupg2 | gnupg1, powermgmt-base
+Breaks: apt-transport-https (<< 1.5~alpha4~), apt-utils (<< 1.3~exp2~), aptitude (<< 0.8.10)
+Conffiles:
+ /etc/apt/apt.conf.d/01-vendor-ubuntu c69ce53f5f0755e5ac4441702e820505
+ /etc/apt/apt.conf.d/01autoremove ab6540f7278a05a4b7f9e58afcaa5f46
+ /etc/cron.daily/apt-compat 49e9b2cfa17849700d4db735d04244f3
+ /etc/logrotate.d/apt 179f2ed4f85cbaca12fa3d69c2a4a1c3
+Description: commandline package manager
+ This package provides commandline tools for searching and
+ managing as well as querying information about packages
+ as a low-level access to all features of the libapt-pkg library.
+ .
+ These include:
+  * apt-get for retrieval of packages and information about them
+    from authenticated sources and for installation, upgrade and
+    removal of packages together with their dependencies
+  * apt-cache for querying available information about installed
+    as well as installable packages
+  * apt-cdrom to use removable media as a source for packages
+  * apt-config as an interface to the configuration settings
+  * apt-key as an interface to manage authentication keys
+Original-Maintainer: APT Development Team <deity@lists.debian.org>
+
+Package: apt-utils
+Status: install ok installed
+Priority: important
+Section: admin
+Installed-Size: 836
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Source: apt
+Version: 2.0.9
+Depends: apt (= 2.0.9), libapt-pkg6.0 (>= 1.9.11~), libc6 (>= 2.14), libdb5.3, libgcc-s1 (>= 3.0), libstdc++6 (>= 9)
+Description: package management related utility programs
+ This package contains some less used commandline utilities related
+ to package management with APT.
+ .
+  * apt-extracttemplates is used by debconf to prompt for configuration
+    questions before installation.
+  * apt-ftparchive is used to create Packages and other index files
+    needed to publish an archive of Debian packages
+  * apt-sortpkgs is a Packages/Sources file normalizer.
+Original-Maintainer: APT Development Team <deity@lists.debian.org>
+
+Package: at
+Status: install ok installed
+Priority: standard
+Section: admin
+Installed-Size: 159
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 3.1.23-1ubuntu1
+Depends: libpam-runtime (>= 1.0.1-11), lsb-base (>= 3.2-14), libc6 (>= 2.14), libfl2 (>= 2.5.33), libpam0g (>= 0.99.7.1), libselinux1 (>= 2.1.9)
+Suggests: default-mta | mail-transport-agent
+Conffiles:
+ /etc/at.deny 8cb7e7632119dc26115436938efd2522
+ /etc/init.d/atd ce2de503acc3de02f544571e89d4d717
+ /etc/pam.d/atd ccdb71bdfe8764a2feb0f6e4ebbd378d
+Description: Delayed job execution and batch processing
+ At and batch read shell commands from standard input
+ storing them as a job to be scheduled for execution in the
+ future.
+ .
+ Use
+  at    to run the job at a specified time
+  batch to run the job when system load levels permit
+Homepage: http://blog.calhariz.com
+Original-Maintainer: Jose M Calhariz <calhariz@debian.org>
+
+Package: base-files
+Essential: yes
+Status: install ok installed
+Priority: required
+Section: admin
+Installed-Size: 392
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 11ubuntu5.6
+Replaces: base, dpkg (<= 1.15.0), miscutils
+Provides: base
+Depends: libc6 (>= 2.3.4), libcrypt1 (>= 1:4.4.10-10ubuntu3)
+Pre-Depends: awk
+Breaks: debian-security-support (<< 2019.04.25), initscripts (<< 2.88dsf-13.3), sendfile (<< 2.1b.20080616-5.2~), ubuntu-server (<< 1.450.2)
+Conffiles:
+ /etc/debian_version 4b4c97acdc4675fdd3375b84a28fcb64
+ /etc/dpkg/origins/debian 731423fa8ba067262f8ef37882d1e742
+ /etc/dpkg/origins/ubuntu ea35901c45553c3451f60476be94d2d8
+ /etc/host.conf 89408008f2585c957c031716600d5a80
+ /etc/issue 1e0f0a891c768b80861f5d1f7d097dfa
+ /etc/issue.net 696088cd5a0f89d8c45901636b6adb22
+ /etc/legal 0110925f6e068836ef2e09356e3651d9
+ /etc/lsb-release 17aadfb259e2ec6a98803f9f60f10af2
+ /etc/profile.d/01-locale-fix.sh 870346d97b16faac4a371b04ffe4cc2f
+ /etc/update-motd.d/00-header 4a1e6eed7a59f200b4267085721750a3
+ /etc/update-motd.d/10-help-text d95d18b11ac12cf6582d08a1643034f3
+ /etc/update-motd.d/50-motd-news 54567afa89b3a7983d05ff217fe4a9fd
+Description: Debian base system miscellaneous files
+ This package contains the basic filesystem hierarchy of a Debian system, and
+ several important miscellaneous files, such as /etc/debian_version,
+ /etc/host.conf, /etc/issue, /etc/motd, /etc/profile, and others,
+ and the text of several common licenses in use on Debian systems.
+Original-Maintainer: Santiago Vila <sanvila@debian.org>
+
+Package: base-passwd
+Essential: yes
+Status: install ok installed
+Priority: required
+Section: admin
+Installed-Size: 233
+Maintainer: Colin Watson <cjwatson@debian.org>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 3.5.47
+Replaces: base
+Depends: libc6 (>= 2.8), libdebconfclient0 (>= 0.145)
+Recommends: debconf (>= 0.5) | debconf-2.0
+Description: Debian base system master password and group files
+ These are the canonical master copies of the user database files
+ (/etc/passwd and /etc/group), containing the Debian-allocated user and
+ group IDs. The update-passwd tool is provided to keep the system databases
+ synchronized with these master files.
+
+Package: bash
+Essential: yes
+Status: install ok installed
+Priority: required
+Section: shells
+Installed-Size: 1660
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 5.0-6ubuntu1.2
+Replaces: bash-completion (<< 20060301-0), bash-doc (<= 2.05-1)
+Depends: base-files (>= 2.1.12), debianutils (>= 2.15)
+Pre-Depends: libc6 (>= 2.15), libtinfo6 (>= 6)
+Recommends: bash-completion (>= 20060301-0)
+Suggests: bash-doc
+Conflicts: bash-completion (<< 20060301-0)
+Conffiles:
+ /etc/bash.bashrc 3aa8b92d1dd6ddf4daaedc019662f1dc
+ /etc/skel/.bash_logout 22bfb8c1dd94b5f3813a2b25da67463f
+ /etc/skel/.bashrc 1f98b8f3f3c8f8927eca945d59dcc1c6
+ /etc/skel/.profile f4e81ade7d6f9fb342541152d08e7a97
+Description: GNU Bourne Again SHell
+ Bash is an sh-compatible command language interpreter that executes
+ commands read from the standard input or from a file.  Bash also
+ incorporates useful features from the Korn and C shells (ksh and csh).
+ .
+ Bash is ultimately intended to be a conformant implementation of the
+ IEEE POSIX Shell and Tools specification (IEEE Working Group 1003.2).
+ .
+ The Programmable Completion Code, by Ian Macdonald, is now found in
+ the bash-completion package.
+Homepage: http://tiswww.case.edu/php/chet/bash/bashtop.html
+Original-Maintainer: Matthias Klose <doko@debian.org>
+
+Package: bash-completion
+Status: install ok installed
+Priority: standard
+Section: shells
+Installed-Size: 1487
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 1:2.10-1ubuntu1
+Conffiles:
+ /etc/bash_completion a81b3f1cb197219b815942f4fc7fa94e
+ /etc/profile.d/bash_completion.sh 45bbec45b8f1ca2effe5da16ea1709c9
+Description: programmable completion for the bash shell
+ bash completion extends bash's standard completion behavior to achieve
+ complex command lines with just a few keystrokes.  This project was
+ conceived to produce programmable completion routines for the most
+ common Linux/UNIX commands, reducing the amount of typing sysadmins
+ and programmers need to do on a daily basis.
+Homepage: https://github.com/scop/bash-completion
+Original-Maintainer: Gabriel F. T. Gomes <gabriel@inconstante.net.br>
+
+Package: bcache-tools
+Status: install ok installed
+Priority: optional
+Section: utils
+Installed-Size: 107
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 1.0.8-3ubuntu0.1
+Depends: libblkid1 (>= 2.17.2), libc6 (>= 2.8), libuuid1 (>= 2.16), gawk
+Recommends: initramfs-tools | linux-initramfs-tool
+Description: bcache userspace tools
+ Bcache allows the use of SSDs to cache other block devices.
+ .
+ Documentation for the run-time interface is included in the kernel tree; in
+ Documentation/bcache.txt.
+ .
+ This package includes udev rules, initramfs support, and the utilities to
+ create a new bcache as well as inspect existing bcache partitions.
+Homepage: https://bcache.evilpiepirate.org/
+Original-Maintainer: David Mohr <david@mcbf.net>
+
+Package: bind9-dnsutils
+Status: install ok installed
+Priority: standard
+Section: net
+Installed-Size: 491
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Source: bind9
+Version: 1:9.16.1-0ubuntu2.11
+Provides: dnsutils
+Depends: bind9-host | host, bind9-libs (= 1:9.16.1-0ubuntu2.11), libc6 (>= 2.4), libedit2 (>= 2.11-20080614-0), libidn2-0 (>= 2.0.0), libkrb5-3 (>= 1.6.dfsg.2), libssl1.1 (>= 1.1.0)
+Breaks: bind-dnsutils (<< 1:9.13.6~), dnsutils (<< 1:9.13.6~)
+Conflicts: bind-dnsutils (<< 1:9.13.6~), dnsutils (<< 1:9.13.6~)
+Description: Clients provided with BIND 9
+ The Berkeley Internet Name Domain (BIND 9) implements an Internet domain
+ name server.  BIND 9 is the most widely-used name server software on the
+ Internet, and is supported by the Internet Software Consortium, www.isc.org.
+ .
+ This package delivers various client programs related to DNS that are
+ derived from the BIND 9 source tree.
+ .
+  - dig - query the DNS in various ways
+  - nslookup - the older way to do it
+  - nsupdate - perform dynamic updates (See RFC2136)
+Homepage: https://www.isc.org/downloads/bind/
+Original-Maintainer: Debian DNS Team <team+dns@tracker.debian.org>
+
+Package: bind9-host
+Status: install ok installed
+Priority: standard
+Section: net
+Installed-Size: 155
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Source: bind9
+Version: 1:9.16.1-0ubuntu2.11
+Replaces: bind-host (<< 1:9.13.6~)
+Provides: host
+Depends: bind9-libs (>= 1:9.16.1), libc6 (>= 2.4), libidn2-0 (>= 2.0.0), libssl1.1 (>= 1.1.0)
+Breaks: bind-host (<< 1:9.13.6~)
+Description: DNS Lookup Utility
+ This package provides the 'host' DNS lookup utility in the form that
+ is bundled with the BIND 9 sources.
+Homepage: https://www.isc.org/downloads/bind/
+Original-Maintainer: Debian DNS Team <team+dns@tracker.debian.org>
+
+Package: bind9-libs
+Status: install ok installed
+Priority: standard
+Section: libs
+Installed-Size: 3331
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: same
+Source: bind9
+Version: 1:9.16.1-0ubuntu2.11
+Replaces: bind-libs (<< 1:9.13.6~)
+Depends: libc6 (>= 2.17), libgssapi-krb5-2 (>= 1.17), libjson-c4 (>= 0.13.1), libkrb5-3 (>= 1.6.dfsg.2), liblmdb0 (>= 0.9.7), libmaxminddb0 (>= 1.3.0), libssl1.1 (>= 1.1.1), libuv1 (>= 1.20.2), libxml2 (>= 2.7.4)
+Breaks: bind-libs (<< 1:9.13.6~)
+Description: Shared Libraries used by BIND 9
+ The Berkeley Internet Name Domain (BIND 9) implements an Internet domain
+ name server.  BIND 9 is the most widely-used name server software on the
+ Internet, and is supported by the Internet Software Consortium, www.isc.org.
+ .
+ This package contains a bundle of shared libraries used by BIND 9.
+Homepage: https://www.isc.org/downloads/bind/
+Original-Maintainer: Debian DNS Team <team+dns@tracker.debian.org>
+
+Package: binutils
+Status: install ok installed
+Priority: optional
+Section: devel
+Installed-Size: 107
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 2.34-6ubuntu1.3
+Provides: binutils-gold, elf-binutils
+Depends: binutils-common (= 2.34-6ubuntu1.3), libbinutils (= 2.34-6ubuntu1.3), binutils-x86-64-linux-gnu (= 2.34-6ubuntu1.3)
+Suggests: binutils-doc (>= 2.34-6ubuntu1.3)
+Conflicts: binutils-mingw-w64-i686 (<< 2.23.52.20130612-1+3), binutils-mingw-w64-x86-64 (<< 2.23.52.20130612-1+3), binutils-multiarch (<< 2.27-8), modutils (<< 2.4.19-1)
+Description: GNU assembler, linker and binary utilities
+ The programs in this package are used to assemble, link and manipulate
+ binary and object files.  They may be used in conjunction with a compiler
+ and various libraries to build programs.
+Homepage: https://www.gnu.org/software/binutils/
+Original-Maintainer: Matthias Klose <doko@debian.org>
+
+Package: binutils-common
+Status: install ok installed
+Priority: optional
+Section: devel
+Installed-Size: 424
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: same
+Source: binutils
+Version: 2.34-6ubuntu1.3
+Replaces: binutils (<< 2.29.1-3.1~)
+Breaks: binutils (<< 2.29.1-3.1~)
+Description: Common files for the GNU assembler, linker and binary utilities
+ This package contains the localization files used by binutils packages for
+ various target architectures and parts of the binutils documentation. It is
+ not useful on its own.
+Homepage: https://www.gnu.org/software/binutils/
+Original-Maintainer: Matthias Klose <doko@debian.org>
+
+Package: binutils-x86-64-linux-gnu
+Status: install ok installed
+Priority: optional
+Section: devel
+Installed-Size: 9848
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: allowed
+Source: binutils
+Version: 2.34-6ubuntu1.3
+Replaces: binutils (<< 2.29-6)
+Depends: binutils-common (= 2.34-6ubuntu1.3), libbinutils (= 2.34-6ubuntu1.3), libc6 (>= 2.27), libctf-nobfd0 (>= 2.33.50), libctf0 (>= 2.33.50), libgcc-s1 (>= 3.0), libstdc++6 (>= 5.2), zlib1g (>= 1:1.1.4)
+Suggests: binutils-doc (= 2.34-6ubuntu1.3)
+Breaks: binutils (<< 2.29-6)
+Description: GNU binary utilities, for x86-64-linux-gnu target
+ This package provides GNU assembler, linker and binary utilities
+ for the x86-64-linux-gnu target.
+ .
+ You don't need this package unless you plan to cross-compile programs
+ for x86-64-linux-gnu and x86-64-linux-gnu is not your native platform.
+Homepage: https://www.gnu.org/software/binutils/
+Original-Maintainer: Matthias Klose <doko@debian.org>
+
+Package: bolt
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 521
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 0.9.1-2~ubuntu20.04.1
+Depends: libc6 (>= 2.28), libglib2.0-0 (>= 2.56), libpolkit-gobject-1-0 (>= 0.99), libudev1 (>= 183)
+Description: system daemon to manage thunderbolt 3 devices
+ Thunderbolt 3 features different security modes that require
+ devices to be authorized before they can be used. The D-Bus API can be
+ used to list devices, enroll them (authorize and store them in the
+ local database) and forget them again (remove previously enrolled
+ devices). It also emits signals if new devices are connected (or
+ removed). During enrollment devices can be set to be automatically
+ authorized as soon as they are connected.  A command line tool, called
+ boltctl, can be used to control the daemon and perform all the above
+ mentioned tasks.
+Original-Maintainer: Debian freedesktop.org maintainers <pkg-freedesktop-maintainers@lists.alioth.debian.org>
+Homepage: https://gitlab.freedesktop.org/bolt/bolt
+
+Package: bsdmainutils
+Status: install ok installed
+Priority: important
+Section: utils
+Installed-Size: 637
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 11.1.2ubuntu3
+Depends: libbsd0 (>= 0.2.0), libc6 (>= 2.14), libtinfo6 (>= 6), bsdutils (>= 3.0-0), debianutils (>= 1.8)
+Suggests: cpp, wamerican | wordlist, whois, vacation
+Breaks: bsdutils (<< 1:2.13-11)
+Conffiles:
+ /etc/calendar/default f499e79b0d2d685aa5ae7e1013940b96
+ /etc/cron.daily/bsdmainutils 559387f792462a62e3efb1d573e38d11
+ /etc/default/bsdmainutils bded239f4fea461cc5c92c3bd5a28cc9
+Description: collection of more utilities from FreeBSD
+ This package contains lots of small programs many people expect to find when
+ they use a BSD-style Unix system.
+ .
+ It provides banner (as printerbanner), calendar, col, colcrt, colrm, column,
+ from (as bsd-from), hexdump (or hd), look, lorder, ncal (or cal), ul, and
+ write (as bsd-write).
+ .
+ This package used to contain whois and vacation, which are now distributed in
+ their own packages. Also here was tsort, which is now in the "coreutils"
+ package.
+Original-Maintainer: Debian Bsdmainutils Team <pkg-bsdmainutils@teams.debian.net>
+
+Package: bsdutils
+Essential: yes
+Status: install ok installed
+Priority: required
+Section: utils
+Installed-Size: 304
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Source: util-linux (2.34-0.1ubuntu9.3)
+Version: 1:2.34-0.1ubuntu9.3
+Replaces: bash-completion (<< 1:2.1-4.1~)
+Pre-Depends: libc6 (>= 2.17), libsystemd0
+Recommends: bsdmainutils
+Breaks: bash-completion (<< 1:2.1-4.1~)
+Description: basic utilities from 4.4BSD-Lite
+ This package contains the bare minimum of BSD utilities needed for a
+ Debian system: logger, renice, script, scriptreplay, and wall. The
+ remaining standard BSD utilities are provided by bsdmainutils.
+Original-Maintainer: LaMont Jones <lamont@debian.org>
+
+Package: btrfs-progs
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 4016
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 5.4.1-2
+Depends: libblkid1 (>= 2.17.2), libc6 (>= 2.8), libcom-err2 (>= 1.43.9), libext2fs2 (>= 1.42), liblzo2-2 (>= 2.02), libuuid1 (>= 2.16), libzstd1 (>= 1.3.2), zlib1g (>= 1:1.2.0)
+Suggests: duperemove
+Breaks: btrbk (<= 0.25.0), libgcc-s1 (<< 10-20200211)
+Description: Checksumming Copy on Write Filesystem utilities
+ Btrfs is a new copy on write filesystem for Linux aimed at implementing
+ advanced features while focusing on fault tolerance, repair and easy
+ administration.
+ .
+ This package contains utilities (mkfs, fsck) used to work with btrfs
+ and an utility (btrfs-convert) to make a btrfs filesystem from an ext3.
+Original-Maintainer: Adam Borowski <kilobyte@angband.pl>
+Homepage: http://btrfs.wiki.kernel.org/
+
+Package: build-essential
+Status: install ok installed
+Priority: optional
+Section: devel
+Installed-Size: 21
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 12.8ubuntu1.1
+Depends: libc6-dev | libc-dev, gcc (>= 4:9.2), g++ (>= 4:9.2), make, dpkg-dev (>= 1.17.11)
+Description: Informational list of build-essential packages
+ If you do not plan to build Debian packages, you don't need this
+ package.  Starting with dpkg (>= 1.14.18) this package is required
+ for building Debian packages.
+ .
+ This package contains an informational list of packages which are
+ considered essential for building Debian packages.  This package also
+ depends on the packages on that list, to make it easy to have the
+ build-essential packages installed.
+ .
+ If you have this package installed, you only need to install whatever
+ a package specifies as its build-time dependencies to build the
+ package.  Conversely, if you are determining what your package needs
+ to build-depend on, you can always leave out the packages this
+ package depends on.
+ .
+ This package is NOT the definition of what packages are
+ build-essential; the real definition is in the Debian Policy Manual.
+ This package contains merely an informational list, which is all
+ most people need.   However, if this package and the manual disagree,
+ the manual is correct.
+Original-Maintainer: Matthias Klose <doko@debian.org>
+
+Package: busybox-initramfs
+Status: install ok installed
+Priority: optional
+Section: shells
+Installed-Size: 368
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Source: busybox
+Version: 1:1.30.1-4ubuntu6.4
+Depends: libc6 (>= 2.28)
+Description: Standalone shell setup for initramfs
+ BusyBox combines tiny versions of many common UNIX utilities into a single
+ small executable. It provides minimalist replacements for the most common
+ utilities you would usually find on your desktop system (i.e., ls, cp, mv,
+ mount, tar, etc.). The utilities in BusyBox generally have fewer options than
+ their full-featured GNU cousins; however, the options that are included
+ provide the expected functionality and behave very much like their GNU
+ counterparts.
+ .
+ busybox-initramfs provides a simple stand alone shell that provides
+ only the basic utilities needed for the initramfs.
+Homepage: http://www.busybox.net
+Original-Maintainer: Debian Install System Team <debian-boot@lists.debian.org>
+
+Package: busybox-static
+Status: install ok installed
+Priority: optional
+Section: shells
+Installed-Size: 2224
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Source: busybox
+Version: 1:1.30.1-4ubuntu6.4
+Replaces: busybox
+Provides: busybox
+Conflicts: busybox
+Description: Standalone rescue shell with tons of builtin utilities
+ BusyBox combines tiny versions of many common UNIX utilities into a single
+ small executable. It provides minimalist replacements for the most common
+ utilities you would usually find on your desktop system (i.e., ls, cp, mv,
+ mount, tar, etc.).  The utilities in BusyBox generally have fewer options than
+ their full-featured GNU cousins; however, the options that are included
+ provide the expected functionality and behave very much like their GNU
+ counterparts.
+ .
+ busybox-static provides you with a statically linked simple stand alone shell
+ that provides all the utilities available in BusyBox. This package is
+ intended to be used as a rescue shell, in the event that you screw up your
+ system. Invoke "busybox sh" and you have a standalone shell ready to save
+ your system from certain destruction. Invoke "busybox", and it will list the
+ available builtin commands.
+Built-Using: glibc (= 2.31-0ubuntu9)
+Homepage: http://www.busybox.net
+Original-Maintainer: Debian Install System Team <debian-boot@lists.debian.org>
+
+Package: byobu
+Status: install ok installed
+Priority: optional
+Section: misc
+Installed-Size: 624
+Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
+Architecture: all
+Version: 5.133-0ubuntu1
+Replaces: bikeshed (<< 1.64), byobu-extras (<< 2.17), screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0)
+Provides: byobu-extras, screen-profiles, screen-profiles-extras
+Depends: debconf (>= 0.5) | debconf-2.0, python3:any, gettext-base, iproute2, python3, python3-newt, tmux (>= 1.5), gawk
+Recommends: less, pastebinit, sensible-utils, run-one
+Suggests: apport, ccze, gnome-terminal | xterm, gnupg, lsb-release, po-debconf, screen, speedometer, ttf-ubuntu-font-family (>= 0.80-0ubuntu1~medium), update-notifier-common, vim, wireless-tools
+Breaks: bikeshed (<< 1.64), byobu-extras (<< 2.17), screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0)
+Enhances: screen
+Conffiles:
+ /etc/byobu/backend 9f19a0102abedf38ec2174039d0d0d6d
+ /etc/byobu/socketdir 774a796c75a097ffd7c5c7492cb39568
+ /etc/profile.d/Z97-byobu.sh d3fffff67e2a324cc1111f05cb9cc53b
+Description: text window manager, shell multiplexer, integrated DevOps environment
+ Byobu is Ubuntu's powerful text-based window manager, shell multiplexer, and
+ integrated DevOps environment.
+ .
+ Using Byobu, you can quickly create and move between different windows
+ over a single SSH connection or TTY terminal, split each of those windows into
+ multiple panes, monitor dozens of important statistics about your system,
+ detach and reattach to sessions later while your programs continue to run in
+ the background.
+Homepage: http://byobu.org
+
+Package: bzip2
+Status: install ok installed
+Priority: important
+Section: utils
+Installed-Size: 195
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 1.0.8-2
+Replaces: libbz2 (<< 0.9.5d-3)
+Depends: libbz2-1.0 (= 1.0.8-2), libc6 (>= 2.14)
+Suggests: bzip2-doc
+Description: high-quality block-sorting file compressor - utilities
+ bzip2 is a freely available, patent free, data compressor.
+ .
+ bzip2 compresses files using the Burrows-Wheeler block-sorting text
+ compression algorithm, and Huffman coding.  Compression is generally
+ considerably better than that achieved by more conventional
+ LZ77/LZ78-based compressors, and approaches the performance of the PPM
+ family of statistical compressors.
+ .
+ The archive file format of bzip2 (.bz2) is incompatible with that of its
+ predecessor, bzip (.bz).
+Original-Maintainer: Anibal Monsalve Salazar <anibal@debian.org>
+Homepage: https://sourceware.org/bzip2/
+
+Package: ca-certificates
+Status: install ok installed
+Priority: important
+Section: misc
+Installed-Size: 375
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 20211016~20.04.1
+Depends: openssl (>= 1.1.1), debconf (>= 0.5) | debconf-2.0
+Breaks: ca-certificates-java (<< 20121112+nmu1)
+Enhances: openssl
+Description: Common CA certificates
+ Contains the certificate authorities shipped with Mozilla's browser to allow
+ SSL-based applications to check for the authenticity of SSL connections.
+ .
+ Please note that Debian can neither confirm nor deny whether the
+ certificate authorities whose certificates are included in this package
+ have in any way been audited for trustworthiness or RFC 3647 compliance.
+ Full responsibility to assess them belongs to the local system
+ administrator.
+Original-Maintainer: Michael Shuler <michael@pbandjelly.org>
+
+Package: cifs-utils
+Status: install ok installed
+Priority: optional
+Section: otherosfs
+Installed-Size: 307
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 2:6.9-1ubuntu0.2
+Replaces: smbfs (<< 2:4.0~rc1-1)
+Depends: libc6 (>= 2.17), libcap-ng0 (>= 0.7.9), libkeyutils1 (>= 1.4), libkrb5-3 (>= 1.13~alpha1+dfsg), libpam0g (>= 0.99.7.1), libtalloc2 (>= 2.0.4~git20101213), libwbclient0 (>= 2:4.0.3+dfsg1)
+Suggests: keyutils, smbclient, winbind
+Conffiles:
+ /etc/request-key.d/cifs.idmap.conf 4c95734a68b45b65a5dc7b108836427b
+ /etc/request-key.d/cifs.spnego.conf db5289bad3063aea58e1814380259a28
+Description: Common Internet File System utilities
+ The SMB/CIFS protocol provides support for cross-platform file sharing with
+ Microsoft Windows, OS X, and other Unix systems.
+ .
+ This package provides utilities for managing mounts of CIFS network
+ file systems.
+Homepage: https://www.samba.org/~jlayton/cifs-utils/
+Original-Maintainer: Debian Samba Maintainers <pkg-samba-maint@lists.alioth.debian.org>
+
+Package: command-not-found
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 36
+Maintainer: Michael Vogt <michael.vogt@ubuntu.com>
+Architecture: all
+Version: 20.04.6
+Depends: python3-commandnotfound (= 20.04.6)
+Suggests: snapd
+Conffiles:
+ /etc/apt/apt.conf.d/50command-not-found 9bf399a111915919e5c6952f64a6f5eb
+ /etc/zsh_command_not_found 373832ecdbbde52cf4610789e940f10f
+Description: Suggest installation of packages in interactive bash sessions
+ This package will install a handler for command_not_found that looks up
+ programs not currently installed but available from the repositories.
+Original-Maintainer: Zygmunt Krynicki <zkrynicki@gmail.com>
+
+Package: console-setup
+Status: install ok installed
+Priority: important
+Section: utils
+Installed-Size: 428
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 1.194ubuntu3
+Depends: console-setup-linux | console-setup-freebsd | hurd, xkb-data (>= 0.9), keyboard-configuration (= 1.194ubuntu3)
+Pre-Depends: debconf (>= 1.5.34)
+Suggests: lsb-base (>= 3.0-6), locales
+Breaks: lsb (<< 2.0-6), lsb-base (<< 3.0-6), lsb-core (<< 2.0-6)
+Conflicts: console-setup-mini
+Description: console font and keymap setup program
+ This package provides the console with the same keyboard
+ configuration scheme as the X Window System. As a result, there is no
+ need to duplicate or change the keyboard files just to make simple
+ customizations such as the use of dead keys, the key functioning as
+ AltGr or Compose key, the key(s) to switch between Latin and
+ non-Latin mode, etc.
+ .
+ The package also installs console fonts supporting many of the
+ world's languages.  It provides an unified set of font faces - the
+ classic VGA, the simplistic Fixed, and the cleaned Terminus,
+ TerminusBold and TerminusBoldVGA.
+Original-Maintainer: Debian Install System Team <debian-boot@lists.debian.org>
+
+Package: console-setup-linux
+Status: install ok installed
+Priority: important
+Section: utils
+Installed-Size: 1766
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Source: console-setup
+Version: 1.194ubuntu3
+Replaces: console-setup (<< 1.71), console-terminus
+Provides: console-terminus
+Depends: kbd (>= 0.99-12) | console-tools (>= 1:0.2.3-16), keyboard-configuration (= 1.194ubuntu3), init-system-helpers (>= 1.29~) | initscripts
+Suggests: console-setup
+Breaks: console-cyrillic (<= 0.9-11), console-setup (<< 1.71), console-terminus
+Conflicts: console-setup-freebsd
+Conffiles:
+ /etc/console-setup/compose.ARMSCII-8.inc fef36b61fb8b1cacc151ad3db127f777
+ /etc/console-setup/compose.CP1251.inc fef88d8c8dd4c726498003fd3cd84a7f
+ /etc/console-setup/compose.CP1255.inc c972a2e90938657e97b643366b98b2ed
+ /etc/console-setup/compose.CP1256.inc 5ea5e4d41da7a88f742863810e86144b
+ /etc/console-setup/compose.GEORGIAN-ACADEMY.inc b6d80f40abff7e8af236796ebaca0247
+ /etc/console-setup/compose.GEORGIAN-PS.inc cf45272b6bf35a22223b132600dc36c3
+ /etc/console-setup/compose.IBM1133.inc a31102602f7e7cab9738022b6c5469ae
+ /etc/console-setup/compose.ISIRI-3342.inc 5ada7fbba750192f11fa238add232ba9
+ /etc/console-setup/compose.ISO-8859-1.inc 28f20a64f3f0b175cfaec4bce07465c2
+ /etc/console-setup/compose.ISO-8859-10.inc e5fce59617c839b56574c9e323d34686
+ /etc/console-setup/compose.ISO-8859-11.inc ad2f3cc7ee64602a790bad8a2a989243
+ /etc/console-setup/compose.ISO-8859-13.inc 5e9ad266f17ff2a0281a870079bc8284
+ /etc/console-setup/compose.ISO-8859-14.inc 360a44f83e8f8c9d463c9400dcc60de4
+ /etc/console-setup/compose.ISO-8859-15.inc 695ec832355223fb036629e4e6a9a963
+ /etc/console-setup/compose.ISO-8859-16.inc 8245c19b5262d8d23ca856587739eb20
+ /etc/console-setup/compose.ISO-8859-2.inc c93ffa7f80e22c04c94e89a0cd742458
+ /etc/console-setup/compose.ISO-8859-3.inc 67b8fafc842a4dc9b3bc0c06af394834
+ /etc/console-setup/compose.ISO-8859-4.inc aba127ff3df5159c3070617a7efac46c
+ /etc/console-setup/compose.ISO-8859-5.inc f861a4b0403490677e6d400f2d7129da
+ /etc/console-setup/compose.ISO-8859-6.inc 41ea36ea1c1a1c0c9bebdf0016395e1f
+ /etc/console-setup/compose.ISO-8859-7.inc 8f48a9f7c9f69ca828edbd7b276fe406
+ /etc/console-setup/compose.ISO-8859-8.inc 9cceaa9f3312f89aba371d3c893f4e7b
+ /etc/console-setup/compose.ISO-8859-9.inc 05aae7589b5062a53f346f721cb0f7d3
+ /etc/console-setup/compose.KOI8-R.inc 8cfd7766b86e5e55d6e71d0d95519c92
+ /etc/console-setup/compose.KOI8-U.inc 217ee62f6982736276f41f760f8622f8
+ /etc/console-setup/compose.TIS-620.inc 31b73af83ef3993c128e2b983b9eaf89
+ /etc/console-setup/compose.VISCII.inc e4ffc74868adf4cc39ba61dd99581899
+ /etc/console-setup/remap.inc b72cfe32ffa93987f74c5cec9ac180fd
+ /etc/console-setup/vtrgb 1fb3c13c4fcfa8cc4131aba905df559e
+ /etc/console-setup/vtrgb.vga 302837772c14006c7956211e184acfbd
+ /etc/init.d/console-setup.sh 510488b5120b580b673a15b75a5498b0
+ /etc/init.d/keyboard-setup.sh b868200c6e36ef87e27ead9a3ddad2db
+Description: Linux specific part of console-setup
+ This package includes fonts in psf format and definitions of various
+ 8-bit charmaps.
+Original-Maintainer: Debian Install System Team <debian-boot@lists.debian.org>
+
+Package: coreutils
+Essential: yes
+Status: install ok installed
+Priority: required
+Section: utils
+Installed-Size: 7196
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 8.30-3ubuntu2
+Pre-Depends: libacl1 (>= 2.2.23), libattr1 (>= 1:2.4.44), libc6 (>= 2.28), libselinux1 (>= 2.1.13)
+Description: GNU core utilities
+ This package contains the basic file, shell and text manipulation
+ utilities which are expected to exist on every operating system.
+ .
+ Specifically, this package includes:
+ arch base64 basename cat chcon chgrp chmod chown chroot cksum comm cp
+ csplit cut date dd df dir dircolors dirname du echo env expand expr
+ factor false flock fmt fold groups head hostid id install join link ln
+ logname ls md5sum mkdir mkfifo mknod mktemp mv nice nl nohup nproc numfmt
+ od paste pathchk pinky pr printenv printf ptx pwd readlink realpath rm
+ rmdir runcon sha*sum seq shred sleep sort split stat stty sum sync tac
+ tail tee test timeout touch tr true truncate tsort tty uname unexpand
+ uniq unlink users vdir wc who whoami yes
+Homepage: http://gnu.org/software/coreutils
+Original-Maintainer: Michael Stone <mstone@debian.org>
+
+Package: cpio
+Status: install ok installed
+Priority: important
+Section: utils
+Installed-Size: 368
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 2.13+dfsg-2ubuntu0.3
+Replaces: cpio-mt
+Depends: libc6 (>= 2.17)
+Suggests: libarchive1
+Conflicts: cpio-mt, mt-st (<< 0.6)
+Description: GNU cpio -- a program to manage archives of files
+ GNU cpio is a tool for creating and extracting archives, or copying
+ files from one place to another.  It handles a number of cpio formats
+ as well as reading and writing tar files.
+Homepage: https://www.gnu.org/software/cpio/
+Original-Maintainer: Anibal Monsalve Salazar <anibal@debian.org>
+
+Package: cpp
+Status: install ok installed
+Priority: optional
+Section: interpreters
+Installed-Size: 64
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: allowed
+Source: gcc-defaults (1.185.1ubuntu2)
+Version: 4:9.3.0-1ubuntu2
+Depends: cpp-9 (>= 9.3.0-3~)
+Suggests: cpp-doc
+Conflicts: cpp-doc (<< 1:2.95.3)
+Description: GNU C preprocessor (cpp)
+ The GNU C preprocessor is a macro processor that is used automatically
+ by the GNU C compiler to transform programs before actual compilation.
+ .
+ This package has been separated from gcc for the benefit of those who
+ require the preprocessor but not the compiler.
+ .
+ This is a dependency package providing the default GNU C preprocessor.
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+
+Package: cpp-9
+Status: install ok installed
+Priority: optional
+Section: interpreters
+Installed-Size: 26238
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Source: gcc-9
+Version: 9.4.0-1ubuntu1~20.04.1
+Depends: gcc-9-base (= 9.4.0-1ubuntu1~20.04.1), libc6 (>= 2.14), libgmp10 (>= 2:5.0.1~), libisl22 (>= 0.15), libmpc3, libmpfr6 (>= 3.1.3), zlib1g (>= 1:1.1.4)
+Suggests: gcc-9-locales (>= 8)
+Breaks: hardening-wrapper (<< 2.8+nmu3), libmagics++-dev (<< 2.28.0-4)
+Description: GNU C preprocessor
+ A macro processor that is used automatically by the GNU C compiler
+ to transform programs before actual compilation.
+ .
+ This package has been separated from gcc for the benefit of those who
+ require the preprocessor but not the compiler.
+Homepage: http://gcc.gnu.org/
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+
+Package: crda
+Status: install ok installed
+Priority: optional
+Section: net
+Installed-Size: 265
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 3.18-1build1
+Depends: libc6 (>= 2.7), libnl-3-200 (>= 3.2.7), libnl-genl-3-200 (>= 3.2.7), libssl1.1 (>= 1.1.0), wireless-regdb, iw (>= 3.2-1~)
+Conffiles:
+ /etc/default/crda d1f1468521b60cdfc0b9d22d5a74975a
+Description: wireless Central Regulatory Domain Agent
+ This package provides a Central Regulatory Domain Agent (CRDA) to be used by
+ the Linux kernel cfg80211 wireless subsystem to query and apply the regulatory
+ domain settings wireless devices may operate within for a given location.
+ .
+ CRDA queries operational frequency regulations stored within the regulatory
+ database provided by the wireless-regdb package.
+Homepage: https://wireless.wiki.kernel.org/en/developers/Regulatory/CRDA
+Original-Maintainer: Ben Hutchings <ben@decadent.org.uk>
+
+Package: cron
+Status: install ok installed
+Priority: standard
+Section: admin
+Installed-Size: 262
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 3.0pl1-136ubuntu1
+Provides: cron-daemon
+Depends: libc6 (>= 2.7), libpam0g (>= 0.99.7.1), libselinux1 (>= 2.0.82), debianutils (>= 1.7), sensible-utils, adduser, lsb-base (>= 3.0-10), libpam-runtime (>= 1.0.1-11)
+Pre-Depends: init-system-helpers (>= 1.54~)
+Suggests: anacron (>= 2.0-1), logrotate, checksecurity, default-mta | mail-transport-agent
+Conffiles:
+ /etc/cron.d/.placeholder e5e12910bf011222160404d7bdb824f2
+ /etc/cron.daily/.placeholder e5e12910bf011222160404d7bdb824f2
+ /etc/cron.hourly/.placeholder e5e12910bf011222160404d7bdb824f2
+ /etc/cron.monthly/.placeholder e5e12910bf011222160404d7bdb824f2
+ /etc/cron.weekly/.placeholder e5e12910bf011222160404d7bdb824f2
+ /etc/crontab 44df62f8c671c9306af920e2839cda53
+ /etc/default/cron bc9ab63f9e143d7338909d50494d552f
+ /etc/init.d/cron 4824366b523de668591f5b6e258c7043
+ /etc/pam.d/cron 11e788a7f7cd5477b10da2c7fd5ecdf0
+Description: process scheduling daemon
+ The cron daemon is a background process that runs particular programs at
+ particular times (for example, every minute, day, week, or month), as
+ specified in a crontab. By default, users may also create crontabs of
+ their own so that processes are run on their behalf.
+ .
+ Output from the commands is usually mailed to the system administrator
+ (or to the user in question); you should probably install a mail system
+ as well so that you can receive these messages.
+ .
+ This cron package does not provide any system maintenance tasks. Basic
+ periodic maintenance tasks are provided by other packages, such
+ as checksecurity.
+Homepage: https://ftp.isc.org/isc/cron/
+Original-Maintainer: Javier Fernández-Sanguino Peña <jfs@debian.org>
+
+Package: cryptsetup
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 398
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 2:2.2.2-3ubuntu2.4
+Replaces: cryptsetup-run (<< 2:2.1.0-6)
+Depends: cryptsetup-bin (>= 2:1.6.0), dmsetup, debconf (>= 0.5) | debconf-2.0, libc6 (>= 2.15)
+Recommends: cryptsetup-initramfs, cryptsetup-run
+Suggests: dosfstools, keyutils, liblocale-gettext-perl
+Breaks: cryptsetup-run (<< 2:2.1.0-6)
+Conffiles:
+ /etc/default/cryptdisks 3e3b2248193105b5ecd9456c01ef3736
+ /etc/init.d/cryptdisks 8dd64a17dcefb1dd1a60eec286a6b502
+ /etc/init.d/cryptdisks-early 9c68271b34d88afd2764cdb203af9bd1
+Description: disk encryption support - startup scripts
+ Cryptsetup provides an interface for configuring encryption on block
+ devices (such as /home or swap partitions), using the Linux kernel
+ device mapper target dm-crypt. It features integrated Linux Unified Key
+ Setup (LUKS) support.
+ .
+ Cryptsetup is backwards compatible with the on-disk format of cryptoloop,
+ but also supports more secure formats. This package includes support for
+ automatically configuring encrypted devices at boot time via the config
+ file /etc/crypttab. Additional features are cryptoroot support through
+ initramfs-tools and several supported ways to read a passphrase or key.
+ .
+ This package provides the cryptdisk_start and stop wrappers and
+ luksformat.
+Homepage: https://gitlab.com/cryptsetup/cryptsetup
+Original-Maintainer: Debian Cryptsetup Team <pkg-cryptsetup-devel@alioth-lists.debian.net>
+
+Package: cryptsetup-bin
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 544
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Source: cryptsetup
+Version: 2:2.2.2-3ubuntu2.4
+Depends: libblkid1 (>= 2.24.2), libc6 (>= 2.25), libcryptsetup12 (>= 2:2.2), libpopt0 (>= 1.14), libuuid1 (>= 2.16)
+Description: disk encryption support - command line tools
+ Cryptsetup provides an interface for configuring encryption on block
+ devices (such as /home or swap partitions), using the Linux kernel
+ device mapper target dm-crypt. It features integrated Linux Unified Key
+ Setup (LUKS) support.
+ .
+ This package provides cryptsetup, cryptsetup-reencrypt, integritysetup
+ and veritysetup.
+Homepage: https://gitlab.com/cryptsetup/cryptsetup
+Original-Maintainer: Debian Cryptsetup Team <pkg-cryptsetup-devel@alioth-lists.debian.net>
+
+Package: cryptsetup-initramfs
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 155
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Source: cryptsetup
+Version: 2:2.2.2-3ubuntu2.4
+Replaces: cryptsetup (<< 2:2.0.3-1)
+Depends: busybox-initramfs, cryptsetup (>= 2:2.2.2-3ubuntu2.4), initramfs-tools (>= 0.129) | linux-initramfs-tool, debconf (>= 0.5) | debconf-2.0
+Recommends: console-setup, kbd, plymouth
+Breaks: cryptsetup (<< 2:2.0.3-1)
+Conffiles:
+ /etc/cryptsetup-initramfs/conf-hook 8a076f5d9da94980261345d1bf16fece
+Description: disk encryption support - initramfs integration
+ Cryptsetup provides an interface for configuring encryption on block
+ devices (such as /home or swap partitions), using the Linux kernel
+ device mapper target dm-crypt. It features integrated Linux Unified Key
+ Setup (LUKS) support.
+ .
+ This package provides initramfs integration for cryptsetup.
+Homepage: https://gitlab.com/cryptsetup/cryptsetup
+Original-Maintainer: Debian Cryptsetup Team <pkg-cryptsetup-devel@alioth-lists.debian.net>
+
+Package: cryptsetup-run
+Status: install ok installed
+Priority: optional
+Section: oldlibs
+Installed-Size: 78
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Source: cryptsetup
+Version: 2:2.2.2-3ubuntu2.4
+Depends: cryptsetup (>= 2:2.1.0-6)
+Description: transitional dummy package for cryptsetup
+ This is a transitional dummy package to get upgrading systems to install the
+ cryptsetup package. It can safely be removed once no other package depends on
+ it.
+Homepage: https://gitlab.com/cryptsetup/cryptsetup
+Original-Maintainer: Debian Cryptsetup Team <pkg-cryptsetup-devel@alioth-lists.debian.net>
+
+Package: curl
+Status: install ok installed
+Priority: optional
+Section: web
+Installed-Size: 403
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 7.68.0-1ubuntu2.14
+Depends: libc6 (>= 2.17), libcurl4 (= 7.68.0-1ubuntu2.14), zlib1g (>= 1:1.1.4)
+Description: command line tool for transferring data with URL syntax
+ curl is a command line tool for transferring data with URL syntax, supporting
+ DICT, FILE, FTP, FTPS, GOPHER, HTTP, HTTPS, IMAP, IMAPS, LDAP, LDAPS, POP3,
+ POP3S, RTMP, RTSP, SCP, SFTP, SMTP, SMTPS, TELNET and TFTP.
+ .
+ curl supports SSL certificates, HTTP POST, HTTP PUT, FTP uploading, HTTP form
+ based upload, proxies, cookies, user+password authentication (Basic, Digest,
+ NTLM, Negotiate, kerberos...), file transfer resume, proxy tunneling and a
+ busload of other useful tricks.
+Homepage: http://curl.haxx.se
+Original-Maintainer: Alessandro Ghedini <ghedo@debian.org>
+
+Package: dash
+Essential: yes
+Status: install ok installed
+Priority: required
+Section: shells
+Installed-Size: 212
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 0.5.10.2-6
+Depends: debianutils (>= 2.15), dpkg (>= 1.19.1), debconf (>= 0.5) | debconf-2.0
+Pre-Depends: libc6 (>= 2.14)
+Description: POSIX-compliant shell
+ The Debian Almquist Shell (dash) is a POSIX-compliant shell derived
+ from ash.
+ .
+ Since it executes scripts faster than bash, and has fewer library
+ dependencies (making it more robust against software or hardware
+ failures), it is used as the default system shell on Debian systems.
+Original-Maintainer: Andrej Shadura <andrewsh@debian.org>
+Homepage: http://gondor.apana.org.au/~herbert/dash/
+
+Package: dbus
+Status: install ok installed
+Priority: standard
+Section: admin
+Installed-Size: 619
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 1.12.16-2ubuntu2.3
+Provides: dbus-bin (= 1.12.16-2ubuntu2.3), dbus-system-bus (= 1.12.16-2ubuntu2.3)
+Depends: adduser, libapparmor1 (>= 2.8.94), libaudit1 (>= 1:2.2.1), libc6 (>= 2.14), libcap-ng0 (>= 0.7.9), libdbus-1-3 (= 1.12.16-2ubuntu2.3), libexpat1 (>= 2.1~beta3), libselinux1 (>= 2.0.65), libsystemd0
+Suggests: default-dbus-session-bus | dbus-session-bus
+Conffiles:
+ /etc/default/dbus 0d0f25a2f993509c857eb262f6e22015
+ /etc/init.d/dbus d78b20b35de983cf6f1475dcf8cb21a1
+Description: simple interprocess messaging system (daemon and utilities)
+ D-Bus is a message bus, used for sending messages between applications.
+ Conceptually, it fits somewhere in between raw sockets and CORBA in
+ terms of complexity.
+ .
+ D-Bus supports broadcast messages, asynchronous messages (thus
+ decreasing latency), authentication, and more. It is designed to be
+ low-overhead; messages are sent using a binary protocol, not using
+ XML. D-Bus also supports a method call mapping for its messages, but
+ it is not required; this makes using the system quite simple.
+ .
+ It comes with several bindings, including GLib, Python, Qt and Java.
+ .
+ This package contains the D-Bus daemon and related utilities.
+ .
+ The client-side library can be found in the libdbus-1-3 package, as it is no
+ longer contained in this package.
+Homepage: http://dbus.freedesktop.org/
+Original-Maintainer: Utopia Maintenance Team <pkg-utopia-maintainers@lists.alioth.debian.org>
+
+Package: dbus-user-session
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 127
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Source: dbus
+Version: 1.12.16-2ubuntu2.3
+Provides: dbus-session-bus, default-dbus-session-bus
+Depends: dbus (>= 1.12.16-2ubuntu2.3), libpam-systemd, systemd
+Recommends: systemd-sysv
+Breaks: dbus-x11 (<< 1.9.10-2~), policykit-1 (<< 0.105-12~), udisks2 (<< 2.1.5-2~)
+Conffiles:
+ /etc/X11/Xsession.d/20dbus_xdg-runtime a10c47d15857ae4b557dc7e062f6e6f1
+Description: simple interprocess messaging system (systemd --user integration)
+ D-Bus is a message bus, used for sending messages between applications.
+ Conceptually, it fits somewhere in between raw sockets and CORBA in
+ terms of complexity.
+ .
+ On systemd systems, this package opts in to the session model in which
+ a user's session starts the first time they log in, and does not end
+ until all their login sessions have ended. This model merges all
+ parallel non-graphical login sessions (text mode, ssh, cron, etc.), and up
+ to one graphical session, into a single "user-session" or "super-session"
+ within which all background D-Bus services are shared.
+ .
+ Multiple graphical sessions per user are not currently supported in this
+ mode; as a result, it is particularly suitable for gdm, which responds to
+ requests to open a parallel graphical session by switching to the existing
+ graphical session and unlocking it.
+ .
+ To retain dbus' traditional session semantics, in which login sessions
+ are artificially isolated from each other, remove this package and install
+ dbus-x11 instead.
+ .
+ See the dbus package description for more information about D-Bus in general.
+Homepage: http://dbus.freedesktop.org/
+Original-Maintainer: Utopia Maintenance Team <pkg-utopia-maintainers@lists.alioth.debian.org>
+
+Package: dconf-gsettings-backend
+Status: install ok installed
+Priority: optional
+Section: libs
+Installed-Size: 87
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: same
+Source: dconf
+Version: 0.36.0-1
+Provides: gsettings-backend
+Depends: libc6 (>= 2.14), libglib2.0-0 (>= 2.55.2), dconf-service (>= 0.36.0-1), dconf-service (<< 0.36.0-1.1~), libdconf1 (= 0.36.0-1)
+Description: simple configuration storage system - GSettings back-end
+ DConf is a low-level key/value database designed for storing desktop
+ environment settings.
+ .
+ This package contains a back-end for GSettings. It is needed by
+ applications accessing settings through GSettings to set custom values
+ and listen for changes.
+Original-Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
+Homepage: https://wiki.gnome.org/Projects/dconf
+
+Package: dconf-service
+Status: install ok installed
+Priority: optional
+Section: libs
+Installed-Size: 114
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Source: dconf
+Version: 0.36.0-1
+Depends: libc6 (>= 2.28), libglib2.0-0 (>= 2.55.2), libdconf1 (= 0.36.0-1), default-dbus-session-bus | dbus-session-bus
+Recommends: dconf-gsettings-backend
+Description: simple configuration storage system - D-Bus service
+ DConf is a low-level key/value database designed for storing desktop
+ environment settings.
+ .
+ This package contains the DConf service, which applications talk to
+ using D-Bus in order to obtain their settings. It is mostly used by the
+ GSettings backend.
+Original-Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
+Homepage: https://wiki.gnome.org/Projects/dconf
+
+Package: dctrl-tools
+Status: install ok installed
+Priority: optional
+Section: utils
+Installed-Size: 296
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 2.24-3
+Replaces: grep-dctrl
+Provides: grep-dctrl
+Depends: libc6 (>= 2.14)
+Suggests: apt, debtags
+Conflicts: grep-dctrl
+Description: Command-line tools to process Debian package information
+ Debian package information is generally stored in files having a
+ special file format, dubbed the Debian control file format (the dctrl
+ format), a special case of the record jar file format.  These tools
+ operate on any files conforming in a general sense to that format and
+ are therefore widely applicable whenever those formats are in play.
+ .
+ Included are:
+ .
+   grep-dctrl     - Grep dctrl-format files
+   grep-available - Grep the DPKG available database
+   grep-status    - Grep the DPKG status database
+   grep-aptavail  - Grep the APT available database
+   grep-debtags   - Grep the Debtags package database
+ .
+   sort-dctrl     - Sort dctrl-format files
+ .
+   tbl-dctrl      - Tabulate dctrl-format files
+ .
+   sync-available - Sync the dpkg available database with
+                    the apt database
+Original-Maintainer: Rhonda D'Vine <rhonda@debian.org>
+Homepage: https://github.com/ajkaijanaho/dctrl-tools
+
+Package: debconf
+Status: install ok installed
+Priority: required
+Section: admin
+Installed-Size: 520
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 1.5.73
+Replaces: debconf-tiny
+Provides: debconf-2.0
+Pre-Depends: perl-base (>= 5.20.1-3~)
+Recommends: apt-utils (>= 0.5.1), debconf-i18n
+Suggests: debconf-doc, debconf-utils, whiptail | dialog, libterm-readline-gnu-perl, libgtk3-perl, libnet-ldap-perl, perl, debconf-kde-helper (>= 0.1+git20110702)
+Breaks: apt-listchanges (<< 3.14), ubiquity (<< 17.10.2), update-notifier-common (<< 3.187~)
+Conflicts: apt (<< 0.3.12.1), cdebconf (<< 0.96), debconf-tiny, debconf-utils (<< 1.3.22), dialog (<< 0.9b-20020814-1), menu (<= 2.1.3-1), whiptail (<< 0.51.4-11), whiptail-utf8 (<= 0.50.17-13)
+Conffiles:
+ /etc/apt/apt.conf.d/70debconf 7e9d09d5801a42b4926b736b8eeabb73
+ /etc/debconf.conf 8c0619be413824f1fc7698cee0f23811
+Description: Debian configuration management system
+ Debconf is a configuration management system for debian packages. Packages
+ use Debconf to ask questions when they are installed.
+Original-Maintainer: Debconf Developers <debconf-devel@lists.alioth.debian.org>
+
+Package: debconf-i18n
+Status: install ok installed
+Priority: important
+Section: admin
+Installed-Size: 781
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Source: debconf
+Version: 1.5.73
+Replaces: debconf (<< 1.3.0), debconf-utils (<< 1.3.22)
+Depends: debconf (= 1.5.73), liblocale-gettext-perl, libtext-iconv-perl, libtext-wrapi18n-perl, libtext-charwidth-perl
+Conflicts: debconf-english, debconf-utils (<< 1.3.22)
+Description: full internationalization support for debconf
+ This package provides full internationalization for debconf, including
+ translations into all available languages, support for using translated
+ debconf templates, and support for proper display of multibyte character
+ sets.
+Original-Maintainer: Debconf Developers <debconf-devel@lists.alioth.debian.org>
+
+Package: debianutils
+Essential: yes
+Status: install ok installed
+Priority: required
+Section: utils
+Installed-Size: 230
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 4.9.1
+Pre-Depends: libc6 (>= 2.15)
+Description: Miscellaneous utilities specific to Debian
+ This package provides a number of small utilities which are used
+ primarily by the installation scripts of Debian packages, although
+ you may use them directly.
+ .
+ The specific utilities included are:
+ add-shell installkernel ischroot remove-shell run-parts savelog
+ tempfile which
+Original-Maintainer: Clint Adams <clint@debian.org>
+
+Package: diffutils
+Essential: yes
+Status: install ok installed
+Priority: required
+Section: utils
+Installed-Size: 532
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 1:3.7-3
+Replaces: diff
+Pre-Depends: libc6 (>= 2.17)
+Suggests: diffutils-doc, wdiff
+Description: File comparison utilities
+ The diffutils package provides the diff, diff3, sdiff, and cmp programs.
+ .
+ `diff' shows differences between two files, or each corresponding file
+ in two directories.  `cmp' shows the offsets and line numbers where
+ two files differ.  `cmp' can also show all the characters that
+ differ between the two files, side by side.  `diff3' shows differences
+ among three files.  `sdiff' merges two files interactively.
+ .
+ The set of differences produced by `diff' can be used to distribute
+ updates to text files (such as program source code) to other people.
+ This method is especially useful when the differences are small compared
+ to the complete files.  Given `diff' output, the `patch' program can
+ update, or "patch", a copy of the file.
+Original-Maintainer: Santiago Vila <sanvila@debian.org>
+Homepage: http://www.gnu.org/software/diffutils/
+
+Package: dirmngr
+Status: install ok installed
+Priority: optional
+Section: utils
+Installed-Size: 918
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Source: gnupg2
+Version: 2.2.19-3ubuntu2.2
+Replaces: gnupg2 (<< 2.1.10-2)
+Depends: adduser, gpgconf (= 2.2.19-3ubuntu2.2), lsb-base (>= 3.2-13), init-system-helpers (>= 1.52), libassuan0 (>= 2.5.0), libc6 (>= 2.25), libgcrypt20 (>= 1.8.0), libgnutls30 (>= 3.6.12), libgpg-error0 (>= 1.35), libksba8 (>= 1.3.4), libldap-2.4-2 (>= 2.4.7), libnpth0 (>= 0.90)
+Recommends: gnupg (= 2.2.19-3ubuntu2.2)
+Suggests: dbus-user-session, libpam-systemd, pinentry-gnome3, tor
+Breaks: gnupg2 (<< 2.1.10-2)
+Enhances: gpg, gpgsm, squid
+Description: GNU privacy guard - network certificate management service
+ dirmngr is a server for managing and downloading OpenPGP and X.509
+ certificates, as well as updates and status signals related to those
+ certificates.  For OpenPGP, this means pulling from the public
+ HKP/HKPS keyservers, or from LDAP servers.  For X.509 this includes
+ Certificate Revocation Lists (CRLs) and Online Certificate Status
+ Protocol updates (OCSP).  It is capable of using Tor for network
+ access.
+ .
+ dirmngr is used for network access by gpg, gpgsm, and dirmngr-client,
+ among other tools.  Unless this package is installed, the parts of
+ the GnuPG suite that try to interact with the network will fail.
+Homepage: https://www.gnupg.org/
+Original-Maintainer: Debian GnuPG Maintainers <pkg-gnupg-maint@lists.alioth.debian.org>
+
+Package: distro-info
+Status: install ok installed
+Priority: optional
+Section: devel
+Installed-Size: 68
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 0.23ubuntu1
+Replaces: ubuntu-dev-tools (<< 0.127~)
+Depends: distro-info-data (>= 0.39ubuntu1), libc6 (>= 2.7)
+Suggests: shunit2 (>= 2.1.6)
+Breaks: ubuntu-dev-tools (<< 0.133~)
+Description: provides information about the distributions' releases
+ Information about all releases of Debian and Ubuntu. The distro-info script
+ will give you the codename for e.g. the latest stable release of your
+ distribution. To get information about a specific distribution there are the
+ debian-distro-info and the ubuntu-distro-info scripts.
+Original-Maintainer: Benjamin Drung <bdrung@debian.org>
+
+Package: distro-info-data
+Status: install ok installed
+Priority: important
+Section: devel
+Installed-Size: 17
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 0.43ubuntu1.10
+Replaces: distro-info (<< 0.3~)
+Breaks: distro-info (<< 0.20~)
+Description: information about the distributions' releases (data files)
+ Information about all releases of Debian and Ubuntu. The distro-info script
+ will give you the codename for e.g. the latest stable release of your
+ distribution. To get information about a specific distribution there are the
+ debian-distro-info and the ubuntu-distro-info scripts.
+ .
+ This package contains the data files.
+Original-Maintainer: Benjamin Drung <bdrung@debian.org>
+
+Package: dkms
+Status: install ok installed
+Priority: optional
+Section: kernel
+Installed-Size: 289
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 2.8.1-5ubuntu2
+Depends: kmod | kldutils, gcc | c-compiler, dpkg-dev, make | build-essential, coreutils (>= 7.4), patch, dctrl-tools
+Pre-Depends: lsb-release
+Recommends: fakeroot, sudo, linux-headers-686-pae | linux-headers-amd64 | linux-headers-generic | linux-headers
+Suggests: menu, e2fsprogs
+Breaks: shim-signed (<< 1.34~)
+Conffiles:
+ /etc/dkms/framework.conf 5917eba01d1548392c781c8659e085a2
+ /etc/dkms/template-dkms-mkbmdeb/Makefile 4f97af9157f9723cabc53bccb66c767f
+ /etc/dkms/template-dkms-mkbmdeb/debian/README.Debian 6707f5716bc3a2d65fa1b05d81ba8add
+ /etc/dkms/template-dkms-mkbmdeb/debian/changelog c23b6a31473b7bb42c04eb1bbe338ebd
+ /etc/dkms/template-dkms-mkbmdeb/debian/compat 84bc3da1b3e33a18e8d5e1bdd7a18d7a
+ /etc/dkms/template-dkms-mkbmdeb/debian/control ec2a4fe135bde547450c93f322691506
+ /etc/dkms/template-dkms-mkbmdeb/debian/copyright de471e376ba2c3886424b5c4649c42d6
+ /etc/dkms/template-dkms-mkbmdeb/debian/rules 00da363e68dd8894b525e569ded30024
+ /etc/dkms/template-dkms-mkdeb/Makefile d97acaeba72f667d3eb69695e9018243
+ /etc/dkms/template-dkms-mkdeb/debian/README.Debian 6707f5716bc3a2d65fa1b05d81ba8add
+ /etc/dkms/template-dkms-mkdeb/debian/changelog f14e36c92f14270163eb20fa883d463e
+ /etc/dkms/template-dkms-mkdeb/debian/compat 84bc3da1b3e33a18e8d5e1bdd7a18d7a
+ /etc/dkms/template-dkms-mkdeb/debian/control 31ba1d3f0eb07d2c5f7dbc774aff0a09
+ /etc/dkms/template-dkms-mkdeb/debian/copyright de471e376ba2c3886424b5c4649c42d6
+ /etc/dkms/template-dkms-mkdeb/debian/dirs ea7a90f4a1be2e0054c3d4920c29e33f
+ /etc/dkms/template-dkms-mkdeb/debian/postinst 59aaa9bedf0ed610a6842986afad3fe1
+ /etc/dkms/template-dkms-mkdeb/debian/prerm e7c0c39003edb2255d22a775efa907e5
+ /etc/dkms/template-dkms-mkdeb/debian/rules c385ec9e8f6c6745ad9b9665c38cbd84
+ /etc/kernel/header_postinst.d/dkms 7b7f8862aef036b138330a98bb17c2a2
+ /etc/kernel/postinst.d/dkms 7b7f8862aef036b138330a98bb17c2a2
+ /etc/kernel/prerm.d/dkms d48e71ca76901a350d752c6e31e499f2
+ /etc/modprobe.d/dkms.conf 74452a1f23577a0bb30d764a895429d0
+Description: Dynamic Kernel Module Support Framework
+ DKMS is a framework designed to allow individual kernel modules to be upgraded
+ without changing the whole kernel. It is also very easy to rebuild modules as
+ you upgrade kernels.
+Original-Maintainer: Dynamic Kernel Modules Support Team <dkms@packages.debian.org>
+Homepage: https://github.com/dell-oss/dkms
+
+Package: dmeventd
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 244
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Source: lvm2 (2.03.07-1ubuntu1)
+Version: 2:1.02.167-1ubuntu1
+Depends: libc6 (>= 2.28), libdevmapper-event1.02.1 (>= 2:1.02.110), libdevmapper1.02.1 (>= 2:1.02.110), liblvm2cmd2.03 (>= 2.03.07)
+Description: Linux Kernel Device Mapper event daemon
+ The Linux Kernel Device Mapper is the LVM (Linux Logical Volume Management)
+ Team's implementation of a minimalistic kernel-space driver that handles
+ volume management, while keeping knowledge of the underlying device layout
+ in user-space.  This makes it useful for not only LVM, but software raid,
+ and other drivers that create "virtual" block devices.
+ .
+ This package contains a daemon to monitor events of devmapper devices.
+Homepage: http://sources.redhat.com/lvm2/
+Original-Maintainer: Debian LVM Team <team+lvm@tracker.debian.org>
+
+Package: dmidecode
+Status: install ok installed
+Priority: important
+Section: utils
+Installed-Size: 214
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 3.2-3
+Depends: libc6 (>= 2.4)
+Description: SMBIOS/DMI table decoder
+ Dmidecode reports information about the system's hardware as described in the
+ system BIOS according to the SMBIOS/DMI standard.
+ .
+ This information typically includes system manufacturer, model name, serial
+ number, BIOS version, asset tag as well as a lot of other details of varying
+ level of interest and reliability depending on the manufacturer. This will
+ often include usage status for the CPU sockets, expansion slots (e.g. AGP, PCI,
+ ISA) and memory module slots, and the list of I/O ports (e.g. serial, parallel,
+ USB).
+ .
+ Beware that DMI data have proven to be too unreliable to be blindly trusted.
+ Dmidecode does not scan the hardware, it only reports what the BIOS told it to.
+Original-Maintainer: Jörg Frings-Fürst <debian@jff.email>
+Homepage: https://nongnu.org/dmidecode/
+
+Package: dmsetup
+Status: install ok installed
+Priority: important
+Section: admin
+Installed-Size: 270
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Source: lvm2 (2.03.07-1ubuntu1)
+Version: 2:1.02.167-1ubuntu1
+Depends: libc6 (>= 2.14), libdevmapper1.02.1 (>= 2:1.02.138)
+Description: Linux Kernel Device Mapper userspace library
+ The Linux Kernel Device Mapper is the LVM (Linux Logical Volume Management)
+ Team's implementation of a minimalistic kernel-space driver that handles
+ volume management, while keeping knowledge of the underlying device layout
+ in user-space.  This makes it useful for not only LVM, but software raid,
+ and other drivers that create "virtual" block devices.
+ .
+ This package contains a utility for modifying device mappings.
+Homepage: http://sources.redhat.com/lvm2/
+Original-Maintainer: Debian LVM Team <team+lvm@tracker.debian.org>
+
+Package: dosfstools
+Status: install ok installed
+Priority: optional
+Section: otherosfs
+Installed-Size: 211
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 4.1-2
+Depends: libc6 (>= 2.14), libudev1 (>= 183)
+Description: utilities for making and checking MS-DOS FAT filesystems
+ The dosfstools package includes the mkfs.fat and fsck.fat utilities, which
+ respectively make and check MS-DOS FAT filesystems.
+Original-Maintainer: Andreas Bombe <aeb@debian.org>
+Homepage: https://github.com/dosfstools/dosfstools
+
+Package: dpkg
+Essential: yes
+Status: install ok installed
+Priority: required
+Section: admin
+Installed-Size: 6741
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 1.19.7ubuntu3.2
+Depends: tar (>= 1.28-1)
+Pre-Depends: libbz2-1.0, libc6 (>= 2.15), liblzma5 (>= 5.2.2), libselinux1 (>= 2.3), libzstd1 (>= 1.3.2), zlib1g (>= 1:1.1.4)
+Suggests: apt, debsig-verify
+Breaks: acidbase (<= 1.4.5-4), amule (<< 2.3.1+git1a369e47-3), beep (<< 1.3-4), im (<< 1:151-4), libapt-pkg5.0 (<< 1.7~b), libdpkg-perl (<< 1.18.11), lsb-base (<< 10.2019031300), netselect (<< 0.3.ds1-27), pconsole (<< 1.0-12), phpgacl (<< 3.3.7-7.3), pure-ftpd (<< 1.0.43-1), systemtap (<< 2.8-1), terminatorx (<< 4.0.1-1), xvt (<= 2.1-20.1)
+Conffiles:
+ /etc/alternatives/README 7be88b21f7e386c8d5a8790c2461c92b
+ /etc/cron.daily/dpkg f20e10c12fb47903b8ec9d282491f4be
+ /etc/dpkg/dpkg.cfg f4413ffb515f8f753624ae3bb365b81b
+ /etc/logrotate.d/alternatives 5fe0af6ce1505fefdc158d9e5dbf6286
+ /etc/logrotate.d/dpkg 9e25c8505966b5829785f34a548ae11f
+Description: Debian package management system
+ This package provides the low-level infrastructure for handling the
+ installation and removal of Debian software packages.
+ .
+ For Debian package development tools, install dpkg-dev.
+Homepage: https://wiki.debian.org/Teams/Dpkg
+Original-Maintainer: Dpkg Developers <debian-dpkg@lists.debian.org>
+
+Package: dpkg-dev
+Status: install ok installed
+Priority: optional
+Section: utils
+Installed-Size: 2075
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Source: dpkg
+Version: 1.19.7ubuntu3.2
+Depends: perl:any, libdpkg-perl (= 1.19.7ubuntu3.2), tar (>= 1.28-1), bzip2, xz-utils, patch (>= 2.7), make, binutils
+Recommends: build-essential, gcc | c-compiler, fakeroot, gnupg | gnupg2, gpgv | gpgv2, libalgorithm-merge-perl
+Suggests: debian-keyring
+Breaks: debhelper (<< 10.10.1~)
+Conffiles:
+ /etc/dpkg/shlibs.default 1a2b9d0a869e2aa885ae3621c557fb95
+ /etc/dpkg/shlibs.override 84b1e69080569cc5c613a50887af5200
+Description: Debian package development tools
+ This package provides the development tools (including dpkg-source)
+ required to unpack, build and upload Debian source packages.
+ .
+ Most Debian source packages will require additional tools to build;
+ for example, most packages need make and the C compiler gcc.
+Homepage: https://wiki.debian.org/Teams/Dpkg
+Original-Maintainer: Dpkg Developers <debian-dpkg@lists.debian.org>
+
+Package: e2fsprogs
+Status: install ok installed
+Priority: required
+Section: admin
+Installed-Size: 1491
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 1.45.5-2ubuntu1.1
+Depends: logsave
+Pre-Depends: libblkid1 (>= 2.17.2), libc6 (>= 2.14), libcom-err2 (>= 1.43.9), libext2fs2 (= 1.45.5-2ubuntu1.1), libss2 (>= 1.38), libuuid1 (>= 2.16)
+Recommends: e2fsprogs-l10n
+Suggests: gpart, parted, fuse2fs, e2fsck-static
+Conffiles:
+ /etc/cron.d/e2scrub_all bc533e09f3b3d96bfe1633ad57eb7026
+ /etc/e2scrub.conf df38534cc670c70a91cf9b035845d244
+ /etc/mke2fs.conf 8aedf0933eb5d956beccac70285650e6
+Description: ext2/ext3/ext4 file system utilities
+ The ext2, ext3 and ext4 file systems are successors of the original ext
+ ("extended") file system. They are the main file system types used for
+ hard disks on Debian and other Linux systems.
+ .
+ This package contains programs for creating, checking, and maintaining
+ ext2/3/4-based file systems.  It also includes the "badblocks" program,
+ which can be used to scan for bad blocks on a disk or other storage device.
+Homepage: http://e2fsprogs.sourceforge.net
+Important: yes
+Original-Maintainer: Theodore Y. Ts'o <tytso@mit.edu>
+
+Package: ed
+Status: install ok installed
+Priority: optional
+Section: editors
+Installed-Size: 108
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 1.16-1
+Depends: libc6 (>= 2.14)
+Description: classic UNIX line editor
+ ed is a line-oriented text editor.  It is used to
+ create, display, modify and otherwise manipulate text
+ files.
+ .
+ red is a restricted ed: it can only edit files in the
+ current directory and cannot execute shell commands.
+Original-Maintainer: Martin Zobel-Helas <zobel@debian.org>
+Homepage: https://www.gnu.org/software/ed/
+
+Package: eject
+Status: install ok installed
+Priority: important
+Section: utils
+Installed-Size: 172
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 2.1.5+deb1+cvs20081104-14
+Depends: libc6 (>= 2.8), libdevmapper1.02.1 (>= 2:1.02.97)
+Suggests: cdtool, setcd
+Description: ejects CDs and operates CD-Changers under Linux
+ This little program will eject CD-ROMs (assuming your drive supports
+ the CDROMEJECT ioctl). It also allows setting the autoeject feature.
+ .
+ On supported ATAPI/IDE multi-disc CD-ROM changers, it allows changing
+ the active disc.
+ .
+ You can also use eject to properly disconnect external mass-storage
+ devices like digital cameras or portable music players.
+Original-Maintainer: Debian QA Group <packages@qa.debian.org>
+Homepage: http://eject.sourceforge.net/
+
+Package: ethtool
+Status: install ok installed
+Priority: optional
+Section: net
+Installed-Size: 450
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 1:5.4-1
+Depends: libc6 (>= 2.14)
+Conffiles:
+ /etc/network/if-pre-up.d/ethtool 39693276fe35fccec75f610cb71d3e85
+ /etc/network/if-up.d/ethtool b0d11ba5983c8c5990bb9933c35a3ec5
+Description: display or change Ethernet device settings
+ ethtool can be used to query and change settings such as speed, auto-
+ negotiation and checksum offload on many network devices, especially
+ Ethernet devices.
+Original-Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Homepage: https://www.kernel.org/pub/software/network/ethtool/
+
+Package: fakeroot
+Status: install ok installed
+Priority: optional
+Section: utils
+Installed-Size: 227
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 1.24-1
+Depends: libfakeroot (>= 1.24-1), libc6 (>= 2.15)
+Description: tool for simulating superuser privileges
+ fakeroot provides a fake "root environment" by means of LD_PRELOAD and
+ SysV IPC (or TCP) trickery. It puts wrappers around getuid(), chown(),
+ stat(), and other file-manipulation functions, so that unprivileged
+ users can (for instance) populate .deb archives with root-owned files;
+ various build tools use fakeroot for this by default.
+ .
+ This package contains fakeroot command and the daemon that remembers
+ fake ownership/permissions of files manipulated by fakeroot
+ processes.
+Original-Maintainer: Clint Adams <clint@debian.org>
+
+Package: fdisk
+Status: install ok installed
+Priority: required
+Section: utils
+Installed-Size: 506
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Source: util-linux
+Version: 2.34-0.1ubuntu9.3
+Replaces: util-linux (<< 2.30.1-0ubuntu4~)
+Depends: libc6 (>= 2.14), libfdisk1 (>= 2.33), libmount1 (>= 2.24.2), libncursesw6 (>= 6), libsmartcols1 (>= 2.28~rc1), libtinfo6 (>= 6)
+Breaks: util-linux (<< 2.30.1-0ubuntu4~)
+Description: collection of partitioning utilities
+ This package contains the classic fdisk, sfdisk and cfdisk partitioning
+ utilities from the util-linux suite.
+ .
+ The utilities included in this package allow you to partition
+ your hard disk. The utilities supports both modern and legacy
+ partition tables (eg. GPT, MBR, etc).
+ .
+ The fdisk utility is the classical text-mode utility.
+ The cfdisk utilitity gives a more userfriendly curses based interface.
+ The sfdisk utility is mostly for automation and scripting uses.
+Important: yes
+Original-Maintainer: LaMont Jones <lamont@debian.org>
+
+Package: file
+Status: install ok installed
+Priority: important
+Section: utils
+Installed-Size: 86
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 1:5.38-4
+Depends: libc6 (>= 2.4), libmagic1 (= 1:5.38-4)
+Breaks: debhelper (<< 12.2~)
+Description: Recognize the type of data in a file using "magic" numbers
+ The file command is "a file type guesser", a command-line tool that
+ tells you in words what kind of data a file contains.
+ .
+ This package contains the file program itself.
+Original-Maintainer: Christoph Biedl <debian.axhn@manchmal.in-ulm.de>
+Homepage: https://www.darwinsys.com/file/
+
+Package: finalrd
+Status: install ok installed
+Priority: optional
+Section: utils
+Installed-Size: 29
+Maintainer: Dimitri John Ledkov <xnox@ubuntu.com>
+Architecture: all
+Version: 6~ubuntu20.04.1
+Recommends: initramfs-tools-core
+Description: final runtime directory for shutdown
+ Generates a systemd compatible shutdown runtime directory. This
+ enables to execute scripts and binaries to clean up shutdown.
+ .
+ Also supports hookless operation, to simply facilitate clean shutdowns.
+ .
+ Approximate tmpfs RAM requirement is 14MB on shutdown.
+Homepage: https://launchpad.net/finalrd
+
+Package: findutils
+Essential: yes
+Status: install ok installed
+Priority: required
+Section: utils
+Installed-Size: 668
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 4.7.0-1ubuntu1
+Pre-Depends: libc6 (>= 2.17), libselinux1 (>= 1.32)
+Suggests: mlocate | locate
+Breaks: binstats (<< 1.08-8.1), guilt (<< 0.36-0.2), libpython3.4-minimal (<< 3.4.4-2), libpython3.5-minimal (<< 3.5.1-3), lsat (<< 0.9.7.1-2.1), mc (<< 3:4.8.11-1), switchconf (<< 0.0.9-2.1)
+Description: utilities for finding files--find, xargs
+ GNU findutils provides utilities to find files meeting specified
+ criteria and perform various actions on the files which are found.
+ This package contains 'find' and 'xargs'; however, 'locate' has
+ been split off into a separate package.
+Homepage: https://savannah.gnu.org/projects/findutils/
+Original-Maintainer: Andreas Metzler <ametzler@debian.org>
+
+Package: fonts-ubuntu-console
+Status: install ok installed
+Priority: optional
+Section: non-free/fonts
+Installed-Size: 63
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Source: fonts-ubuntu
+Version: 0.83-4ubuntu1
+Replaces: fonts-ubuntu-font-family-console (<= 1:0.83-1~)
+Breaks: fonts-ubuntu-font-family-console (<= 1:0.83-1~)
+Description: console version of the Ubuntu Mono font
+ The Ubuntu Font Family is a set of contemporary sans-serif fonts developed
+ between 2010-2011. Dalton Maag performed the font design work and
+ implementation with funding from Canonical. The fonts have been the default
+ fonts for Ubuntu since 2010.
+ .
+ This package contains the "Ubuntu Mono" font converted to a bitmap version
+ for Linux console use. These fonts can be loaded from a virtual terminal by
+ executing "setfont /usr/share/consolefonts/UbuntuMono*.psf" .
+Homepage: https://design.ubuntu.com/font/
+Original-Maintainer: Debian Fonts Task Force <pkg-fonts-devel@lists.alioth.debian.org>
+
+Package: friendly-recovery
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 45
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Version: 0.2.41ubuntu0.20.04.1
+Depends: systemd-sysv, whiptail
+Recommends: gettext-base, update-manager-core
+Breaks: grub2 (<< 1.99-12ubuntu4), initramfs-tools (<< 0.99ubuntu4), upstart (<< 1.3-0ubuntu9)
+Description: Make recovery boot mode more user-friendly
+ Make the recovery boot mode more user-friendly by providing a menu
+ with pluggable options.
+Original-Maintainer: Debian QA Group <packages@qa.debian.org>
+
+Package: ftp
+Status: install ok installed
+Priority: standard
+Section: net
+Installed-Size: 142
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Source: netkit-ftp
+Version: 0.17-34.1
+Replaces: netstd
+Depends: libc6 (>= 2.27), libreadline8 (>= 6.0), netbase
+Description: classical file transfer client
+ This is the user interface to the ARPANET standard File Transfer Protocol.
+ The program allows a user to transfer files to and from a remote network
+ site.
+Original-Maintainer: Mats Erik Andersson <mats.andersson@gisladisker.se>
+
+Package: fuse
+Status: install ok installed
+Priority: optional
+Section: utils
+Installed-Size: 113
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 2.9.9-3
+Depends: libc6 (>= 2.28), libfuse2 (= 2.9.9-3), adduser, mount (>= 2.19.1), sed (>= 4)
+Conffiles:
+ /etc/fuse.conf 298587592c8444196833f317def414f2
+Description: Filesystem in Userspace
+ Filesystem in Userspace (FUSE) is a simple interface for userspace programs to
+ export a virtual filesystem to the Linux kernel. It also aims to provide a
+ secure method for non privileged users to create and mount their own filesystem
+ implementations.
+Original-Maintainer: Laszlo Boszormenyi (GCS) <gcs@debian.org>
+Homepage: https://github.com/libfuse/libfuse/wiki
+
+Package: fwupd
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 6684
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 1.7.9-1~20.04.1
+Replaces: fwupdate (<< 12-7), gir1.2-dfu-1.0 (<< 0.9.7-1), libdfu-dev (<< 0.9.7-1), libdfu1 (<< 0.9.7-1)
+Provides: fwupdate
+Depends: libfwupd2 (= 1.7.9-1~20.04.1), libfwupdplugin5 (= 1.7.9-1~20.04.1), libc6 (>= 2.28), libcurl3-gnutls (>= 7.63.0), libefiboot1 (>= 37), libglib2.0-0 (>= 2.63.3), libgnutls30 (>= 3.6.12), libgudev-1.0-0 (>= 165), libgusb2 (>= 0.3.4), libjcat1 (>= 0.1.4), libjson-glib-1.0-0 (>= 1.4.2), libmbim-glib4 (>= 1.26.0), libmbim-proxy, libmm-glib0 (>= 1.18), libpolkit-gobject-1-0 (>= 0.99), libqmi-glib5 (>= 1.18.0), libqmi-proxy, libsmbios-c2, libsqlite3-0 (>= 3.6.1), libsystemd0, libtss2-esys0 (>= 2.3.1), libxmlb2 (>= 0.3.2), shared-mime-info
+Recommends: python3, bolt, dbus, secureboot-db, udisks2, fwupd-signed
+Suggests: gir1.2-fwupd-2.0
+Breaks: fwupdate (<< 12-7), gir1.2-dfu-1.0 (<< 0.9.7-1), libdfu-dev (<< 0.9.7-1), libdfu1 (<< 0.9.7-1)
+Conflicts: fwupdate-amd64-signed, fwupdate-arm64-signed, fwupdate-armhf-signed, fwupdate-i386-signed
+Conffiles:
+ /etc/fwupd/daemon.conf 377ba3fdc58ecf45cb0083b2841edc7b
+ /etc/fwupd/msr.conf 2c9f619efa963a505fa3670b77795c44
+ /etc/fwupd/redfish.conf 9651d998d3914ce10b28f61f5fff8b98
+ /etc/fwupd/remotes.d/dell-esrt.conf 71236e67e6fd095c771f9312cbae0382
+ /etc/fwupd/remotes.d/lvfs-testing.conf 29d484b5d5c374ba278eba49ab28e40b
+ /etc/fwupd/remotes.d/lvfs.conf 03115854971bef4f13b16729e9c107ad
+ /etc/fwupd/remotes.d/vendor-directory.conf f65a59cfb87730fb523910f492dbceb6
+ /etc/fwupd/remotes.d/vendor.conf b54e960f98c71d49af9421cf8e9cf7b9
+ /etc/fwupd/thunderbolt.conf ecd9f08e4e9382b959e8604758ce71b3
+ /etc/fwupd/uefi_capsule.conf ef3a1b12a9884d69456c137193c7d72f
+ /etc/grub.d/35_fwupd d35ffdb3ab8eef4d4fa9f916ff621b55
+ /etc/pki/fwupd-metadata/GPG-KEY-Linux-Foundation-Metadata 2ace8894994764ae32e391bc0c68e398
+ /etc/pki/fwupd-metadata/GPG-KEY-Linux-Vendor-Firmware-Service 5abbdc42a8e3d9e60039ab658700ec71
+ /etc/pki/fwupd-metadata/LVFS-CA.pem d9dff488bd9051268984da014f0be43d
+ /etc/pki/fwupd/GPG-KEY-Linux-Foundation-Firmware de0622638572a2f6a6e29fa83f387eea
+ /etc/pki/fwupd/GPG-KEY-Linux-Vendor-Firmware-Service 5abbdc42a8e3d9e60039ab658700ec71
+ /etc/pki/fwupd/LVFS-CA.pem d9dff488bd9051268984da014f0be43d
+ /etc/update-motd.d/85-fwupd ded254e025601b203abb19ef3fdc88b9
+ /etc/fwupd/upower.conf 101e62f86b3fc2947723bbf6cd7f8e66 obsolete
+Description: Firmware update daemon
+ fwupd is a daemon to allow session software to update device firmware.
+ You can either use a GUI software manager like GNOME Software to view and
+ apply updates, the command-line tool or the system D-Bus interface directly.
+ Firmware updates are supported for a variety of technologies.
+ See <https://github.com/fwupd/fwupd> for details
+Original-Maintainer: Debian EFI <debian-efi@lists.debian.org>
+Homepage: https://github.com/fwupd/fwupd
+
+Package: fwupd-signed
+Status: install ok installed
+Priority: optional
+Section: utils
+Installed-Size: 76
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Source: fwupd-signed (1.27.1ubuntu7)
+Version: 1.27.1ubuntu7+1.2-2~20.04.1
+Recommends: secureboot-db, fwupd
+Description: Linux Firmware Updater EFI signed binary
+ fwupd provides functionality to update system firmware. It has been
+ initially designed to update firmware using UEFI capsule updates, but
+ it is designed to be extensible to other firmware update standards.
+ .
+ This package contains a version of the fwupd binary signed with
+ Canonical's UEFI signing key.
+Built-Using: fwupd-unsigned (= 1.2-2~20.04.1)
+
+Package: g++
+Status: install ok installed
+Priority: optional
+Section: devel
+Installed-Size: 16
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Source: gcc-defaults (1.185.1ubuntu2)
+Version: 4:9.3.0-1ubuntu2
+Provides: c++-compiler, g++-x86-64-linux-gnu (= 4:9.3.0-1ubuntu2)
+Depends: cpp (= 4:9.3.0-1ubuntu2), gcc (= 4:9.3.0-1ubuntu2), g++-9 (>= 9.3.0-3~), gcc-9 (>= 9.3.0-3~)
+Suggests: g++-multilib
+Description: GNU C++ compiler
+ This is the GNU C++ compiler, a fairly portable optimizing compiler for C++.
+ .
+ This is a dependency package providing the default GNU C++ compiler.
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+
+Package: g++-9
+Status: install ok installed
+Priority: optional
+Section: devel
+Installed-Size: 28016
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Source: gcc-9
+Version: 9.4.0-1ubuntu1~20.04.1
+Provides: c++-compiler, c++abi2-dev
+Depends: gcc-9-base (= 9.4.0-1ubuntu1~20.04.1), gcc-9 (= 9.4.0-1ubuntu1~20.04.1), libstdc++-9-dev (= 9.4.0-1ubuntu1~20.04.1), libc6 (>= 2.14), libgmp10 (>= 2:5.0.1~), libisl22 (>= 0.15), libmpc3, libmpfr6 (>= 3.1.3), zlib1g (>= 1:1.1.4)
+Suggests: g++-9-multilib, gcc-9-doc (>= 8)
+Description: GNU C++ compiler
+ This is the GNU C++ compiler, a fairly portable optimizing compiler for C++.
+Homepage: http://gcc.gnu.org/
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+
+Package: gawk
+Status: install ok installed
+Priority: optional
+Section: interpreters
+Installed-Size: 1668
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 1:5.0.1+dfsg-1
+Provides: awk
+Pre-Depends: libc6 (>= 2.29), libgmp10, libmpfr6 (>= 3.1.3), libreadline8 (>= 6.0), libsigsegv2 (>= 2.9)
+Suggests: gawk-doc
+Conffiles:
+ /etc/profile.d/gawk.csh b3d9e29a36f945b2065b2f88d18dadaa
+ /etc/profile.d/gawk.sh bfc054c0862d0fad98ca641b951c7061
+Description: GNU awk, a pattern scanning and processing language
+ `awk', a program that you can use to select particular records in a
+ file and perform operations upon them.
+ .
+ Gawk is the GNU Project's implementation of the AWK programming language.
+ It conforms to the definition of the language in the POSIX 1003.2 Command
+ Language And Utilities Standard. This version in turn is based on the
+ description in The AWK Programming Language, by Aho, Kernighan, and
+ Weinberger, with the additional features defined in the System V Release
+ 4 version of UNIX awk. Gawk also provides more recent Bell Labs awk
+ extensions, and some GNU-specific extensions.
+Original-Maintainer: Adrian Bunk <bunk@debian.org>
+Homepage: http://www.gnu.org/software/gawk/
+
+Package: gcc
+Status: install ok installed
+Priority: optional
+Section: devel
+Installed-Size: 50
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Source: gcc-defaults (1.185.1ubuntu2)
+Version: 4:9.3.0-1ubuntu2
+Provides: c-compiler, gcc-x86-64-linux-gnu (= 4:9.3.0-1ubuntu2)
+Depends: cpp (= 4:9.3.0-1ubuntu2), gcc-9 (>= 9.3.0-3~)
+Recommends: libc6-dev | libc-dev
+Suggests: gcc-multilib, make, manpages-dev, autoconf, automake, libtool, flex, bison, gdb, gcc-doc
+Conflicts: gcc-doc (<< 1:2.95.3)
+Description: GNU C compiler
+ This is the GNU C compiler, a fairly portable optimizing compiler for C.
+ .
+ This is a dependency package providing the default GNU C compiler.
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+
+Package: gcc-10-base
+Status: install ok installed
+Priority: required
+Section: libs
+Installed-Size: 265
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: same
+Source: gcc-10
+Version: 10.3.0-1ubuntu1~20.04
+Breaks: gnat (<< 7)
+Description: GCC, the GNU Compiler Collection (base package)
+ This package contains files common to all languages and libraries
+ contained in the GNU Compiler Collection (GCC).
+Homepage: http://gcc.gnu.org/
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+
+Package: gcc-9
+Status: install ok installed
+Priority: optional
+Section: devel
+Installed-Size: 29840
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 9.4.0-1ubuntu1~20.04.1
+Replaces: cpp-9 (<< 7.1.1-8)
+Provides: c-compiler
+Depends: cpp-9 (= 9.4.0-1ubuntu1~20.04.1), gcc-9-base (= 9.4.0-1ubuntu1~20.04.1), libcc1-0 (>= 9.4.0-1ubuntu1~20.04.1), binutils (>= 2.34), libgcc-9-dev (= 9.4.0-1ubuntu1~20.04.1), libc6 (>= 2.15), libgcc-s1 (>= 3.0), libgmp10 (>= 2:5.0.1~), libisl22 (>= 0.15), libmpc3, libmpfr6 (>= 3.1.3), libstdc++6 (>= 5), zlib1g (>= 1:1.1.4)
+Recommends: libc6-dev (>= 2.13-0ubuntu6)
+Suggests: gcc-9-multilib, gcc-9-doc (>= 8), gcc-9-locales (>= 8)
+Description: GNU C compiler
+ This is the GNU C compiler, a fairly portable optimizing compiler for C.
+Homepage: http://gcc.gnu.org/
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+
+Package: gcc-9-base
+Status: install ok installed
+Priority: required
+Section: libs
+Installed-Size: 265
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: same
+Source: gcc-9
+Version: 9.4.0-1ubuntu1~20.04.1
+Breaks: gnat (<< 7)
+Description: GCC, the GNU Compiler Collection (base package)
+ This package contains files common to all languages and libraries
+ contained in the GNU Compiler Collection (GCC).
+Homepage: http://gcc.gnu.org/
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+
+Package: gdisk
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 860
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 1.0.5-1
+Depends: libc6 (>= 2.29), libgcc-s1 (>= 3.0), libncursesw6 (>= 6), libpopt0 (>= 1.14), libstdc++6 (>= 5.2), libtinfo6 (>= 6), libuuid1 (>= 2.16)
+Recommends: groff-base
+Description: GPT fdisk text-mode partitioning tool
+ GPT fdisk (aka gdisk) is a text-mode partitioning
+ tool that provides utilities for Globally Unique
+ Identifier (GUID) Partition Table (GPT) disks.
+ .
+ Features:
+ .
+  - Edit GUID partition table definitions
+  - In place conversion of BSD disklabels to GPT
+  - In place conversion of MBR to GPT
+  - In place conversion of GPT to MBR
+  - Create hybrid MBR/GPT layouts
+  - Repair damaged GPT data structures
+  - Repair damaged MBR structures
+  - Back up GPT data to a file (and restore from file)
+Original-Maintainer: Jonathan Carter <jcc@debian.org>
+Homepage: http://sourceforge.net/projects/gptfdisk/
+
+Package: gettext-base
+Status: install ok installed
+Priority: standard
+Section: utils
+Installed-Size: 364
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Source: gettext
+Version: 0.19.8.1-10build1
+Depends: libc6 (>= 2.14)
+Description: GNU Internationalization utilities for the base system
+ This package includes the gettext and ngettext programs which allow
+ other packages to internationalize the messages given by shell scripts.
+Original-Maintainer: Santiago Vila <sanvila@debian.org>
+Homepage: https://www.gnu.org/software/gettext/
+
+Package: gir1.2-glib-2.0
+Status: install ok installed
+Priority: important
+Section: introspection
+Installed-Size: 650
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: same
+Source: gobject-introspection
+Version: 1.64.1-1~ubuntu20.04.1
+Provides: gir1.2-gio-2.0 (= 1.64.1-1~ubuntu20.04.1), gir1.2-girepository-2.0 (= 1.64.1-1~ubuntu20.04.1), gir1.2-gmodule-2.0 (= 1.64.1-1~ubuntu20.04.1), gir1.2-gobject-2.0 (= 1.64.1-1~ubuntu20.04.1)
+Depends: libgirepository-1.0-1 (>= 1.59.4), libglib2.0-0 (>= 2.63.3)
+Description: Introspection data for GLib, GObject, Gio and GModule
+ GObject Introspection is a project for providing machine readable
+ introspection data of the API of C libraries. This introspection
+ data can be used in several different use cases, for example
+ automatic code generation for bindings, API verification and documentation
+ generation.
+ .
+ GObject Introspection contains tools to generate and handle the
+ introspection data.
+ .
+ This package contains the introspection data for the GLib, GObject,
+ GModule and Gio libraries.
+Original-Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
+Homepage: https://wiki.gnome.org/GObjectIntrospection
+
+Package: gir1.2-packagekitglib-1.0
+Status: install ok installed
+Priority: optional
+Section: introspection
+Installed-Size: 121
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Source: packagekit
+Version: 1.1.13-2ubuntu1.1
+Depends: gir1.2-glib-2.0 (>= 1.36), libpackagekit-glib2-18 (>= 1.1.13)
+Description: GObject introspection data for the PackageKit GLib library
+ PackageKit allows performing simple software management tasks over a DBus
+ interface e.g. refreshing the cache, updating, installing and removing
+ software packages or searching for multimedia codecs and file handlers.
+ .
+ This package contains introspection data for the PackageKit
+ GLib interface library.
+ .
+ It can be used by packages using the GIRepository format to generate
+ dynamic bindings.
+Homepage: https://www.freedesktop.org/software/PackageKit/
+Original-Maintainer: Matthias Klumpp <mak@debian.org>
+
+Package: git
+Status: install ok installed
+Priority: optional
+Section: vcs
+Installed-Size: 35720
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Version: 1:2.25.1-1ubuntu3.6
+Replaces: git-core (<< 1:1.7.0.4-1.), gitweb (<< 1:1.7.4~rc1)
+Provides: git-completion, git-core
+Depends: libc6 (>= 2.28), libcurl3-gnutls (>= 7.56.1), libexpat1 (>= 2.0.1), libpcre2-8-0 (>= 10.22), zlib1g (>= 1:1.2.0), perl, liberror-perl, git-man (>> 1:2.25.1), git-man (<< 1:2.25.1-.)
+Recommends: ca-certificates, patch, less, ssh-client
+Suggests: gettext-base, git-daemon-run | git-daemon-sysvinit, git-doc, git-el, git-email, git-gui, gitk, gitweb, git-cvs, git-mediawiki, git-svn
+Breaks: bash-completion (<< 1:1.90-1), cogito (<= 0.18.2+), dgit (<< 5.1~), git-buildpackage (<< 0.6.5), git-core (<< 1:1.7.0.4-1.), gitosis (<< 0.2+20090917-7), gitpkg (<< 0.15), gitweb (<< 1:1.7.4~rc1), guilt (<< 0.33), openssh-client (<< 1:6.8), stgit (<< 0.15), stgit-contrib (<< 0.15)
+Conffiles:
+ /etc/bash_completion.d/git-prompt 7baac5c3ced94ebf2c0e1dde65c3b1a6
+Description: fast, scalable, distributed revision control system
+ Git is popular version control system designed to handle very large
+ projects with speed and efficiency; it is used for many high profile
+ open source projects, most notably the Linux kernel.
+ .
+ Git falls in the category of distributed source code management tools.
+ Every Git working directory is a full-fledged repository with full
+ revision tracking capabilities, not dependent on network access or a
+ central server.
+ .
+ This package provides the git main components with minimal dependencies.
+ Additional functionality, e.g. a graphical user interface and revision
+ tree visualizer, tools for interoperating with other VCS's, or a web
+ interface, is provided as separate git* packages.
+Homepage: https://git-scm.com/
+Original-Maintainer: Jonathan Nieder <jrnieder@gmail.com>
+
+Package: git-man
+Status: install ok installed
+Priority: optional
+Section: doc
+Installed-Size: 1780
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Source: git
+Version: 1:2.25.1-1ubuntu3.6
+Replaces: git (<< 1:1.7.4~rc1), git-core (<< 1:1.7.0.4-1.)
+Breaks: git (<< 1:1.7.4~rc1)
+Description: fast, scalable, distributed revision control system (manual pages)
+ Git is popular version control system designed to handle very large
+ projects with speed and efficiency; it is used for many high profile
+ open source projects, most notably the Linux kernel.
+ .
+ Git falls in the category of distributed source code management tools.
+ Every Git working directory is a full-fledged repository with full
+ revision tracking capabilities, not dependent on network access or a
+ central server.
+ .
+ This package provides reference documentation for use by the 'man'
+ utility and the 'git help' command.
+Homepage: https://git-scm.com/
+Original-Maintainer: Jonathan Nieder <jrnieder@gmail.com>
+
+Package: glib-networking
+Status: install ok installed
+Priority: optional
+Section: libs
+Installed-Size: 209
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: same
+Version: 2.64.2-1ubuntu0.1
+Depends: libc6 (>= 2.14), libglib2.0-0 (>= 2.63.0), libgnutls30 (>= 3.6.12), libproxy1v5 (>= 0.4.14), glib-networking-services (>= 2.64.2-1ubuntu0.1), glib-networking-services (<< 2.64.2-1ubuntu0.1.1~), glib-networking-common (>= 2.64.2-1ubuntu0.1), gsettings-desktop-schemas
+Description: network-related giomodules for GLib
+ This package contains various network related extensions for the GIO
+ library.
+Original-Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
+
+Package: glib-networking-common
+Status: install ok installed
+Priority: optional
+Section: libs
+Installed-Size: 52
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Source: glib-networking
+Version: 2.64.2-1ubuntu0.1
+Recommends: glib-networking
+Description: network-related giomodules for GLib - data files
+ This package contains data files and translations for the GIO network
+ extensions in glib-networking.
+Original-Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
+
+Package: glib-networking-services
+Status: install ok installed
+Priority: optional
+Section: libs
+Installed-Size: 51
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Source: glib-networking
+Version: 2.64.2-1ubuntu0.1
+Depends: libc6 (>= 2.4), libglib2.0-0 (>= 2.63.0), libproxy1v5 (>= 0.4.14), glib-networking-common (>= 2.64.2-1ubuntu0.1)
+Recommends: glib-networking
+Description: network-related giomodules for GLib - D-Bus services
+ This package contains D-Bus services that are used by the GIO network
+ extensions in glib-networking, for actions that need to be done in a
+ separate process.
+Original-Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
+
+Package: gnupg
+Status: install ok installed
+Priority: optional
+Section: utils
+Installed-Size: 413
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Source: gnupg2
+Version: 2.2.19-3ubuntu2.2
+Replaces: gnupg2 (<< 2.1.11-7+exp1)
+Depends: dirmngr (<< 2.2.19-3ubuntu2.2.1~), dirmngr (>= 2.2.19-3ubuntu2.2), gnupg-l10n (= 2.2.19-3ubuntu2.2), gnupg-utils (<< 2.2.19-3ubuntu2.2.1~), gnupg-utils (>= 2.2.19-3ubuntu2.2), gpg (<< 2.2.19-3ubuntu2.2.1~), gpg (>= 2.2.19-3ubuntu2.2), gpg-agent (<< 2.2.19-3ubuntu2.2.1~), gpg-agent (>= 2.2.19-3ubuntu2.2), gpg-wks-client (<< 2.2.19-3ubuntu2.2.1~), gpg-wks-client (>= 2.2.19-3ubuntu2.2), gpg-wks-server (<< 2.2.19-3ubuntu2.2.1~), gpg-wks-server (>= 2.2.19-3ubuntu2.2), gpgsm (<< 2.2.19-3ubuntu2.2.1~), gpgsm (>= 2.2.19-3ubuntu2.2), gpgv (<< 2.2.19-3ubuntu2.2.1~), gpgv (>= 2.2.19-3ubuntu2.2)
+Suggests: parcimonie, xloadimage
+Breaks: debsig-verify (<< 0.15), dirmngr (<< 2.2.19-3ubuntu2.2), gnupg2 (<< 2.1.11-7+exp1), libgnupg-interface-perl (<< 0.52-3), libgnupg-perl (<= 0.19-1), libmail-gnupg-perl (<= 0.22-1), monkeysphere (<< 0.38~), php-crypt-gpg (<= 1.4.1-1), python-apt (<= 1.1.0~beta4), python-gnupg (<< 0.3.8-3), python3-apt (<= 1.1.0~beta4)
+Description: GNU privacy guard - a free PGP replacement
+ GnuPG is GNU's tool for secure communication and data storage.
+ It can be used to encrypt data and to create digital signatures.
+ It includes an advanced key management facility and is compliant
+ with the proposed OpenPGP Internet standard as described in RFC4880.
+ .
+ This package contains the full suite of GnuPG tools for cryptographic
+ communications and data storage.
+Homepage: https://www.gnupg.org/
+Original-Maintainer: Debian GnuPG Maintainers <pkg-gnupg-maint@lists.alioth.debian.org>
+
+Package: gnupg-l10n
+Status: install ok installed
+Priority: optional
+Section: localization
+Installed-Size: 380
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Source: gnupg2
+Version: 2.2.19-3ubuntu2.2
+Replaces: gnupg (<< 2.1.14-2~), gnupg2 (<< 2.1.14-2~)
+Breaks: gnupg (<< 2.1.14-2~), gnupg2 (<< 2.1.14-2~)
+Enhances: dirmngr, gpg, gpg-agent
+Description: GNU privacy guard - localization files
+ GnuPG is GNU's tool for secure communication and data storage.
+ It can be used to encrypt data and to create digital signatures.
+ It includes an advanced key management facility and is compliant
+ with the proposed OpenPGP Internet standard as described in RFC 4880.
+ .
+ This package contains the translation files for the use of GnuPG in
+ non-English locales.
+Homepage: https://www.gnupg.org/
+Original-Maintainer: Debian GnuPG Maintainers <pkg-gnupg-maint@lists.alioth.debian.org>
+Original-Maintainer: Debian GnuPG Maintainers <pkg-gnupg-maint@lists.alioth.debian.org>
+
