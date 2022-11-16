@@ -11,6 +11,10 @@ build = "build.rs"
 name = "twackup"
 path = "src/main.rs"
 
+[features]
+default = ["ios"]
+ios = ["twackup/ios"]
+
 [package.metadata.deb_pkg]
 name = "Twackup (CLI)"
 identifier = "ru.danpashin.twackup"
@@ -57,7 +61,7 @@ stderrlog = { version = "0.5", default-features = false, features = [] }
 # Misc
 libc = "0.2"
 gethostname = "0.4"
-libproc = { path = "./libproc", default-features = false, features = [] }
+libproc = { git = "https://github.com/danpashin/libproc-rs", branch = "0.12.0-ios" }
 
 [dependencies.clap]
 version = "4.0"
@@ -66,7 +70,3 @@ features = ["derive", "std", "color", "help", "usage", "error-context"]
 
 [build-dependencies]
 vergen = { version = "7.4", default-features = false, features = ["cargo", "build", "git"] }
-
-[features]
-default = ["ios"]
-ios = ["twackup/ios"]

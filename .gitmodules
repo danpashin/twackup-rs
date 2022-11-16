@@ -1,4 +1,0 @@
-[submodule "twackup-cli/libproc"]
-	path = twackup-cli/libproc
-	url = https://github.com/danpashin/libproc-rs
-	branch = 0.12.0-ios

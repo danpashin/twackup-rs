@@ -625,6 +625,7 @@ dependencies = [
 [[package]]
 name = "libproc"
 version = "0.12.0"
+source = "git+https://github.com/danpashin/libproc-rs?branch=0.12.0-ios#067195d8e16ea3d9467dcc09a005e4bbf773be92"
 dependencies = [
  "bindgen",
  "errno",
