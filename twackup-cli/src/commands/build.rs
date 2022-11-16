@@ -18,8 +18,7 @@
  */
 
 use super::{CliCommand, GlobalOptions};
-use crate::progress_bar::ProgressBar;
-use crate::{error::Result, TARGET_DIR};
+use crate::{error::Result, progress_bar::ProgressBar, TARGET_DIR};
 use chrono::Local;
 use console::style;
 use gethostname::gethostname;
