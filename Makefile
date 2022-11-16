@@ -2,10 +2,11 @@ CARGO_FLAGS=--release
 TARGET=twackup
 CARGO_TARGET=$(TARGET)-cli
 BUILD_DIR=build
-RUSTFLAGS=
+RUSTFLAGS=--remap-path-prefix=$(HOME)=
 OUTPUT_DIR=packages
 
 IOS_ARCHS=aarch64-apple-ios
+NIGHTLY_IOS_ARCHS=armv7-apple-ios
 NATIVE_ARCH=$(shell basename $(shell dirname $(shell rustc --print target-libdir)))
 ALL_ARCHS=$(shell rustc --print target-list)
 
@@ -16,6 +17,7 @@ ifneq (,$(findstring --release,$(CARGO_FLAGS)))
 endif
 
 IOS_BINARIES=$(addsuffix /$(CONFIGURATION)/${TARGET},$(addprefix ${BUILD_DIR}/,${IOS_ARCHS}))
+IOS_BINARIES+=$(addsuffix /$(CONFIGURATION)/${TARGET},$(addprefix ${BUILD_DIR}/,${NIGHTLY_IOS_ARCHS}))
 NATIVE_BINARY=$(addsuffix /$(CONFIGURATION)/${TARGET},$(addprefix ${BUILD_DIR}/,${NATIVE_ARCH}))
 
 PKG_METADATA:='$(shell cargo metadata --format-version 1 | jq -r '.packages[] | select(.name == "$(CARGO_TARGET)")')'
@@ -42,6 +44,7 @@ native: $(OUTPUT_DIR) $(NATIVE_ARCH) test
 
 
 ios: $(OUTPUT_DIR) $(IOS_ARCHS) test
+	@RUSTFLAGS="$(RUSTFLAGS)" cargo +nightly build $(CARGO_FLAGS) --target-dir $(BUILD_DIR) --target armv7-apple-ios
 	@lipo -create $(IOS_BINARIES) -o $(BUILD_DIR)/$(TARGET)-ios
 	@ldid -S $(BUILD_DIR)/$(TARGET)-ios
 	@fpm -s dir -t deb -f --log error -n "$(DEB_IDENTIFIER)" --category "$(DEB_CATEGORY)" -d "$(DEB_DEPENDS)" \
