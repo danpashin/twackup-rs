@@ -2,6 +2,10 @@
 name = "twackup-derive"
 version = "0.1.0"
 edition = "2021"
+rust-version = "1.60.0"
+description = "Derive wrappers for twackup lib. Not intended to use with other crates."
+license = "MIT"
+homepage = "https://github.com/danpashin/twackup"
 
 [lib]
 proc-macro = true

@@ -1,18 +1,24 @@
 [package]
 name = "twackup"
 version = "1.0.0"
-description = "Safe and fast iOS CLI utility for rebuilding DEBs and backing up packages"
+description = "Tokio-based dpkg database parser and .deb packages rebuilder library"
 edition = "2021"
-publish = false
 license = "GPL-3.0-only"
+rust-version = "1.62.1"
+homepage = "https://github.com/danpashin/twackup-rs"
+categories = ["filesystem", "parser-implementations"]
+keywords = ["dpkg", "linux", "ios"]
 
-[lib]
-crate-type = ["staticlib", "rlib"]
+[features]
+default = []
+cli = ["console"]
+ios = []
+with-serde = ["plist", "serde"]
 
 [dependencies]
 
 # Core
-twackup-derive = { path = "../twackup-derive" }
+twackup-derive = { version = "0.1.0", path = "../twackup-derive" }
 tokio = { version = "1.5", features = ["rt-multi-thread", "sync", "macros", "fs"] }
 memmem = "0.1"
 memmap2 = "0.5"
@@ -37,9 +43,3 @@ libc = "0.2"
 
 # CLI Utils
 console = { version = "0.15", default-features = false, features = [], optional = true }
-
-[features]
-default = []
-cli = ["console"]
-ios = []
-with-serde = ["plist", "serde"]
