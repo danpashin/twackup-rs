@@ -19,10 +19,11 @@
 
 use super::{CliCommand, GlobalOptions};
 use crate::progress_bar::ProgressBar;
-use crate::{context::Context, error::Result, TARGET_DIR};
+use crate::{error::Result, TARGET_DIR};
 use chrono::Local;
 use console::style;
 use gethostname::gethostname;
+use libproc::libproc::proc_pid::am_root;
 use std::{collections::LinkedList, io, iter::Iterator, path::PathBuf, sync::Arc};
 use tokio::{fs, sync::Mutex};
 use twackup::{
@@ -102,7 +103,7 @@ pub(crate) struct Build {
 }
 
 impl Build {
-    async fn build_user_specified(&self, context: Context) -> Result<()> {
+    async fn build_user_specified(&self) -> Result<()> {
         let all_packages = self
             .global_options
             .packages(false, PackagesSort::Name)
@@ -147,16 +148,16 @@ impl Build {
         let to_build_ids: Vec<_> = to_build.iter().map(|pkg| pkg.id.as_str()).collect();
         log::info!("Building {}...", to_build_ids.join(", "));
 
-        self.build(to_build, context).await
+        self.build(to_build).await
     }
 
-    async fn build(&self, packages: Vec<Package>, context: Context) -> Result<()> {
+    async fn build(&self, packages: Vec<Package>) -> Result<()> {
         self.create_dir_if_needed().await?;
 
         let all_count = packages.len() as u64;
         let progress = ProgressBar::default(all_count);
 
-        if !context.is_root {
+        if !am_root() {
             log::warn!("{}", GenericError::NotRunningAsRoot);
         }
 
@@ -185,11 +186,7 @@ impl Build {
         .await;
 
         progress.finish();
-        log::info!(
-            "Processed {} packages in {}",
-            all_count,
-            indicatif::HumanDuration(context.elapsed())
-        );
+        log::info!("Processed {} packages", all_count);
 
         Ok(())
     }
@@ -227,9 +224,9 @@ impl Build {
 
 #[async_trait::async_trait]
 impl CliCommand for Build {
-    async fn run(&self, context: Context) -> Result<()> {
+    async fn run(&self) -> Result<()> {
         if !self.packages.is_empty() {
-            return self.build_user_specified(context).await;
+            return self.build_user_specified().await;
         }
 
         let mut leaves_only = false;
@@ -251,6 +248,6 @@ impl CliCommand for Build {
 
         let packages = self.global_options.unsorted_packages(leaves_only).await?;
         let packages = packages.into_iter().collect();
-        self.build(packages, context).await
+        self.build(packages).await
     }
 }

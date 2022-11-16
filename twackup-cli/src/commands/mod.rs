@@ -24,7 +24,6 @@ mod list;
 #[cfg(feature = "ios")]
 mod backup;
 
-use super::Context;
 use crate::{error::Result, ADMIN_DIR};
 use std::{
     collections::{BTreeMap, LinkedList},
@@ -34,7 +33,7 @@ use twackup::{package::Package, Dpkg, PackagesSort};
 
 #[async_trait::async_trait]
 pub(crate) trait CliCommand {
-    async fn run(&self, context: Context) -> Result<()>;
+    async fn run(&self) -> Result<()>;
 }
 
 #[derive(clap::Parser)]

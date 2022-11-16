@@ -22,7 +22,6 @@ use crate::{
     commands::{CliCommand, GlobalOptions},
     error::Result,
     serializer::Format,
-    Context,
 };
 use std::{
     fs::File,
@@ -53,10 +52,10 @@ pub(crate) struct Export {
 
 #[async_trait::async_trait]
 impl CliCommand for Export {
-    async fn run(&self, context: Context) -> Result<()> {
+    async fn run(&self) -> Result<()> {
         log::info!("Exporting data for {:?}...", self.data);
 
-        let data = self.construct_data(context).await?;
+        let data = self.construct_data().await?;
         if let Some(path) = &self.output {
             let file = File::create(path)?;
             self.format.ser_to_writer(file, &data)?;
@@ -72,7 +71,7 @@ impl CliCommand for Export {
 }
 
 impl Export {
-    async fn construct_data(&self, _context: Context) -> Result<ExportData> {
+    async fn construct_data(&self) -> Result<ExportData> {
         let (packages, repositories) = match self.data {
             DataType::Packages => (Some(self.get_packages().await?), None),
             DataType::Repositories => (None, Some(self.get_repos().await?)),

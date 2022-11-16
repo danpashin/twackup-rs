@@ -24,7 +24,6 @@
 )]
 
 mod commands;
-mod context;
 mod error;
 mod logger;
 mod process;
@@ -33,9 +32,9 @@ mod serializer;
 
 use clap::Parser;
 use commands::{CliCommand, Command};
-use context::Context;
 use error::Result;
 use std::fs;
+use std::time::Instant;
 
 #[cfg(not(target_os = "macos"))]
 const ADMIN_DIR: &str = "/var/lib/dpkg";
@@ -67,32 +66,36 @@ const fn long_version_message() -> &'static str {
 #[clap(about, version, long_version = long_version_message())]
 pub(crate) struct Options {
     #[clap(subcommand)]
-    subcmd: Command,
+    sub_cmd: Command,
 }
 
 #[tokio::main]
 async fn main() {
     logger::Logger::init();
-    if let Err(error) = _run().await {
-        log::error!("{}", error);
+
+    let start_time = Instant::now();
+    match _run().await {
+        Ok(()) => log::info!(
+            "command performed in {}",
+            indicatif::HumanDuration(start_time.elapsed())
+        ),
+        Err(error) => log::error!("{}", error),
     }
 }
 
 /// Starts parsing CLI arguments and runs actions for them
 async fn _run() -> Result<()> {
-    let context = Context::new();
-
     let options = Options::parse();
-    match options.subcmd {
-        Command::List(cmd) => cmd.run(context).await,
-        Command::Leaves(cmd) => cmd.run(context).await,
-        Command::Build(cmd) => cmd.run(context).await,
+    match options.sub_cmd {
+        Command::List(cmd) => cmd.run().await,
+        Command::Leaves(cmd) => cmd.run().await,
+        Command::Build(cmd) => cmd.run().await,
 
         #[cfg(feature = "ios")]
-        Command::Export(cmd) => cmd.run(context).await,
+        Command::Export(cmd) => cmd.run().await,
 
         #[cfg(feature = "ios")]
-        Command::Import(cmd) => cmd.run(context).await,
+        Command::Import(cmd) => cmd.run().await,
 
         Command::ShowLicense => {
             let license = fs::read_to_string(LICENSE_PATH)?;
