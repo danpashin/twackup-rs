@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{CliCommand, Context, GlobalOptions};
+use super::{CliCommand, GlobalOptions};
 use crate::error::Result;
 use twackup::PackagesSort;
 
@@ -30,7 +30,7 @@ pub(crate) struct List {
 
 #[async_trait::async_trait]
 impl CliCommand for List {
-    async fn run(&self, _context: Context) -> Result<()> {
+    async fn run(&self) -> Result<()> {
         let packages = self
             .global_options
             .packages(false, PackagesSort::Name)

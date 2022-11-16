@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{CliCommand, Context};
+use super::CliCommand;
 use crate::{commands::GlobalOptions, error::Result};
 use twackup::PackagesSort;
 
@@ -29,7 +29,7 @@ pub(crate) struct Leaves {
 
 #[async_trait::async_trait]
 impl CliCommand for Leaves {
-    async fn run(&self, _context: Context) -> Result<()> {
+    async fn run(&self) -> Result<()> {
         let packages = self
             .global_options
             .packages(true, PackagesSort::Name)

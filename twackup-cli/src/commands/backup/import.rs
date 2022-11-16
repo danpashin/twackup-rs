@@ -18,7 +18,8 @@
  */
 
 use super::{ExportData, RepoGroup, RepoGroupFormat};
-use crate::{commands::CliCommand, context::Context, error::Result, process, serializer::Format};
+use crate::{commands::CliCommand, error::Result, process, serializer::Format};
+use libproc::libproc::proc_pid::am_root;
 use std::{
     fs::File as StdFile,
     io,
@@ -42,8 +43,8 @@ pub(crate) struct Import {
 
 #[async_trait::async_trait]
 impl CliCommand for Import {
-    async fn run(&self, context: Context) -> Result<()> {
-        if !context.is_root {
+    async fn run(&self) -> Result<()> {
+        if !am_root() {
             Err(GenericError::NotRunningAsRoot)?;
         }
 
