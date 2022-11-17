@@ -1,6 +1,6 @@
 [package]
 name = "twackup"
-version = "1.0.0"
+version = "2.0.0"
 description = "Tokio-based dpkg database parser and .deb packages rebuilder library"
 edition = "2021"
 license = "GPL-3.0-only"
