@@ -120,7 +120,7 @@ impl Parser {
 impl ChunkWorker {
     /// Prepares environment and creates parser instance
     #[inline]
-    fn new(ptr: usize, length: usize) -> Self {
+    const fn new(ptr: usize, length: usize) -> Self {
         Self { ptr, length }
     }
 

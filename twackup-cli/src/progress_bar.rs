@@ -27,7 +27,7 @@ pub(crate) static mut PROGRESS_BAR: Option<&'static ProgressBar> = None;
 pub(crate) struct ProgressBar(pub(crate) ProgressBarImpl);
 
 impl ProgressBar {
-    pub(crate) fn default(length: u64) -> &'static ProgressBar {
+    pub(crate) fn default(length: u64) -> &'static Self {
         let progress_bar = indicatif::ProgressBar::new(length);
         progress_bar.set_style(
             indicatif::ProgressStyle::default_bar()
@@ -36,7 +36,7 @@ impl ProgressBar {
                 .progress_chars("##-"),
         );
 
-        let progress_bar = ProgressBar(progress_bar);
+        let progress_bar = Self(progress_bar);
         progress_bar.make_static()
     }
 
@@ -65,7 +65,7 @@ impl Progress for ProgressBar {
 
         unsafe {
             if let Some(progress_bar) = PROGRESS_BAR {
-                let progress_bar: *mut ProgressBar = progress_bar as *const _ as *mut _;
+                let progress_bar: *mut Self = progress_bar as *const _ as *mut _;
                 let progress_bar = Box::from_raw(progress_bar);
                 drop(progress_bar);
 

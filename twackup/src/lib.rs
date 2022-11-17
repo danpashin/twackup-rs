@@ -17,7 +17,13 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#![deny(rust_2018_idioms, clippy::pedantic, unreachable_pub)]
+#![deny(
+    rust_2018_idioms,
+    clippy::pedantic,
+    unreachable_pub,
+    clippy::string_lit_as_bytes,
+    clippy::missing_const_for_fn
+)]
 #![warn(clippy::unused_self, missing_docs)]
 
 //! A Tokio-based DPKG database parsing library.
