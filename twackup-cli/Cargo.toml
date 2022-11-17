@@ -1,0 +1,68 @@
+[package]
+name = "twackup-cli"
+version = "1.0.0"
+description = "Safe and fast iOS CLI utility for rebuilding DEBs and backing up packages"
+edition = "2021"
+publish = false
+license = "GPL-3.0-only"
+build = "build.rs"
+
+[[bin]]
+name = "twackup"
+path = "src/main.rs"
+
+[features]
+default = ["ios"]
+ios = ["twackup/ios"]
+
+[package.metadata.deb_pkg]
+name = "Twackup (CLI)"
+identifier = "ru.danpashin.twackup"
+section = "Utilities"
+priority = "optional"
+architecture = "iphoneos-arm"
+depends = "firmware (>= 3.0)"
+changelog = "changelog"
+homepage = ""
+assets = [
+    ["build/twackup-ios", "/usr/bin/twackup"],
+    ["COPYING", "/usr/share/doc/ru.danpashin.twackup/LICENSE"],
+]
+license_type = "GPL-3.0"
+
+[dependencies]
+twackup = { path = "../twackup", features = ["cli", "with-serde"] }
+
+# Core
+clap = { version = "4.0", features = ["derive"] }
+async-trait = "0.1"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+tokio = { version = "1.5", features = ["rt-multi-thread", "sync", "macros"] }
+futures = "0.3"
+
+# Archiving
+tokio-tar = "0.3"
+
+# Serializing
+plist = { version = "1.0", default-features = false }
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+toml = "0.5"
+serde_json = "1.0"
+
+# Logging
+log = "0.4"
+thiserror = "1.0"
+
+# CLI Utils
+console = { version = "0.15", default-features = false, features = [] }
+indicatif = { version = "0.17", default-features = false, features = [] }
+stderrlog = { version = "0.5", default-features = false, features = [] }
+
+# Misc
+libc = "0.2"
+gethostname = "0.4"
+libproc = { git = "https://github.com/danpashin/libproc-rs", branch = "0.12.0-ios" }
+
+[build-dependencies]
+vergen = { version = "7.4", default-features = false, features = ["cargo", "build", "git"] }

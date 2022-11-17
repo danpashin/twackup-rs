@@ -1,0 +1,52 @@
+[package]
+name = "twackup"
+version = "1.0.0"
+description = "Tokio-based dpkg database parser and .deb packages rebuilder library"
+edition = "2021"
+license = "GPL-3.0-only"
+rust-version = "1.62.1"
+homepage = "https://github.com/danpashin/twackup-rs"
+categories = ["filesystem", "parser-implementations"]
+keywords = ["dpkg", "linux", "ios"]
+
+[features]
+default = []
+cli = ["console"]
+ios = []
+with-serde = ["plist", "serde"]
+
+[[bench]]
+name = "basic"
+harness = false
+
+[dependencies]
+
+# Core
+twackup-derive = { version = "0.1.0", path = "../twackup-derive" }
+tokio = { version = "1.5", features = ["rt-multi-thread", "sync", "macros", "fs"] }
+memmem = "0.1"
+memmap2 = "0.5"
+
+# Archiving
+ar = "0.9"
+tokio-tar = "0.3"
+flate2 = "1.0"
+xz2 = "0.1"
+zstd = "0.11.2"
+
+# Serializing
+plist = { version = "1.0", default-features = false, optional = true}
+serde = { version = "1.0", features = ["derive"], optional = true }
+
+# Logging
+log = "0.4"
+thiserror = "1.0"
+
+# Misc
+libc = "0.2"
+
+# CLI Utils
+console = { version = "0.15", default-features = false, features = [], optional = true }
+
+[dev-dependencies]
+criterion = { version = "0.4", features = ["async_tokio"] }
