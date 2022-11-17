@@ -103,7 +103,7 @@ pub enum Encoder<T: Write> {
 
 impl From<Level> for u32 {
     #[inline]
-    fn from(level: Level) -> u32 {
+    fn from(level: Level) -> Self {
         match level {
             Level::None => 0,
             Level::Fast => 1,
@@ -141,9 +141,9 @@ impl<T: Write> Encoder<T> {
     #[inline]
     pub fn into_inner(self) -> std::io::Result<T> {
         match self {
-            Encoder::Gzip(inner) => inner.finish(),
-            Encoder::Xz(inner) => inner.finish(),
-            Encoder::Zstd(inner) => {
+            Self::Gzip(inner) => inner.finish(),
+            Self::Xz(inner) => inner.finish(),
+            Self::Zstd(inner) => {
                 let inner = inner.into_inner();
                 inner.finish()
             }
@@ -159,9 +159,9 @@ impl<T: Write + Unpin> AsyncWrite for Encoder<T> {
     ) -> Poll<Result<usize, Error>> {
         let enum_self = self.get_mut();
         match enum_self {
-            Encoder::Gzip(inner) => Poll::Ready(inner.write(buf)),
-            Encoder::Xz(inner) => Poll::Ready(inner.write(buf)),
-            Encoder::Zstd(inner) => {
+            Self::Gzip(inner) => Poll::Ready(inner.write(buf)),
+            Self::Xz(inner) => Poll::Ready(inner.write(buf)),
+            Self::Zstd(inner) => {
                 let inner = inner.get_mut();
                 Poll::Ready(inner.write(buf))
             }
@@ -171,9 +171,9 @@ impl<T: Write + Unpin> AsyncWrite for Encoder<T> {
     fn poll_flush(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Result<(), Error>> {
         let enum_self = self.get_mut();
         match enum_self {
-            Encoder::Gzip(inner) => Poll::Ready(inner.flush()),
-            Encoder::Xz(inner) => Poll::Ready(inner.flush()),
-            Encoder::Zstd(inner) => {
+            Self::Gzip(inner) => Poll::Ready(inner.flush()),
+            Self::Xz(inner) => Poll::Ready(inner.flush()),
+            Self::Zstd(inner) => {
                 let inner = inner.get_mut();
                 Poll::Ready(inner.flush())
             }
@@ -183,9 +183,9 @@ impl<T: Write + Unpin> AsyncWrite for Encoder<T> {
     fn poll_shutdown(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Result<(), Error>> {
         let enum_self = self.get_mut();
         match enum_self {
-            Encoder::Gzip(inner) => Poll::Ready(inner.try_finish()),
-            Encoder::Xz(inner) => Poll::Ready(inner.try_finish()),
-            Encoder::Zstd(inner) => {
+            Self::Gzip(inner) => Poll::Ready(inner.try_finish()),
+            Self::Xz(inner) => Poll::Ready(inner.try_finish()),
+            Self::Zstd(inner) => {
                 let inner = inner.get_mut();
                 Poll::Ready(inner.do_finish())
             }

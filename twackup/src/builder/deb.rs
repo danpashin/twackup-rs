@@ -89,8 +89,7 @@ impl Deb {
             builder.append(&header, data)
         };
 
-        let version = "2.0\n".as_bytes();
-        append_data(b"debian-binary".to_vec(), version)?;
+        append_data(b"debian-binary".to_vec(), b"2.0\n")?;
 
         let compression_str = self.compression.r#type.as_str();
 

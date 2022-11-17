@@ -51,13 +51,13 @@ impl Format {
 
     pub(crate) fn de_from_reader<T: DeserializeOwned, R: Read>(&self, mut reader: R) -> Result<T> {
         Ok(match self {
-            Format::Json => serde_json::from_reader(reader)?,
-            Format::Toml => {
+            Self::Json => serde_json::from_reader(reader)?,
+            Self::Toml => {
                 let mut data = Vec::new();
                 reader.read_to_end(&mut data)?;
                 toml::from_slice(&data)?
             }
-            Format::Yaml => serde_yaml::from_reader(reader)?,
+            Self::Yaml => serde_yaml::from_reader(reader)?,
         })
     }
 }

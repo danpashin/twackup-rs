@@ -26,8 +26,7 @@ impl<'buf> Iterator for UnOwnedLine<'buf> {
             None => None,
         };
 
-        result
-            .and_then(|result| (!result.is_empty() && result != "\n".as_bytes()).then_some(result))
+        result.and_then(|result| (!result.is_empty() && result != b"\n").then_some(result))
     }
 }
 
@@ -46,12 +45,12 @@ impl<'buf> UnOwnedLine<'buf> {
     #[inline]
     #[must_use]
     pub(crate) fn double_line(buf: &'buf [u8]) -> Self {
-        Self::search("\n\n".as_bytes(), buf)
+        Self::search(b"\n\n", buf)
     }
 
     #[inline]
     #[must_use]
     pub(crate) fn single_line(buf: &'buf [u8]) -> Self {
-        Self::search("\n".as_bytes(), buf)
+        Self::search(b"\n", buf)
     }
 }
