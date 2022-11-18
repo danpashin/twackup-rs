@@ -179,8 +179,7 @@ impl Package {
             sum + name.as_str().len() + value.len() + between_kv_length
         });
 
-        let important_fields: HashSet<_> =
-            header_fields.iter().map(|(name, _)| name.clone()).collect();
+        let important_fields: HashSet<_> = header_fields.iter().map(|(name, _)| name).collect();
 
         let other_fields = self
             .other_fields
@@ -194,28 +193,23 @@ impl Package {
                 sum + name.as_str().len() + value.len() + between_kv_length
             });
 
-        // Build header with important fields
-        let control = String::with_capacity(control_length);
-        let control = header_fields
-            .iter()
-            .fold(control, |mut control, (name, value)| {
-                control.push_str(name.as_str());
-                control.push_str(": ");
-                control.push_str(value);
-                control.push('\n');
-
-                control
-            });
-
-        // And build other fields
-        other_fields.fold(control, |mut control, (name, value)| {
+        let push = |mut control: String, name: &Field, value: &str| -> String {
             control.push_str(name.as_str());
             control.push_str(": ");
             control.push_str(value);
             control.push('\n');
 
             control
-        })
+        };
+
+        // Build header with important fields
+        let control = String::with_capacity(control_length);
+        let control = header_fields
+            .iter()
+            .fold(control, |control, (name, value)| push(control, name, value));
+
+        // And build other fields
+        other_fields.fold(control, |control, (name, value)| push(control, name, value))
     }
 
     /// Searches any package identifiers this package depends on.
@@ -231,9 +225,9 @@ impl Package {
         }
 
         let depends = self.get(Field::Depends).unwrap_or_default();
-        let predepends = self.get(Field::Depends).unwrap_or_default();
+        let pre_depends = self.get(Field::PreDepends).unwrap_or_default();
 
-        parse(depends).chain(parse(predepends))
+        parse(depends).chain(parse(pre_depends))
     }
 
     /// Fetches value associated with this field.
