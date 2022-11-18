@@ -17,13 +17,14 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use twackup_derive::StrEnumWithError;
+use crate::package::Priority;
+use safer_ffi::derive_ReprC;
 
-/// Wrapper on package priority
-#[derive(Copy, Clone, Debug, PartialEq, Eq, StrEnumWithError)]
-#[twackup(convert_all = "lower")]
-#[non_exhaustive]
-pub enum Priority {
+/// Package priority
+#[derive_ReprC]
+#[repr(u8)]
+pub enum TwPackagePriority {
+    NotSpecified = 0,
     /// Package is optional for installation and removal
     Optional,
     /// Package is required for system to work
@@ -34,4 +35,17 @@ pub enum Priority {
     Standard,
     /// Package is important for installed system
     Extra,
+}
+
+impl From<Option<Priority>> for TwPackagePriority {
+    fn from(value: Option<Priority>) -> Self {
+        match value {
+            Some(Priority::Optional) => Self::Optional,
+            Some(Priority::Required) => Self::Required,
+            Some(Priority::Important) => Self::Important,
+            Some(Priority::Standard) => Self::Standard,
+            Some(Priority::Extra) => Self::Extra,
+            None => Self::NotSpecified,
+        }
+    }
 }

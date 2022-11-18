@@ -22,7 +22,7 @@ use std::fmt::{Display, Formatter};
 use twackup_derive::StrEnumWithError;
 
 /// Wrapper for dpkg current package state
-#[derive(Clone, Debug, PartialEq, Eq, StrEnumWithError)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, StrEnumWithError)]
 #[twackup(convert_all = "lower")]
 pub enum SelectionState {
     /// The package selection is unknown. A package that is also
@@ -48,7 +48,7 @@ impl Display for SelectionState {
 }
 
 /// Wrapper for dpkg-set flags for package
-#[derive(Clone, Debug, PartialEq, Eq, StrEnumWithError)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, StrEnumWithError)]
 #[twackup(convert_all = "lower")]
 pub enum Flags {
     /// A package marked ok is in a known state,
@@ -66,7 +66,7 @@ impl Display for Flags {
 }
 
 /// Wrapper for dpkg-set current package state
-#[derive(Clone, Debug, PartialEq, Eq, StrEnumWithError)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, StrEnumWithError)]
 #[twackup(convert_all = "kebab")]
 pub enum State {
     /// The package is not installed on a system
@@ -94,16 +94,16 @@ impl Display for State {
 }
 
 /// Wrapper of the dpkg Status database field
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Status {
     /// Current dpkg selection state of this package.
     /// Typically, should be  **Install**
-    selection_state: SelectionState,
+    pub selection_state: SelectionState,
     /// Package different flags. Should always be **Ok**
-    flags: Flags,
+    pub flags: Flags,
     /// Current installation state of this package.
     /// Typically, should be  **Installed**
-    state: State,
+    pub state: State,
 }
 
 impl TryFrom<&str> for Status {
