@@ -22,7 +22,12 @@
     clippy::pedantic,
     unreachable_pub,
     clippy::string_lit_as_bytes,
-    clippy::missing_const_for_fn
+    clippy::deref_by_slicing,
+    clippy::filetype_is_file,
+    clippy::let_underscore_must_use,
+    clippy::print_stdout,
+    clippy::print_stderr,
+    clippy::redundant_feature_names
 )]
 #![warn(clippy::unused_self, missing_docs)]
 

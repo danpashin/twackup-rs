@@ -22,14 +22,14 @@
     clippy::pedantic,
     unreachable_pub,
     clippy::string_lit_as_bytes,
-    clippy::missing_const_for_fn
+    clippy::deref_by_slicing,
+    clippy::filetype_is_file,
+    clippy::let_underscore_must_use,
+    clippy::print_stdout,
+    clippy::redundant_feature_names
 )]
 #![deny(rust_2018_idioms, clippy::pedantic, unreachable_pub)]
-#![warn(
-    clippy::single_match_else,
-    clippy::unused_self,
-    clippy::cast_possible_wrap
-)]
+#![warn(clippy::single_match_else, clippy::unused_self)]
 
 mod commands;
 mod error;
@@ -107,7 +107,7 @@ async fn _run() -> Result<()> {
 
         Command::ShowLicense => {
             let license = fs::read_to_string(LICENSE_PATH)?;
-            println!("\n{}\n", license);
+            eprintln!("\n{}\n", license);
 
             Ok(())
         }
@@ -121,6 +121,6 @@ mod tests {
 
     #[test]
     fn cli_generic() {
-        Options::command().debug_assert()
+        Options::command().debug_assert();
     }
 }
