@@ -9,11 +9,16 @@ homepage = "https://github.com/danpashin/twackup-rs"
 categories = ["filesystem", "parser-implementations"]
 keywords = ["dpkg", "linux", "ios"]
 
+[lib]
+crate-type = [ "staticlib", "rlib", "cdylib" ]
+
 [features]
 default = []
 cli = ["console"]
 ios = []
 serde = ["plist", "dep:serde"]
+ffi = ["safer-ffi"]
+ffi-headers = ["ffi", "safer-ffi/headers"]
 
 [[bench]]
 name = "basic"
@@ -44,6 +49,7 @@ thiserror = "1.0"
 
 # Misc
 libc = "0.2"
+safer-ffi = { version = "0.0.10", features = ["proc_macros"], optional = true }
 
 # CLI Utils
 console = { version = "0.15", default-features = false, features = [], optional = true }
