@@ -13,7 +13,7 @@ keywords = ["dpkg", "linux", "ios"]
 default = []
 cli = ["console"]
 ios = []
-with-serde = ["plist", "serde"]
+serde = ["plist", "dep:serde"]
 
 [[bench]]
 name = "basic"

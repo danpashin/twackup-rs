@@ -31,7 +31,7 @@ assets = [
 license_type = "GPL-3.0"
 
 [dependencies]
-twackup = { path = "../twackup", features = ["cli", "with-serde"] }
+twackup = { path = "../twackup", features = ["cli", "serde"] }
 
 # Core
 clap = { version = "4.0", features = ["derive"] }

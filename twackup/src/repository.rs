@@ -43,7 +43,7 @@ pub enum Error {
 
 /// Repo category type
 #[derive(Clone, Debug, StrEnumWithDefault)]
-#[cfg_attr(feature = "with-serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[non_exhaustive]
 pub enum Category {
     /// Used for distributing binaries only
@@ -58,7 +58,7 @@ pub enum Category {
 
 /// Wrapper for default repo structure
 #[derive(Clone, Debug)]
-#[cfg_attr(feature = "with-serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[non_exhaustive]
 pub struct Repository {
     /// specifies type of repo packages - Binary or Source
@@ -172,7 +172,7 @@ impl Repository {
 
     /// Performs constructing repo to Apple's plist format
     #[must_use]
-    #[cfg(feature = "with-serde")]
+    #[cfg(feature = "serde")]
     pub fn to_dict(&self) -> plist::Dictionary {
         let mut dict = plist::Dictionary::new();
         dict.insert(
