@@ -13,11 +13,18 @@ int main(int argc, char *argv[]) {
     auto package = packages.ptr[i];
     std::cout << i + 1 << ". " << std::string((char *)package.identifier.ptr, package.identifier.len) << "; ";
 
-    auto section = tw_package_section_description(&package);
+    auto section = package.get_section_string(package.inner_ptr);
     std::cout << "section = " << std::string((char *)section.ptr, section.len) << "; ";
 
-    auto arch = tw_package_get_field(&package, TW_PACKAGE_FIELD_ARCHITECTURE);
+    auto arch = package.get_field(package.inner_ptr, TW_PACKAGE_FIELD_ARCHITECTURE);
     std::cout << "arch = " << std::string((char *)arch.ptr, arch.len) << "; ";
+
+    auto deps = package.get_dependencies(package.inner_ptr);
+    std::cout << std::endl;
+    for (int j = 0; j < deps.len; j++) {
+      std::cout << "dep: " << std::string((char *)deps.ptr[j].ptr, deps.ptr[j].len) << std::endl;
+    }
+    std::cout << std::endl;
 
     std::cout << std::endl;
   }
