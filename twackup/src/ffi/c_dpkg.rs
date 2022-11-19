@@ -81,7 +81,7 @@ impl TwDpkg {
         &self,
         leaves_only: bool,
         sort: TwPackagesSort,
-    ) -> c_slice::Box<TwPackage<'_>> {
+    ) -> c_slice::Box<TwPackage> {
         let dpkg = self.inner_dpkg();
         let tokio_rt = self.inner_tokio_rt();
 

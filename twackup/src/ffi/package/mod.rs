@@ -17,69 +17,91 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+pub mod container;
 pub(crate) mod field;
 mod priority;
 mod section;
 mod status;
 
-use self::{priority::TwPackagePriority, section::TwPackageSection, status::TwPackageState};
-use crate::ffi::package::field::TwPackageField;
+use self::{
+    container::TwPackageRef, field::TwPackageField, priority::TwPackagePriority,
+    section::TwPackageSection, status::TwPackageState,
+};
 use crate::package::{Field, Package};
-use safer_ffi::{derive_ReprC, prelude::c_slice, ptr};
-use std::{ffi::c_void, mem::ManuallyDrop};
+use safer_ffi::{
+    derive_ReprC,
+    prelude::c_slice::{Box, Raw, Ref},
+};
 
 #[derive_ReprC]
 #[repr(C)]
-pub struct TwPackage<'a> {
-    inner_ptr: ptr::NonNull<c_void>,
-    identifier: c_slice::Ref<'a, u8>,
-    name: c_slice::Ref<'a, u8>,
-    version: c_slice::Ref<'a, u8>,
+pub struct TwPackage {
+    inner_ptr: TwPackageRef,
+    identifier: Raw<u8>,
+    name: Raw<u8>,
+    version: Raw<u8>,
     section: TwPackageSection,
     state: TwPackageState,
     priority: TwPackagePriority,
+    get_section_string: extern "C" fn(TwPackageRef) -> Raw<u8>,
+    get_field: extern "C" fn(TwPackageRef, TwPackageField) -> Raw<u8>,
+    build_control: extern "C" fn(TwPackageRef) -> Box<u8>,
+    get_dependencies: extern "C" fn(TwPackageRef) -> Box<Raw<u8>>,
 }
 
-impl<'a> TwPackage<'a> {
+impl TwPackage {
     pub(crate) fn new(package: Package) -> Self {
-        let package = Box::leak(Box::new(package));
+        let package_ptr = TwPackageRef::from_package(package);
+        let package = package_ptr.inner();
 
         Self {
-            inner_ptr: ptr::NonNull::new(package as *const Package as *mut c_void).unwrap(),
-            identifier: c_slice::Ref::from(package.id.as_bytes()),
-            name: c_slice::Ref::from(package.human_name().as_bytes()),
-            version: c_slice::Ref::from(package.version.as_bytes()),
+            inner_ptr: package_ptr,
+            identifier: Raw::from(Ref::from(package.id.as_bytes())),
+            name: Raw::from(Ref::from(package.human_name().as_bytes())),
+            version: Raw::from(Ref::from(package.version.as_bytes())),
             section: (&package.section).into(),
             state: package.status.into(),
             priority: package.priority.into(),
-        }
-    }
-
-    #[inline]
-    #[must_use]
-    fn rust_package(&self) -> &Package {
-        unsafe { &*self.inner_ptr.as_ptr().cast() }
-    }
-
-    pub(crate) fn get_section_description(&self) -> c_slice::Ref<'_, u8> {
-        let package = self.rust_package();
-        c_slice::Ref::from(package.section.as_str().as_bytes())
-    }
-
-    pub(crate) fn get_field(&self, field: TwPackageField) -> c_slice::Ref<'_, u8> {
-        let package = self.rust_package();
-        let field: Field = field.into();
-        match package.get(field) {
-            Ok(value) => c_slice::Ref::from(value.as_bytes()),
-            Err(_) => c_slice::Ref::default(),
+            get_section_string,
+            get_field,
+            build_control,
+            get_dependencies,
         }
     }
 }
 
-impl<'a> Drop for TwPackage<'a> {
+impl Drop for TwPackage {
     fn drop(&mut self) {
-        unsafe {
-            ManuallyDrop::<Package>::drop(&mut *self.inner_ptr.as_ptr().cast());
-        }
+        self.inner_ptr.drop_self();
     }
+}
+
+pub(crate) extern "C" fn get_section_string(package: TwPackageRef) -> Raw<u8> {
+    let package = package.inner();
+    Raw::from(Ref::from(package.section.as_str().as_bytes()))
+}
+
+pub(crate) extern "C" fn get_field(package: TwPackageRef, field: TwPackageField) -> Raw<u8> {
+    let package = package.inner();
+    let field: Field = field.into();
+    match package.get(field) {
+        Ok(value) => Raw::from(Ref::from(value.as_bytes())),
+        Err(_) => Raw::from(Ref::default()),
+    }
+}
+
+pub(crate) extern "C" fn build_control(package: TwPackageRef) -> Box<u8> {
+    let control = package.inner().to_control();
+    Box::from(control.into_bytes().into_boxed_slice())
+}
+
+pub(crate) extern "C" fn get_dependencies(package: TwPackageRef) -> Box<Raw<u8>> {
+    let dependencies = package.inner().dependencies();
+    let dependencies: Vec<_> = dependencies
+        .map(|dep| {
+            let dep = Ref::from(dep.as_bytes());
+            Raw::from(dep)
+        })
+        .collect();
+    Box::from(dependencies.into_boxed_slice())
 }

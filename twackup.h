@@ -68,8 +68,14 @@ TwPackagesSort_t
 #endif
 ;
 
+typedef void *TwPackageRef;
 /** \brief
- *  `&'lt [T]` but with a guaranteed `#[repr(C)]` layout.
+ *  Like [`slice_ref`] and [`slice_mut`], but with any lifetime attached
+ *  whatsoever.
+ * 
+ *  It is only intended to be used as the parameter of a **callback** that
+ *  locally borrows it, due to limitations of the [`ReprC`][
+ *  `trait@crate::layout::ReprC`] design _w.r.t._ higher-rank trait bounds.
  * 
  *  # C layout (for some given type T)
  * 
@@ -87,13 +93,13 @@ TwPackagesSort_t
  *  allowed to be `NULL` (with the contents of `len` then being undefined)
  *  use the `Option< slice_ptr<_> >` type.
  */
-typedef struct slice_ref_uint8 {
+typedef struct slice_raw_uint8 {
 
-    uint8_t const * ptr;
+    uint8_t * ptr;
 
     size_t len;
 
-} slice_ref_uint8_t;
+} slice_raw_uint8_t;
 
 /** \remark Has the same ABI as `uint8_t` **/
 #ifdef DOXYGEN
@@ -313,75 +319,6 @@ TwPackagePriority_t
 #endif
 ;
 
-typedef struct TwPackage {
-
-    void * inner_ptr;
-
-    slice_ref_uint8_t identifier;
-
-    slice_ref_uint8_t name;
-
-    slice_ref_uint8_t version;
-
-    TwPackageSection_t section;
-
-    TwPackageState_t state;
-
-    TwPackagePriority_t priority;
-
-} TwPackage_t;
-
-/** \brief
- *  [`Box`][`rust::Box`]`<[T]>` (fat pointer to a slice),
- *  but with a guaranteed `#[repr(C)]` layout.
- * 
- *  # C layout (for some given type T)
- * 
- *  ```c
- *  typedef struct {
- *      // Cannot be NULL
- *      T * ptr;
- *      size_t len;
- *  } slice_T;
- *  ```
- * 
- *  # Nullable pointer?
- * 
- *  If you want to support the above typedef, but where the `ptr` field is
- *  allowed to be `NULL` (with the contents of `len` then being undefined)
- *  use the `Option< slice_ptr<_> >` type.
- */
-typedef struct slice_boxed_TwPackage {
-
-    TwPackage_t * ptr;
-
-    size_t len;
-
-} slice_boxed_TwPackage_t;
-
-/** \brief
- *  Fetches packages from dpkg database
- * 
- *  \param[in] dpkg Dpkg instance
- *  \param[in] leaves_only If parser should return leaves packages or not
- *  \param[in] sort Sort type. Select TW_PACKAGES_SORT_UNSORTED if no sort is needed
- * 
- */
-slice_boxed_TwPackage_t tw_get_packages (
-    TwDpkg_t const * dpkg,
-    bool leaves_only,
-    TwPackagesSort_t sort);
-
-/** \brief
- *  Returns package section description
- * 
- *  \param[in] package package instance
- *  from which section description should be fetched
- * 
- */
-slice_ref_uint8_t tw_package_section_description (
-    TwPackage_t const * package);
-
 /** \brief
  *  Describes field type
  */
@@ -516,15 +453,160 @@ TwPackageField_t
 ;
 
 /** \brief
+ *  [`Box`][`rust::Box`]`<[T]>` (fat pointer to a slice),
+ *  but with a guaranteed `#[repr(C)]` layout.
+ * 
+ *  # C layout (for some given type T)
+ * 
+ *  ```c
+ *  typedef struct {
+ *      // Cannot be NULL
+ *      T * ptr;
+ *      size_t len;
+ *  } slice_T;
+ *  ```
+ * 
+ *  # Nullable pointer?
+ * 
+ *  If you want to support the above typedef, but where the `ptr` field is
+ *  allowed to be `NULL` (with the contents of `len` then being undefined)
+ *  use the `Option< slice_ptr<_> >` type.
+ */
+typedef struct slice_boxed_uint8 {
+
+    uint8_t * ptr;
+
+    size_t len;
+
+} slice_boxed_uint8_t;
+
+/** \brief
+ *  [`Box`][`rust::Box`]`<[T]>` (fat pointer to a slice),
+ *  but with a guaranteed `#[repr(C)]` layout.
+ * 
+ *  # C layout (for some given type T)
+ * 
+ *  ```c
+ *  typedef struct {
+ *      // Cannot be NULL
+ *      T * ptr;
+ *      size_t len;
+ *  } slice_T;
+ *  ```
+ * 
+ *  # Nullable pointer?
+ * 
+ *  If you want to support the above typedef, but where the `ptr` field is
+ *  allowed to be `NULL` (with the contents of `len` then being undefined)
+ *  use the `Option< slice_ptr<_> >` type.
+ */
+typedef struct slice_boxed_slice_raw_uint8 {
+
+    slice_raw_uint8_t * ptr;
+
+    size_t len;
+
+} slice_boxed_slice_raw_uint8_t;
+
+/** \brief
+ *  fff TWPACKAGE
+ */
+typedef struct TwPackage {
+
+    TwPackageRef inner_ptr;
+
+    slice_raw_uint8_t identifier;
+
+    slice_raw_uint8_t name;
+
+    slice_raw_uint8_t version;
+
+    TwPackageSection_t section;
+
+    TwPackageState_t state;
+
+    TwPackagePriority_t priority;
+
+    slice_raw_uint8_t (*get_section_string)(TwPackageRef package_ref);
+
+    slice_raw_uint8_t (*get_field)(TwPackageRef package_ref, TwPackageField_t);
+
+    slice_boxed_uint8_t (*build_control)(TwPackageRef package_ref);
+
+    slice_boxed_slice_raw_uint8_t (*get_dependencies)(TwPackageRef package_ref);
+
+} TwPackage_t;
+
+/** \brief
+ *  [`Box`][`rust::Box`]`<[T]>` (fat pointer to a slice),
+ *  but with a guaranteed `#[repr(C)]` layout.
+ * 
+ *  # C layout (for some given type T)
+ * 
+ *  ```c
+ *  typedef struct {
+ *      // Cannot be NULL
+ *      T * ptr;
+ *      size_t len;
+ *  } slice_T;
+ *  ```
+ * 
+ *  # Nullable pointer?
+ * 
+ *  If you want to support the above typedef, but where the `ptr` field is
+ *  allowed to be `NULL` (with the contents of `len` then being undefined)
+ *  use the `Option< slice_ptr<_> >` type.
+ */
+typedef struct slice_boxed_TwPackage {
+
+    TwPackage_t * ptr;
+
+    size_t len;
+
+} slice_boxed_TwPackage_t;
+
+/** \brief
+ *  Fetches packages from dpkg database
+ * 
+ *  \param[in] dpkg Dpkg instance
+ *  \param[in] leaves_only If parser should return leaves packages or not
+ *  \param[in] sort Sort type. Select TW_PACKAGES_SORT_UNSORTED if no sort is needed
+ * 
+ */
+slice_boxed_TwPackage_t tw_get_packages (
+    TwDpkg_t const * dpkg,
+    bool leaves_only,
+    TwPackagesSort_t sort);
+
+/** \brief
+ *  Returns package section description
+ * 
+ *  \param[in] package package instance
+ *  from which section description should be fetched
+ * 
+ */
+slice_raw_uint8_t tw_get_package_section_string (
+    TwPackageRef package);
+
+/** \brief
  *  Fetches package field value
  * 
  *  \param[in] package Package from which field value should be fetched
  *  \param[in] field Field type
  * 
  */
-slice_ref_uint8_t tw_package_get_field (
-    TwPackage_t const * package,
+slice_raw_uint8_t tw_get_package_field (
+    TwPackageRef package,
     TwPackageField_t field);
+
+/** \brief
+ *  Build control file string from package
+ * 
+ *  \param[in] package Package from which control string should be build
+ * 
+ */
+slice_boxed_uint8_t tw_package_build_control (
+    TwPackageRef package);
 
 
 #ifdef __cplusplus

@@ -18,11 +18,11 @@
  */
 
 pub mod c_dpkg;
-mod package;
+pub mod package;
 
 use self::{
     c_dpkg::{TwDpkg, TwPackagesSort},
-    package::{field::TwPackageField, TwPackage},
+    package::{container::TwPackageRef, field::TwPackageField, TwPackage},
 };
 use crate::Dpkg;
 use safer_ffi::{
@@ -62,7 +62,7 @@ fn tw_get_packages(
     dpkg: &TwDpkg,
     leaves_only: bool,
     sort: TwPackagesSort,
-) -> c_slice::Box<TwPackage<'_>> {
+) -> c_slice::Box<TwPackage> {
     dpkg.get_packages(leaves_only, sort)
 }
 
@@ -72,8 +72,8 @@ fn tw_get_packages(
 /// from which section description should be fetched
 ///
 #[ffi_export]
-fn tw_package_section_description<'a>(package: &'a TwPackage<'a>) -> c_slice::Ref<'a, u8> {
-    package.get_section_description()
+fn tw_get_package_section_string(package: TwPackageRef) -> c_slice::Raw<u8> {
+    package::get_section_string(package)
 }
 
 /// Fetches package field value
@@ -82,11 +82,17 @@ fn tw_package_section_description<'a>(package: &'a TwPackage<'a>) -> c_slice::Re
 /// \param[in] field Field type
 ///
 #[ffi_export]
-fn tw_package_get_field<'a>(
-    package: &'a TwPackage<'a>,
-    field: TwPackageField,
-) -> c_slice::Ref<'a, u8> {
-    package.get_field(field)
+fn tw_get_package_field(package: TwPackageRef, field: TwPackageField) -> c_slice::Raw<u8> {
+    package::get_field(package, field)
+}
+
+/// Build control file string from package
+///
+/// \param[in] package Package from which control string should be build
+///
+#[ffi_export]
+fn tw_package_build_control(package: TwPackageRef) -> c_slice::Box<u8> {
+    package::build_control(package)
 }
 
 #[cfg(feature = "ffi-headers")]
