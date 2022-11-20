@@ -14,21 +14,22 @@ Twackup is the fastest tool at this moment. It uses Rust lightweight threads and
 	cd twackup-rs
 	```
 	
-3. * For host platform run `make native` or `cargo build --release`
-   * For iOS you have to install additional utilities:
+3. * For host platform just run `cargo build --release`
+   * For iOS, you have to install some utilities:
 
+      * [cargo-make](https://github.com/sagiegurari/cargo-make)
       * [fpm](https://github.com/jordansissel/fpm)
-      * [jq](https://stedolan.github.io/jq/)
       * [ldid](https://github.com/xerub/ldid)
-      * lipo
-      * **aarch64-apple-ios** and **armv7-apple-ios** targets for Rust
+      * lipo (on macOS it is already installed with XCLT or Xcode)
+      * **aarch64-apple-ios** targets for Rust
      
-     Then run `make ios`
+     Then run `cargo build-ios`
+
+## MSRV
+**1.62.1** if you are targeting to build library only
+
+**1.64.0** for CLI
      
-## Known issues
-
-* Doesn't have arm64e (Apple A12 and higher) support with PAC as Rust doesn't support it. Although, plain arm64 runs fine.
-
 ## License
 
 Twackup is licensed under GNU General Public License v3.0
