@@ -21,7 +21,7 @@ Twackup is the fastest tool at this moment. It uses Rust lightweight threads and
       * [fpm](https://github.com/jordansissel/fpm)
       * [ldid](https://github.com/xerub/ldid)
       * lipo (on macOS it is already installed with XCLT or Xcode)
-      * **aarch64-apple-ios** targets for Rust
+      * **aarch64-apple-ios** target for Rust
      
      Then run `cargo build-ios`
 
