@@ -36,9 +36,9 @@ pub enum TwPackagesSort {
 impl From<TwPackagesSort> for PackagesSort {
     fn from(value: TwPackagesSort) -> Self {
         match value {
-            TwPackagesSort::Identifier => PackagesSort::Identifier,
-            TwPackagesSort::Name => PackagesSort::Name,
-            TwPackagesSort::Unsorted => unimplemented!(),
+            TwPackagesSort::Identifier => Self::Identifier,
+            TwPackagesSort::Name => Self::Name,
+            TwPackagesSort::Unsorted => unreachable!("wtf, how did you broke this?"),
         }
     }
 }

@@ -30,7 +30,7 @@ args = ["build", "@@remove-empty(CARGO_BUILD_RELEASE_ARG)", "--target", "aarch64
 command = "cargo"
 toolchain = "${CARGO_MAKE_RUST_DEFAULT_TOOLCHAIN}"
 args = [
-    "run",
+    "run", "@@remove-empty(CARGO_BUILD_RELEASE_ARG)",
     "--example", "generate-headers",
     "--features", "ffi-headers",
     "--", "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}"
