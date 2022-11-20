@@ -8,27 +8,12 @@ license = "GPL-3.0-only"
 build = "build.rs"
 
 [[bin]]
-name = "twackup"
+name = "twackup-cli"
 path = "src/main.rs"
 
 [features]
 default = ["ios"]
 ios = ["twackup/ios"]
-
-[package.metadata.deb_pkg]
-name = "Twackup (CLI)"
-identifier = "ru.danpashin.twackup"
-section = "Utilities"
-priority = "optional"
-architecture = "iphoneos-arm"
-depends = "firmware (>= 3.0)"
-changelog = "changelog"
-homepage = ""
-assets = [
-    ["build/twackup-ios", "/usr/bin/twackup"],
-    ["COPYING", "/usr/share/doc/ru.danpashin.twackup/LICENSE"],
-]
-license_type = "GPL-3.0"
 
 [dependencies]
 twackup = { path = "../twackup", features = ["cli", "serde"] }

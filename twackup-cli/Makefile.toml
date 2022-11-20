@@ -1,0 +1,79 @@
+[env]
+CARGO_BUILD_RELEASE_ARG = { value = "--release", condition = { profiles = ["release"] }}
+RUSTFLAGS = "--remap-path-prefix=${HOME}="
+TWACKUP_FAT_BINARY = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/${CARGO_MAKE_PROJECT_NAME}"
+
+DEB_NAME = "Twackup (CLI)"
+DEB_IDENTIFIER = "ru.danpashin.twackup"
+DEB_SECTION = "Utilities"
+DEB_PRIORITY = "optional"
+DEB_ARCHITECTURE = "iphoneos"
+DEB_DEPENDS = "firmware (>= 3.0)"
+DEB_CHANGELOG_FILE = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/changelog"
+DEB_HOMEPAGE = "https://moreinfo.thebigboss.org/moreinfo/depiction.php?file=twackupDp"
+DEB_AUTHOR = "DanP"
+DEB_ASSETS = { multiline = true, script = [
+    '''
+    files=(
+    "${TWACKUP_FAT_BINARY}=/usr/bin/twackup"
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/COPYING=/usr/share/doc/${DEB_IDENTIFIER}/LICENSE"
+    )
+    files=$(printf " %s" "${files[@]}")
+    echo ${files:1}
+    '''
+]}
+DEB_FILE_NAME = "${DEB_IDENTIFIER}_${CARGO_MAKE_CRATE_VERSION}_${DEB_ARCHITECTURE}.deb"
+DEB_TARGET_FILE = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/${DEB_FILE_NAME}"
+
+[tasks.build-apple-aarch64]
+command = "cargo"
+toolchain = "${CARGO_MAKE_RUST_DEFAULT_TOOLCHAIN}"
+args = ["build", "@@remove-empty(CARGO_BUILD_RELEASE_ARG)", "--target", "aarch64-apple-ios"]
+
+[tasks.build-apple-armv7]
+command = "cargo"
+toolchain = "nightly"
+args = ["build", "@@remove-empty(CARGO_BUILD_RELEASE_ARG)", "--target", "armv7-apple-ios"]
+
+[tasks.build-fat-binary]
+dependencies = ["build-apple-aarch64", "build-apple-armv7"]
+command = "lipo"
+args = [
+    "-create",
+    "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/aarch64-apple-ios/${CARGO_MAKE_CARGO_PROFILE}/${CARGO_MAKE_PROJECT_NAME}",
+    "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/armv7-apple-ios/${CARGO_MAKE_CARGO_PROFILE}/${CARGO_MAKE_PROJECT_NAME}",
+    "-o",
+    "${TWACKUP_FAT_BINARY}",
+]
+
+[tasks.sign-binary]
+command = "ldid"
+args = ["-S", "${TWACKUP_FAT_BINARY}"]
+
+[tasks.create-deb]
+command = "fpm"
+args = [
+    "--input-type", "dir",
+    "--output-type", "deb",
+    "--force",
+    "--package", "${DEB_TARGET_FILE}",
+    "--log", "warn",
+    "--name", "${DEB_IDENTIFIER}",
+    "--category", "${DEB_SECTION}",
+    "--depends", "${DEB_DEPENDS}",
+    "--architecture", "${DEB_ARCHITECTURE}",
+    "--maintainer", "${DEB_AUTHOR}",
+    "--deb-priority", "${DEB_PRIORITY}",
+    "--description", "${CARGO_MAKE_CRATE_DESCRIPTION}",
+    "--version", "${CARGO_MAKE_CRATE_VERSION}",
+    "--license", "${CARGO_MAKE_CRATE_LICENSE}",
+    "--vendor", "",
+    "--deb-changelog", "${DEB_CHANGELOG_FILE}",
+    "--url", "${DEB_HOMEPAGE}",
+    "--deb-field", "Name: ${DEB_NAME}",
+    "${DEB_ASSETS}"
+]
+
+[tasks.create-package]
+dependencies = ["build-fat-binary", "sign-binary"]
+run_task = { name = "create-deb" }
