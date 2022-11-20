@@ -1,0 +1,122 @@
+[env]
+CARGO_BUILD_RELEASE_ARG = { value = "--release", condition = { profiles = ["release"] }}
+RUSTFLAGS = "--remap-path-prefix=${HOME}="
+
+TWACKUP_DYLIB_NAME = "lib${CARGO_MAKE_PROJECT_NAME}.dylib"
+TWACKUP_FAT_DYLIB = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/${TWACKUP_DYLIB_NAME}"
+
+TWACKUP_STATIC_LIB_NAME = "lib${CARGO_MAKE_PROJECT_NAME}.a"
+TWACKUP_FAT_STATIC_LIB = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/${TWACKUP_STATIC_LIB_NAME}"
+
+DEB_NAME = "Twackup (Developer Library)"
+DEB_IDENTIFIER = "ru.danpashin.twackup-dev"
+DEB_SECTION = "Developer"
+DEB_PRIORITY = "optional"
+DEB_ARCHITECTURE = "iphoneos-arm"
+DEB_DEPENDS = "firmware (>= 6.0)"
+DEB_CHANGELOG_FILE = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/changelog"
+DEB_HOMEPAGE = "https://moreinfo.thebigboss.org/moreinfo/depiction.php?file=twackupDp"
+DEB_AUTHOR = "DanP"
+
+DEB_FILE_NAME = "${DEB_IDENTIFIER}_${CARGO_MAKE_CRATE_VERSION}_${DEB_ARCHITECTURE}.deb"
+DEB_TARGET_FILE = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/${DEB_FILE_NAME}"
+
+[tasks.build-apple-aarch64]
+command = "cargo"
+toolchain = "${CARGO_MAKE_RUST_DEFAULT_TOOLCHAIN}"
+args = ["build", "@@remove-empty(CARGO_BUILD_RELEASE_ARG)", "--target", "aarch64-apple-ios", "--features", "ffi" ]
+
+[tasks.create-headers]
+command = "cargo"
+toolchain = "${CARGO_MAKE_RUST_DEFAULT_TOOLCHAIN}"
+args = [
+    "run",
+    "--example", "generate-headers",
+    "--features", "ffi-headers",
+    "--", "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}"
+]
+
+[tasks.build-native-library]
+command = "cargo"
+toolchain = "${CARGO_MAKE_RUST_DEFAULT_TOOLCHAIN}"
+args = [ "build", "@@remove-empty(CARGO_BUILD_RELEASE_ARG)", "--features", "ffi" ]
+
+[tasks.build-fat-dynamic-library]
+dependencies = ["build-apple-aarch64"]
+command = "lipo"
+args = [
+    "-create",
+    "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/aarch64-apple-ios/${CARGO_MAKE_CARGO_PROFILE}/${TWACKUP_DYLIB_NAME}",
+    "-o",
+    "${TWACKUP_FAT_DYLIB}",
+]
+
+[tasks.build-fat-static-library]
+dependencies = ["build-apple-aarch64"]
+command = "lipo"
+args = [
+    "-create",
+    "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/aarch64-apple-ios/${CARGO_MAKE_CARGO_PROFILE}/${TWACKUP_STATIC_LIB_NAME}",
+    "-o",
+    "${TWACKUP_FAT_STATIC_LIB}",
+]
+
+[tasks.sign-library]
+command = "ldid"
+args = ["-S", "${TWACKUP_FAT_DYLIB}"]
+
+[tasks.create-deb]
+command = "fpm"
+args = [
+    "--input-type", "dir",
+    "--output-type", "deb",
+    "--force",
+    "--package", "${DEB_TARGET_FILE}",
+    "--log", "warn",
+    "--name", "${DEB_IDENTIFIER}",
+    "--category", "${DEB_SECTION}",
+    "--depends", "${DEB_DEPENDS}",
+    "--architecture", "${DEB_ARCHITECTURE}",
+    "--maintainer", "${DEB_AUTHOR}",
+    "--deb-priority", "${DEB_PRIORITY}",
+    "--description", "${CARGO_MAKE_CRATE_DESCRIPTION}",
+    "--version", "${CARGO_MAKE_CRATE_VERSION}",
+    "--license", "${CARGO_MAKE_CRATE_LICENSE}",
+    "--vendor", "",
+    "--deb-changelog", "${DEB_CHANGELOG_FILE}",
+    "--url", "${DEB_HOMEPAGE}",
+    "--deb-field", "Name: ${DEB_NAME}",
+
+    "${TWACKUP_FAT_DYLIB}=/usr/lib/${TWACKUP_DYLIB_NAME}",
+    "${TWACKUP_FAT_STATIC_LIB}=/usr/lib/${TWACKUP_STATIC_LIB_NAME}",
+    "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/twackup.h=/usr/include/twackup.h",
+]
+
+[tasks.build-ffi-binary]
+dependencies = ["build-native-library"]
+command = "c++"
+args = [
+    "-L", "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/${CARGO_MAKE_CARGO_PROFILE}",
+    "-I", "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}",
+    "-l", "twackup",
+    "-std=c++11",
+    "-o", "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/twackup-test",
+    "${CARGO_MAKE_WORKING_DIRECTORY}/assets/ffi_test.cpp",
+]
+
+[tasks.test-ffi]
+dependencies = ["build-ffi-binary"]
+command = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/twackup-test"
+args = [
+    "${CARGO_MAKE_WORKING_DIRECTORY}/assets/dpkg_database_dir"
+]
+
+[tasks.create-package]
+dependencies = [
+    "build-fat-dynamic-library",
+    "build-fat-static-library",
+    "sign-library",
+    "create-headers",
+    "test-ffi",
+]
+run_task = { name = "create-deb" }

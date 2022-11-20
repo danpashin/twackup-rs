@@ -3,7 +3,11 @@
 
 int main(int argc, char *argv[]) {
 
-  auto dpkg = tw_init("/var/lib/dpkg", false);
+  if (argc != 2) {
+    std::cout << "Usage: <" << argv[0] << "> path_to_dpkg_dir" << std::endl;
+  }
+
+  auto dpkg = tw_init(argv[1], false);
 
   auto packages = tw_get_packages(dpkg, true, TW_PACKAGES_SORT_UNSORTED);
 
