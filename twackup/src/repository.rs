@@ -157,45 +157,6 @@ impl Repository {
             self.components.join(" ").trim_end()
         )
     }
-
-    /// Performs fields formatting for Cydia plist key
-    #[must_use]
-    #[cfg(feature = "ios")]
-    pub fn to_cydia_key(&self) -> String {
-        format!(
-            "{}:{}:{}",
-            self.category.as_str(),
-            self.url,
-            self.distribution
-        )
-    }
-
-    /// Performs constructing repo to Apple's plist format
-    #[must_use]
-    #[cfg(feature = "serde")]
-    pub fn to_dict(&self) -> plist::Dictionary {
-        let mut dict = plist::Dictionary::new();
-        dict.insert(
-            "Distribution".to_owned(),
-            plist::Value::String(self.distribution.clone()),
-        );
-        dict.insert("URI".to_owned(), plist::Value::String(self.url.clone()));
-        dict.insert(
-            "Type".to_owned(),
-            plist::Value::String(self.category.as_str().to_owned()),
-        );
-        dict.insert(
-            "Sections".to_owned(),
-            plist::Value::Array(
-                self.components
-                    .iter()
-                    .map(|val| plist::Value::String(val.clone()))
-                    .collect(),
-            ),
-        );
-
-        dict
-    }
 }
 
 #[cfg(test)]

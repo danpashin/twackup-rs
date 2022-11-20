@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{DataType, ExportData, RepoGroup, RepoGroupFormat, CLASSIC_MANAGERS, MODERN_MANAGERS};
+use super::{DataType, ExportData, RepoGroup, RepoGroupFormat};
 use crate::{
     commands::{CliCommand, GlobalOptions},
     error::Result,
@@ -25,10 +25,9 @@ use crate::{
 };
 use std::{
     fs::File,
-    io::{self, BufRead, BufReader},
+    io::{self},
     path::PathBuf,
 };
-use twackup::{repository::Repository, Parser};
 
 #[derive(clap::Parser)]
 pub(crate) struct Export {
@@ -93,48 +92,31 @@ impl Export {
     }
 
     async fn get_repos(&self) -> Result<Vec<RepoGroup>> {
-        let capacity = MODERN_MANAGERS.len() + CLASSIC_MANAGERS.len();
+        let managers = super::package_manager::PackageManager::supported();
+
+        let capacity = managers.len();
         let mut sources = Vec::with_capacity(capacity);
 
-        for (name, path) in MODERN_MANAGERS {
-            let parser = match Parser::new(path) {
-                Ok(parser) => parser,
+        for manager in managers {
+            let executable = manager.name().to_string();
+            let repos = match manager.repositories().await {
+                Ok(val) => val,
                 Err(error) => {
-                    log::warn!("[{}] {:?}", name, error);
+                    log::warn!("[{}] {:?}", executable, error);
                     continue;
                 }
             };
 
-            let repos = parser.parse::<Repository>().await.into_iter().collect();
-            sources.push(RepoGroup {
-                format: RepoGroupFormat::Modern,
-                path: (*path).to_string(),
-                executable: (*name).to_string(),
-                sources: repos,
-            });
-        }
-
-        for (name, path) in CLASSIC_MANAGERS {
-            let file = match File::open(path) {
-                Ok(file) => file,
-                Err(error) => {
-                    log::warn!("[{}] {:?}", name, error);
-                    continue;
-                }
+            let format = if manager.is_modern() {
+                RepoGroupFormat::Modern
+            } else {
+                RepoGroupFormat::Classic
             };
 
-            let mut repos = Vec::new();
-            for line in BufReader::new(file).lines().flatten() {
-                match Repository::from_one_line(line.as_str()) {
-                    Ok(repo) => repos.push(repo),
-                    Err(error) => log::warn!("[{}] {:?}", name, error),
-                }
-            }
-
             sources.push(RepoGroup {
-                format: RepoGroupFormat::Classic,
-                path: (*path).to_string(),
-                executable: (*name).to_string(),
+                format,
+                path: manager.sources_path(),
+                executable,
                 sources: repos,
             });
         }
