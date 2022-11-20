@@ -25,7 +25,7 @@ use std::{
     io,
     process::{Command, Stdio},
 };
-use tokio::fs::{self, File};
+use tokio::fs::File;
 use tokio::io::{AsyncWriteExt, BufWriter};
 use twackup::GenericError;
 
@@ -122,38 +122,15 @@ impl Import {
             repo_group.executable
         );
 
-        match repo_group.executable.as_str() {
-            "Zebra" => {
-                let path = "/var/mobile/Library/Application Support/xyz.willy.Zebra/zebra.db";
-                fs::remove_file(path).await?;
-            }
-            "Cydia" => Self::cydia_post_import_hook(repo_group)?,
-            _ => {}
+        let managers = super::package_manager::PackageManager::supported();
+        let manager = managers
+            .iter()
+            .find(|pm| pm.name() == repo_group.executable);
+        if let Some(manager) = manager {
+            manager.post_import(repo_group)?;
         }
 
         Ok(())
-    }
-
-    fn cydia_post_import_hook(repo_group: &RepoGroup) -> Result<()> {
-        let prefs_path = "/var/mobile/Library/Preferences/com.saurik.Cydia.plist";
-        let mut prefs = plist::Value::from_file(prefs_path)?;
-
-        let prefs_dict = prefs
-            .as_dictionary_mut()
-            .ok_or_else(|| io::Error::from(io::ErrorKind::InvalidInput))?;
-
-        let sources: plist::Dictionary = repo_group
-            .sources
-            .iter()
-            .map(|src| (src.to_cydia_key(), plist::Value::Dictionary(src.to_dict())))
-            .collect();
-
-        prefs_dict.insert(
-            "CydiaSources".to_string(),
-            plist::Value::Dictionary(sources),
-        );
-
-        Ok(prefs.to_file_binary(prefs_path)?)
     }
 
     fn run_apt(args: &[&str]) -> Result<()> {

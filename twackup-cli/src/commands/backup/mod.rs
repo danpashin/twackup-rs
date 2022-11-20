@@ -19,22 +19,11 @@
 
 pub(crate) mod export;
 pub(crate) mod import;
+pub(crate) mod package_manager;
 
 use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 use twackup::repository::Repository;
-
-const MODERN_MANAGERS: &[(&str, &str)] = &[("Sileo", "/etc/apt/sources.list.d/sileo.sources")];
-
-const CLASSIC_MANAGERS: &[(&str, &str)] = &[
-    (
-        "Cydia",
-        "/var/mobile/Library/Caches/com.saurik.Cydia/sources.list",
-    ),
-    (
-        "Zebra",
-        "/var/mobile/Library/Application Support/xyz.willy.Zebra/sources.list",
-    ),
-];
 
 /// Describes what data should be used for exporting or importing
 #[derive(clap::Parser, clap::ValueEnum, PartialEq, Debug, Clone)]
@@ -55,9 +44,9 @@ enum RepoGroupFormat {
 }
 
 #[derive(Serialize, Deserialize)]
-struct RepoGroup {
+pub(crate) struct RepoGroup {
     format: RepoGroupFormat,
-    path: String,
+    path: PathBuf,
     executable: String,
     sources: Vec<Repository>,
 }

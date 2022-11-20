@@ -23,8 +23,8 @@ use chrono::Local;
 use console::style;
 use gethostname::gethostname;
 use libproc::libproc::proc_pid::am_root;
-use std::{collections::LinkedList, io, iter::Iterator, path::PathBuf, sync::Arc};
-use tokio::{fs, sync::Mutex};
+use std::{collections::LinkedList, fs, io, iter::Iterator, path::PathBuf, sync::Arc};
+use tokio::sync::Mutex;
 use twackup::{
     archiver::Level as CompressionLevel,
     builder::{AllPackagesArchive, Preferences, Worker},
@@ -151,7 +151,7 @@ impl Build {
     }
 
     async fn build(&self, packages: Vec<Package>) -> Result<()> {
-        self.create_dir_if_needed().await?;
+        self.create_dir_if_needed()?;
 
         let all_count = packages.len() as u64;
         let progress = ProgressBar::default(all_count);
@@ -205,19 +205,19 @@ impl Build {
         };
 
         let filepath = self.destination_dir.join(&filename);
-        let file = fs::File::create(filepath).await?;
+        let file = tokio::fs::File::create(filepath).await?;
 
         let archive = tokio_tar::Builder::new(file);
         Ok(Some(Arc::new(Mutex::new(archive))))
     }
 
-    async fn create_dir_if_needed(&self) -> Result<()> {
-        match fs::metadata(&self.destination_dir).await {
-            Ok(metadata) if !metadata.is_dir() => fs::remove_file(&self.destination_dir).await?,
+    fn create_dir_if_needed(&self) -> Result<()> {
+        match fs::metadata(&self.destination_dir) {
+            Ok(metadata) if !metadata.is_dir() => fs::remove_file(&self.destination_dir)?,
             _ => {}
         }
 
-        Ok(fs::create_dir_all(&self.destination_dir).await?)
+        Ok(fs::create_dir_all(&self.destination_dir)?)
     }
 }
 
