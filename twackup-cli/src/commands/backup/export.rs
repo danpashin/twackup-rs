@@ -17,7 +17,7 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use super::{DataType, ExportData, RepoGroup, RepoGroupFormat};
+use super::{package_manager::PackageManager, DataType, ExportData, RepoGroup, RepoGroupFormat};
 use crate::{
     commands::{CliCommand, GlobalOptions},
     error::Result,
@@ -92,12 +92,8 @@ impl Export {
     }
 
     async fn get_repos(&self) -> Result<Vec<RepoGroup>> {
-        let managers = super::package_manager::PackageManager::supported();
-
-        let capacity = managers.len();
-        let mut sources = Vec::with_capacity(capacity);
-
-        for manager in managers {
+        let mut sources = Vec::new();
+        for manager in PackageManager::supported() {
             let executable = manager.name().to_string();
             let repos = match manager.repositories().await {
                 Ok(val) => val,
