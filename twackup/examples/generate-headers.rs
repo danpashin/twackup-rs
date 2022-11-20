@@ -1,7 +1,9 @@
 use std::env::args;
 use std::path::PathBuf;
+use twackup::ffi::generate_headers;
 
 fn main() -> ::std::io::Result<()> {
-    let target_dir = args().nth(1).expect("target dir is required");
-    ::twackup::ffi::generate_headers(PathBuf::from(target_dir))
+    let output_dir = args().nth(1).expect("target dir is required");
+    let output_dir = PathBuf::from(output_dir);
+    generate_headers(output_dir.as_ref())
 }

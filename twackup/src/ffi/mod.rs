@@ -17,6 +17,8 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#![allow(missing_docs)]
+
 pub mod c_dpkg;
 pub mod package;
 
@@ -30,8 +32,6 @@ use safer_ffi::{
     prelude::c_slice,
     prelude::{char_p, repr_c},
 };
-use std::env;
-use std::path::PathBuf;
 
 /// Initialises dpkg database parser
 ///
@@ -97,8 +97,15 @@ fn tw_package_build_control(package: TwPackageRef) -> c_slice::Box<u8> {
     package::build_control(package)
 }
 
+/// Generates FFI headers
+///
+/// # Parameters
+/// - `output_dir` - Directory to which header file should be written
+///
+/// # Errors
+/// Returns IO error if cannot write to `output_dir`
 #[cfg(feature = "ffi-headers")]
-pub fn generate_headers(output_dir: PathBuf) -> ::std::io::Result<()> {
+pub fn generate_headers(output_dir: &std::path::Path) -> std::io::Result<()> {
     ::safer_ffi::headers::builder()
         .to_file(output_dir.join("twackup.h"))?
         .generate()
