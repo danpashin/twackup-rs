@@ -7,21 +7,12 @@ DEB_NAME = "Twackup (CLI)"
 DEB_IDENTIFIER = "ru.danpashin.twackup"
 DEB_SECTION = "Utilities"
 DEB_PRIORITY = "optional"
-DEB_ARCHITECTURE = "iphoneos"
+DEB_ARCHITECTURE = "iphoneos-arm"
 DEB_DEPENDS = "firmware (>= 3.0)"
 DEB_CHANGELOG_FILE = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/changelog"
 DEB_HOMEPAGE = "https://moreinfo.thebigboss.org/moreinfo/depiction.php?file=twackupDp"
 DEB_AUTHOR = "DanP"
-DEB_ASSETS = { multiline = true, script = [
-    '''
-    files=(
-    "${TWACKUP_FAT_BINARY}=/usr/bin/twackup"
-    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/COPYING=/usr/share/doc/${DEB_IDENTIFIER}/LICENSE"
-    )
-    files=$(printf " %s" "${files[@]}")
-    echo ${files:1}
-    '''
-]}
+
 DEB_FILE_NAME = "${DEB_IDENTIFIER}_${CARGO_MAKE_CRATE_VERSION}_${DEB_ARCHITECTURE}.deb"
 DEB_TARGET_FILE = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/${DEB_FILE_NAME}"
 
@@ -71,7 +62,9 @@ args = [
     "--deb-changelog", "${DEB_CHANGELOG_FILE}",
     "--url", "${DEB_HOMEPAGE}",
     "--deb-field", "Name: ${DEB_NAME}",
-    "${DEB_ASSETS}"
+
+    "${TWACKUP_FAT_BINARY}=/usr/bin/twackup",
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/COPYING=/usr/share/doc/${DEB_IDENTIFIER}/LICENSE",
 ]
 
 [tasks.create-package]
