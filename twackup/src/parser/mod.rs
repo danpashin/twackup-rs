@@ -27,7 +27,7 @@ use std::{
     io::{self},
     marker::Send,
     path::Path,
-    ptr::slice_from_raw_parts,
+    ptr,
 };
 
 /// Common trait for any struct that can be parsed in key-value mode
@@ -75,12 +75,6 @@ pub trait Parsable: Send + Sized {
 pub struct Parser {
     mmap: Mmap,
 }
-
-struct ChunkWorker {
-    ptr: usize,
-    length: usize,
-}
-
 impl Parser {
     /// Prepares environment and creates parser instance
     ///
@@ -100,8 +94,8 @@ impl Parser {
         let mut workers = LinkedList::new();
 
         for chunk in UnOwnedLine::double_line(&self.mmap) {
-            let worker = ChunkWorker::new(chunk.as_ptr() as usize, chunk.len());
-            workers.push_back(tokio::spawn(async { worker.run::<P>() }));
+            let worker = ChunkWorker::new(ptr::NonNull::from(chunk));
+            workers.push_back(tokio::spawn(async move { worker.run::<P>() }));
         }
 
         let mut models = LinkedList::new();
@@ -117,11 +111,15 @@ impl Parser {
     }
 }
 
+struct ChunkWorker {
+    chunk: ptr::NonNull<[u8]>,
+}
+
 impl ChunkWorker {
     /// Prepares environment and creates parser instance
     #[inline]
-    const fn new(ptr: usize, length: usize) -> Self {
-        Self { ptr, length }
+    const fn new(chunk: ptr::NonNull<[u8]>) -> Self {
+        Self { chunk }
     }
 
     /// Parses chunk to model
@@ -133,11 +131,11 @@ impl ChunkWorker {
 
     /// Converts raw chunk bytes to list of lines with multi-line syntax support
     fn parse_chunk(&self) -> HashMap<String, String> {
-        // Fucking hacks. This is the only way to pass slice without ARC
-        let chunk = unsafe { &*slice_from_raw_parts(self.ptr as *const u8, self.length) };
-
         let mut fields: LinkedList<Vec<_>> = LinkedList::new();
 
+        // SAFETY: As parser will wait for all workers to continue,
+        // mmap pages will be always exist, so this will not cause UB.
+        let chunk = unsafe { self.chunk.as_ref() };
         let line_iter = UnOwnedLine::single_line(chunk).flat_map(std::str::from_utf8);
 
         // Now we'll process each line of chunk
@@ -197,3 +195,5 @@ impl ChunkWorker {
             .collect()
     }
 }
+
+unsafe impl Send for ChunkWorker {}
