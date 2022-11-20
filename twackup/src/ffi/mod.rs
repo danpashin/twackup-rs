@@ -30,6 +30,8 @@ use safer_ffi::{
     prelude::c_slice,
     prelude::{char_p, repr_c},
 };
+use std::env;
+use std::path::PathBuf;
 
 /// Initialises dpkg database parser
 ///
@@ -96,8 +98,8 @@ fn tw_package_build_control(package: TwPackageRef) -> c_slice::Box<u8> {
 }
 
 #[cfg(feature = "ffi-headers")]
-pub fn generate_headers() -> ::std::io::Result<()> {
+pub fn generate_headers(output_dir: PathBuf) -> ::std::io::Result<()> {
     ::safer_ffi::headers::builder()
-        .to_file("twackup.h")?
+        .to_file(output_dir.join("twackup.h"))?
         .generate()
 }
