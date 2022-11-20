@@ -49,39 +49,8 @@ impl CliCommand for Import {
         }
 
         let data = self.deserialize_input()?;
-
-        if let Some(repositories) = data.repositories {
-            for repo_group in &repositories {
-                if let Err(error) = self.import_repo_group(repo_group).await {
-                    log::error!(
-                        "Can't import sources for {}. {:?}",
-                        repo_group.executable,
-                        error
-                    );
-                }
-            }
-
-            let executables = repositories.iter().map(|src| src.executable.as_str());
-            process::send_signal_to_multiple(executables, process::Signal::Kill);
-        }
-
-        if let Some(packages) = data.packages {
-            log::info!("Importing packages...");
-            Self::run_apt(&[
-                "update",
-                "--allow-unauthenticated",
-                "--allow-insecure-repositories",
-                "-o",
-                "Acquire::Languages=none",
-            ])?;
-
-            let install_args = ["install", "-y", "--allow-unauthenticated", "--fix-missing"];
-            let install_args: Vec<_> = install_args
-                .into_iter()
-                .chain(packages.iter().map(String::as_str))
-                .collect();
-            Self::run_apt(&install_args)?;
-        }
+        Self::import_repositories(&data).await?;
+        Self::import_packages(&data)?;
 
         Ok(())
     }
@@ -96,7 +65,29 @@ impl Import {
         })
     }
 
-    async fn import_repo_group(&self, repo_group: &RepoGroup) -> Result<()> {
+    async fn import_repositories(data: &ExportData) -> Result<()> {
+        let repos = match &data.repositories {
+            Some(val) => val,
+            None => return Ok(()),
+        };
+
+        for repo_group in repos {
+            if let Err(error) = Self::import_repo_group(repo_group).await {
+                log::error!(
+                    "Can't import sources for {}. {:?}",
+                    repo_group.executable,
+                    error
+                );
+            }
+        }
+
+        let executables = repos.iter().map(|src| src.executable.as_str());
+        process::send_signal_to_multiple(executables, process::Signal::Kill);
+
+        Ok(())
+    }
+
+    async fn import_repo_group(repo_group: &RepoGroup) -> Result<()> {
         log::info!(
             "Importing {} source(s) for {}",
             repo_group.sources.len(),
@@ -117,18 +108,39 @@ impl Import {
         }
         writer.flush().await?;
 
-        log::info!(
-            "Triggering post-import hooks for {}...",
-            repo_group.executable
-        );
-
         let managers = super::package_manager::PackageManager::supported();
         let manager = managers
             .iter()
             .find(|pm| pm.name() == repo_group.executable);
         if let Some(manager) = manager {
+            log::info!("Triggering post-import hooks for {}...", manager.name());
             manager.post_import(repo_group)?;
         }
+
+        Ok(())
+    }
+
+    fn import_packages(data: &ExportData) -> Result<()> {
+        let packages = match &data.packages {
+            Some(val) => val,
+            None => return Ok(()),
+        };
+
+        log::info!("Importing packages...");
+        Self::run_apt(&[
+            "update",
+            "--allow-unauthenticated",
+            "--allow-insecure-repositories",
+            "-o",
+            "Acquire::Languages=none",
+        ])?;
+
+        let install_args = ["install", "-y", "--allow-unauthenticated", "--fix-missing"];
+        let install_args: Vec<_> = install_args
+            .into_iter()
+            .chain(packages.iter().map(String::as_str))
+            .collect();
+        Self::run_apt(&install_args)?;
 
         Ok(())
     }

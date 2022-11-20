@@ -28,8 +28,11 @@ use twackup::repository::Repository;
 /// Describes what data should be used for exporting or importing
 #[derive(clap::Parser, clap::ValueEnum, PartialEq, Debug, Clone)]
 enum DataType {
+    #[clap(aliases = &["pack", "p"])]
     Packages,
+    #[clap(aliases = &["repo", "r"])]
     Repositories,
+    #[clap(alias = "a")]
     All,
 }
 
