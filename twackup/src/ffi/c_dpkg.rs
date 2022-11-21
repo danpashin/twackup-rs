@@ -89,12 +89,12 @@ impl TwDpkg {
             .block_on(async {
                 if sort == TwPackagesSort::Unsorted {
                     let packages = dpkg.unsorted_packages(leaves_only).await;
-                    let pkgs = packages.map(|pkgs| pkgs.into_iter().map(TwPackage::new));
+                    let pkgs = packages.map(|pkgs| pkgs.into_iter().map(TwPackage::from));
                     pkgs.map(Iterator::collect)
                 } else {
                     let packages = dpkg.packages(leaves_only, sort.into()).await;
                     let pkgs = packages.map(|packages| packages.into_iter().map(|(_, pkg)| pkg));
-                    pkgs.map(|pkgs| pkgs.map(TwPackage::new).collect())
+                    pkgs.map(|pkgs| pkgs.map(TwPackage::from).collect())
                 }
             })
             .expect("dpkg database parsing failed");

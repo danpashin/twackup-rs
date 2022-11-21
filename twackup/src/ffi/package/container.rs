@@ -34,24 +34,26 @@ impl TwPackageRef {
     }
 
     #[inline]
-    #[must_use]
-    pub(crate) fn inner(&self) -> &ManuallyDrop<Package> {
-        unsafe { &*self.0.as_ptr().cast() }
-    }
-
-    #[inline]
-    #[must_use]
-    pub(crate) fn inner_mut(&mut self) -> &mut ManuallyDrop<Package> {
-        unsafe { &mut *self.0.as_ptr().cast() }
-    }
-
-    #[inline]
     pub(crate) fn drop_self(&mut self) {
         unsafe {
-            ManuallyDrop::<Package>::drop(self.inner_mut());
+            ManuallyDrop::<Package>::drop(self.as_mut());
         }
     }
 }
+
+impl AsRef<ManuallyDrop<Package>> for TwPackageRef {
+    fn as_ref(&self) -> &ManuallyDrop<Package> {
+        unsafe { &*self.0.as_ptr().cast() }
+    }
+}
+
+impl AsMut<ManuallyDrop<Package>> for TwPackageRef {
+    fn as_mut(&mut self) -> &mut ManuallyDrop<Package> {
+        unsafe { &mut *self.0.as_ptr().cast() }
+    }
+}
+
+unsafe impl Send for TwPackageRef {}
 
 unsafe impl safer_ffi::layout::ReprC for TwPackageRef {
     type CLayout = Self;
@@ -79,11 +81,6 @@ unsafe impl safer_ffi::layout::CType for TwPackageRef {
 
     #[cfg(feature = "ffi-headers")]
     fn c_var_fmt(fmt: &'_ mut std::fmt::Formatter<'_>, var_name: &'_ str) -> std::fmt::Result {
-        let var_name = if var_name.is_empty() {
-            "package_ref"
-        } else {
-            var_name
-        };
         write!(fmt, "{} {}", Self::c_short_name(), var_name)
     }
 }

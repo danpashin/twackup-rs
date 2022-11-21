@@ -36,7 +36,7 @@ use safer_ffi::{
 #[derive_ReprC]
 #[repr(C)]
 pub struct TwPackage {
-    inner_ptr: TwPackageRef,
+    pub(crate) inner_ptr: TwPackageRef,
     identifier: Raw<u8>,
     name: Raw<u8>,
     version: Raw<u8>,
@@ -49,11 +49,9 @@ pub struct TwPackage {
     get_dependencies: extern "C" fn(TwPackageRef) -> Box<Raw<u8>>,
 }
 
-impl TwPackage {
-    pub(crate) fn new(package: Package) -> Self {
-        let package_ptr = TwPackageRef::from_package(package);
-        let package = package_ptr.inner();
-
+impl From<TwPackageRef> for TwPackage {
+    fn from(package_ptr: TwPackageRef) -> Self {
+        let package = package_ptr.as_ref();
         Self {
             inner_ptr: package_ptr,
             identifier: Raw::from(Ref::from(package.id.as_bytes())),
@@ -70,6 +68,12 @@ impl TwPackage {
     }
 }
 
+impl From<Package> for TwPackage {
+    fn from(package: Package) -> Self {
+        Self::from(TwPackageRef::from_package(package))
+    }
+}
+
 impl Drop for TwPackage {
     fn drop(&mut self) {
         self.inner_ptr.drop_self();
@@ -77,12 +81,12 @@ impl Drop for TwPackage {
 }
 
 pub(crate) extern "C" fn get_section_string(package: TwPackageRef) -> Raw<u8> {
-    let package = package.inner();
+    let package = package.as_ref();
     Raw::from(Ref::from(package.section.as_str().as_bytes()))
 }
 
 pub(crate) extern "C" fn get_field(package: TwPackageRef, field: TwPackageField) -> Raw<u8> {
-    let package = package.inner();
+    let package = package.as_ref();
     let field: Field = field.into();
     match package.get(field) {
         Ok(value) => Raw::from(Ref::from(value.as_bytes())),
@@ -91,12 +95,12 @@ pub(crate) extern "C" fn get_field(package: TwPackageRef, field: TwPackageField)
 }
 
 pub(crate) extern "C" fn build_control(package: TwPackageRef) -> Box<u8> {
-    let control = package.inner().to_control();
+    let control = package.as_ref().to_control();
     Box::from(control.into_bytes().into_boxed_slice())
 }
 
 pub(crate) extern "C" fn get_dependencies(package: TwPackageRef) -> Box<Raw<u8>> {
-    let dependencies = package.inner().dependencies();
+    let dependencies = package.as_ref().dependencies();
     let dependencies: Vec<_> = dependencies
         .map(|dep| {
             let dep = Ref::from(dep.as_bytes());

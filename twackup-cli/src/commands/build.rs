@@ -178,7 +178,7 @@ impl Build {
             let contents = contents.clone();
 
             tokio::spawn(async move {
-                let builder = Worker::new(package, progress, archive, preferences, contents);
+                let builder = Worker::new(&package, progress, archive, preferences, contents);
                 builder.work().await
             })
         }))

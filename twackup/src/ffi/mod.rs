@@ -19,6 +19,7 @@
 
 #![allow(missing_docs)]
 
+pub mod builder;
 pub mod c_dpkg;
 pub mod package;
 
@@ -26,11 +27,14 @@ use self::{
     c_dpkg::{TwDpkg, TwPackagesSort},
     package::{container::TwPackageRef, field::TwPackageField, TwPackage},
 };
+use crate::ffi::builder::TwPackagesRebuildResult;
 use crate::Dpkg;
+use builder::progress::TwProgressFunctions;
 use safer_ffi::{
     ffi_export,
     prelude::c_slice,
     prelude::{char_p, repr_c},
+    slice::Ref,
 };
 
 /// Initialises dpkg database parser
@@ -95,6 +99,25 @@ fn tw_get_package_field(package: TwPackageRef, field: TwPackageField) -> c_slice
 #[ffi_export]
 fn tw_package_build_control(package: TwPackageRef) -> c_slice::Box<u8> {
     package::build_control(package)
+}
+
+/// Rebuilds package to deb file.
+///
+/// \param[in] dpkg dpkg instance to run tasks
+/// \param[in] packages packages to rebuild
+/// \param[in] functions different functions used to report about progress
+/// \param[in] out_dir directory to write deb files
+///
+/// \returns Vector with errors. You MUST free result and all errors inside.
+///
+#[ffi_export]
+fn tw_rebuild_packages(
+    dpkg: &TwDpkg,
+    packages: Ref<'_, TwPackage>,
+    functions: &'static TwProgressFunctions,
+    out_dir: char_p::Ref<'_>,
+) -> TwPackagesRebuildResult {
+    builder::rebuild_packages(dpkg, packages, functions, out_dir)
 }
 
 /// Generates FFI headers

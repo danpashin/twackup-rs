@@ -100,8 +100,8 @@ pub struct Preferences {
 
 /// Creates DEB from filesystem contents
 #[non_exhaustive]
-pub struct Worker<T: Progress> {
-    package: Package,
+pub struct Worker<'a, T: Progress> {
+    package: &'a Package,
     progress: T,
     archive: Option<AllPackagesArchive>,
     preferences: Preferences,
@@ -115,17 +115,17 @@ impl Preferences {
     /// - `admin_dir` - Directory with dpkg database. Typically **/var/lib/dpkg**
     /// - `destination_dir` - Directory to which final deb package should be placed
     #[inline]
-    pub fn new<A: AsRef<Path>, D: AsRef<Path>>(admin_dir: A, destination_dir: D) -> Self {
+    pub fn new<A: Into<Paths>, D: AsRef<Path>>(admin_dir: A, destination_dir: D) -> Self {
         Self {
             remove_deb: false,
             compression: Compression::default(),
-            paths: Paths::new(admin_dir),
+            paths: admin_dir.into(),
             destination_dir: destination_dir.as_ref().to_path_buf(),
         }
     }
 }
 
-impl<T: Progress> Worker<T> {
+impl<'a, T: Progress> Worker<'a, T> {
     /// Constructs workder instance
     ///
     /// # Parameters
@@ -136,7 +136,7 @@ impl<T: Progress> Worker<T> {
     /// - `dpkg_contents` - **/var/lib/dpkg/info** contents. Used for IO optimization
     #[inline]
     pub fn new(
-        package: Package,
+        package: &'a Package,
         progress: T,
         archive: Option<AllPackagesArchive>,
         preferences: Preferences,
