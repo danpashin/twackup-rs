@@ -64,8 +64,15 @@ impl From<&Paths> for Paths {
         value.clone()
     }
 }
+
 impl From<&PathBuf> for Paths {
     fn from(value: &PathBuf) -> Self {
+        Self::new(value)
+    }
+}
+
+impl From<&str> for Paths {
+    fn from(value: &str) -> Self {
         Self::new(value)
     }
 }
