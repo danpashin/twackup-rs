@@ -20,7 +20,7 @@
 use std::path::{Path, PathBuf};
 
 #[derive(Clone, Debug)]
-pub struct Paths(PathBuf);
+pub struct Paths(pub PathBuf);
 
 impl Paths {
     #[inline]
@@ -50,5 +50,22 @@ impl Paths {
 impl AsRef<PathBuf> for Paths {
     fn as_ref(&self) -> &PathBuf {
         &self.0
+    }
+}
+
+impl From<&Path> for Paths {
+    fn from(value: &Path) -> Self {
+        Self::new(value)
+    }
+}
+
+impl From<&Paths> for Paths {
+    fn from(value: &Paths) -> Self {
+        value.clone()
+    }
+}
+impl From<&PathBuf> for Paths {
+    fn from(value: &PathBuf) -> Self {
+        Self::new(value)
     }
 }
