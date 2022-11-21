@@ -114,10 +114,18 @@ fn tw_package_build_control(package: TwPackageRef) -> c_slice::Box<u8> {
 fn tw_rebuild_packages(
     dpkg: &TwDpkg,
     packages: Ref<'_, TwPackage>,
-    functions: &'static TwProgressFunctions,
+    functions: TwProgressFunctions,
     out_dir: char_p::Ref<'_>,
 ) -> TwPackagesRebuildResult {
     builder::rebuild_packages(dpkg, packages, functions, out_dir)
+}
+
+/// Deallocates memory allocated from *tw_rebuild_packages*
+///
+/// \param[in] result *tw_rebuild_packages* result
+#[ffi_export]
+fn free_packages_rebuild_result(result: TwPackagesRebuildResult) {
+    drop(result);
 }
 
 /// Generates FFI headers

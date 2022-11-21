@@ -32,8 +32,7 @@ use safer_ffi::{
         char_p,
     },
 };
-use std::collections::LinkedList;
-use std::sync::Arc;
+use std::{collections::LinkedList, sync::Arc};
 
 #[derive_ReprC]
 #[repr(transparent)]
@@ -42,24 +41,26 @@ pub struct TwPackagesRebuildResult(Box<Box<u8>>);
 pub(crate) fn rebuild_packages(
     dpkg: &TwDpkg,
     packages: Ref<'_, TwPackage>,
-    functions: &'static TwProgressFunctions,
+    functions: TwProgressFunctions,
     out_dir: char_p::Ref<'_>,
 ) -> TwPackagesRebuildResult {
     let mut progress = TwProgressImpl::new(packages.len() as u64);
-    progress.set_functions(*functions);
+    progress.functions = Some(functions);
 
     let tokio_rt = dpkg.inner_tokio_rt();
 
     let dpkg_paths = &dpkg.inner_dpkg().paths;
     let out_dir = out_dir.to_str();
     let preferences = Preferences::new(dpkg_paths, out_dir);
-    let dpkg_contents = dpkg.inner_dpkg().info_dir_contents().unwrap();
+    let dpkg_contents = dpkg
+        .inner_dpkg()
+        .info_dir_contents()
+        .expect("Cannot get dpkg contents");
     let dpkg_contents = Arc::new(dpkg_contents);
 
     let mut workers = LinkedList::new();
     for package in packages.iter() {
         let package = package.inner_ptr;
-        let progress = progress.clone();
         let dpkg_contents = dpkg_contents.clone();
         let preferences = preferences.clone();
 

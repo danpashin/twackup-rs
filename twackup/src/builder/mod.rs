@@ -45,7 +45,7 @@
 //!     let progress = ProgressImpl;
 //!     let dpkg_contents = Arc::new(HashSet::new());
 //!
-//!     let worker = Worker::new(package, progress, None, preferences, dpkg_contents);
+//!     let worker = Worker::new(&package, progress, None, preferences, dpkg_contents);
 //!     let deb_path = worker.run().await?;
 //!     println!("Deb is located at {:?}", deb_path);
 //!
@@ -299,7 +299,7 @@ mod tests {
         let dpkg_contents = Arc::new(dpkg.info_dir_contents()?);
         let preferences = Preferences::new(dpkg_dir, "/tmp");
 
-        let worker = Worker::new(package, ProgressImpl, None, preferences, dpkg_contents);
+        let worker = Worker::new(&package, ProgressImpl, None, preferences, dpkg_contents);
         let deb_path = worker.run().await?;
 
         let dpkg = Command::new("dpkg")
