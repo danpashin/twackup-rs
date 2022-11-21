@@ -30,6 +30,7 @@
     clippy::redundant_feature_names
 )]
 #![warn(clippy::unused_self, missing_docs)]
+#![allow(clippy::expl_impl_clone_on_copy)]
 
 //! A Tokio-based DPKG database parsing library.
 //!
@@ -66,6 +67,9 @@ pub mod package;
 mod parser;
 pub mod progress;
 pub mod repository;
+
+#[cfg(feature = "ffi")]
+pub mod ffi;
 
 pub use dpkg::{Dpkg, PackagesSort};
 pub use error::{Generic as GenericError, Result};

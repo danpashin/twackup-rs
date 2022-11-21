@@ -4,6 +4,11 @@ workspace = false
 env = { "CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS" = ["twackup-cli"] }
 run_task = { name = "create-package", fork = true }
 
+[tasks.build-lib-package]
+workspace = false
+env = { "CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS" = ["twackup"] }
+run_task = { name = "create-package", fork = true }
+
 [tasks.build-all]
 workspace = false
-dependencies = ["test", "build-cli-package"]
+dependencies = ["test", "build-cli-package", "build-lib-package"]
