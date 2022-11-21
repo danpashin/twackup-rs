@@ -1,0 +1,10 @@
+v2.0.0 - 17.11.2022
+- Fully rewritten. Remove all the old bullshit under the hood.
+- Start migrating to library and cli packages.
+- Add options to change deb compression type and level. Now supports gzip, zstd and xz types.
+- Improve logging system.
+- Add some colors to cli commands errors.
+
+v1.0.0 - 30.11.2020
+Initial release.
+- Supports list, leaves, export/import, rebuild packages commands. Written in a hurry.
