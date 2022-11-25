@@ -42,7 +42,7 @@ use std::{
     pin::Pin,
     task::{Context, Poll},
 };
-use tokio::{io::AsyncWrite, sync::Mutex};
+use tokio::io::AsyncWrite;
 use twackup_derive::StrEnumWithError;
 use xz2::write::XzEncoder;
 use zstd::Encoder as ZSTDEncoder;
@@ -98,7 +98,7 @@ pub enum Encoder<T: Write> {
     /// Modern-based xz type
     Xz(XzEncoder<T>),
     /// Super-modern and fast zstd type
-    Zstd(Mutex<ZSTDEncoder<'static, T>>),
+    Zstd(ZSTDEncoder<'static, T>),
 }
 
 impl From<Level> for u32 {
@@ -117,10 +117,11 @@ impl From<Level> for u32 {
 impl<T: Write> Encoder<T> {
     /// Creates encoder with specified compression
     ///
+    /// - `inner` - Inner object to which compressor will write in
     /// - `compression` - Structure, containing compression type and level
     ///
     /// # Errors
-    /// Return error if zts compression failed
+    /// Return error if zstd compression failed
     ///
     #[inline]
     pub fn new(inner: T, compression: Compression) -> crate::error::Result<Self> {
@@ -130,7 +131,7 @@ impl<T: Write> Encoder<T> {
                 flate2::Compression::new(compression.level.into()),
             ))),
             Type::Xz => Ok(Self::Xz(XzEncoder::new(inner, compression.level.into()))),
-            Type::Zst => Ok(Self::Zstd(Mutex::new(ZSTDEncoder::new(inner, 0)?))),
+            Type::Zst => Ok(Self::Zstd(ZSTDEncoder::new(inner, 0)?)),
         }
     }
 
@@ -143,13 +144,12 @@ impl<T: Write> Encoder<T> {
         match self {
             Self::Gzip(inner) => inner.finish(),
             Self::Xz(inner) => inner.finish(),
-            Self::Zstd(inner) => {
-                let inner = inner.into_inner();
-                inner.finish()
-            }
+            Self::Zstd(inner) => inner.finish(),
         }
     }
 }
+
+unsafe impl<T: Write> Sync for Encoder<T> {}
 
 impl<T: Write + Unpin> AsyncWrite for Encoder<T> {
     fn poll_write(
@@ -161,10 +161,7 @@ impl<T: Write + Unpin> AsyncWrite for Encoder<T> {
         match enum_self {
             Self::Gzip(inner) => Poll::Ready(inner.write(buf)),
             Self::Xz(inner) => Poll::Ready(inner.write(buf)),
-            Self::Zstd(inner) => {
-                let inner = inner.get_mut();
-                Poll::Ready(inner.write(buf))
-            }
+            Self::Zstd(inner) => Poll::Ready(inner.write(buf)),
         }
     }
 
@@ -173,10 +170,7 @@ impl<T: Write + Unpin> AsyncWrite for Encoder<T> {
         match enum_self {
             Self::Gzip(inner) => Poll::Ready(inner.flush()),
             Self::Xz(inner) => Poll::Ready(inner.flush()),
-            Self::Zstd(inner) => {
-                let inner = inner.get_mut();
-                Poll::Ready(inner.flush())
-            }
+            Self::Zstd(inner) => Poll::Ready(inner.flush()),
         }
     }
 
@@ -185,10 +179,7 @@ impl<T: Write + Unpin> AsyncWrite for Encoder<T> {
         match enum_self {
             Self::Gzip(inner) => Poll::Ready(inner.try_finish()),
             Self::Xz(inner) => Poll::Ready(inner.try_finish()),
-            Self::Zstd(inner) => {
-                let inner = inner.get_mut();
-                Poll::Ready(inner.do_finish())
-            }
+            Self::Zstd(inner) => Poll::Ready(inner.do_finish()),
         }
     }
 }
