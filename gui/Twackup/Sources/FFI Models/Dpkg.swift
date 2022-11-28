@@ -28,8 +28,8 @@ class Dpkg {
         packages.reserveCapacity(rawPackages.count)
 
         for package in rawPackages {
-            if let packageModel = Package(package) {
-                packages.append(packageModel)
+            if let packageModel = FFIPackage(package) {
+                packages.append(packageModel as any Package)
             }
         }
 

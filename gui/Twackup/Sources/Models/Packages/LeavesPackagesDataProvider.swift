@@ -18,20 +18,18 @@ struct LeavesPackagesDataProvider : PackagesDataProvider {
     }
 
     var packages: [Package] {
-        mutating get {
+        get {
             guard let filteredPackages else { return allPackages }
             return filteredPackages
         }
     }
 
-    lazy var allPackages: [Package] = {
-        return dpkg.parsePackages(leaves: true)
-    }()
-
+    private let allPackages: [Package]
     private var filteredPackages: [Package]?
 
     init(_ dpkg: Dpkg) {
         self.dpkg = dpkg
+        allPackages = dpkg.parsePackages(leaves: true)
     }
 
     mutating func filter(_ filter: PackageFilter?) {
