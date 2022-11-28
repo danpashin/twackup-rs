@@ -1,20 +1,20 @@
 //
-//  AllPackagesVCModel.swift
+//  BuildedPackagesDataProvider.swift
 //  Twackup
 //
-//  Created by Daniil on 25.11.2022.
+//  Created by Daniil on 28.11.2022.
 //
 
 import UIKit
 
-struct AllPackagesDataProvider : PackagesDataProvider {
+struct BuildedPackagesDataProvider : PackagesDataProvider {
 
-    let dpkg: Dpkg
+    let database: Database
 
-    let navTitle: String = "All packages"
+    let navTitle: String = "DEBs"
 
     var tabbarItem: UITabBarItem {
-        return UITabBarItem(title: "All", image: UIImage(systemName: "list.bullet.rectangle"), tag: 0)
+        return UITabBarItem(title: "DEBs", image: UIImage(systemName: "list.bullet.rectangle"), tag: 0)
     }
 
     var packages: [Package] {
@@ -24,12 +24,13 @@ struct AllPackagesDataProvider : PackagesDataProvider {
         }
     }
 
-    private var allPackages: [Package]
+    var allPackages: [Package]
     private var filteredPackages: [Package]?
 
-    init(_ dpkg: Dpkg) {
-        self.dpkg = dpkg
-        allPackages = dpkg.parsePackages(leaves: false)
+    init(_ database: Database) {
+        self.database = database
+        allPackages = database.fetchBuildedPackages()
+        print(allPackages)
     }
 
     mutating func filter(_ filter: PackageFilter?) {

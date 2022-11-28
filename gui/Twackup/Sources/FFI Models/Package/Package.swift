@@ -7,7 +7,8 @@
 
 import Foundation
 
-class Package {
+class FFIPackage: Package {
+
     let pkg: TwPackage_t
 
     let id: String
@@ -25,6 +26,8 @@ class Package {
     let description: String
 
     let installedSize: Int64
+
+    let architecture: String
 
     init?(_ pkg: TwPackage_t) {
         self.pkg = pkg
@@ -53,13 +56,14 @@ class Package {
             depiction = nil
         }
 
-
         let installedSizeField = TwPackageField_t(TW_PACKAGE_FIELD_INSTALLED_SIZE)
         installedSize = Int64(String(ffiSlice: pkg.get_field(pkg.inner_ptr, installedSizeField)) ?? "") ?? 0
 
-
         let descriptionField = TwPackageField_t(TW_PACKAGE_FIELD_DESCRIPTION)
         description = String(ffiSlice: pkg.get_field(pkg.inner_ptr, descriptionField)) ?? ""
+
+        let archField = TwPackageField_t(TW_PACKAGE_FIELD_ARCHITECTURE)
+        architecture = String(ffiSlice: pkg.get_field(pkg.inner_ptr, archField)) ?? ""
     }
 
     deinit {

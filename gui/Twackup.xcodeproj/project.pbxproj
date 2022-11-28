@@ -7,7 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B0DBB692934DEA7002F3BB2 /* BuildedPackageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB682934DEA7002F3BB2 /* BuildedPackageModel.swift */; };
+		0B0DBB6B2934DEA7002F3BB2 /* DatabasePackageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB662934DEA7002F3BB2 /* DatabasePackageModel.swift */; };
 		0B5D3F972934CB2C00AE50F2 /* PackagesDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F962934CB2C00AE50F2 /* PackagesDataProvider.swift */; };
+		0B5D3F9A2934D0C300AE50F2 /* Twackup.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F982934D0C300AE50F2 /* Twackup.xcdatamodeld */; };
+		0B5D3F9C2934D2EB00AE50F2 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F9B2934D2EB00AE50F2 /* Database.swift */; };
+		0B5D3F9E2934D85500AE50F2 /* BuildedPackagesDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F9D2934D85500AE50F2 /* BuildedPackagesDataProvider.swift */; };
 		0B8661692930ADA300EA4301 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8661682930ADA300EA4301 /* AppDelegate.swift */; };
 		0B86616B2930ADA300EA4301 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86616A2930ADA300EA4301 /* SceneDelegate.swift */; };
 		0B86616D2930ADA300EA4301 /* MainTabbarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86616C2930ADA300EA4301 /* MainTabbarController.swift */; };
@@ -32,7 +37,12 @@
 
 /* Begin PBXFileReference section */
 		007C412C6D65357FB85FA8C6 /* Pods-Twackup.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Twackup.release.xcconfig"; path = "Target Support Files/Pods-Twackup/Pods-Twackup.release.xcconfig"; sourceTree = "<group>"; };
+		0B0DBB662934DEA7002F3BB2 /* DatabasePackageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DatabasePackageModel.swift; path = "/Users/danpashin/Documents/projects/my-own/twackup-rs/gui/Twackup/Sources/Models/Database/DatabasePackageModel.swift"; sourceTree = "<absolute>"; };
+		0B0DBB682934DEA7002F3BB2 /* BuildedPackageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BuildedPackageModel.swift; path = "/Users/danpashin/Documents/projects/my-own/twackup-rs/gui/Twackup/Sources/Models/Database/BuildedPackageModel.swift"; sourceTree = "<absolute>"; };
 		0B5D3F962934CB2C00AE50F2 /* PackagesDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesDataProvider.swift; sourceTree = "<group>"; };
+		0B5D3F992934D0C300AE50F2 /* DBPackage.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DBPackage.xcdatamodel; sourceTree = "<group>"; };
+		0B5D3F9B2934D2EB00AE50F2 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
+		0B5D3F9D2934D85500AE50F2 /* BuildedPackagesDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildedPackagesDataProvider.swift; sourceTree = "<group>"; };
 		0B8661652930ADA300EA4301 /* Twackup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Twackup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B8661682930ADA300EA4301 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0B86616A2930ADA300EA4301 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -72,6 +82,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B0DBB642934DE7E002F3BB2 /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				0B0DBB662934DEA7002F3BB2 /* DatabasePackageModel.swift */,
+				0B0DBB682934DEA7002F3BB2 /* BuildedPackageModel.swift */,
+				0B5D3F982934D0C300AE50F2 /* Twackup.xcdatamodeld */,
+				0B5D3F9B2934D2EB00AE50F2 /* Database.swift */,
+			);
+			path = Database;
+			sourceTree = "<group>";
+		};
 		0B86615C2930ADA300EA4301 = {
 			isa = PBXGroup;
 			children = (
@@ -161,6 +182,7 @@
 		0B88C3132930CE1F00BA5312 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				0B0DBB642934DE7E002F3BB2 /* Database */,
 				0B88C31A2930CE4D00BA5312 /* Packages */,
 			);
 			path = Models;
@@ -172,6 +194,7 @@
 				0B88C3142930CE2E00BA5312 /* PackagesVCModel.swift */,
 				0B5D3F962934CB2C00AE50F2 /* PackagesDataProvider.swift */,
 				0B88C3162930CE3900BA5312 /* AllPackagesDataProvider.swift */,
+				0B5D3F9D2934D85500AE50F2 /* BuildedPackagesDataProvider.swift */,
 				0B88C3182930CE4100BA5312 /* LeavesPackagesDataProvider.swift */,
 			);
 			path = Packages;
@@ -339,20 +362,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B0DBB692934DEA7002F3BB2 /* BuildedPackageModel.swift in Sources */,
 				0B86618B2930AF7100EA4301 /* Package.swift in Sources */,
 				0B88C30B2930B58D00BA5312 /* PackageDetailViewController.swift in Sources */,
 				0B86617D2930AE5E00EA4301 /* PackagesViewController.swift in Sources */,
 				0B86618A2930AF7100EA4301 /* Dpkg.swift in Sources */,
 				0B88C30D2930B88800BA5312 /* PackageTableViewCell.swift in Sources */,
 				0B88C3172930CE3900BA5312 /* AllPackagesDataProvider.swift in Sources */,
+				0B5D3F9C2934D2EB00AE50F2 /* Database.swift in Sources */,
 				0B88C31E2930DEA200BA5312 /* PackageDetailView.swift in Sources */,
 				0B88C3192930CE4100BA5312 /* LeavesPackagesDataProvider.swift in Sources */,
 				0B88C3152930CE2E00BA5312 /* PackagesVCModel.swift in Sources */,
+				0B0DBB6B2934DEA7002F3BB2 /* DatabasePackageModel.swift in Sources */,
 				0B5D3F972934CB2C00AE50F2 /* PackagesDataProvider.swift in Sources */,
 				0B86616D2930ADA300EA4301 /* MainTabbarController.swift in Sources */,
 				0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */,
 				0B8661692930ADA300EA4301 /* AppDelegate.swift in Sources */,
+				0B5D3F9E2934D85500AE50F2 /* BuildedPackagesDataProvider.swift in Sources */,
 				0B88C31C2930DE8C00BA5312 /* KeyValueLabelView.swift in Sources */,
+				0B5D3F9A2934D0C300AE50F2 /* Twackup.xcdatamodeld in Sources */,
 				0B86616B2930ADA300EA4301 /* SceneDelegate.swift in Sources */,
 				0B88C3092930B30F00BA5312 /* Utils.swift in Sources */,
 			);
@@ -510,8 +538,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -550,8 +577,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -596,6 +622,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		0B5D3F982934D0C300AE50F2 /* Twackup.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				0B5D3F992934D0C300AE50F2 /* DBPackage.xcdatamodel */,
+			);
+			currentVersion = 0B5D3F992934D0C300AE50F2 /* DBPackage.xcdatamodel */;
+			path = Twackup.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 0B86615D2930ADA300EA4301 /* Project object */;
 }

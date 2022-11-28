@@ -11,6 +11,12 @@ class MainTabbarController: UITabBarController {
 
     let dpkgInstance = Dpkg()
 
+    let database = Database()
+
+    lazy private(set) var buildedPackagesVC: UIViewController = {
+        return makePackagesControler(BuildedPackagesDataProvider(database))
+    }()
+
     lazy private(set) var leavesPackagesVC: UIViewController = {
         return makePackagesControler(LeavesPackagesDataProvider(dpkgInstance))
     }()
@@ -22,9 +28,18 @@ class MainTabbarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let package = database.createBuildedPackage();
+        package.name = "Test"
+        package.id = "ru.danpashin.test"
+        package.architecture = "iphoneos-arm"
+        package.buildDate = Date()
+        package.debRelativePath = "/"
+        package.version = "1.0"
+        database.addBuildedPackage(package)
+
         view.tintColor = .systemPink
 
-        setViewControllers([leavesPackagesVC, allPackagesVC], animated: false)
+        setViewControllers([buildedPackagesVC, leavesPackagesVC, allPackagesVC], animated: false)
     }
 
     func makePackagesControler(_ dataProvider: PackagesDataProvider) -> UIViewController {

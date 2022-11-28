@@ -108,7 +108,7 @@ class PackageDetailView : UIView {
 
         identifierLabel.valueLabel.text = package.id
         versionLabel.valueLabel.text = package.version
-        sectionLabel.valueLabel.text = package.section.rawValue
+        sectionLabel.valueLabel.text = package.section.humanName()
 
         if let icon = package.icon {
             if icon.isFileURL {

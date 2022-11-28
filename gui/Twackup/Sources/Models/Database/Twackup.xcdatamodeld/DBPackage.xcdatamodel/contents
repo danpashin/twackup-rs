@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="22A400" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="BuildedPackageModel" representedClassName=".BuildedPackageModel" parentEntity="DatabasePackageModel" syncable="YES">
+        <attribute name="buildDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="debRelativePath" attributeType="String"/>
+    </entity>
+    <entity name="DatabasePackageModel" representedClassName=".DatabasePackageModel" syncable="YES">
+        <attribute name="architecture" attributeType="String"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="pdescription" optional="YES" attributeType="String"/>
+        <attribute name="section" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="version" attributeType="String"/>
+    </entity>
+</model>
