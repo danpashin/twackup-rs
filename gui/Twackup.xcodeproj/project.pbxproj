@@ -26,9 +26,11 @@
 		0B88C3192930CE4100BA5312 /* LeavesPackagesVCModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3182930CE4100BA5312 /* LeavesPackagesVCModel.swift */; };
 		0B88C31C2930DE8C00BA5312 /* KeyValueLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C31B2930DE8C00BA5312 /* KeyValueLabelView.swift */; };
 		0B88C31E2930DEA200BA5312 /* PackageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C31D2930DEA200BA5312 /* PackageDetailView.swift */; };
+		6DD25E80695E2BDA484FEFFE /* Pods_Twackup.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E868F451985FB9D360C4198E /* Pods_Twackup.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		007C412C6D65357FB85FA8C6 /* Pods-Twackup.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Twackup.release.xcconfig"; path = "Target Support Files/Pods-Twackup/Pods-Twackup.release.xcconfig"; sourceTree = "<group>"; };
 		0B8661652930ADA300EA4301 /* Twackup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Twackup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B8661682930ADA300EA4301 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0B86616A2930ADA300EA4301 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -51,6 +53,8 @@
 		0B88C3182930CE4100BA5312 /* LeavesPackagesVCModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeavesPackagesVCModel.swift; sourceTree = "<group>"; };
 		0B88C31B2930DE8C00BA5312 /* KeyValueLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueLabelView.swift; sourceTree = "<group>"; };
 		0B88C31D2930DEA200BA5312 /* PackageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageDetailView.swift; sourceTree = "<group>"; };
+		E868F451985FB9D360C4198E /* Pods_Twackup.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Twackup.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4A8FB183915E3D413DF2C45 /* Pods-Twackup.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Twackup.debug.xcconfig"; path = "Target Support Files/Pods-Twackup/Pods-Twackup.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +63,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0B8661862930AF4E00EA4301 /* libtwackup.a in Frameworks */,
+				6DD25E80695E2BDA484FEFFE /* Pods_Twackup.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +76,8 @@
 				0B8661832930AF4E00EA4301 /* libs */,
 				0B8661672930ADA300EA4301 /* Twackup */,
 				0B8661662930ADA300EA4301 /* Products */,
+				B1A85DB18112F57BBD674B6A /* Pods */,
+				A9DB1EE24AF2E5EE6554C623 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -197,6 +204,23 @@
 			path = Package;
 			sourceTree = "<group>";
 		};
+		A9DB1EE24AF2E5EE6554C623 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E868F451985FB9D360C4198E /* Pods_Twackup.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B1A85DB18112F57BBD674B6A /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F4A8FB183915E3D413DF2C45 /* Pods-Twackup.debug.xcconfig */,
+				007C412C6D65357FB85FA8C6 /* Pods-Twackup.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -204,9 +228,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0B8661792930ADA400EA4301 /* Build configuration list for PBXNativeTarget "Twackup" */;
 			buildPhases = (
+				8C5040D30DD7C7249C048804 /* [CP] Check Pods Manifest.lock */,
 				0B8661612930ADA300EA4301 /* Sources */,
 				0B8661622930ADA300EA4301 /* Frameworks */,
 				0B8661632930ADA300EA4301 /* Resources */,
+				154E6304DE1415E94BD6E921 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -262,6 +288,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		154E6304DE1415E94BD6E921 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Twackup/Pods-Twackup-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Twackup/Pods-Twackup-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Twackup/Pods-Twackup-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8C5040D30DD7C7249C048804 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Twackup-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0B8661612930ADA300EA4301 /* Sources */ = {
@@ -424,6 +492,7 @@
 		};
 		0B86617A2930ADA400EA4301 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F4A8FB183915E3D413DF2C45 /* Pods-Twackup.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -463,6 +532,7 @@
 		};
 		0B86617B2930ADA400EA4301 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 007C412C6D65357FB85FA8C6 /* Pods-Twackup.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

@@ -58,7 +58,7 @@ enum PackageSection: String {
         case .networking:
             return "network"
         case .packaging:
-            return "archivebox.circle.fill"
+            return "archivebox"
         case .system:
             return "command"
         case .terminalSupport:
@@ -68,11 +68,11 @@ enum PackageSection: String {
         case .themes:
             return "lasso.sparkles"
         case .tweaks:
-            return "rectangle.expand.vertical"
+            return "gearshape"
         case .utilities:
             return "keyboard"
         case .other:
-            return "person.fill.turn.down"
+            return "cube"
         }
     }
 }
