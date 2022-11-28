@@ -8,14 +8,14 @@
 import UIKit
 import SDWebImage
 
-protocol PackageDetailViewDelegate {
+protocol PackageDetailViewDelegate: AnyObject {
     func openExternalPackageInfo(_ package: Package)
 
     func rebuild(_ package: Package)
 }
 
-class PackageDetailView : UIView {
-    private(set) var delegate: PackageDetailViewDelegate
+class PackageDetailView: UIView {
+    private(set) var delegate: PackageDetailViewDelegate?
 
     private(set) var package: Package?
 
@@ -23,8 +23,8 @@ class PackageDetailView : UIView {
     let versionLabel = KeyValueLabelView(key: "Version:")
     let sectionLabel = KeyValueLabelView(key: "Section:")
 
-    lazy var logoHeightConstraint = logoView.heightAnchor.constraint(equalToConstant: 0.0)
-    lazy var logoView: UIImageView = {
+    lazy private(set) var logoHeightConstraint = logoView.heightAnchor.constraint(equalToConstant: 0.0)
+    lazy private(set) var logoView: UIImageView = {
         let view = UIImageView()
 
         view.contentMode = .scaleAspectFit
@@ -34,7 +34,7 @@ class PackageDetailView : UIView {
         return view
     }()
 
-    lazy var labelsStack: UIStackView = {
+    lazy private(set) var labelsStack: UIStackView = {
         let stack = UIStackView()
         stack.spacing = 8.0
         stack.axis = .vertical
@@ -42,7 +42,7 @@ class PackageDetailView : UIView {
         return stack
     }()
 
-    lazy var learnMoreButton: UIButton = {
+    lazy private(set) var learnMoreButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Learn More", for: .normal)
         button.addTarget(self, action: #selector(learnMoreTapped), for: .touchUpInside)
@@ -50,7 +50,7 @@ class PackageDetailView : UIView {
 
     }()
 
-    lazy var rebuildButton: UIButton = {
+    lazy private(set) var rebuildButton: UIButton = {
         let button = UIButton(type: .system)
         button.addTarget(self, action: #selector(rebuild), for: .touchUpInside)
 
@@ -71,7 +71,7 @@ class PackageDetailView : UIView {
 
     init(delegate: PackageDetailViewDelegate) {
         self.delegate = delegate
-        super.init(frame: CGRectZero)
+        super.init(frame: .zero)
 
         addSubview(logoView)
         addSubview(labelsStack)
@@ -95,7 +95,7 @@ class PackageDetailView : UIView {
             labelsStack.trailingAnchor.constraint(equalTo: trailingAnchor),
 
             rebuildButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-            rebuildButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8.0),
+            rebuildButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8.0)
         ])
     }
 
@@ -115,7 +115,7 @@ class PackageDetailView : UIView {
                 logoView.image = UIImage(contentsOfFile: icon.relativePath)
                 logoHeightConstraint.constant = logoView.image != nil ? 60.0 : 0.0
             } else {
-                logoView.sd_setImage(with: icon , placeholderImage: nil) { img, error, _, _ in
+                logoView.sd_setImage(with: icon, placeholderImage: nil) { img, _, _, _ in
                     self.logoHeightConstraint.constant = img != nil ? 60.0 : 0.0
                 }
             }
@@ -126,11 +126,11 @@ class PackageDetailView : UIView {
 
     @objc func learnMoreTapped() {
         guard let package = self.package else { return }
-        delegate.openExternalPackageInfo(package)
+        delegate?.openExternalPackageInfo(package)
     }
 
     @objc func rebuild() {
         guard let package = self.package else { return }
-        delegate.rebuild(package)
+        delegate?.rebuild(package)
     }
 }

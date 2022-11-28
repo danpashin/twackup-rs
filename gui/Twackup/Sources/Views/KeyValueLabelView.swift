@@ -8,7 +8,7 @@
 import UIKit
 
 class KeyValueLabelView: UIView {
-    lazy var keyLabel: UILabel = {
+    lazy private(set) var keyLabel: UILabel = {
         var label = UILabel()
         label.textColor = .secondaryLabel
         label.font = UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: .semibold)
@@ -16,14 +16,14 @@ class KeyValueLabelView: UIView {
         return label
     }()
 
-    lazy var valueLabel: UILabel = {
+    lazy private(set) var valueLabel: UILabel = {
         var label = UILabel()
 
         return label
     }()
 
     init(key: String, value: String? = nil) {
-        super.init(frame: CGRectZero)
+        super.init(frame: .zero)
 
         keyLabel.text = key
         valueLabel.text = value
@@ -41,7 +41,7 @@ class KeyValueLabelView: UIView {
 
             valueLabel.leadingAnchor.constraint(equalTo: keyLabel.trailingAnchor, constant: 8.0),
             valueLabel.topAnchor.constraint(equalTo: topAnchor),
-            valueLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
+            valueLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
 

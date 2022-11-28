@@ -15,11 +15,11 @@ class DatabasePackageModel: NSManagedObject, Package {
     }
 
     @NSManaged var name: String
-    @NSManaged var architecture: String
+    @NSManaged var architecture: String?
     @NSManaged var id: String
     @NSManaged var version: String
     @NSManaged var section: PackageSection
-    @NSManaged var pdescription: String
+    @NSManaged var humanDescription: String?
 
     var icon: URL?
     var depiction: URL?
@@ -29,9 +29,5 @@ class DatabasePackageModel: NSManagedObject, Package {
         id = package.id
         version = package.version
         architecture = package.architecture
-    }
-
-    override var description: String {
-        return pdescription
     }
 }

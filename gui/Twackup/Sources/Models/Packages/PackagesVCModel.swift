@@ -7,20 +7,20 @@
 
 import UIKit
 
-protocol PackageDetailDelegate {
+protocol PackageDetailDelegate: AnyObject {
     func didSelectPackage(_ package: Package)
 }
 
-protocol PackagesVCModelDelegate {
+protocol PackagesVCModelDelegate: AnyObject {
     func reloadTableView()
 }
 
-class PackagesVCModel: NSObject, UISearchResultsUpdating, UISearchControllerDelegate, UITableViewDelegate, UITableViewDataSource {
+class PackagesVCModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource {
     private(set) var dataProvider: PackagesDataProvider
 
-    var detailDelegate: PackageDetailDelegate? = nil
+    var detailDelegate: PackageDetailDelegate?
 
-    var delegate: PackagesVCModelDelegate? = nil
+    var delegate: PackagesVCModelDelegate?
 
     init(dataProvider: PackagesDataProvider) {
         self.dataProvider = dataProvider
@@ -45,7 +45,7 @@ class PackagesVCModel: NSObject, UISearchResultsUpdating, UISearchControllerDele
 
     func updateSearchResults(for searchController: UISearchController) {
         var filter: PackageFilter?
-        if let text = searchController.searchBar.text, !text.isEmpty { filter = .Name(text) }
+        if let text = searchController.searchBar.text, !text.isEmpty { filter = .name(text) }
 
         dataProvider.filter(filter)
         delegate?.reloadTableView()

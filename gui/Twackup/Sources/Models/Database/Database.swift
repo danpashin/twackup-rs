@@ -11,7 +11,8 @@ import CoreData
 class Database {
     lazy private var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Twackup")
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        container.loadPersistentStores(completionHandler: { (_, error) in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
@@ -49,6 +50,7 @@ extension Database {
     }
 
     func fetchBuildedPackages() -> [BuildedPackageModel] {
+        // swiftlint:disable force_try
         try! self.context.fetch(BuildedPackageModel.fetchRequest())
     }
 }

@@ -7,13 +7,6 @@
 
 import UIKit
 
-extension String {
-    func truncate(_ length: Int, trailing: String = "...") -> String {
-        return (count > length) ? prefix(length) + trailing : self
-    }
-}
-
-
 class PackageTableViewCell: UITableViewCell {
 
     var package: Package? {
@@ -52,7 +45,7 @@ class PackageTableViewCell: UITableViewCell {
 
         config.image = UIImage(systemName: package.section.systemImageName())
         config.text = package.name
-        config.secondaryText = package.description.truncate(70)
+        config.secondaryText = package.humanDescription?.truncate(70)
 
         contentConfiguration = config
     }

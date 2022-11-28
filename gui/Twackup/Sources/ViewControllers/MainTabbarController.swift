@@ -27,16 +27,6 @@ class MainTabbarController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let package = database.createBuildedPackage();
-        package.name = "Test"
-        package.id = "ru.danpashin.test"
-        package.architecture = "iphoneos-arm"
-        package.buildDate = Date()
-        package.debRelativePath = "/"
-        package.version = "1.0"
-        database.addBuildedPackage(package)
-
         view.tintColor = .systemPink
 
         setViewControllers([buildedPackagesVC, leavesPackagesVC, allPackagesVC], animated: false)
@@ -52,7 +42,7 @@ class MainTabbarController: UITabBarController {
         splitVC.tabBarItem = dataProvider.tabbarItem
         splitVC.viewControllers = [
             UINavigationController(rootViewController: mainVC),
-            UINavigationController(rootViewController: detailVC),
+            UINavigationController(rootViewController: detailVC)
         ]
 
         return splitVC

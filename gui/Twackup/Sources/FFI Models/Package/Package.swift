@@ -23,23 +23,26 @@ class FFIPackage: Package {
 
     let depiction: URL?
 
-    let description: String
+    let humanDescription: String?
 
-    let installedSize: Int64
+    let installedSize: Int64?
 
-    let architecture: String
+    let architecture: String?
 
     init?(_ pkg: TwPackage_t) {
         self.pkg = pkg
-        
-        id = String(ffiSlice: pkg.identifier) ?? "FFI ERROR"
-        if (id.hasPrefix("gsc") || id.hasPrefix("cy+")) {
+
+        // safe to unwrap here 'cause Rust string is UTF-8 encoded
+        // and never will be nullable
+        id = String(ffiSlice: pkg.identifier)!
+        if id.hasPrefix("gsc") || id.hasPrefix("cy+") {
             pkg.inner_ptr.deallocate()
             return nil
         }
 
-        name = String(ffiSlice: pkg.name) ?? "FFI ERROR"
-        version = String(ffiSlice: pkg.version) ?? "FFI ERROR"
+        // Here unwrap is safe too
+        name = String(ffiSlice: pkg.name)!
+        version = String(ffiSlice: pkg.version)!
         section = PackageSection(pkg.section)
 
         let iconField = TwPackageField_t(TW_PACKAGE_FIELD_ICON)
@@ -50,20 +53,24 @@ class FFIPackage: Package {
         }
 
         let depictionField = TwPackageField_t(TW_PACKAGE_FIELD_DEPICTION)
-        if let _depiction = String(ffiSlice: pkg.get_field(pkg.inner_ptr, depictionField)) {
-            depiction = URL(string: _depiction)
+        if let depict = String(ffiSlice: pkg.get_field(pkg.inner_ptr, depictionField)) {
+            depiction = URL(string: depict)
         } else {
             depiction = nil
         }
 
         let installedSizeField = TwPackageField_t(TW_PACKAGE_FIELD_INSTALLED_SIZE)
-        installedSize = Int64(String(ffiSlice: pkg.get_field(pkg.inner_ptr, installedSizeField)) ?? "") ?? 0
+        if let size = String(ffiSlice: pkg.get_field(pkg.inner_ptr, installedSizeField)) {
+            installedSize = Int64(size)
+        } else {
+            installedSize = nil
+        }
 
         let descriptionField = TwPackageField_t(TW_PACKAGE_FIELD_DESCRIPTION)
-        description = String(ffiSlice: pkg.get_field(pkg.inner_ptr, descriptionField)) ?? ""
+        humanDescription = String(ffiSlice: pkg.get_field(pkg.inner_ptr, descriptionField))
 
         let archField = TwPackageField_t(TW_PACKAGE_FIELD_ARCHITECTURE)
-        architecture = String(ffiSlice: pkg.get_field(pkg.inner_ptr, archField)) ?? ""
+        architecture = String(ffiSlice: pkg.get_field(pkg.inner_ptr, archField))
     }
 
     deinit {
@@ -71,6 +78,6 @@ class FFIPackage: Package {
     }
 
     func humanInstalledSize() -> String {
-        return ByteCountFormatter.string(fromByteCount: installedSize * 1000, countStyle: .decimal)
+        return ByteCountFormatter.string(fromByteCount: installedSize ?? 0 * 1000, countStyle: .decimal)
     }
 }

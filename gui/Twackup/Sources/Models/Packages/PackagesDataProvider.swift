@@ -8,25 +8,25 @@
 import UIKit
 
 enum PackageFilter {
-    case Name(String)
+    case name(String)
 }
 
 protocol Package {
     var id: String { get }
 
-    var name: String  { get }
+    var name: String { get }
 
-    var version: String  { get }
+    var version: String { get }
 
-    var section: PackageSection  { get }
+    var section: PackageSection { get }
 
-    var architecture: String { get }
+    var architecture: String? { get }
 
     var icon: URL? { get }
 
     var depiction: URL? { get }
 
-    var description: String { get }
+    var humanDescription: String? { get }
 }
 
 protocol PackagesDataProvider {
