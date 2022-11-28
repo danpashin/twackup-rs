@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B5D3F972934CB2C00AE50F2 /* PackagesDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F962934CB2C00AE50F2 /* PackagesDataProvider.swift */; };
 		0B8661692930ADA300EA4301 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8661682930ADA300EA4301 /* AppDelegate.swift */; };
 		0B86616B2930ADA300EA4301 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86616A2930ADA300EA4301 /* SceneDelegate.swift */; };
 		0B86616D2930ADA300EA4301 /* MainTabbarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86616C2930ADA300EA4301 /* MainTabbarController.swift */; };
@@ -22,8 +23,8 @@
 		0B88C30B2930B58D00BA5312 /* PackageDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C30A2930B58D00BA5312 /* PackageDetailViewController.swift */; };
 		0B88C30D2930B88800BA5312 /* PackageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */; };
 		0B88C3152930CE2E00BA5312 /* PackagesVCModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3142930CE2E00BA5312 /* PackagesVCModel.swift */; };
-		0B88C3172930CE3900BA5312 /* AllPackagesVCModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3162930CE3900BA5312 /* AllPackagesVCModel.swift */; };
-		0B88C3192930CE4100BA5312 /* LeavesPackagesVCModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3182930CE4100BA5312 /* LeavesPackagesVCModel.swift */; };
+		0B88C3172930CE3900BA5312 /* AllPackagesDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3162930CE3900BA5312 /* AllPackagesDataProvider.swift */; };
+		0B88C3192930CE4100BA5312 /* LeavesPackagesDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3182930CE4100BA5312 /* LeavesPackagesDataProvider.swift */; };
 		0B88C31C2930DE8C00BA5312 /* KeyValueLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C31B2930DE8C00BA5312 /* KeyValueLabelView.swift */; };
 		0B88C31E2930DEA200BA5312 /* PackageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C31D2930DEA200BA5312 /* PackageDetailView.swift */; };
 		6DD25E80695E2BDA484FEFFE /* Pods_Twackup.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E868F451985FB9D360C4198E /* Pods_Twackup.framework */; };
@@ -31,6 +32,7 @@
 
 /* Begin PBXFileReference section */
 		007C412C6D65357FB85FA8C6 /* Pods-Twackup.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Twackup.release.xcconfig"; path = "Target Support Files/Pods-Twackup/Pods-Twackup.release.xcconfig"; sourceTree = "<group>"; };
+		0B5D3F962934CB2C00AE50F2 /* PackagesDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesDataProvider.swift; sourceTree = "<group>"; };
 		0B8661652930ADA300EA4301 /* Twackup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Twackup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B8661682930ADA300EA4301 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0B86616A2930ADA300EA4301 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -49,8 +51,8 @@
 		0B88C30A2930B58D00BA5312 /* PackageDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageDetailViewController.swift; sourceTree = "<group>"; };
 		0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageTableViewCell.swift; sourceTree = "<group>"; };
 		0B88C3142930CE2E00BA5312 /* PackagesVCModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesVCModel.swift; sourceTree = "<group>"; };
-		0B88C3162930CE3900BA5312 /* AllPackagesVCModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllPackagesVCModel.swift; sourceTree = "<group>"; };
-		0B88C3182930CE4100BA5312 /* LeavesPackagesVCModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeavesPackagesVCModel.swift; sourceTree = "<group>"; };
+		0B88C3162930CE3900BA5312 /* AllPackagesDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllPackagesDataProvider.swift; sourceTree = "<group>"; };
+		0B88C3182930CE4100BA5312 /* LeavesPackagesDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeavesPackagesDataProvider.swift; sourceTree = "<group>"; };
 		0B88C31B2930DE8C00BA5312 /* KeyValueLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueLabelView.swift; sourceTree = "<group>"; };
 		0B88C31D2930DEA200BA5312 /* PackageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageDetailView.swift; sourceTree = "<group>"; };
 		E868F451985FB9D360C4198E /* Pods_Twackup.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Twackup.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -168,8 +170,9 @@
 			isa = PBXGroup;
 			children = (
 				0B88C3142930CE2E00BA5312 /* PackagesVCModel.swift */,
-				0B88C3162930CE3900BA5312 /* AllPackagesVCModel.swift */,
-				0B88C3182930CE4100BA5312 /* LeavesPackagesVCModel.swift */,
+				0B5D3F962934CB2C00AE50F2 /* PackagesDataProvider.swift */,
+				0B88C3162930CE3900BA5312 /* AllPackagesDataProvider.swift */,
+				0B88C3182930CE4100BA5312 /* LeavesPackagesDataProvider.swift */,
 			);
 			path = Packages;
 			sourceTree = "<group>";
@@ -341,10 +344,11 @@
 				0B86617D2930AE5E00EA4301 /* PackagesViewController.swift in Sources */,
 				0B86618A2930AF7100EA4301 /* Dpkg.swift in Sources */,
 				0B88C30D2930B88800BA5312 /* PackageTableViewCell.swift in Sources */,
-				0B88C3172930CE3900BA5312 /* AllPackagesVCModel.swift in Sources */,
+				0B88C3172930CE3900BA5312 /* AllPackagesDataProvider.swift in Sources */,
 				0B88C31E2930DEA200BA5312 /* PackageDetailView.swift in Sources */,
-				0B88C3192930CE4100BA5312 /* LeavesPackagesVCModel.swift in Sources */,
+				0B88C3192930CE4100BA5312 /* LeavesPackagesDataProvider.swift in Sources */,
 				0B88C3152930CE2E00BA5312 /* PackagesVCModel.swift in Sources */,
+				0B5D3F972934CB2C00AE50F2 /* PackagesDataProvider.swift in Sources */,
 				0B86616D2930ADA300EA4301 /* MainTabbarController.swift in Sources */,
 				0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */,
 				0B8661692930ADA300EA4301 /* AppDelegate.swift in Sources */,

@@ -9,14 +9,14 @@ import UIKit
 
 class MainTabbarController: UITabBarController {
 
-    var dpkgInstance = Dpkg()
+    let dpkgInstance = Dpkg()
 
-    lazy var leavesPackagesVC: UIViewController = {
-        return makePackagesControler(LeavesPackagesVCModel(dpkgInstance))
+    lazy private(set) var leavesPackagesVC: UIViewController = {
+        return makePackagesControler(LeavesPackagesDataProvider(dpkgInstance))
     }()
 
-    lazy var allPackagesVC: UIViewController = {
-        return makePackagesControler(AllPackagesVCModel(dpkgInstance))
+    lazy private(set) var allPackagesVC: UIViewController = {
+        return makePackagesControler(AllPackagesDataProvider(dpkgInstance))
     }()
 
     override func viewDidLoad() {
@@ -27,15 +27,14 @@ class MainTabbarController: UITabBarController {
         setViewControllers([leavesPackagesVC, allPackagesVC], animated: false)
     }
 
-    func makePackagesControler(_ model: PackagesVCModel) -> UIViewController {
-        var model = model
+    func makePackagesControler(_ dataProvider: PackagesDataProvider) -> UIViewController {
         let detailVC = PackageDetailViewController()
-        model.detailDelegate = detailVC
 
-        let mainVC = PackagesViewController(model)
+        let mainVC = PackagesViewController(dataProvider)
+        mainVC.model.detailDelegate = detailVC
 
         let splitVC = UISplitViewController()
-        splitVC.tabBarItem = mainVC.model.tabbarItem
+        splitVC.tabBarItem = dataProvider.tabbarItem
         splitVC.viewControllers = [
             UINavigationController(rootViewController: mainVC),
             UINavigationController(rootViewController: detailVC),
