@@ -16,7 +16,7 @@ struct LeavesPackagesVCModel : PackagesVCModel {
     let navTitle: String = "Leaves"
 
     var tabbarItem: UITabBarItem {
-        return UITabBarItem(title: "Leaves", image: UIImage(systemName: "shippingbox"), tag: 0)
+        return UITabBarItem(title: "Leaves", image: UIImage(systemName: "cube"), tag: 0)
     }
 
     var packages: [Package] {

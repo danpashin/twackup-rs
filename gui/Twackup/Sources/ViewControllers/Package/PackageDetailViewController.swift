@@ -7,8 +7,9 @@
 
 import UIKit
 
-class PackageDetailViewController: UIViewController, PackageDetailDelegate {
-    let containerView = PackageDetailView()
+class PackageDetailViewController: UIViewController, PackageDetailDelegate, PackageDetailViewDelegate {
+
+    lazy var containerView = PackageDetailView(delegate: self)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,5 +33,14 @@ class PackageDetailViewController: UIViewController, PackageDetailDelegate {
 
         containerView.isHidden = false
         containerView.updateContents(forPackage: package)
+    }
+
+    func openExternalPackageInfo(_ package: Package) {
+        guard let depiction = package.depiction else { return }
+        UIApplication.shared.open(depiction)
+    }
+
+    func rebuild(_ package: Package) {
+
     }
 }
