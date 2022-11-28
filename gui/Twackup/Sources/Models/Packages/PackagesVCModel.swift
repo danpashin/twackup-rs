@@ -15,39 +15,45 @@ protocol PackagesVCModelDelegate: AnyObject {
     func reloadTableView()
 }
 
-class PackagesVCModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource {
-    private(set) var dataProvider: PackagesDataProvider
+extension ViewControllers.Package.Main {
+    class Model: NSObject, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource {
+        private(set) var dataProvider: Provider
 
-    var detailDelegate: PackageDetailDelegate?
+        var detailDelegate: PackageDetailDelegate?
 
-    var delegate: PackagesVCModelDelegate?
+        var delegate: PackagesVCModelDelegate?
 
-    init(dataProvider: PackagesDataProvider) {
-        self.dataProvider = dataProvider
-    }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataProvider.packages.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "PackageCell", for: indexPath)
-        if let cell = cell as? PackageTableViewCell {
-            cell.package = dataProvider.packages[indexPath.row]
+        init(dataProvider: Provider) {
+            self.dataProvider = dataProvider
         }
 
-        return cell
-    }
+        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            return dataProvider.packages.count
+        }
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        detailDelegate?.didSelectPackage(dataProvider.packages[indexPath.row])
-    }
+        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "PackageCell", for: indexPath)
+            if let cell = cell as? Views.Package.SimpleTableViewCell {
+                cell.package = dataProvider.packages[indexPath.row]
+            }
 
-    func updateSearchResults(for searchController: UISearchController) {
-        var filter: PackageFilter?
-        if let text = searchController.searchBar.text, !text.isEmpty { filter = .name(text) }
+            return cell
+        }
 
-        dataProvider.filter(filter)
-        delegate?.reloadTableView()
+        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+            detailDelegate?.didSelectPackage(dataProvider.packages[indexPath.row])
+        }
+
+        func updateSearchResults(for searchController: UISearchController) {
+            var filter: Provider.Filter?
+            if let text = searchController.searchBar.text, !text.isEmpty { filter = .name(text) }
+
+            dataProvider.applyFilter(filter)
+            delegate?.reloadTableView()
+        }
     }
+}
+
+extension ViewControllers.Package.Main.Model {
+    typealias Provider = ViewControllers.Package.DataProvider.BasicProvider
 }

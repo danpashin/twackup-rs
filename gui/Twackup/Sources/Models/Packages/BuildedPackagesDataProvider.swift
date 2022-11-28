@@ -7,41 +7,24 @@
 
 import UIKit
 
-struct BuildedPackagesDataProvider: PackagesDataProvider {
+extension ViewControllers.Package.Metadata {
+    struct BuildedPkgsVC: PackagesControllerMetadata {
+        let navTitle: String = "DEBs"
 
-    let database: Database
-
-    let navTitle: String = "DEBs"
-
-    var tabbarItem: UITabBarItem {
-        return UITabBarItem(title: "DEBs", image: UIImage(systemName: "list.bullet.rectangle"), tag: 0)
-    }
-
-    var packages: [Package] {
-        guard let filteredPackages else { return allPackages }
-        return filteredPackages
-    }
-
-    private var allPackages: [Package]
-    private var filteredPackages: [Package]?
-
-    init(_ database: Database) {
-        self.database = database
-        allPackages = database.fetchBuildedPackages()
-        print(allPackages)
-    }
-
-    mutating func filter(_ filter: PackageFilter?) {
-        guard let filter else {
-            filteredPackages = nil
-            return
+        var tabbarItem: UITabBarItem {
+            return UITabBarItem(title: "DEBs", image: UIImage(systemName: "list.bullet.rectangle"), tag: 0)
         }
+    }
+}
 
-        filteredPackages = allPackages.filter({ package in
-            switch filter {
-            case .name(let name):
-                return package.name.contains(name)
-            }
-        })
+extension ViewControllers.Package.DataProvider {
+    class BuildedPkgsVC: BasicProvider {
+        private let database: Database
+
+        init(_ database: Database) {
+            self.database = database
+
+            super.init(packages: database.fetchBuildedPackages())
+        }
     }
 }
