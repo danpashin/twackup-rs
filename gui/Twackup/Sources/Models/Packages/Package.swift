@@ -1,17 +1,13 @@
 //
-//  PackagesDataProvider.swift
+//  Package.swift
 //  Twackup
 //
 //  Created by Daniil on 28.11.2022.
 //
 
-import UIKit
+import Foundation
 
-enum PackageFilter {
-    case name(String)
-}
-
-protocol Package {
+protocol Package: AnyObject {
     var id: String { get }
 
     var name: String { get }
@@ -27,14 +23,4 @@ protocol Package {
     var depiction: URL? { get }
 
     var humanDescription: String? { get }
-}
-
-protocol PackagesDataProvider {
-    var navTitle: String { get }
-
-    var tabbarItem: UITabBarItem { get }
-
-    var packages: [Package] { get }
-
-    mutating func filter(_ filter: PackageFilter?)
 }

@@ -7,40 +7,24 @@
 
 import UIKit
 
-struct LeavesPackagesDataProvider: PackagesDataProvider {
+extension ViewControllers.Package.Metadata {
+    struct LeavesPkgsVC: PackagesControllerMetadata {
+        let navTitle: String = "Leaves"
 
-    let dpkg: Dpkg
-
-    let navTitle: String = "Leaves"
-
-    var tabbarItem: UITabBarItem {
-        return UITabBarItem(title: "Leaves", image: UIImage(systemName: "cube"), tag: 0)
-    }
-
-    var packages: [Package] {
-        guard let filteredPackages else { return allPackages }
-        return filteredPackages
-    }
-
-    private let allPackages: [Package]
-    private var filteredPackages: [Package]?
-
-    init(_ dpkg: Dpkg) {
-        self.dpkg = dpkg
-        allPackages = dpkg.parsePackages(leaves: true)
-    }
-
-    mutating func filter(_ filter: PackageFilter?) {
-        guard let filter else {
-            filteredPackages = nil
-            return
+        var tabbarItem: UITabBarItem {
+            return UITabBarItem(title: "Leaves", image: UIImage(systemName: "cube"), tag: 0)
         }
+    }
+}
 
-        filteredPackages = allPackages.filter({ package in
-            switch filter {
-            case .name(let name):
-                return package.name.range(of: name, options: .caseInsensitive) != nil
-            }
-        })
+extension ViewControllers.Package.DataProvider {
+    class LeavesPkgsVC: BasicProvider {
+        private let dpkg: Dpkg
+
+        init(_ dpkg: Dpkg) {
+            self.dpkg = dpkg
+
+            super.init(packages: dpkg.parsePackages(leaves: true))
+        }
     }
 }

@@ -8,21 +8,23 @@
 import UIKit
 
 class MainTabbarController: UITabBarController {
+    private typealias Provider = ViewControllers.Package.DataProvider
+    private typealias Metadata = ViewControllers.Package.Metadata
 
     let dpkgInstance = Dpkg()
 
     let database = Database()
 
     lazy private(set) var buildedPackagesVC: UIViewController = {
-        return makePackagesControler(BuildedPackagesDataProvider(database))
+        return makePackagesControler(Provider.BuildedPkgsVC(database), Metadata.BuildedPkgsVC())
     }()
 
     lazy private(set) var leavesPackagesVC: UIViewController = {
-        return makePackagesControler(LeavesPackagesDataProvider(dpkgInstance))
+        return makePackagesControler(Provider.LeavesPkgsVC(dpkgInstance), Metadata.LeavesPkgsVC())
     }()
 
     lazy private(set) var allPackagesVC: UIViewController = {
-        return makePackagesControler(AllPackagesDataProvider(dpkgInstance))
+        return makePackagesControler(Provider.AllPkgsVC(dpkgInstance), Metadata.AllPkgsVC())
     }()
 
     override func viewDidLoad() {
@@ -32,14 +34,15 @@ class MainTabbarController: UITabBarController {
         setViewControllers([buildedPackagesVC, leavesPackagesVC, allPackagesVC], animated: false)
     }
 
-    func makePackagesControler(_ dataProvider: PackagesDataProvider) -> UIViewController {
-        let detailVC = PackageDetailViewController()
+    private func makePackagesControler(_ dataProvider: Provider.BasicProvider,
+                                       _ metadata: PackagesControllerMetadata) -> UIViewController {
+        let detailVC = ViewControllers.Package.Detail()
 
-        let mainVC = PackagesViewController(dataProvider)
+        let mainVC = ViewControllers.Package.Main(dataProvider, metadata)
         mainVC.model.detailDelegate = detailVC
 
         let splitVC = UISplitViewController()
-        splitVC.tabBarItem = dataProvider.tabbarItem
+        splitVC.tabBarItem = metadata.tabbarItem
         splitVC.viewControllers = [
             UINavigationController(rootViewController: mainVC),
             UINavigationController(rootViewController: detailVC)

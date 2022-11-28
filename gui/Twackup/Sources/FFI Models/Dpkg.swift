@@ -22,7 +22,7 @@ class Dpkg {
     func parsePackages(leaves: Bool) -> [Package] {
         let ffiPackages = tw_get_packages(innerDpkg, leaves, TwPackagesSort_t(TW_PACKAGES_SORT_NAME))
 
-        let rawPackages =  UnsafeBufferPointer(start: ffiPackages.ptr, count: ffiPackages.len)
+        let rawPackages = UnsafeBufferPointer(start: ffiPackages.ptr, count: ffiPackages.len)
 
         var packages: [Package] = []
         packages.reserveCapacity(rawPackages.count)
