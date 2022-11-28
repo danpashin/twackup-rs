@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct LeavesPackagesDataProvider : PackagesDataProvider {
+struct LeavesPackagesDataProvider: PackagesDataProvider {
 
     let dpkg: Dpkg
 
@@ -18,10 +18,8 @@ struct LeavesPackagesDataProvider : PackagesDataProvider {
     }
 
     var packages: [Package] {
-        get {
-            guard let filteredPackages else { return allPackages }
-            return filteredPackages
-        }
+        guard let filteredPackages else { return allPackages }
+        return filteredPackages
     }
 
     private let allPackages: [Package]
@@ -40,7 +38,7 @@ struct LeavesPackagesDataProvider : PackagesDataProvider {
 
         filteredPackages = allPackages.filter({ package in
             switch filter {
-            case .Name(let name):
+            case .name(let name):
                 return package.name.range(of: name, options: .caseInsensitive) != nil
             }
         })

@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct AllPackagesDataProvider : PackagesDataProvider {
+struct AllPackagesDataProvider: PackagesDataProvider {
 
     let dpkg: Dpkg
 
@@ -18,10 +18,8 @@ struct AllPackagesDataProvider : PackagesDataProvider {
     }
 
     var packages: [Package] {
-        get {
-            guard let filteredPackages else { return allPackages }
-            return filteredPackages
-        }
+        guard let filteredPackages else { return allPackages }
+        return filteredPackages
     }
 
     private var allPackages: [Package]
@@ -40,7 +38,7 @@ struct AllPackagesDataProvider : PackagesDataProvider {
 
         filteredPackages = allPackages.filter({ package in
             switch filter {
-            case .Name(let name):
+            case .name(let name):
                 return package.name.contains(name)
             }
         })

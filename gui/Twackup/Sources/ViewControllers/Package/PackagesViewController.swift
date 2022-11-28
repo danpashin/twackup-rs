@@ -15,14 +15,12 @@ class PackagesViewController: UIViewController, PackagesVCModelDelegate {
         let controller = UISearchController(searchResultsController: nil)
         controller.obscuresBackgroundDuringPresentation = false
         controller.searchResultsUpdater = self.model
-        controller.delegate = self.model
-        
         controller.searchBar.placeholder = "Search"
         return controller
     }()
 
     lazy private(set) var tableView: UITableView =  {
-        let table = UITableView(frame: CGRectZero, style: .plain)
+        let table = UITableView(frame: .zero, style: .plain)
         table.delegate = model
         table.dataSource = model
 

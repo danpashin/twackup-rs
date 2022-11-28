@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0B0DBB692934DEA7002F3BB2 /* BuildedPackageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB682934DEA7002F3BB2 /* BuildedPackageModel.swift */; };
 		0B0DBB6B2934DEA7002F3BB2 /* DatabasePackageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB662934DEA7002F3BB2 /* DatabasePackageModel.swift */; };
+		0B0DBB6F2934FA58002F3BB2 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB6E2934FA58002F3BB2 /* String.swift */; };
 		0B5D3F972934CB2C00AE50F2 /* PackagesDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F962934CB2C00AE50F2 /* PackagesDataProvider.swift */; };
 		0B5D3F9A2934D0C300AE50F2 /* Twackup.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F982934D0C300AE50F2 /* Twackup.xcdatamodeld */; };
 		0B5D3F9C2934D2EB00AE50F2 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F9B2934D2EB00AE50F2 /* Database.swift */; };
@@ -24,7 +25,6 @@
 		0B86618A2930AF7100EA4301 /* Dpkg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8661882930AF7100EA4301 /* Dpkg.swift */; };
 		0B86618B2930AF7100EA4301 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8661892930AF7100EA4301 /* Package.swift */; };
 		0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3062930B2FB00BA5312 /* PackageSection.swift */; };
-		0B88C3092930B30F00BA5312 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3082930B30F00BA5312 /* Utils.swift */; };
 		0B88C30B2930B58D00BA5312 /* PackageDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C30A2930B58D00BA5312 /* PackageDetailViewController.swift */; };
 		0B88C30D2930B88800BA5312 /* PackageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */; };
 		0B88C3152930CE2E00BA5312 /* PackagesVCModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3142930CE2E00BA5312 /* PackagesVCModel.swift */; };
@@ -39,6 +39,7 @@
 		007C412C6D65357FB85FA8C6 /* Pods-Twackup.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Twackup.release.xcconfig"; path = "Target Support Files/Pods-Twackup/Pods-Twackup.release.xcconfig"; sourceTree = "<group>"; };
 		0B0DBB662934DEA7002F3BB2 /* DatabasePackageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DatabasePackageModel.swift; path = "/Users/danpashin/Documents/projects/my-own/twackup-rs/gui/Twackup/Sources/Models/Database/DatabasePackageModel.swift"; sourceTree = "<absolute>"; };
 		0B0DBB682934DEA7002F3BB2 /* BuildedPackageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BuildedPackageModel.swift; path = "/Users/danpashin/Documents/projects/my-own/twackup-rs/gui/Twackup/Sources/Models/Database/BuildedPackageModel.swift"; sourceTree = "<absolute>"; };
+		0B0DBB6E2934FA58002F3BB2 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		0B5D3F962934CB2C00AE50F2 /* PackagesDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesDataProvider.swift; sourceTree = "<group>"; };
 		0B5D3F992934D0C300AE50F2 /* DBPackage.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DBPackage.xcdatamodel; sourceTree = "<group>"; };
 		0B5D3F9B2934D2EB00AE50F2 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
@@ -57,7 +58,6 @@
 		0B8661882930AF7100EA4301 /* Dpkg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dpkg.swift; sourceTree = "<group>"; };
 		0B8661892930AF7100EA4301 /* Package.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		0B88C3062930B2FB00BA5312 /* PackageSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageSection.swift; sourceTree = "<group>"; };
-		0B88C3082930B30F00BA5312 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		0B88C30A2930B58D00BA5312 /* PackageDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageDetailViewController.swift; sourceTree = "<group>"; };
 		0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageTableViewCell.swift; sourceTree = "<group>"; };
 		0B88C3142930CE2E00BA5312 /* PackagesVCModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesVCModel.swift; sourceTree = "<group>"; };
@@ -91,6 +91,14 @@
 				0B5D3F9B2934D2EB00AE50F2 /* Database.swift */,
 			);
 			path = Database;
+			sourceTree = "<group>";
+		};
+		0B0DBB6D2934FA4F002F3BB2 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				0B0DBB6E2934FA58002F3BB2 /* String.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 		0B86615C2930ADA300EA4301 = {
@@ -137,7 +145,6 @@
 			isa = PBXGroup;
 			children = (
 				0B8661882930AF7100EA4301 /* Dpkg.swift */,
-				0B88C3082930B30F00BA5312 /* Utils.swift */,
 				0B88C3052930B2EB00BA5312 /* Package */,
 			);
 			path = "FFI Models";
@@ -203,6 +210,7 @@
 		0B88C31F2930E32800BA5312 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				0B0DBB6D2934FA4F002F3BB2 /* Helpers */,
 				0B88C3132930CE1F00BA5312 /* Models */,
 				0B86618D2930AF9700EA4301 /* App Lifecycle */,
 				0B8661872930AF7100EA4301 /* FFI Models */,
@@ -259,6 +267,7 @@
 				0B8661622930ADA300EA4301 /* Frameworks */,
 				0B8661632930ADA300EA4301 /* Resources */,
 				154E6304DE1415E94BD6E921 /* [CP] Embed Pods Frameworks */,
+				0B0DBB702934FAB5002F3BB2 /* Lint swift sources */,
 			);
 			buildRules = (
 			);
@@ -316,6 +325,26 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0B0DBB702934FAB5002F3BB2 /* Lint swift sources */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Lint swift sources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export PATH=\"$PATH:/opt/homebrew/bin\"\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			showEnvVarsInLog = 0;
+		};
 		154E6304DE1415E94BD6E921 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -374,6 +403,7 @@
 				0B88C3192930CE4100BA5312 /* LeavesPackagesDataProvider.swift in Sources */,
 				0B88C3152930CE2E00BA5312 /* PackagesVCModel.swift in Sources */,
 				0B0DBB6B2934DEA7002F3BB2 /* DatabasePackageModel.swift in Sources */,
+				0B0DBB6F2934FA58002F3BB2 /* String.swift in Sources */,
 				0B5D3F972934CB2C00AE50F2 /* PackagesDataProvider.swift in Sources */,
 				0B86616D2930ADA300EA4301 /* MainTabbarController.swift in Sources */,
 				0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */,
@@ -382,7 +412,6 @@
 				0B88C31C2930DE8C00BA5312 /* KeyValueLabelView.swift in Sources */,
 				0B5D3F9A2934D0C300AE50F2 /* Twackup.xcdatamodeld in Sources */,
 				0B86616B2930ADA300EA4301 /* SceneDelegate.swift in Sources */,
-				0B88C3092930B30F00BA5312 /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
