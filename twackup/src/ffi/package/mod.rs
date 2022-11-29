@@ -112,10 +112,7 @@ pub(crate) extern "C" fn build_control(package: TwPackageRef) -> Box<u8> {
 pub(crate) extern "C" fn get_dependencies(package: TwPackageRef) -> Box<Raw<u8>> {
     let dependencies = package.as_ref().dependencies();
     let dependencies: Vec<_> = dependencies
-        .map(|dep| {
-            let dep = Ref::from(dep.as_bytes());
-            Raw::from(dep)
-        })
+        .map(|dep| Raw::from(Ref::from(dep.as_bytes())))
         .collect();
     Box::from(dependencies.into_boxed_slice())
 }

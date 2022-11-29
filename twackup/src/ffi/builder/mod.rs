@@ -20,7 +20,10 @@
 pub mod progress;
 
 use super::{c_dpkg::TwDpkg, package::TwPackage};
-use crate::builder::{Preferences, Worker};
+use crate::{
+    builder::{Preferences, Worker},
+    Result,
+};
 use progress::{TwProgressFunctions, TwProgressImpl};
 use safer_ffi::{
     derive_ReprC,
@@ -29,18 +32,24 @@ use safer_ffi::{
         char_p,
     },
 };
+use std::os::unix::ffi::OsStringExt;
 use std::{collections::LinkedList, sync::Arc};
 
 #[derive_ReprC]
-#[repr(transparent)]
-pub struct TwPackagesRebuildResult(Box<Box<u8>>);
+#[repr(C)]
+pub struct TwPackagesRebuildResult {
+    success: bool,
+    deb_path: Option<Box<u8>>,
+    error: Option<Box<u8>>,
+}
 
 pub(crate) fn rebuild_packages(
     dpkg: &TwDpkg,
     packages: Ref<'_, TwPackage>,
     functions: TwProgressFunctions,
     out_dir: char_p::Ref<'_>,
-) -> TwPackagesRebuildResult {
+    results: Option<&mut Box<TwPackagesRebuildResult>>,
+) -> Result<()> {
     let progress = TwProgressImpl { functions };
 
     let tokio_rt = dpkg.inner_tokio_rt();
@@ -48,11 +57,7 @@ pub(crate) fn rebuild_packages(
     let dpkg_paths = &dpkg.inner_dpkg().paths;
     let out_dir = out_dir.to_str();
     let preferences = Preferences::new(dpkg_paths, out_dir);
-    let dpkg_contents = dpkg
-        .inner_dpkg()
-        .info_dir_contents()
-        .expect("Cannot get dpkg contents");
-    let dpkg_contents = Arc::new(dpkg_contents);
+    let dpkg_contents = Arc::new(dpkg.inner_dpkg().info_dir_contents()?);
 
     let mut workers = LinkedList::new();
     for package in packages.iter() {
@@ -67,16 +72,44 @@ pub(crate) fn rebuild_packages(
         }));
     }
 
-    let mut errors = vec![];
+    let mut errors_vec = vec![];
     tokio_rt.block_on(async {
         for worker in workers {
-            if let Ok(Err(error)) = worker.await {
-                let error = error.to_string();
-                let error = Box::from(error.into_bytes().into_boxed_slice());
-                errors.push(error);
-            }
+            let result = match worker.await {
+                Ok(result) if results.is_some() => result,
+                _ => continue,
+            };
+
+            let (path, error) = match result {
+                Ok(path) => (Some(path), None),
+                Err(error) => (None, Some(error)),
+            };
+
+            let deb_path = path.map(|path| {
+                let path = OsStringExt::into_vec(path.into_os_string());
+                Box::from(path.into_boxed_slice())
+            });
+
+            let error = error.map(|error| {
+                let error = error.to_string().into_bytes();
+                Box::from(error.into_boxed_slice())
+            });
+
+            errors_vec.push(TwPackagesRebuildResult {
+                success: deb_path.is_some(),
+                deb_path,
+                error,
+            });
         }
     });
 
-    TwPackagesRebuildResult(Box::from(errors.into_boxed_slice()))
+    if let Some(results_ref) = results {
+        let new_results = Box::from(errors_vec.into_boxed_slice());
+        unsafe {
+            let ptr = results_ref as *mut Box<TwPackagesRebuildResult>;
+            ptr.write(new_results);
+        }
+    }
+
+    Ok(())
 }

@@ -31,11 +31,18 @@ use crate::ffi::builder::TwPackagesRebuildResult;
 use crate::Dpkg;
 use builder::progress::TwProgressFunctions;
 use safer_ffi::{
-    ffi_export,
+    derive_ReprC, ffi_export,
     prelude::c_slice,
     prelude::{char_p, repr_c},
     slice::Ref,
 };
+
+#[derive_ReprC]
+#[repr(i8)]
+pub enum TwResult {
+    Ok,
+    Error = -1,
+}
 
 /// Initialises dpkg database parser
 ///
@@ -107,6 +114,8 @@ fn tw_package_build_control(package: TwPackageRef) -> c_slice::Box<u8> {
 /// \param[in] packages packages to rebuild
 /// \param[in] functions different functions used to report about progress
 /// \param[in] out_dir directory to write deb files
+/// \param[out] results paths and errors for every package.
+/// YOU ARE RESPONSIBLE TO DEALLOCATE THIS BEFORE CALLING [tw_rebuild_packages] again
 ///
 /// \returns Vector with errors. You MUST free result and all errors inside.
 ///
@@ -116,16 +125,21 @@ fn tw_rebuild_packages(
     packages: Ref<'_, TwPackage>,
     functions: TwProgressFunctions,
     out_dir: char_p::Ref<'_>,
-) -> TwPackagesRebuildResult {
-    builder::rebuild_packages(dpkg, packages, functions, out_dir)
+    results: Option<&mut c_slice::Box<TwPackagesRebuildResult>>,
+) -> TwResult {
+    if builder::rebuild_packages(dpkg, packages, functions, out_dir, results).is_ok() {
+        TwResult::Ok
+    } else {
+        TwResult::Error
+    }
 }
 
 /// Deallocates memory allocated from *tw_rebuild_packages*
 ///
-/// \param[in] result *tw_rebuild_packages* result
+/// \param[in] results *tw_rebuild_packages* result
 #[ffi_export]
-fn free_packages_rebuild_result(result: TwPackagesRebuildResult) {
-    drop(result);
+fn tw_free_rebuild_results(results: c_slice::Box<TwPackagesRebuildResult>) {
+    drop(results);
 }
 
 /// Generates FFI headers
