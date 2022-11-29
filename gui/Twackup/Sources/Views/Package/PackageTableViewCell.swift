@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension Views.Package {
+extension PackageVC {
     class SimpleTableViewCell: UITableViewCell {
 
         var package: Package? {

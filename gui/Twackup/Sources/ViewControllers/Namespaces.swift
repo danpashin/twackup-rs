@@ -7,20 +7,5 @@
 
 import Foundation
 
-enum ViewControllers {
-    enum Package {
-    }
-}
-
-extension ViewControllers.Package {
-    enum DataProvider {
-    }
-
-    enum Metadata {
-    }
-}
-
-enum Views {
-    enum Package {
-    }
+enum PackageVC {
 }

@@ -12,6 +12,10 @@
 		0B0DBB6F2934FA58002F3BB2 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB6E2934FA58002F3BB2 /* String.swift */; };
 		0B0DBB72293501DE002F3BB2 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB71293501DE002F3BB2 /* Package.swift */; };
 		0B0DBB742935081B002F3BB2 /* Namespaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB732935081B002F3BB2 /* Namespaces.swift */; };
+		0B434F982935DEFA00311FB6 /* RebuildPackageDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F972935DEFA00311FB6 /* RebuildPackageDetailedView.swift */; };
+		0B434F9A2935E29300311FB6 /* DpkgDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F992935E29300311FB6 /* DpkgDetailVC.swift */; };
+		0B434F9C2935E90000311FB6 /* DatabaseDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F9B2935E90000311FB6 /* DatabaseDetailVC.swift */; };
+		0B434F9E2935E97200311FB6 /* DatabasePackageDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F9D2935E97200311FB6 /* DatabasePackageDetailedView.swift */; };
 		0B5D3F972934CB2C00AE50F2 /* PackagesVCDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F962934CB2C00AE50F2 /* PackagesVCDataProvider.swift */; };
 		0B5D3F9A2934D0C300AE50F2 /* Twackup.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F982934D0C300AE50F2 /* Twackup.xcdatamodeld */; };
 		0B5D3F9C2934D2EB00AE50F2 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F9B2934D2EB00AE50F2 /* Database.swift */; };
@@ -30,8 +34,7 @@
 		0B88C30B2930B58D00BA5312 /* PackageDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C30A2930B58D00BA5312 /* PackageDetailViewController.swift */; };
 		0B88C30D2930B88800BA5312 /* PackageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */; };
 		0B88C3152930CE2E00BA5312 /* PackagesVCModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3142930CE2E00BA5312 /* PackagesVCModel.swift */; };
-		0B88C3172930CE3900BA5312 /* AllPackagesDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3162930CE3900BA5312 /* AllPackagesDataProvider.swift */; };
-		0B88C3192930CE4100BA5312 /* LeavesPackagesDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3182930CE4100BA5312 /* LeavesPackagesDataProvider.swift */; };
+		0B88C3172930CE3900BA5312 /* PackagesVCMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3162930CE3900BA5312 /* PackagesVCMetadata.swift */; };
 		0B88C31C2930DE8C00BA5312 /* KeyValueLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C31B2930DE8C00BA5312 /* KeyValueLabelView.swift */; };
 		0B88C31E2930DEA200BA5312 /* PackageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C31D2930DEA200BA5312 /* PackageDetailView.swift */; };
 		6DD25E80695E2BDA484FEFFE /* Pods_Twackup.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E868F451985FB9D360C4198E /* Pods_Twackup.framework */; };
@@ -44,6 +47,10 @@
 		0B0DBB6E2934FA58002F3BB2 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		0B0DBB71293501DE002F3BB2 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		0B0DBB732935081B002F3BB2 /* Namespaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Namespaces.swift; sourceTree = "<group>"; };
+		0B434F972935DEFA00311FB6 /* RebuildPackageDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RebuildPackageDetailedView.swift; sourceTree = "<group>"; };
+		0B434F992935E29300311FB6 /* DpkgDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgDetailVC.swift; sourceTree = "<group>"; };
+		0B434F9B2935E90000311FB6 /* DatabaseDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseDetailVC.swift; sourceTree = "<group>"; };
+		0B434F9D2935E97200311FB6 /* DatabasePackageDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackageDetailedView.swift; sourceTree = "<group>"; };
 		0B5D3F962934CB2C00AE50F2 /* PackagesVCDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesVCDataProvider.swift; sourceTree = "<group>"; };
 		0B5D3F992934D0C300AE50F2 /* DBPackage.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DBPackage.xcdatamodel; sourceTree = "<group>"; };
 		0B5D3F9B2934D2EB00AE50F2 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
@@ -65,8 +72,7 @@
 		0B88C30A2930B58D00BA5312 /* PackageDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageDetailViewController.swift; sourceTree = "<group>"; };
 		0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageTableViewCell.swift; sourceTree = "<group>"; };
 		0B88C3142930CE2E00BA5312 /* PackagesVCModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesVCModel.swift; sourceTree = "<group>"; };
-		0B88C3162930CE3900BA5312 /* AllPackagesDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllPackagesDataProvider.swift; sourceTree = "<group>"; };
-		0B88C3182930CE4100BA5312 /* LeavesPackagesDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeavesPackagesDataProvider.swift; sourceTree = "<group>"; };
+		0B88C3162930CE3900BA5312 /* PackagesVCMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesVCMetadata.swift; sourceTree = "<group>"; };
 		0B88C31B2930DE8C00BA5312 /* KeyValueLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueLabelView.swift; sourceTree = "<group>"; };
 		0B88C31D2930DEA200BA5312 /* PackageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageDetailView.swift; sourceTree = "<group>"; };
 		E868F451985FB9D360C4198E /* Pods_Twackup.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Twackup.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -203,12 +209,11 @@
 		0B88C31A2930CE4D00BA5312 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				0B88C3142930CE2E00BA5312 /* PackagesVCModel.swift */,
-				0B5D3F962934CB2C00AE50F2 /* PackagesVCDataProvider.swift */,
 				0B0DBB71293501DE002F3BB2 /* Package.swift */,
-				0B88C3162930CE3900BA5312 /* AllPackagesDataProvider.swift */,
+				0B88C3142930CE2E00BA5312 /* PackagesVCModel.swift */,
+				0B88C3162930CE3900BA5312 /* PackagesVCMetadata.swift */,
+				0B5D3F962934CB2C00AE50F2 /* PackagesVCDataProvider.swift */,
 				0B5D3F9D2934D85500AE50F2 /* BuildedPackagesDataProvider.swift */,
-				0B88C3182930CE4100BA5312 /* LeavesPackagesDataProvider.swift */,
 			);
 			path = Packages;
 			sourceTree = "<group>";
@@ -231,6 +236,8 @@
 			children = (
 				0B86617C2930AE5E00EA4301 /* PackagesViewController.swift */,
 				0B88C30A2930B58D00BA5312 /* PackageDetailViewController.swift */,
+				0B434F992935E29300311FB6 /* DpkgDetailVC.swift */,
+				0B434F9B2935E90000311FB6 /* DatabaseDetailVC.swift */,
 			);
 			path = Package;
 			sourceTree = "<group>";
@@ -240,6 +247,8 @@
 			children = (
 				0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */,
 				0B88C31D2930DEA200BA5312 /* PackageDetailView.swift */,
+				0B434F9D2935E97200311FB6 /* DatabasePackageDetailedView.swift */,
+				0B434F972935DEFA00311FB6 /* RebuildPackageDetailedView.swift */,
 			);
 			path = Package;
 			sourceTree = "<group>";
@@ -400,13 +409,13 @@
 				0B0DBB692934DEA7002F3BB2 /* BuildedPackageModel.swift in Sources */,
 				0B86618B2930AF7100EA4301 /* FFIPackage.swift in Sources */,
 				0B88C30B2930B58D00BA5312 /* PackageDetailViewController.swift in Sources */,
+				0B434F9A2935E29300311FB6 /* DpkgDetailVC.swift in Sources */,
 				0B86617D2930AE5E00EA4301 /* PackagesViewController.swift in Sources */,
 				0B86618A2930AF7100EA4301 /* Dpkg.swift in Sources */,
 				0B88C30D2930B88800BA5312 /* PackageTableViewCell.swift in Sources */,
-				0B88C3172930CE3900BA5312 /* AllPackagesDataProvider.swift in Sources */,
+				0B88C3172930CE3900BA5312 /* PackagesVCMetadata.swift in Sources */,
 				0B5D3F9C2934D2EB00AE50F2 /* Database.swift in Sources */,
 				0B88C31E2930DEA200BA5312 /* PackageDetailView.swift in Sources */,
-				0B88C3192930CE4100BA5312 /* LeavesPackagesDataProvider.swift in Sources */,
 				0B88C3152930CE2E00BA5312 /* PackagesVCModel.swift in Sources */,
 				0B0DBB6B2934DEA7002F3BB2 /* DatabasePackageModel.swift in Sources */,
 				0B0DBB6F2934FA58002F3BB2 /* String.swift in Sources */,
@@ -414,9 +423,12 @@
 				0B86616D2930ADA300EA4301 /* MainTabbarController.swift in Sources */,
 				0B0DBB742935081B002F3BB2 /* Namespaces.swift in Sources */,
 				0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */,
+				0B434F982935DEFA00311FB6 /* RebuildPackageDetailedView.swift in Sources */,
 				0B8661692930ADA300EA4301 /* AppDelegate.swift in Sources */,
+				0B434F9C2935E90000311FB6 /* DatabaseDetailVC.swift in Sources */,
 				0B5D3F9E2934D85500AE50F2 /* BuildedPackagesDataProvider.swift in Sources */,
 				0B88C31C2930DE8C00BA5312 /* KeyValueLabelView.swift in Sources */,
+				0B434F9E2935E97200311FB6 /* DatabasePackageDetailedView.swift in Sources */,
 				0B5D3F9A2934D0C300AE50F2 /* Twackup.xcdatamodeld in Sources */,
 				0B0DBB72293501DE002F3BB2 /* Package.swift in Sources */,
 				0B86616B2930ADA300EA4301 /* SceneDelegate.swift in Sources */,

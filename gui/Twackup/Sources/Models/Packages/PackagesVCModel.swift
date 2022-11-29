@@ -15,15 +15,15 @@ protocol PackagesVCModelDelegate: AnyObject {
     func reloadTableView()
 }
 
-extension ViewControllers.Package.Main {
-    class Model: NSObject, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource {
-        private(set) var dataProvider: Provider
+extension PackageVC {
+    class MainModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource {
+        private(set) var dataProvider: DataProvider
 
         var detailDelegate: PackageDetailDelegate?
 
         var delegate: PackagesVCModelDelegate?
 
-        init(dataProvider: Provider) {
+        init(dataProvider: DataProvider) {
             self.dataProvider = dataProvider
         }
 
@@ -33,7 +33,7 @@ extension ViewControllers.Package.Main {
 
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
             let cell = tableView.dequeueReusableCell(withIdentifier: "PackageCell", for: indexPath)
-            if let cell = cell as? Views.Package.SimpleTableViewCell {
+            if let cell = cell as? SimpleTableViewCell {
                 cell.package = dataProvider.packages[indexPath.row]
             }
 
@@ -45,15 +45,11 @@ extension ViewControllers.Package.Main {
         }
 
         func updateSearchResults(for searchController: UISearchController) {
-            var filter: Provider.Filter?
+            var filter: DataProvider.Filter?
             if let text = searchController.searchBar.text, !text.isEmpty { filter = .name(text) }
 
             dataProvider.applyFilter(filter)
             delegate?.reloadTableView()
         }
     }
-}
-
-extension ViewControllers.Package.Main.Model {
-    typealias Provider = ViewControllers.Package.DataProvider.BasicProvider
 }
