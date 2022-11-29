@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  free_packages_rebuild_result(results);
+  tw_free_rebuild_results(results);
 
   tw_free(dpkg);
 

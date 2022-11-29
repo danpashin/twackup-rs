@@ -227,7 +227,9 @@ impl Package {
         let depends = self.get(Field::Depends).unwrap_or_default();
         let pre_depends = self.get(Field::PreDepends).unwrap_or_default();
 
-        parse(depends).chain(parse(pre_depends))
+        parse(depends)
+            .chain(parse(pre_depends))
+            .filter(|dep| !dep.is_empty())
     }
 
     /// Fetches value associated with this field.
