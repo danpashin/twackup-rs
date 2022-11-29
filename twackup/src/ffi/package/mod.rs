@@ -32,6 +32,7 @@ use safer_ffi::{
     derive_ReprC,
     prelude::c_slice::{Box, Raw, Ref},
 };
+use std::ffi::c_void;
 
 #[derive_ReprC]
 #[repr(C)]
@@ -71,6 +72,15 @@ impl From<TwPackageRef> for TwPackage {
 impl From<Package> for TwPackage {
     fn from(package: Package) -> Self {
         Self::from(TwPackageRef::from_package(package))
+    }
+}
+
+impl From<&Package> for TwPackage {
+    fn from(package: &Package) -> Self {
+        let package = package as *const _ as *mut c_void;
+        let package_ptr = std::ptr::NonNull::new(package).expect("PTR error");
+        let package_wrapper = TwPackageRef(package_ptr);
+        Self::from(package_wrapper)
     }
 }
 

@@ -27,7 +27,6 @@
 		0B8661722930ADA400EA4301 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0B8661712930ADA400EA4301 /* Assets.xcassets */; };
 		0B8661752930ADA400EA4301 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0B8661732930ADA400EA4301 /* LaunchScreen.storyboard */; };
 		0B86617D2930AE5E00EA4301 /* PackagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86617C2930AE5E00EA4301 /* PackagesViewController.swift */; };
-		0B8661862930AF4E00EA4301 /* libtwackup.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8661852930AF4E00EA4301 /* libtwackup.a */; };
 		0B86618A2930AF7100EA4301 /* Dpkg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8661882930AF7100EA4301 /* Dpkg.swift */; };
 		0B86618B2930AF7100EA4301 /* FFIPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8661892930AF7100EA4301 /* FFIPackage.swift */; };
 		0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3062930B2FB00BA5312 /* PackageSection.swift */; };
@@ -51,6 +50,7 @@
 		0B434F992935E29300311FB6 /* DpkgDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgDetailVC.swift; sourceTree = "<group>"; };
 		0B434F9B2935E90000311FB6 /* DatabaseDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseDetailVC.swift; sourceTree = "<group>"; };
 		0B434F9D2935E97200311FB6 /* DatabasePackageDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackageDetailedView.swift; sourceTree = "<group>"; };
+		0B434FA02936351700311FB6 /* twackup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = twackup.h; path = ../../target/twackup.h; sourceTree = "<group>"; };
 		0B5D3F962934CB2C00AE50F2 /* PackagesVCDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesVCDataProvider.swift; sourceTree = "<group>"; };
 		0B5D3F992934D0C300AE50F2 /* DBPackage.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DBPackage.xcdatamodel; sourceTree = "<group>"; };
 		0B5D3F9B2934D2EB00AE50F2 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
@@ -64,8 +64,6 @@
 		0B8661742930ADA400EA4301 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0B8661762930ADA400EA4301 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0B86617C2930AE5E00EA4301 /* PackagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesViewController.swift; sourceTree = "<group>"; };
-		0B8661842930AF4E00EA4301 /* twackup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = twackup.h; sourceTree = "<group>"; };
-		0B8661852930AF4E00EA4301 /* libtwackup.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtwackup.a; sourceTree = "<group>"; };
 		0B8661882930AF7100EA4301 /* Dpkg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dpkg.swift; sourceTree = "<group>"; };
 		0B8661892930AF7100EA4301 /* FFIPackage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FFIPackage.swift; sourceTree = "<group>"; };
 		0B88C3062930B2FB00BA5312 /* PackageSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageSection.swift; sourceTree = "<group>"; };
@@ -84,7 +82,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0B8661862930AF4E00EA4301 /* libtwackup.a in Frameworks */,
 				6DD25E80695E2BDA484FEFFE /* Pods_Twackup.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -145,8 +142,7 @@
 		0B8661832930AF4E00EA4301 /* libs */ = {
 			isa = PBXGroup;
 			children = (
-				0B8661842930AF4E00EA4301 /* twackup.h */,
-				0B8661852930AF4E00EA4301 /* libtwackup.a */,
+				0B434FA02936351700311FB6 /* twackup.h */,
 			);
 			path = libs;
 			sourceTree = "<group>";
@@ -593,11 +589,15 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/libs",
-				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"\"ImageIO\"",
+					"-framework",
+					"\"SDWebImage\"",
+					"$(PROJECT_DIR)/../target/libtwackup.a",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -632,11 +632,15 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/libs",
-				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"\"ImageIO\"",
+					"-framework",
+					"\"SDWebImage\"",
+					"$(PROJECT_DIR)/../target/libtwackup.a",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
