@@ -74,13 +74,19 @@ int main(int argc, char *argv[]) {
   functions.finished_processing = finished_processing;
   functions.finished_all = finished_all;
 
-  auto errors = tw_rebuild_packages(dpkg, rebuild_packages, functions, "/tmp");
-  for (int i = 0; i < errors.len; i++) {
-    auto error = errors.ptr[i];
-    std::cout << "dep: " << std::string((char *)error.ptr, error.len) << std::endl;
+  slice_boxed_TwPackagesRebuildResult_t results;
+  auto result_code = tw_rebuild_packages(dpkg, rebuild_packages, functions, "/tmp", &results);
+  std::cout << "result code = " << int(result_code) << std::endl;
+  for (int i = 0; i < results.len; i++) {
+    auto result = results.ptr[i];
+    if (result.success) {
+      std::cout << "build deb path: " << std::string((char *) result.deb_path.ptr, result.deb_path.len) << std::endl;
+    } else {
+      std::cout << "build error: " << std::string((char *) result.error.ptr, result.error.len) << std::endl;
+    }
   }
 
-  free_packages_rebuild_result(errors);
+  free_packages_rebuild_result(results);
 
   tw_free(dpkg);
 
