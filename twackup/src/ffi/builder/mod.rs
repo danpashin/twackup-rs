@@ -20,10 +20,7 @@
 pub mod progress;
 
 use super::{c_dpkg::TwDpkg, package::TwPackage};
-use crate::{
-    builder::{Preferences, Worker},
-    progress::Progress,
-};
+use crate::builder::{Preferences, Worker};
 use progress::{TwProgressFunctions, TwProgressImpl};
 use safer_ffi::{
     derive_ReprC,
@@ -44,8 +41,7 @@ pub(crate) fn rebuild_packages(
     functions: TwProgressFunctions,
     out_dir: char_p::Ref<'_>,
 ) -> TwPackagesRebuildResult {
-    let mut progress = TwProgressImpl::new(packages.len() as u64);
-    progress.functions = Some(functions);
+    let progress = TwProgressImpl { functions };
 
     let tokio_rt = dpkg.inner_tokio_rt();
 

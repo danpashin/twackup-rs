@@ -20,6 +20,11 @@ serde = ["plist", "dep:serde"]
 ffi = ["safer-ffi"]
 ffi-headers = ["ffi", "safer-ffi/headers"]
 
+[[example]]
+name = "generate-headers"
+path = "examples/generate-headers.rs"
+required-features = ["ffi-headers"]
+
 [[bench]]
 name = "basic"
 harness = false

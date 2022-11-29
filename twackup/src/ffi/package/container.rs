@@ -25,7 +25,7 @@ use std::{ffi::c_void, mem::ManuallyDrop};
 
 #[repr(transparent)]
 #[derive(Copy, Clone)]
-pub struct TwPackageRef(ptr::NonNull<c_void>);
+pub struct TwPackageRef(pub(crate) ptr::NonNull<c_void>);
 
 impl TwPackageRef {
     pub(crate) fn from_package(package: Package) -> Self {

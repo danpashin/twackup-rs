@@ -19,31 +19,29 @@
 
 //! This module represents some traits used for allowing
 //! user to see packages build progress.
-//!
-//! Should be probably refactored.
 
 #![allow(unused_variables)]
 
+use crate::package::Package;
+
+pub enum MessageLevel {
+    Debug,
+    Info,
+    Warning,
+    Error,
+}
+
 /// Allow users to see progress
 pub trait Progress {
-    /// Should construct self for total packages/items
-    fn new(total: u64) -> Self;
-
-    /// Will be called when total progress is incrementing
-    fn increment(&self, delta: u64) {}
-
-    /// For cleanup and finish
-    fn finish(&self) {}
-
     /// Prints message. Should be probably removed.
-    fn print<M: AsRef<str>>(&self, message: M) {}
-
-    /// Prints or logs warning message
-    fn print_warning<M: AsRef<str>>(&self, message: M) {}
-
-    /// Prints or logs error message
-    fn print_error<M: AsRef<str>>(&self, message: M) {}
+    fn print_message<M: AsRef<str>>(&self, message: M, level: MessageLevel);
 
     /// Sets current progress message
-    fn set_message<M: AsRef<str>>(&self, message: M) {}
+    fn started_processing(&self, package: &Package);
+
+    /// Will be called when total progress is incrementing
+    fn finished_processing(&self, package: &Package);
+
+    /// For cleanup and finish
+    fn finished_all(&self);
 }

@@ -184,7 +184,7 @@ impl Build {
         }))
         .await;
 
-        progress.finish();
+        progress.finished_all();
         log::info!("Processed {} packages", all_count);
 
         Ok(())

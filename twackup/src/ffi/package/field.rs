@@ -97,6 +97,8 @@ pub enum TwPackageField {
     Tag,
     /// Like homepage
     Depiction,
+    /// Package icon. Can be file or http URL
+    Icon,
 }
 
 impl From<TwPackageField> for Field {
@@ -126,6 +128,7 @@ impl From<TwPackageField> for Field {
             TwPackageField::Name => Self::Name,
             TwPackageField::Tag => Self::Tag,
             TwPackageField::Depiction => Self::Depiction,
+            TwPackageField::Icon => Self::Icon,
         }
     }
 }

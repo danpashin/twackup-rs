@@ -23,16 +23,18 @@
 //! ### Example usage
 //!
 //! ```no_run
-//! use twackup::{builder::{Worker, Preferences}, Result, progress::Progress, Dpkg, package::Package};
+//! use twackup::builder::{Worker, Preferences};
+//! use twackup::{Result, Dpkg, progress::{Progress, MessageLevel}, package::Package};
 //! use std::{collections::HashSet, sync::Arc};
 //!
 //! // some progress struct btw
 //! struct ProgressImpl;
 //!
 //! impl Progress for ProgressImpl {
-//!     fn new(_total: u64) -> Self {
-//!         Self
-//!     }
+//!     fn print_message<M: AsRef<str>>(&self, _message: M, _level: MessageLevel) {}
+//!     fn started_processing(&self, _package: &Package) {}
+//!     fn finished_processing(&self, _package: &Package) {}
+//!     fn finished_all(&self) {}
 //! }
 //!
 //! #[tokio::main]
@@ -234,26 +236,23 @@ impl<'a, T: Progress> Worker<'a, T> {
     /// # Errors
     /// Returns error if any of underlying operations failed
     #[inline]
-    pub async fn work(&self) -> Result<()> {
-        let progress = format!("Processing {}", self.package.human_name());
-        self.progress.set_message(progress);
+    pub async fn work(&self) -> Result<PathBuf> {
+        self.progress.started_processing(self.package);
 
         let file = self.run().await?;
-        self.progress.increment(1);
 
-        let progress = format!("Done {}", self.package.human_name());
-        self.progress.set_message(progress);
+        self.add_to_archive(&file).await?;
 
-        self.add_to_archive(file).await?;
+        self.progress.finished_processing(self.package);
 
-        Ok(())
+        Ok(file)
     }
 
     /// Adds already assembled package to common TAR archive
     ///
     /// # Errors
     /// Returns error if any of underlying operations failed
-    async fn add_to_archive(&self, file: PathBuf) -> Result<()> {
+    async fn add_to_archive(&self, file: &PathBuf) -> Result<()> {
         if let Some(ref archive) = self.archive {
             let mut archive = archive.try_lock().map_err(|_| Generic::Lock)?;
 
@@ -273,6 +272,8 @@ impl<'a, T: Progress> Worker<'a, T> {
 
 #[cfg(test)]
 mod tests {
+    use crate::package::Package;
+    use crate::progress::MessageLevel;
     use crate::{
         builder::{Preferences, Worker},
         progress::Progress,
@@ -283,9 +284,10 @@ mod tests {
     struct ProgressImpl;
 
     impl Progress for ProgressImpl {
-        fn new(_total: u64) -> Self {
-            Self
-        }
+        fn print_message<M: AsRef<str>>(&self, _message: M, _level: MessageLevel) {}
+        fn started_processing(&self, _package: &Package) {}
+        fn finished_processing(&self, _package: &Package) {}
+        fn finished_all(&self) {}
     }
 
     #[tokio::test]

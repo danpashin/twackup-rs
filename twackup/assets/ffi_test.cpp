@@ -1,24 +1,34 @@
 #include "twackup.h"
 #include <iostream>
 
-static void progress_did_increment(uint64_t delta) {
-  std::cout << "progress_did_increment(" << delta << ")" <<  std::endl;
+static void print_message(slice_raw_uint8_t msg, TwMessageLevel_t level) {
+  std::cout
+  << "print_message(\""
+  << std::string((char *)msg.ptr, msg.len)
+  << "\", "
+  << level
+  << ")"
+  << std::endl;
 }
 
-static void progress_set_message(slice_raw_uint8_t msg) {
-  std::cout << "progress_set_message(\"" << std::string((char *)msg.ptr, msg.len) << "\")" <<  std::endl;
+static void started_processing(TwPackage_t const *package) {
+  std::cout
+  << "started_processing(\""
+  << std::string((char *)package->identifier.ptr, package->identifier.len)
+  << "\")"
+  << std::endl;
 }
 
-static void progress_print_message(slice_raw_uint8_t msg) {
-  std::cout << "progress_print_message(\"" << std::string((char *)msg.ptr, msg.len) << "\")" <<  std::endl;
+static void finished_processing(TwPackage_t const *package) {
+  std::cout
+  << "finished_processing(\""
+  << std::string((char *)package->identifier.ptr, package->identifier.len)
+  << "\")"
+  << std::endl;
 }
 
-static void progress_print_warning(slice_raw_uint8_t msg) {
-  std::cout << "progress_print_warning(\"" << std::string((char *)msg.ptr, msg.len) << "\")" <<  std::endl;
-}
-
-static void progress_print_error(slice_raw_uint8_t msg) {
-  std::cout << "progress_print_error(\"" << std::string((char *)msg.ptr, msg.len) << "\")" <<  std::endl;
+static void finished_all() {
+  std::cout << "finished_all()" <<  std::endl;
 }
 
 
@@ -59,11 +69,10 @@ int main(int argc, char *argv[]) {
   rebuild_packages.len = packages.len;
 
   TwProgressFunctions_t functions;
-  functions.did_increment = progress_did_increment;
-  functions.set_message = progress_set_message;
-  functions.print_message = progress_print_message;
-  functions.print_warning = progress_print_warning;
-  functions.print_error = progress_print_error;
+  functions.print_message = print_message;
+  functions.started_processing = started_processing;
+  functions.finished_processing = finished_processing;
+  functions.finished_all = finished_all;
 
   auto errors = tw_rebuild_packages(dpkg, rebuild_packages, functions, "/tmp");
   for (int i = 0; i < errors.len; i++) {
