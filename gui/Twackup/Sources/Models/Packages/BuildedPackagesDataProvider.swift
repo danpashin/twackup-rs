@@ -7,18 +7,8 @@
 
 import UIKit
 
-extension ViewControllers.Package.Metadata {
-    struct BuildedPkgsVC: PackagesControllerMetadata {
-        let navTitle: String = "DEBs"
-
-        var tabbarItem: UITabBarItem {
-            return UITabBarItem(title: "DEBs", image: UIImage(systemName: "list.bullet.rectangle"), tag: 0)
-        }
-    }
-}
-
-extension ViewControllers.Package.DataProvider {
-    class BuildedPkgsVC: BasicProvider {
+extension PackageVC {
+    class DatabaseProvider: DataProvider {
         private let database: Database
 
         init(_ database: Database) {

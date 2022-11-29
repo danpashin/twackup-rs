@@ -7,9 +7,9 @@
 
 import UIKit
 
-extension ViewControllers.Package {
-    class Detail: UIViewController, PackageDetailDelegate, PackageDetailViewDelegate {
-        lazy var containerView = Views.Package.DetailView(delegate: self)
+extension PackageVC {
+    class DetailVC: UIViewController, PackageDetailDelegate, PackageDetailViewDelegate {
+        lazy private(set) var containerView: PackageDetailedView = PackageDetailedView(delegate: self)
 
         override func viewDidLoad() {
             super.viewDidLoad()
@@ -40,10 +40,6 @@ extension ViewControllers.Package {
         func openExternalPackageInfo(_ package: Package) {
             guard let depiction = package.depiction else { return }
             UIApplication.shared.open(depiction)
-        }
-
-        func rebuild(_ package: Package) {
-
         }
     }
 }

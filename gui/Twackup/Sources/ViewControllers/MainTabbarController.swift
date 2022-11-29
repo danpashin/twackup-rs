@@ -8,23 +8,38 @@
 import UIKit
 
 class MainTabbarController: UITabBarController {
-    private typealias Provider = ViewControllers.Package.DataProvider
-    private typealias Metadata = ViewControllers.Package.Metadata
+    lazy private var dpkgInstance = Dpkg()
 
-    let dpkgInstance = Dpkg()
+    lazy private var database = Database()
 
-    let database = Database()
+    lazy private var buildedPackagesVC: UIViewController = {
+        let provider = PackageVC.DatabaseProvider(database)
+        let metadata = PackageVC.BuildedPkgsMetadata()
 
-    lazy private(set) var buildedPackagesVC: UIViewController = {
-        return makePackagesControler(Provider.BuildedPkgsVC(database), Metadata.BuildedPkgsVC())
+        let detailVC = PackageVC.DatabaseDetailVC()
+
+        let mainVC = PackageVC.ListWithDetailVC(provider, metadata)
+        mainVC.model.detailDelegate = detailVC
+
+        let splitVC = UISplitViewController()
+        splitVC.tabBarItem = metadata.tabbarItem
+        splitVC.viewControllers = [
+            UINavigationController(rootViewController: mainVC),
+            UINavigationController(rootViewController: detailVC)
+        ]
+        return splitVC
     }()
 
-    lazy private(set) var leavesPackagesVC: UIViewController = {
-        return makePackagesControler(Provider.LeavesPkgsVC(dpkgInstance), Metadata.LeavesPkgsVC())
+    lazy private var leavesPackagesVC: UIViewController = {
+        let provider = PackageVC.DpkgProvier(dpkgInstance, leaves: true)
+        let metadata = PackageVC.LeavesPkgsMetadata()
+        return makePackagesControler(provider, metadata)
     }()
 
-    lazy private(set) var allPackagesVC: UIViewController = {
-        return makePackagesControler(Provider.AllPkgsVC(dpkgInstance), Metadata.AllPkgsVC())
+    lazy private var allPackagesVC: UIViewController = {
+        let provider = PackageVC.DpkgProvier(dpkgInstance)
+        let metadata = PackageVC.AllPkgsMetadata()
+        return makePackagesControler(provider, metadata)
     }()
 
     override func viewDidLoad() {
@@ -34,11 +49,11 @@ class MainTabbarController: UITabBarController {
         setViewControllers([buildedPackagesVC, leavesPackagesVC, allPackagesVC], animated: false)
     }
 
-    private func makePackagesControler(_ dataProvider: Provider.BasicProvider,
-                                       _ metadata: PackagesControllerMetadata) -> UIViewController {
-        let detailVC = ViewControllers.Package.Detail()
+    private func makePackagesControler(_ dataProvider: PackageVC.DataProvider,
+                                       _ metadata: PackageVC.Metadata) -> UIViewController {
+        let detailVC = PackageVC.DpkgDetailVC()
 
-        let mainVC = ViewControllers.Package.Main(dataProvider, metadata)
+        let mainVC = PackageVC.ListWithDetailVC(dataProvider, metadata)
         mainVC.model.detailDelegate = detailVC
 
         let splitVC = UISplitViewController()

@@ -7,14 +7,8 @@
 
 import UIKit
 
-protocol PackagesControllerMetadata {
-    var navTitle: String { get }
-
-    var tabbarItem: UITabBarItem { get }
-}
-
-extension ViewControllers.Package.DataProvider {
-    class BasicProvider {
+extension PackageVC {
+    class DataProvider {
         var packages: [Package] {
             guard let filteredPackages else { return allPackages }
             return filteredPackages
@@ -42,9 +36,20 @@ extension ViewControllers.Package.DataProvider {
         }
     }
 }
-
-extension ViewControllers.Package.DataProvider.BasicProvider {
+extension PackageVC.DataProvider {
     enum Filter {
         case name(String)
+    }
+}
+
+extension PackageVC {
+    class DpkgProvier: DataProvider {
+        let dpkg: Dpkg
+
+        init(_ dpkg: Dpkg, leaves: Bool = false) {
+            self.dpkg = dpkg
+
+            super.init(packages: dpkg.parsePackages(leaves: leaves))
+        }
     }
 }

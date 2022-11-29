@@ -7,12 +7,12 @@
 
 import UIKit
 
-extension ViewControllers.Package {
-    class Main: UIViewController, PackagesVCModelDelegate {
+extension PackageVC {
+    class ListWithDetailVC: UIViewController, PackagesVCModelDelegate {
 
-        private(set) var model: Model
+        private(set) var model: MainModel
 
-        private(set) var metadata: PackagesControllerMetadata
+        private(set) var metadata: PackageVC.Metadata
 
         lazy private(set) var searchController: UISearchController = {
             let controller = UISearchController(searchResultsController: nil)
@@ -30,8 +30,8 @@ extension ViewControllers.Package {
             return table
         }()
 
-        init(_ dataProvider: DataProvider.BasicProvider, _ metadata: PackagesControllerMetadata) {
-            self.model = Model(dataProvider: dataProvider)
+        init(_ dataProvider: PackageVC.DataProvider, _ metadata: PackageVC.Metadata) {
+            self.model = MainModel(dataProvider: dataProvider)
             self.metadata = metadata
             super.init(nibName: nil, bundle: nil)
 
@@ -54,7 +54,7 @@ extension ViewControllers.Package {
             navigationController?.navigationBar.prefersLargeTitles = true
 
             tableView.backgroundColor = .systemBackground
-            tableView.register(Views.Package.SimpleTableViewCell.self, forCellReuseIdentifier: "PackageCell")
+            tableView.register(SimpleTableViewCell.self, forCellReuseIdentifier: "PackageCell")
         }
 
         func reloadTableView() {
