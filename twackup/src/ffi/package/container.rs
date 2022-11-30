@@ -23,33 +23,61 @@ use safer_ffi::headers::Definer;
 use safer_ffi::{layout::OpaqueKind, ptr};
 use std::{ffi::c_void, mem::ManuallyDrop};
 
+struct Contents<'a> {
+    is_inner_droppable: bool,
+    package: &'a Package,
+}
+
 #[repr(transparent)]
 #[derive(Copy, Clone)]
 pub struct TwPackageRef(pub(crate) ptr::NonNull<c_void>);
 
 impl TwPackageRef {
-    pub(crate) fn from_package(package: Package) -> Self {
+    pub(crate) fn owned(package: Package) -> Self {
         let package = Box::leak(Box::new(package));
-        Self(ptr::NonNull::new(package as *const Package as *mut c_void).unwrap())
+        let contents = Box::leak(Box::new(Contents {
+            is_inner_droppable: true,
+            package,
+        }));
+
+        Self(ptr::NonNull::new(contents as *const Contents<'_> as *mut c_void).unwrap())
+    }
+
+    pub(crate) fn unowned(package: &Package) -> Self {
+        let contents = Box::leak(Box::new(Contents {
+            is_inner_droppable: false,
+            package,
+        }));
+
+        Self(ptr::NonNull::new(contents as *const Contents<'_> as *mut c_void).unwrap())
+    }
+
+    fn inner(&self) -> &ManuallyDrop<Contents<'_>> {
+        unsafe { &*self.0.as_ptr().cast() }
+    }
+
+    fn inner_mut(&mut self) -> &mut ManuallyDrop<Contents<'_>> {
+        unsafe { &mut *self.0.as_ptr().cast() }
     }
 
     #[inline]
     pub(crate) fn drop_self(&mut self) {
         unsafe {
-            ManuallyDrop::<Package>::drop(self.as_mut());
+            let contents: &mut ManuallyDrop<Contents<'_>> = self.inner_mut();
+            if contents.is_inner_droppable {
+                let package = contents.package as *const Package;
+                let package = &mut *package.cast_mut().cast();
+                ManuallyDrop::<Package>::drop(package);
+            }
+
+            ManuallyDrop::drop(contents);
         }
     }
 }
 
-impl AsRef<ManuallyDrop<Package>> for TwPackageRef {
-    fn as_ref(&self) -> &ManuallyDrop<Package> {
-        unsafe { &*self.0.as_ptr().cast() }
-    }
-}
-
-impl AsMut<ManuallyDrop<Package>> for TwPackageRef {
-    fn as_mut(&mut self) -> &mut ManuallyDrop<Package> {
-        unsafe { &mut *self.0.as_ptr().cast() }
+impl AsRef<Package> for TwPackageRef {
+    fn as_ref(&self) -> &Package {
+        self.inner().package
     }
 }
 
