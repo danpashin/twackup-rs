@@ -1,7 +1,7 @@
 #include "twackup.h"
 #include <iostream>
 
-static void print_message(slice_raw_uint8_t msg, TwMessageLevel_t level) {
+static void print_message(void *context, slice_raw_uint8_t msg, TwMessageLevel_t level) {
   std::cout
   << "print_message(\""
   << std::string((char *)msg.ptr, msg.len)
@@ -11,7 +11,7 @@ static void print_message(slice_raw_uint8_t msg, TwMessageLevel_t level) {
   << std::endl;
 }
 
-static void started_processing(TwPackage_t const *package) {
+static void started_processing(void *context, TwPackage_t const *package) {
   std::cout
   << "started_processing(\""
   << std::string((char *)package->identifier.ptr, package->identifier.len)
@@ -19,7 +19,7 @@ static void started_processing(TwPackage_t const *package) {
   << std::endl;
 }
 
-static void finished_processing(TwPackage_t const *package) {
+static void finished_processing(void *context, TwPackage_t const *package) {
   std::cout
   << "finished_processing(\""
   << std::string((char *)package->identifier.ptr, package->identifier.len)
@@ -27,7 +27,7 @@ static void finished_processing(TwPackage_t const *package) {
   << std::endl;
 }
 
-static void finished_all() {
+static void finished_all(void *context) {
   std::cout << "finished_all()" <<  std::endl;
 }
 

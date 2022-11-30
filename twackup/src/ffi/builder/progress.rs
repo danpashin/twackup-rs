@@ -23,6 +23,7 @@ use crate::{
     progress::{MessageLevel, Progress},
 };
 use safer_ffi::{derive_ReprC, prelude::c_slice::Raw, slice::Ref};
+use std::ffi::c_void;
 
 #[derive_ReprC]
 #[repr(u8)]
@@ -49,10 +50,21 @@ impl From<MessageLevel> for TwMessageLevel {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct TwProgressFunctions {
-    print_message: Option<unsafe extern "C" fn(message: Raw<u8>, level: TwMessageLevel)>,
-    started_processing: Option<unsafe extern "C" fn(package: *const TwPackage)>,
-    finished_processing: Option<unsafe extern "C" fn(package: *const TwPackage)>,
-    finished_all: Option<unsafe extern "C" fn()>,
+    context: Option<std::ptr::NonNull<c_void>>,
+    print_message: Option<
+        unsafe extern "C" fn(
+            Option<std::ptr::NonNull<c_void>>,
+            message: Raw<u8>,
+            level: TwMessageLevel,
+        ),
+    >,
+    started_processing: Option<
+        unsafe extern "C" fn(context: Option<std::ptr::NonNull<c_void>>, package: *const TwPackage),
+    >,
+    finished_processing: Option<
+        unsafe extern "C" fn(context: Option<std::ptr::NonNull<c_void>>, package: *const TwPackage),
+    >,
+    finished_all: Option<unsafe extern "C" fn(context: Option<std::ptr::NonNull<c_void>>)>,
 }
 
 #[derive(Copy, Clone)]
@@ -65,27 +77,30 @@ impl Progress for TwProgressImpl {
         if let Some(func) = self.functions.print_message {
             let message = Ref::from(message.as_ref().as_bytes());
             let message = Raw::from(message);
-            unsafe { func(message, level.into()) };
+            unsafe { func(self.functions.context, message, level.into()) };
         }
     }
 
     fn started_processing(&self, package: &Package) {
         if let Some(func) = self.functions.started_processing {
             let package = TwPackage::from(package);
-            unsafe { func(std::ptr::addr_of!(package)) };
+            unsafe { func(self.functions.context, std::ptr::addr_of!(package)) };
         }
     }
 
     fn finished_processing(&self, package: &Package) {
         if let Some(func) = self.functions.finished_processing {
             let package = TwPackage::from(package);
-            unsafe { func(std::ptr::addr_of!(package)) };
+            unsafe { func(self.functions.context, std::ptr::addr_of!(package)) };
         }
     }
 
     fn finished_all(&self) {
         if let Some(func) = self.functions.finished_all {
-            unsafe { func() };
+            unsafe { func(self.functions.context) };
         }
     }
 }
+
+unsafe impl Send for TwProgressFunctions {}
+unsafe impl Sync for TwProgressFunctions {}
