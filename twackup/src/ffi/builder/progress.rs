@@ -23,7 +23,7 @@ use crate::{
     progress::{MessageLevel, Progress},
 };
 use safer_ffi::{derive_ReprC, prelude::c_slice::Raw, slice::Ref};
-use std::ffi::c_void;
+use std::{ffi::c_void, os::unix::ffi::OsStrExt, path::Path, ptr::addr_of};
 
 #[derive_ReprC]
 #[repr(u8)]
@@ -62,7 +62,11 @@ pub struct TwProgressFunctions {
         unsafe extern "C" fn(context: Option<std::ptr::NonNull<c_void>>, package: *const TwPackage),
     >,
     finished_processing: Option<
-        unsafe extern "C" fn(context: Option<std::ptr::NonNull<c_void>>, package: *const TwPackage),
+        unsafe extern "C" fn(
+            context: Option<std::ptr::NonNull<c_void>>,
+            package: *const TwPackage,
+            deb_path: Raw<u8>,
+        ),
     >,
     finished_all: Option<unsafe extern "C" fn(context: Option<std::ptr::NonNull<c_void>>)>,
 }
@@ -84,14 +88,17 @@ impl Progress for TwProgressImpl {
     fn started_processing(&self, package: &Package) {
         if let Some(func) = self.functions.started_processing {
             let package = TwPackage::from(package);
-            unsafe { func(self.functions.context, std::ptr::addr_of!(package)) };
+            unsafe { func(self.functions.context, addr_of!(package)) };
         }
     }
 
-    fn finished_processing(&self, package: &Package) {
+    fn finished_processing<P: AsRef<Path>>(&self, package: &Package, deb_path: P) {
         if let Some(func) = self.functions.finished_processing {
             let package = TwPackage::from(package);
-            unsafe { func(self.functions.context, std::ptr::addr_of!(package)) };
+            let deb_path = deb_path.as_ref().as_os_str().as_bytes();
+            let deb_path = Raw::from(Ref::from(deb_path));
+
+            unsafe { func(self.functions.context, addr_of!(package), deb_path) };
         }
     }
 

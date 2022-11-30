@@ -19,8 +19,11 @@
 
 use console::style;
 use indicatif::ProgressBar as ProgressBarImpl;
-use twackup::package::Package;
-use twackup::progress::{MessageLevel, Progress};
+use std::path::Path;
+use twackup::{
+    package::Package,
+    progress::{MessageLevel, Progress},
+};
 
 pub(crate) static mut PROGRESS_BAR: Option<&'static ProgressBar> = None;
 
@@ -72,7 +75,7 @@ impl Progress for ProgressBar {
         self.0.set_message(message);
     }
 
-    fn finished_processing(&self, package: &Package) {
+    fn finished_processing<P: AsRef<Path>>(&self, package: &Package, _deb_path: P) {
         self.0.inc(1);
 
         let message = format!("Done {}", package.human_name());

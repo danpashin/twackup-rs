@@ -23,6 +23,7 @@
 #![allow(unused_variables)]
 
 use crate::package::Package;
+use std::path::Path;
 
 pub enum MessageLevel {
     Debug,
@@ -40,7 +41,7 @@ pub trait Progress {
     fn started_processing(&self, package: &Package);
 
     /// Will be called when total progress is incrementing
-    fn finished_processing(&self, package: &Package);
+    fn finished_processing<P: AsRef<Path>>(&self, package: &Package, deb_path: P);
 
     /// For cleanup and finish
     fn finished_all(&self);
