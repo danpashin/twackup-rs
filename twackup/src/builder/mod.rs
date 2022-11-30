@@ -128,7 +128,7 @@ impl Preferences {
 }
 
 impl<'a, T: Progress> Worker<'a, T> {
-    /// Constructs workder instance
+    /// Constructs worker instance
     ///
     /// # Parameters
     /// - `package` - Package model which needs to be rebuild
