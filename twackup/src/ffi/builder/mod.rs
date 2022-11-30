@@ -20,6 +20,7 @@
 pub mod progress;
 
 use super::{c_dpkg::TwDpkg, package::TwPackage};
+use crate::progress::Progress;
 use crate::{
     builder::{Preferences, Worker},
     Result,
@@ -102,6 +103,8 @@ pub(crate) fn rebuild_packages(
             });
         }
     });
+
+    progress.finished_all();
 
     if let Some(results_ref) = results {
         let new_results = Box::from(errors_vec.into_boxed_slice());

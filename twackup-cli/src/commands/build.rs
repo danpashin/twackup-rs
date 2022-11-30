@@ -179,7 +179,7 @@ impl Build {
 
             tokio::spawn(async move {
                 let builder = Worker::new(&package, progress, archive, preferences, contents);
-                builder.work().await
+                builder.run().await
             })
         }))
         .await;

@@ -159,6 +159,8 @@ impl<'a, T: Progress> Worker<'a, T> {
     /// Returns error if temp dir creation or any of underlying package operation failed
     #[inline]
     pub async fn run(&self) -> Result<PathBuf> {
+        self.progress.started_processing(self.package);
+
         let deb_name = format!("{}.deb", self.package.canonical_name());
         let deb_path = self.preferences.destination_dir.join(deb_name);
 
@@ -167,6 +169,9 @@ impl<'a, T: Progress> Worker<'a, T> {
         self.archive_metadata(deb.control_mut_ref()).await?;
         deb.build().await?;
 
+        self.add_to_archive(&deb_path).await?;
+
+        self.progress.finished_processing(self.package);
         Ok(deb_path)
     }
 
@@ -229,23 +234,6 @@ impl<'a, T: Progress> Worker<'a, T> {
         }
 
         Ok(())
-    }
-
-    /// Creates package debian archive and optionally add it to shared TAR archive
-    ///
-    /// # Errors
-    /// Returns error if any of underlying operations failed
-    #[inline]
-    pub async fn work(&self) -> Result<PathBuf> {
-        self.progress.started_processing(self.package);
-
-        let file = self.run().await?;
-
-        self.add_to_archive(&file).await?;
-
-        self.progress.finished_processing(self.package);
-
-        Ok(file)
     }
 
     /// Adds already assembled package to common TAR archive
