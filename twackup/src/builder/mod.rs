@@ -25,7 +25,7 @@
 //! ```no_run
 //! use twackup::builder::{Worker, Preferences};
 //! use twackup::{Result, Dpkg, progress::{Progress, MessageLevel}, package::Package};
-//! use std::{collections::HashSet, sync::Arc};
+//! use std::{collections::HashSet, sync::Arc, path::Path};
 //!
 //! // some progress struct btw
 //! struct ProgressImpl;
@@ -33,7 +33,7 @@
 //! impl Progress for ProgressImpl {
 //!     fn print_message<M: AsRef<str>>(&self, _message: M, _level: MessageLevel) {}
 //!     fn started_processing(&self, _package: &Package) {}
-//!     fn finished_processing(&self, _package: &Package) {}
+//!     fn finished_processing<P: AsRef<Path>>(&self, _package: &Package, _deb_path: P) {}
 //!     fn finished_all(&self) {}
 //! }
 //!
@@ -171,7 +171,7 @@ impl<'a, T: Progress> Worker<'a, T> {
 
         self.add_to_archive(&deb_path).await?;
 
-        self.progress.finished_processing(self.package);
+        self.progress.finished_processing(self.package, &deb_path);
         Ok(deb_path)
     }
 
@@ -260,21 +260,20 @@ impl<'a, T: Progress> Worker<'a, T> {
 
 #[cfg(test)]
 mod tests {
-    use crate::package::Package;
-    use crate::progress::MessageLevel;
     use crate::{
         builder::{Preferences, Worker},
-        progress::Progress,
+        package::Package,
+        progress::{MessageLevel, Progress},
         Dpkg, Result,
     };
-    use std::{fs, process::Command, sync::Arc};
+    use std::{fs, path::Path, process::Command, sync::Arc};
 
     struct ProgressImpl;
 
     impl Progress for ProgressImpl {
         fn print_message<M: AsRef<str>>(&self, _message: M, _level: MessageLevel) {}
         fn started_processing(&self, _package: &Package) {}
-        fn finished_processing(&self, _package: &Package) {}
+        fn finished_processing<P: AsRef<Path>>(&self, _package: &Package, _deb_path: P) {}
         fn finished_all(&self) {}
     }
 

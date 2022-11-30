@@ -19,7 +19,7 @@ static void started_processing(void *context, TwPackage_t const *package) {
   << std::endl;
 }
 
-static void finished_processing(void *context, TwPackage_t const *package) {
+static void finished_processing(void *context, TwPackage_t const *package, slice_raw_uint8_t deb_path) {
   std::cout
   << "finished_processing(\""
   << std::string((char *)package->identifier.ptr, package->identifier.len)
