@@ -18,6 +18,10 @@ extension String {
         }
     }
 
+    init?(ffiSlice slice: slice_boxed_uint8_t) {
+        self.init(ffiSlice: slice_raw_uint8_t(ptr: slice.ptr, len: slice.len))
+    }
+
     func truncate(_ length: Int, trailing: String = "...") -> String {
         return (count > length) ? prefix(length) + trailing : self
     }

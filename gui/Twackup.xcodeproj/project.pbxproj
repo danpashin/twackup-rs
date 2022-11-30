@@ -50,7 +50,7 @@
 		0B434F992935E29300311FB6 /* DpkgDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgDetailVC.swift; sourceTree = "<group>"; };
 		0B434F9B2935E90000311FB6 /* DatabaseDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseDetailVC.swift; sourceTree = "<group>"; };
 		0B434F9D2935E97200311FB6 /* DatabasePackageDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackageDetailedView.swift; sourceTree = "<group>"; };
-		0B434FA02936351700311FB6 /* twackup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = twackup.h; path = ../../target/twackup.h; sourceTree = "<group>"; };
+		0B434FA02936351700311FB6 /* twackup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = twackup.h; path = ../target/twackup.h; sourceTree = "<group>"; };
 		0B5D3F962934CB2C00AE50F2 /* PackagesVCDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesVCDataProvider.swift; sourceTree = "<group>"; };
 		0B5D3F992934D0C300AE50F2 /* DBPackage.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DBPackage.xcdatamodel; sourceTree = "<group>"; };
 		0B5D3F9B2934D2EB00AE50F2 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
@@ -144,7 +144,7 @@
 			children = (
 				0B434FA02936351700311FB6 /* twackup.h */,
 			);
-			path = libs;
+			name = libs;
 			sourceTree = "<group>";
 		};
 		0B8661872930AF7100EA4301 /* FFI Models */ = {
