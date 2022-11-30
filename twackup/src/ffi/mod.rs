@@ -108,6 +108,11 @@ fn tw_package_build_control(package: TwPackageRef) -> c_slice::Box<u8> {
     package::build_control(package)
 }
 
+#[ffi_export]
+fn tw_package_free(package: &mut TwPackageRef) {
+    package.drop_self();
+}
+
 /// Rebuilds package to deb file.
 ///
 /// \param[in] dpkg dpkg instance to run tasks
