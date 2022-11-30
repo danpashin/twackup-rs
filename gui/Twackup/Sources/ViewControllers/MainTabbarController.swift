@@ -51,7 +51,7 @@ class MainTabbarController: UITabBarController {
 
     private func makePackagesControler(_ dataProvider: PackageVC.DataProvider,
                                        _ metadata: PackageVC.Metadata) -> UIViewController {
-        let detailVC = PackageVC.DpkgDetailVC()
+        let detailVC = PackageVC.DpkgDetailVC(dpkg: dpkgInstance, database: database)
 
         let mainVC = PackageVC.ListWithDetailVC(dataProvider, metadata)
         mainVC.model.detailDelegate = detailVC

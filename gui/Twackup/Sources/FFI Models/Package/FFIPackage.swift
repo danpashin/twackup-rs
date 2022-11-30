@@ -74,7 +74,7 @@ class FFIPackage: Package {
     }
 
     deinit {
-        pkg.inner_ptr.deallocate()
+        pkg.deallocate(pkg.inner_ptr)
     }
 
     func humanInstalledSize() -> String {
