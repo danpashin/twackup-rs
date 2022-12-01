@@ -13,13 +13,13 @@ class MainTabbarController: UITabBarController {
     lazy private var database = Database()
 
     lazy private var buildedPackagesVC: UIViewController = {
-        let provider = PackageVC.DatabaseProvider(database)
+        let provider = DatabasePackageProvider(database)
         let metadata = PackageVC.BuildedPkgsMetadata()
+        let model = PackageVC.DebsListModel(dataProvider: provider, metadata: metadata)
 
         let detailVC = PackageVC.DatabaseDetailVC()
 
-        let mainVC = PackageVC.ListWithDetailVC(provider, metadata)
-        mainVC.model.detailDelegate = detailVC
+        let mainVC = PackageVC.DebsListVC(model: model, detail: detailVC)
 
         let splitVC = UISplitViewController()
         splitVC.tabBarItem = metadata.tabbarItem
@@ -31,13 +31,13 @@ class MainTabbarController: UITabBarController {
     }()
 
     lazy private var leavesPackagesVC: UIViewController = {
-        let provider = PackageVC.DpkgProvier(dpkgInstance, leaves: true)
+        let provider = DpkgDataProvier(dpkgInstance, leaves: true)
         let metadata = PackageVC.LeavesPkgsMetadata()
         return makePackagesControler(provider, metadata)
     }()
 
     lazy private var allPackagesVC: UIViewController = {
-        let provider = PackageVC.DpkgProvier(dpkgInstance)
+        let provider = DpkgDataProvier(dpkgInstance)
         let metadata = PackageVC.AllPkgsMetadata()
         return makePackagesControler(provider, metadata)
     }()
@@ -49,12 +49,12 @@ class MainTabbarController: UITabBarController {
         setViewControllers([buildedPackagesVC, leavesPackagesVC, allPackagesVC], animated: false)
     }
 
-    private func makePackagesControler(_ dataProvider: PackageVC.DataProvider,
+    private func makePackagesControler(_ dataProvider: PackageDataProvider,
                                        _ metadata: PackageVC.Metadata) -> UIViewController {
+        let model = PackageVC.PackageListModel(dataProvider: dataProvider, metadata: metadata)
         let detailVC = PackageVC.DpkgDetailVC(dpkg: dpkgInstance, database: database)
 
-        let mainVC = PackageVC.ListWithDetailVC(dataProvider, metadata)
-        mainVC.model.detailDelegate = detailVC
+        let mainVC = PackageVC.PackageListVC(model: model, detail: detailVC)
 
         let splitVC = UISplitViewController()
         splitVC.tabBarItem = metadata.tabbarItem

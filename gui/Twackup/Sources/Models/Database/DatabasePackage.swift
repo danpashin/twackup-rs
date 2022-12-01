@@ -1,17 +1,16 @@
 //
-//  DatabasePackageModel.swift
+//  DatabasePackage.swift
 //  
 //
 //  Created by Daniil on 28.11.2022.
 //
 //
 
-import Foundation
 import CoreData
 
-class DatabasePackageModel: NSManagedObject, Package {
-    class func fetchRequest() -> NSFetchRequest<DatabasePackageModel> {
-        return NSFetchRequest<DatabasePackageModel>(entityName: "DatabasePackageModel")
+class DatabasePackage: NSManagedObject, Package {
+    class func fetchRequest() -> NSFetchRequest<DatabasePackage> {
+        return NSFetchRequest<DatabasePackage>(entityName: "DatabasePackage")
     }
 
     @NSManaged var name: String

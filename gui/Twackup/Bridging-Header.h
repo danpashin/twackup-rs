@@ -9,6 +9,6 @@
 #define Twackup_Bridging_Header_h
 
 #import "twackup.h"
-
+#import "RJTHUD.h"
 
 #endif /* Twackup_Bridging_Header_h */

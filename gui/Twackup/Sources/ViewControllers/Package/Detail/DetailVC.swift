@@ -8,7 +8,7 @@
 import UIKit
 
 extension PackageVC {
-    class DetailVC: UIViewController, PackageDetailDelegate, PackageDetailViewDelegate {
+    class DetailVC: UIViewController, PackageDetailViewDelegate {
         lazy private(set) var containerView: PackageDetailedView = PackageDetailedView(delegate: self)
 
         override func viewDidLoad() {

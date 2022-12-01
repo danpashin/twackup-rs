@@ -5,8 +5,6 @@
 //  Created by Daniil on 24.11.2022.
 //
 
-import Foundation
-
 class FFIPackage: Package {
 
     let pkg: TwPackage_t

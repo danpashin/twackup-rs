@@ -5,8 +5,6 @@
 //  Created by Daniil on 29.11.2022.
 //
 
-import Foundation
-
 extension PackageVC {
     class DatabasePackageDetailedView: PackageDetailedView {
         override init(delegate: PackageDetailViewDelegate) {

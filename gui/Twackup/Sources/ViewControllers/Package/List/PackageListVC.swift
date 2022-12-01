@@ -1,5 +1,5 @@
 //
-//  PackagesViewController.swift
+//  PackageListVC.swift
 //  Twackup
 //
 //  Created by Daniil on 25.11.2022.
@@ -8,11 +8,10 @@
 import UIKit
 
 extension PackageVC {
-    class ListWithDetailVC: UIViewController, PackagesVCModelDelegate {
+    class PackageListVC: UIViewController, PackageListDelegate {
+        private(set) var model: PackageListModel
 
-        private(set) var model: MainModel
-
-        private(set) var metadata: PackageVC.Metadata
+        private(set) var detail: DetailVC
 
         lazy private(set) var searchController: UISearchController = {
             let controller = UISearchController(searchResultsController: nil)
@@ -30,9 +29,9 @@ extension PackageVC {
             return table
         }()
 
-        init(_ dataProvider: PackageVC.DataProvider, _ metadata: PackageVC.Metadata) {
-            self.model = MainModel(dataProvider: dataProvider)
-            self.metadata = metadata
+        init(model: PackageListModel, detail: DetailVC ) {
+            self.model = model
+            self.detail = detail
             super.init(nibName: nil, bundle: nil)
 
             model.delegate = self
@@ -49,7 +48,7 @@ extension PackageVC {
         override func viewDidLoad() {
             super.viewDidLoad()
 
-            navigationItem.title = metadata.navTitle
+            navigationItem.title = model.metadata.navTitle
             navigationItem.searchController = searchController
             navigationController?.navigationBar.prefersLargeTitles = true
 
@@ -58,7 +57,11 @@ extension PackageVC {
         }
 
         func reloadTableView() {
-            self.tableView.reloadData()
+            tableView.reloadData()
+        }
+
+        func didSelectPackage(_ package: Package) {
+            detail.didSelectPackage(package)
         }
     }
 }

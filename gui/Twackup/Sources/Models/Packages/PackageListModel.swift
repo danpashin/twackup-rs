@@ -7,24 +7,23 @@
 
 import UIKit
 
-protocol PackageDetailDelegate: AnyObject {
+protocol PackageListDelegate: AnyObject {
+    func reloadTableView()
+
     func didSelectPackage(_ package: Package)
 }
 
-protocol PackagesVCModelDelegate: AnyObject {
-    func reloadTableView()
-}
-
 extension PackageVC {
-    class MainModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource {
-        private(set) var dataProvider: DataProvider
+    class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource {
+        private(set) var dataProvider: PackageDataProvider
 
-        var detailDelegate: PackageDetailDelegate?
+        private(set) var metadata: Metadata
 
-        var delegate: PackagesVCModelDelegate?
+        var delegate: PackageListDelegate?
 
-        init(dataProvider: DataProvider) {
+        init(dataProvider: PackageDataProvider, metadata: Metadata) {
             self.dataProvider = dataProvider
+            self.metadata = metadata
         }
 
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -41,11 +40,11 @@ extension PackageVC {
         }
 
         func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            detailDelegate?.didSelectPackage(dataProvider.packages[indexPath.row])
+            delegate?.didSelectPackage(dataProvider.packages[indexPath.row])
         }
 
         func updateSearchResults(for searchController: UISearchController) {
-            var filter: DataProvider.Filter?
+            var filter: PackageDataProvider.Filter?
             if let text = searchController.searchBar.text, !text.isEmpty { filter = .name(text) }
 
             dataProvider.applyFilter(filter)
