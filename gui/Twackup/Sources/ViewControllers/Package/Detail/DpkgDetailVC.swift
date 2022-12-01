@@ -16,12 +16,12 @@ extension PackageVC {
 
         let database: Database
 
+        var hud: RJTHud?
+
         init(dpkg: Dpkg, database: Database) {
             self.dpkg = dpkg
             self.database = database
             super.init(nibName: nil, bundle: nil)
-
-            dpkg.buildDelegate = self
         }
 
         required init?(coder: NSCoder) {
@@ -29,6 +29,10 @@ extension PackageVC {
         }
 
         func rebuild(_ package: Package) {
+            self.hud = RJTHud.show()
+            dpkg.buildDelegate = self
+            print("\(String(describing: self))")
+
             DispatchQueue.global().async {
                 let docsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
                 self.dpkg.rebuild(packages: [package], outDir: docsDir)
@@ -55,7 +59,9 @@ extension PackageVC {
         }
 
         func finishedAll() {
+            self.hud?.hide(animated: true)
 
+            NotificationCenter.default.post(name: kDebsReloadNotification, object: nil)
         }
     }
 }

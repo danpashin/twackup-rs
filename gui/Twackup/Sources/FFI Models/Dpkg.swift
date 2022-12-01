@@ -5,8 +5,6 @@
 //  Created by Daniil on 24.11.2022.
 //
 
-import Foundation
-
 protocol DpkgBuildDelegate: AnyObject {
     func printMessage(_ message: String, level: Dpkg.MessageLevel)
     func startProcessing(package: Package)

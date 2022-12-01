@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="22A400" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="BuildedPackageModel" representedClassName=".BuildedPackageModel" parentEntity="DatabasePackageModel" syncable="YES">
-        <attribute name="buildDate" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="debRelativePath" attributeType="String"/>
-    </entity>
-    <entity name="DatabasePackageModel" representedClassName=".DatabasePackageModel" syncable="YES">
+    <entity name="DatabasePackage" representedClassName=".DatabasePackage" syncable="YES">
         <attribute name="architecture" optional="YES" attributeType="String"/>
         <attribute name="humanDescription" optional="YES" attributeType="String"/>
         <attribute name="id" attributeType="String"/>
@@ -19,5 +15,9 @@
                 <constraint value="version"/>
             </uniquenessConstraint>
         </uniquenessConstraints>
+    </entity>
+    <entity name="DebPackage" representedClassName=".DebPackage" parentEntity="DatabasePackage" syncable="YES">
+        <attribute name="buildDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="debRelativePath" attributeType="String"/>
     </entity>
 </model>
