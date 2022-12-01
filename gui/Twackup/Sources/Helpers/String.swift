@@ -25,4 +25,9 @@ extension String {
     func truncate(_ length: Int, trailing: String = "...") -> String {
         return (count > length) ? prefix(length) + trailing : self
     }
+
+    func deletePrefix(_ prefix: String) -> String {
+        guard hasPrefix(prefix) else { return self }
+        return String(dropFirst(prefix.count))
+    }
 }

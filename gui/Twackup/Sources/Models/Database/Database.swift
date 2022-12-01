@@ -10,7 +10,7 @@ import CoreData
 class Database {
     lazy private var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Twackup")
-//        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         container.loadPersistentStores(completionHandler: { (_, error) in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
@@ -34,9 +34,11 @@ class Database {
             }
         }
     }
-    
+
     func createBuildedPackage() -> DebPackage {
-        DebPackage(context: context)
+        let package = DebPackage(context: context)
+        package.buildDate = Date()
+        return package
     }
 
     func addBuildedPackage(_ package: DebPackage) {
@@ -47,7 +49,17 @@ class Database {
     }
 
     func fetchBuildedPackages() -> [DebPackage] {
-        // swiftlint:disable force_try
-        try! self.context.fetch(DebPackage.fetchRequest())
+        (try? self.context.fetch(DebPackage.fetchRequest())) ?? []
+    }
+
+    func delete(package: Package) {
+        guard let packages = try? context.fetch(DebPackage.fetchRequest(package: package)) else { return }
+        guard let object = packages.first else { return }
+
+        let debURL = Dpkg.defaultSaveDirectory.appendingPathComponent(object.path)
+        try? FileManager.default.removeItem(at: debURL)
+
+        context.delete(object)
+        saveContext()
     }
 }

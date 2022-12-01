@@ -8,7 +8,7 @@
 protocol DpkgBuildDelegate: AnyObject {
     func printMessage(_ message: String, level: Dpkg.MessageLevel)
     func startProcessing(package: Package)
-    func finishedProcessing(package: Package, debPath: String)
+    func finishedProcessing(package: Package, debPath: URL)
     func finishedAll()
 }
 
@@ -20,6 +20,10 @@ class Dpkg {
         case warning
         case error
     }
+
+    static let defaultSaveDirectory: URL = {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }()
 
     var buildDelegate: DpkgBuildDelegate?
 
@@ -52,7 +56,7 @@ class Dpkg {
         return packages
     }
 
-    func rebuild(packages: [Package], outDir: URL) {
+    func rebuild(packages: [Package], outDir: URL = defaultSaveDirectory) {
 
         let innerPkgs = packages.compactMap({ ($0 as? FFIPackage)?.pkg })
         let ffiPackages = innerPkgs.withUnsafeBufferPointer {
@@ -73,7 +77,7 @@ class Dpkg {
         for result in resultsBuf {
             let error = String(ffiSlice: result.error)
             let path = String(ffiSlice: result.deb_path)
-            
+
             print("success = \(result.success)")
             print("path = \"\(String(describing: path))\"; error = \(String(describing: error))")
         }
@@ -107,7 +111,7 @@ class Dpkg {
             else { return }
 
             let dpkg = Unmanaged<Dpkg>.fromOpaque(context).takeUnretainedValue()
-            dpkg.buildDelegate?.finishedProcessing(package: ffiPackage, debPath: debPath)
+            dpkg.buildDelegate?.finishedProcessing(package: ffiPackage, debPath: URL(fileURLWithPath: debPath))
         }
         funcs.finished_all = { context in
             guard let context else { return }

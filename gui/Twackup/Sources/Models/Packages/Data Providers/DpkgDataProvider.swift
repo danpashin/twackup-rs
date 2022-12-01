@@ -5,7 +5,6 @@
 //  Created by Daniil on 01.12.2022.
 //
 
-
 class DpkgDataProvier: PackageDataProvider {
     let dpkg: Dpkg
 
