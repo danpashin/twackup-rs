@@ -13,6 +13,10 @@ class DatabasePackage: NSManagedObject, Package {
         return NSFetchRequest<DatabasePackage>(entityName: "DatabasePackage")
     }
 
+    class func fetchSinglePredicate(package: Package) -> NSPredicate {
+        return NSPredicate(format: "id == %@", package.id)
+    }
+
     @NSManaged var name: String
     @NSManaged var architecture: String?
     @NSManaged var id: String
@@ -23,10 +27,11 @@ class DatabasePackage: NSManagedObject, Package {
     var icon: URL?
     var depiction: URL?
 
-    func fillFrom(package: Package) {
+    func setProperties(package: Package) {
         name = package.name
         id = package.id
         version = package.version
         architecture = package.architecture
+        section = package.section
     }
 }

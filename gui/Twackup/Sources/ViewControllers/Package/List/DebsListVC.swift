@@ -5,23 +5,7 @@
 //  Created by Daniil on 01.12.2022.
 //
 
-let kDebsReloadNotification = NSNotification.Name("twackup/reloadDEBS")
-
 extension PackageVC {
-
-    class DebsListModel: PackageListModel {
-        private(set) var debsProvider: DatabasePackageProvider
-        override var dataProvider: PackageDataProvider {
-            get { return debsProvider }
-            set { }
-        }
-
-        init(dataProvider: DatabasePackageProvider, metadata: Metadata) {
-            debsProvider = dataProvider
-            super.init(dataProvider: dataProvider, metadata: metadata)
-        }
-    }
-
     class DebsListVC: PackageListVC {
         private var debsModel: DebsListModel
         override var model: PackageListModel {
@@ -42,7 +26,7 @@ extension PackageVC {
             super.viewDidLoad()
 
             let center = NotificationCenter.default
-            center.addObserver(forName: kDebsReloadNotification, object: nil, queue: .current) { _ in
+            center.addObserver(forName: DebsListModel.NotificationName, object: nil, queue: .current) { _ in
                 self.reload()
             }
         }

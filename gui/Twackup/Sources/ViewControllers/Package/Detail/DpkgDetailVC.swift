@@ -31,11 +31,9 @@ extension PackageVC {
         func rebuild(_ package: Package) {
             self.hud = RJTHud.show()
             dpkg.buildDelegate = self
-            print("\(String(describing: self))")
 
             DispatchQueue.global().async {
-                let docsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                self.dpkg.rebuild(packages: [package], outDir: docsDir)
+                self.dpkg.rebuild(packages: [package])
             }
         }
 
@@ -47,13 +45,10 @@ extension PackageVC {
 
         }
 
-        func finishedProcessing(package: Package, debPath: String) {
-            print("finished \(debPath)")
-
+        func finishedProcessing(package: Package, debPath: URL) {
             let model = database.createBuildedPackage()
-            model.fillFrom(package: package)
-            model.debRelativePath = debPath
-            model.buildDate = Date()
+            model.setProperties(package: package)
+            model.setProperties(file: debPath, pathRelativeTo: Dpkg.defaultSaveDirectory)
 
             self.database.addBuildedPackage(model)
         }
@@ -61,7 +56,7 @@ extension PackageVC {
         func finishedAll() {
             self.hud?.hide(animated: true)
 
-            NotificationCenter.default.post(name: kDebsReloadNotification, object: nil)
+            NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
         }
     }
 }

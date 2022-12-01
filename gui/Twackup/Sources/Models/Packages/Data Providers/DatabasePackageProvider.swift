@@ -17,4 +17,9 @@ class DatabasePackageProvider: PackageDataProvider {
     func reload() {
         allPackages = database.fetchBuildedPackages()
     }
+
+    func deletePackage(at index: Int) {
+        let package = allPackages.remove(at: index)
+        database.delete(package: package)
+    }
 }
