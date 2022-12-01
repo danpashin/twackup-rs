@@ -18,8 +18,6 @@ class DebPackage: DatabasePackage {
     class func fetchRequest(package: Package) -> NSFetchRequest<DebPackage> {
         let request = NSFetchRequest<DebPackage>(entityName: entityName)
         request.predicate = fetchSinglePredicate(package: package)
-
-
         return request
     }
 
