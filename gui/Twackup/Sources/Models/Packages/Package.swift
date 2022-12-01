@@ -22,3 +22,14 @@ protocol Package: AnyObject {
 
     var humanDescription: String? { get }
 }
+
+
+extension Package {
+    func debName() -> String {
+        "\(id)_\(version)_\(architecture ?? "").deb"
+    }
+
+    func debDefaultURL() -> URL {
+        Dpkg.defaultSaveDirectory.appendingPathComponent(debName())
+    }
+}
