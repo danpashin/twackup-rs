@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0B0DBB692934DEA7002F3BB2 /* DebPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB682934DEA7002F3BB2 /* DebPackage.swift */; };
-		0B0DBB6B2934DEA7002F3BB2 /* DatabasePackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB662934DEA7002F3BB2 /* DatabasePackage.swift */; };
 		0B0DBB6F2934FA58002F3BB2 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB6E2934FA58002F3BB2 /* String.swift */; };
 		0B0DBB72293501DE002F3BB2 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB71293501DE002F3BB2 /* Package.swift */; };
 		0B0DBB742935081B002F3BB2 /* Namespaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB732935081B002F3BB2 /* Namespaces.swift */; };
+		0B0F22C6293CA01E002128EA /* DatabasePackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0F22C4293CA01E002128EA /* DatabasePackage.swift */; };
+		0B0F22C7293CA01E002128EA /* DebPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0F22C5293CA01E002128EA /* DebPackage.swift */; };
 		0B434F982935DEFA00311FB6 /* RebuildPackageDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F972935DEFA00311FB6 /* RebuildPackageDetailedView.swift */; };
 		0B434F9A2935E29300311FB6 /* DpkgDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F992935E29300311FB6 /* DpkgDetailVC.swift */; };
 		0B434F9C2935E90000311FB6 /* DatabaseDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F9B2935E90000311FB6 /* DatabaseDetailVC.swift */; };
@@ -46,11 +46,11 @@
 
 /* Begin PBXFileReference section */
 		007C412C6D65357FB85FA8C6 /* Pods-Twackup.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Twackup.release.xcconfig"; path = "Target Support Files/Pods-Twackup/Pods-Twackup.release.xcconfig"; sourceTree = "<group>"; };
-		0B0DBB662934DEA7002F3BB2 /* DatabasePackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DatabasePackage.swift; path = "/Users/danpashin/Documents/projects/my-own/twackup-rs/gui/Twackup/Sources/Models/Database/DatabasePackage.swift"; sourceTree = "<absolute>"; };
-		0B0DBB682934DEA7002F3BB2 /* DebPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DebPackage.swift; path = "/Users/danpashin/Documents/projects/my-own/twackup-rs/gui/Twackup/Sources/Models/Database/DebPackage.swift"; sourceTree = "<absolute>"; };
 		0B0DBB6E2934FA58002F3BB2 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		0B0DBB71293501DE002F3BB2 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		0B0DBB732935081B002F3BB2 /* Namespaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Namespaces.swift; sourceTree = "<group>"; };
+		0B0F22C4293CA01E002128EA /* DatabasePackage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabasePackage.swift; sourceTree = "<group>"; };
+		0B0F22C5293CA01E002128EA /* DebPackage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebPackage.swift; sourceTree = "<group>"; };
 		0B434F972935DEFA00311FB6 /* RebuildPackageDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RebuildPackageDetailedView.swift; sourceTree = "<group>"; };
 		0B434F992935E29300311FB6 /* DpkgDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgDetailVC.swift; sourceTree = "<group>"; };
 		0B434F9B2935E90000311FB6 /* DatabaseDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseDetailVC.swift; sourceTree = "<group>"; };
@@ -105,8 +105,8 @@
 		0B0DBB642934DE7E002F3BB2 /* Database */ = {
 			isa = PBXGroup;
 			children = (
-				0B0DBB662934DEA7002F3BB2 /* DatabasePackage.swift */,
-				0B0DBB682934DEA7002F3BB2 /* DebPackage.swift */,
+				0B0F22C4293CA01E002128EA /* DatabasePackage.swift */,
+				0B0F22C5293CA01E002128EA /* DebPackage.swift */,
 				0B5D3F982934D0C300AE50F2 /* Twackup.xcdatamodeld */,
 				0B5D3F9B2934D2EB00AE50F2 /* Database.swift */,
 			);
@@ -455,7 +455,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0B0DBB692934DEA7002F3BB2 /* DebPackage.swift in Sources */,
 				0B86618B2930AF7100EA4301 /* FFIPackage.swift in Sources */,
 				0BAAD99C293893EF0089C8FB /* DpkgDataProvider.swift in Sources */,
 				0B88C30B2930B58D00BA5312 /* DetailVC.swift in Sources */,
@@ -463,6 +462,7 @@
 				0B86617D2930AE5E00EA4301 /* PackageListVC.swift in Sources */,
 				0B86618A2930AF7100EA4301 /* Dpkg.swift in Sources */,
 				0BAAD99729388D310089C8FB /* DebsListVC.swift in Sources */,
+				0B0F22C6293CA01E002128EA /* DatabasePackage.swift in Sources */,
 				0B88C30D2930B88800BA5312 /* PackageTableViewCell.swift in Sources */,
 				0B88C3172930CE3900BA5312 /* Metadata.swift in Sources */,
 				0B463A9B29389EBB00021EF7 /* DebsListModel.swift in Sources */,
@@ -470,7 +470,6 @@
 				0B88C31E2930DEA200BA5312 /* PackageDetailView.swift in Sources */,
 				0BAAD9922937BE360089C8FB /* RJTHudProgressView.m in Sources */,
 				0B88C3152930CE2E00BA5312 /* PackageListModel.swift in Sources */,
-				0B0DBB6B2934DEA7002F3BB2 /* DatabasePackage.swift in Sources */,
 				0B0DBB6F2934FA58002F3BB2 /* String.swift in Sources */,
 				0B5D3F972934CB2C00AE50F2 /* PackageDataProvider.swift in Sources */,
 				0B86616D2930ADA300EA4301 /* MainTabbarController.swift in Sources */,
@@ -480,6 +479,7 @@
 				0B434F982935DEFA00311FB6 /* RebuildPackageDetailedView.swift in Sources */,
 				0B8661692930ADA300EA4301 /* AppDelegate.swift in Sources */,
 				0B434F9C2935E90000311FB6 /* DatabaseDetailVC.swift in Sources */,
+				0B0F22C7293CA01E002128EA /* DebPackage.swift in Sources */,
 				0B5D3F9E2934D85500AE50F2 /* DatabasePackageProvider.swift in Sources */,
 				0B88C31C2930DE8C00BA5312 /* KeyValueLabelView.swift in Sources */,
 				0B434F9E2935E97200311FB6 /* DatabasePackageDetailedView.swift in Sources */,
