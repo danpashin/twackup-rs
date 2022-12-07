@@ -44,7 +44,6 @@ class MainTabbarController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.tintColor = .systemPink
 
         setViewControllers([buildedPackagesVC, leavesPackagesVC, allPackagesVC], animated: false)
     }
