@@ -21,7 +21,7 @@ class MainTabbarController: UITabBarController {
 
         let mainVC = PackageVC.DebsListVC(model: model, detail: detailVC)
 
-        let splitVC = UISplitViewController()
+        let splitVC = TwoColumnsVC()
         splitVC.tabBarItem = metadata.tabbarItem
         splitVC.viewControllers = [
             UINavigationController(rootViewController: mainVC),
@@ -56,7 +56,7 @@ class MainTabbarController: UITabBarController {
 
         let mainVC = PackageVC.PackageListVC(model: model, detail: detailVC)
 
-        let splitVC = UISplitViewController()
+        let splitVC = TwoColumnsVC()
         splitVC.tabBarItem = metadata.tabbarItem
         splitVC.viewControllers = [
             UINavigationController(rootViewController: mainVC),
