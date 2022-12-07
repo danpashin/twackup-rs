@@ -18,7 +18,7 @@
     </entity>
     <entity name="DebPackage" representedClassName=".DebPackage" parentEntity="DatabasePackage" syncable="YES">
         <attribute name="buildDate" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="path" attributeType="String"/>
+        <attribute name="relPath" attributeType="String"/>
         <attribute name="size" attributeType="Integer 64" usesScalarValueType="YES"/>
     </entity>
 </model>

@@ -11,6 +11,19 @@ extension PackageVC {
     class DetailVC: UIViewController, PackageDetailViewDelegate {
         lazy private(set) var containerView: PackageDetailedView = PackageDetailedView(delegate: self)
 
+        let database: Database
+
+        private(set) var currentPackage: Package?
+
+        init(database: Database) {
+            self.database = database
+            super.init(nibName: nil, bundle: nil)
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
         override func viewDidLoad() {
             super.viewDidLoad()
             navigationController?.navigationBar.prefersLargeTitles = true
@@ -32,6 +45,8 @@ extension PackageVC {
 
         func didSelectPackage(_ package: Package) {
             navigationItem.title = package.name
+
+            currentPackage = package
 
             containerView.isHidden = false
             containerView.updateContents(forPackage: package)

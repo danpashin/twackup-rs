@@ -22,13 +22,17 @@ class DebPackage: DatabasePackage {
     }
 
     @NSManaged var buildDate: Date
-    @NSManaged var path: String
+    @NSManaged var relPath: String
     @NSManaged var size: Int64
 
     func setProperties(file: URL, pathRelativeTo: URL) {
         let metadata = try? FileManager.default.attributesOfItem(atPath: file.path)
         size = (metadata?[.size] as? Int64) ?? 0
 
-        path = file.path.deletePrefix(pathRelativeTo.path)
+        relPath = file.path.deletePrefix(pathRelativeTo.path)
+    }
+
+    func fileURL() -> URL {
+        Dpkg.defaultSaveDirectory.appendingPathComponent(relPath)
     }
 }

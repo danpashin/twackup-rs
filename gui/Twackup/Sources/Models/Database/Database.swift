@@ -24,14 +24,14 @@ class Database {
     }()
 
     private func saveContext() {
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                context.rollback()
-                let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-            }
+        if !context.hasChanges { return }
+
+        do {
+            try context.save()
+        } catch {
+            context.rollback()
+            let nserror = error as NSError
+            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
         }
     }
 
@@ -42,9 +42,9 @@ class Database {
     }
 
     func addBuildedPackage(_ package: DebPackage) {
-        DispatchQueue.global().async {
-            self.context.insert(package)
-            self.saveContext()
+        context.perform { [self] in
+            context.insert(package)
+            saveContext()
         }
     }
 
@@ -52,14 +52,14 @@ class Database {
         (try? self.context.fetch(DebPackage.fetchRequest())) ?? []
     }
 
-    func delete(package: Package) {
-        guard let packages = try? context.fetch(DebPackage.fetchRequest(package: package)) else { return }
-        guard let object = packages.first else { return }
+    func fetch(package: Package) -> DebPackage? {
+        try? context.fetch(DebPackage.fetchRequest(package: package)).first
+    }
 
-        let debURL = Dpkg.defaultSaveDirectory.appendingPathComponent(object.path)
-        try? FileManager.default.removeItem(at: debURL)
-
-        context.delete(object)
-        saveContext()
+    func delete(package: DebPackage) {
+        context.perform { [self] in
+            context.delete(package)
+            saveContext()
+        }
     }
 }

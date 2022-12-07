@@ -17,7 +17,7 @@ class MainTabbarController: UITabBarController {
         let metadata = PackageVC.BuildedPkgsMetadata()
         let model = PackageVC.DebsListModel(dataProvider: provider, metadata: metadata)
 
-        let detailVC = PackageVC.DatabaseDetailVC()
+        let detailVC = PackageVC.DatabaseDetailVC(database: database)
 
         let mainVC = PackageVC.DebsListVC(model: model, detail: detailVC)
 

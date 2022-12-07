@@ -14,26 +14,25 @@ extension PackageVC {
 
         private var debURL: URL?
 
+        private lazy var sharingBtn: UIBarButtonItem = {
+            let shareImage = UIImage(systemName: "square.and.arrow.up")
+            return UIBarButtonItem(image: shareImage, style: .plain, target: self, action: #selector(share))
+        }()
+
         override func didSelectPackage(_ package: Package) {
             super.didSelectPackage(package)
-
-            debURL = package.debDefaultURL()
-
-            addSharingMenu()
-        }
-
-        func addSharingMenu() {
-            let shareImage = UIImage(systemName: "square.and.arrow.up")
-            let btn = UIBarButtonItem(image: shareImage, style: .plain, target: self, action: #selector(share))
-            navigationItem.rightBarButtonItem = btn
+            
+            navigationItem.rightBarButtonItem = sharingBtn
         }
 
         @objc func share() {
-            let items = [debURL!]
-            let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
-            activityViewController.popoverPresentationController?.sourceView = self.view
+            guard let package = currentPackage, let package = database.fetch(package: package) else { return }
+            let items = [package.fileURL()]
 
-            self.present(activityViewController, animated: true, completion: nil)
+            let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
+            activityViewController.popoverPresentationController?.sourceView = view
+
+            present(activityViewController, animated: true, completion: nil)
         }
     }
 }

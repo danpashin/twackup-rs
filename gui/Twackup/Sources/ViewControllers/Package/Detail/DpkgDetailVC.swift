@@ -14,14 +14,11 @@ extension PackageVC {
 
         let dpkg: Dpkg
 
-        let database: Database
-
         var hud: RJTHud?
 
         init(dpkg: Dpkg, database: Database) {
             self.dpkg = dpkg
-            self.database = database
-            super.init(nibName: nil, bundle: nil)
+            super.init(database: database)
         }
 
         required init?(coder: NSCoder) {
@@ -29,7 +26,7 @@ extension PackageVC {
         }
 
         func rebuild(_ package: Package) {
-            self.hud = RJTHud.show()
+            hud = RJTHud.show()
             dpkg.buildDelegate = self
 
             DispatchQueue.global().async {
@@ -50,11 +47,11 @@ extension PackageVC {
             model.setProperties(package: package)
             model.setProperties(file: debPath, pathRelativeTo: Dpkg.defaultSaveDirectory)
 
-            self.database.addBuildedPackage(model)
+            database.addBuildedPackage(model)
         }
 
         func finishedAll() {
-            self.hud?.hide(animated: true)
+            hud?.hide(animated: true)
 
             NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
         }

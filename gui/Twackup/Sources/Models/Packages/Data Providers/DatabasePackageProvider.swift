@@ -20,6 +20,9 @@ class DatabasePackageProvider: PackageDataProvider {
 
     func deletePackage(at index: Int) {
         let package = allPackages.remove(at: index)
-        database.delete(package: package)
+        guard let dbPackage = database.fetch(package: package) else { return }
+
+        try? FileManager.default.removeItem(at: dbPackage.fileURL())
+        database.delete(package: dbPackage)
     }
 }
