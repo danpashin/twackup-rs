@@ -18,66 +18,38 @@
  */
 
 use crate::package::Package;
-#[cfg(feature = "ffi-headers")]
-use safer_ffi::headers::Definer;
-use safer_ffi::{layout::OpaqueKind, ptr};
-use std::{ffi::c_void, mem::ManuallyDrop};
+use safer_ffi::layout::OpaqueKind;
+use std::ptr::NonNull;
 
-struct Contents<'a> {
-    is_inner_droppable: bool,
-    package: &'a Package,
+enum Contents {
+    Owned(Package),
+    Borrowed(NonNull<Package>),
 }
 
 #[repr(transparent)]
 #[derive(Copy, Clone)]
-pub struct TwPackageRef(pub(crate) ptr::NonNull<c_void>);
+pub struct TwPackageRef(NonNull<Contents>);
 
 impl TwPackageRef {
     pub(crate) fn owned(package: Package) -> Self {
-        let package = Box::leak(Box::new(package));
-        let contents = Box::leak(Box::new(Contents {
-            is_inner_droppable: true,
-            package,
-        }));
-
-        Self(ptr::NonNull::new(contents as *const Contents<'_> as *mut c_void).unwrap())
+        let contents = Box::new(Contents::Owned(package));
+        Self(NonNull::new(Box::into_raw(contents)).unwrap())
     }
 
     pub(crate) fn unowned(package: &Package) -> Self {
-        let contents = Box::leak(Box::new(Contents {
-            is_inner_droppable: false,
-            package,
-        }));
-
-        Self(ptr::NonNull::new(contents as *const Contents<'_> as *mut c_void).unwrap())
-    }
-
-    fn inner(&self) -> &ManuallyDrop<Contents<'_>> {
-        unsafe { &*self.0.as_ptr().cast() }
-    }
-
-    fn inner_mut(&mut self) -> &mut ManuallyDrop<Contents<'_>> {
-        unsafe { &mut *self.0.as_ptr().cast() }
-    }
-
-    #[inline]
-    pub(crate) fn drop_self(&mut self) {
-        unsafe {
-            let contents: &mut ManuallyDrop<Contents<'_>> = self.inner_mut();
-            if contents.is_inner_droppable {
-                let package = contents.package as *const Package;
-                let package = &mut *package.cast_mut().cast();
-                ManuallyDrop::<Package>::drop(package);
-            }
-
-            ManuallyDrop::drop(contents);
-        }
+        let contents = Box::new(Contents::Borrowed(
+            NonNull::new(package as *const Package as *mut Package).unwrap(),
+        ));
+        Self(NonNull::new(Box::into_raw(contents)).unwrap())
     }
 }
 
 impl AsRef<Package> for TwPackageRef {
     fn as_ref(&self) -> &Package {
-        self.inner().package
+        match unsafe { self.0.as_ref() } {
+            Contents::Owned(package) => package,
+            Contents::Borrowed(package) => unsafe { package.as_ref() },
+        }
     }
 }
 
@@ -100,7 +72,7 @@ unsafe impl safer_ffi::layout::CType for TwPackageRef {
     }
 
     #[cfg(feature = "ffi-headers")]
-    fn c_define_self(definer: &'_ mut dyn Definer) -> std::io::Result<()> {
+    fn c_define_self(definer: &'_ mut dyn safer_ffi::headers::Definer) -> std::io::Result<()> {
         let me = &Self::c_short_name().to_string();
         definer.define_once(me, &mut |definer| {
             writeln!(definer.out(), "typedef void *{};", me)

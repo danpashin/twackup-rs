@@ -6,20 +6,20 @@
 //
 
 extension String {
-    init?(ffiSlice slice: slice_raw_uint8_t) {
+    init?(ffiSlice slice: slice_raw_uint8_t, deallocate: Bool = false) {
         if slice.ptr == nil || slice.len == 0 {
             return nil
         }
 
-        if let string = String(bytesNoCopy: slice.ptr, length: slice.len, encoding: .utf8, freeWhenDone: false) {
+        if let string = String(bytesNoCopy: slice.ptr, length: slice.len, encoding: .utf8, freeWhenDone: deallocate) {
             self = string
         } else {
             return nil
         }
     }
 
-    init?(ffiSlice slice: slice_boxed_uint8_t) {
-        self.init(ffiSlice: slice_raw_uint8_t(ptr: slice.ptr, len: slice.len))
+    init?(ffiSlice slice: slice_boxed_uint8_t, deallocate: Bool = false) {
+        self.init(ffiSlice: slice_raw_uint8_t(ptr: slice.ptr, len: slice.len), deallocate: deallocate)
     }
 
     func truncate(_ length: Int, trailing: String = "...") -> String {

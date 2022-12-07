@@ -40,7 +40,8 @@ int main(int argc, char *argv[]) {
 
   auto dpkg = tw_init(argv[1], false);
 
-  auto packages = tw_get_packages(dpkg, true, TW_PACKAGES_SORT_UNSORTED);
+  slice_boxed_TwPackage_t packages;
+  assert(tw_get_packages(dpkg, true, TW_PACKAGES_SORT_UNSORTED, &packages) == TW_RESULT_OK);
 
   std::cout << "packages_ptr = "<< packages.ptr << ", count = " << packages.len << std::endl;
 

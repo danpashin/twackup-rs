@@ -75,8 +75,17 @@ fn tw_get_packages(
     dpkg: &TwDpkg,
     leaves_only: bool,
     sort: TwPackagesSort,
-) -> c_slice::Box<TwPackage> {
-    dpkg.get_packages(leaves_only, sort)
+    output: &mut c_slice::Box<TwPackage>,
+) -> TwResult {
+    if let Some(packages) = dpkg.get_packages(leaves_only, sort) {
+        unsafe {
+            let ptr = output as *mut c_slice::Box<TwPackage>;
+            ptr.write(packages);
+        }
+        TwResult::Ok
+    } else {
+        TwResult::Error
+    }
 }
 
 /// Returns package section description
@@ -109,8 +118,8 @@ fn tw_package_build_control(package: TwPackageRef) -> c_slice::Box<u8> {
 }
 
 #[ffi_export]
-fn tw_package_free(package: &mut TwPackageRef) {
-    package.drop_self();
+fn tw_package_free(package: TwPackageRef) {
+    drop(package)
 }
 
 /// Rebuilds package to deb file.

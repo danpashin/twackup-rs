@@ -38,26 +38,28 @@ class Dpkg {
     }
 
     func parsePackages(leaves: Bool) -> [Package] {
-        let ffiPackages = tw_get_packages(innerDpkg, leaves, TwPackagesSort_t(TW_PACKAGES_SORT_NAME))
+        var rawPkgs = slice_boxed_TwPackage_t()
+        let result = tw_get_packages(innerDpkg, leaves, TwPackagesSort_t(TW_PACKAGES_SORT_NAME), &rawPkgs)
+        if result != TwResult_t(TW_RESULT_OK) { return [] }
 
-        let rawPackages = UnsafeBufferPointer(start: ffiPackages.ptr, count: ffiPackages.len)
+        let ffiPackages = UnsafeConsumingCollection(raw: rawPkgs.ptr, length: rawPkgs.len)
 
         var packages: [Package] = []
-        packages.reserveCapacity(rawPackages.count)
+        packages.reserveCapacity(ffiPackages.count)
 
-        for package in rawPackages {
-            if let packageModel = FFIPackage(package) {
-                packages.append(packageModel as any Package)
+        for package in ffiPackages {
+            guard let pModel = FFIPackage(package) else {
+                package.deallocate(package.inner_ptr)
+                continue
             }
+            
+            packages.append(pModel as any Package)
         }
-
-        rawPackages.deallocate()
 
         return packages
     }
 
-    func rebuild(packages: [Package], outDir: URL = defaultSaveDirectory) {
-
+    func rebuild(packages: [Package], outDir: URL = defaultSaveDirectory) -> Bool {
         let innerPkgs = packages.compactMap({ ($0 as? FFIPackage)?.pkg })
         let ffiPackages = innerPkgs.withUnsafeBufferPointer {
             // safe to unwrap?
@@ -70,19 +72,16 @@ class Dpkg {
             tw_rebuild_packages(innerDpkg, ffiPackages, createProgressFuncs(), $0.baseAddress!, &results)
         }
 
-        print("status = \(status)")
-        assert(status == TwResult_t(TW_RESULT_OK))
-
-        let resultsBuf = UnsafeBufferPointer(start: results.ptr, count: results.len)
+        let resultsBuf = UnsafeConsumingCollection(raw: results.ptr, length: results.len)
         for result in resultsBuf {
-            let error = String(ffiSlice: result.error)
-            let path = String(ffiSlice: result.deb_path)
+            let error = String(ffiSlice: result.error, deallocate: true)
+            let path = String(ffiSlice: result.deb_path, deallocate: true)
 
             print("success = \(result.success)")
             print("path = \"\(String(describing: path))\"; error = \(String(describing: error))")
         }
 
-        tw_free_rebuild_results(results)
+        return status == TwResult_t(TW_RESULT_OK)
     }
 
     private func createProgressFuncs() -> TwProgressFunctions {

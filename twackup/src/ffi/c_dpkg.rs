@@ -81,25 +81,27 @@ impl TwDpkg {
         &self,
         leaves_only: bool,
         sort: TwPackagesSort,
-    ) -> c_slice::Box<TwPackage> {
+    ) -> Option<c_slice::Box<TwPackage>> {
         let dpkg = self.inner_dpkg();
         let tokio_rt = self.inner_tokio_rt();
 
-        let packages: Vec<_> = tokio_rt
-            .block_on(async {
-                if sort == TwPackagesSort::Unsorted {
-                    let packages = dpkg.unsorted_packages(leaves_only).await;
-                    let pkgs = packages.map(|pkgs| pkgs.into_iter().map(TwPackage::from));
-                    pkgs.map(Iterator::collect)
-                } else {
-                    let packages = dpkg.packages(leaves_only, sort.into()).await;
-                    let pkgs = packages.map(|packages| packages.into_iter().map(|(_, pkg)| pkg));
-                    pkgs.map(|pkgs| pkgs.map(TwPackage::from).collect())
-                }
-            })
-            .expect("dpkg database parsing failed");
+        let packages: Result<Vec<_>, _> = tokio_rt.block_on(async {
+            if sort == TwPackagesSort::Unsorted {
+                let packages = dpkg.unsorted_packages(leaves_only).await;
+                let pkgs = packages.map(|pkgs| pkgs.into_iter().map(TwPackage::from));
+                pkgs.map(Iterator::collect)
+            } else {
+                let packages = dpkg.packages(leaves_only, sort.into()).await;
+                let pkgs = packages.map(|packages| packages.into_iter().map(|(_, pkg)| pkg));
+                pkgs.map(|pkgs| pkgs.map(TwPackage::from).collect())
+            }
+        });
 
-        c_slice::Box::from(packages.into_boxed_slice())
+        if let Ok(packages) = packages {
+            Some(c_slice::Box::from(packages.into_boxed_slice()))
+        } else {
+            None
+        }
     }
 }
 

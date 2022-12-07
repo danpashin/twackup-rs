@@ -34,7 +34,6 @@ class FFIPackage: Package {
         // and never will be nullable
         id = String(ffiSlice: pkg.identifier)!
         if id.hasPrefix("gsc") || id.hasPrefix("cy+") {
-            pkg.inner_ptr.deallocate()
             return nil
         }
 

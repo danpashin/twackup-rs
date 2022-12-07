@@ -110,6 +110,5 @@ pub(crate) extern "C" fn get_dependencies(package: TwPackageRef) -> Box<Raw<u8>>
 }
 
 extern "C" fn deallocate(package: TwPackageRef) {
-    let mut package = package;
-    package.drop_self();
+    drop(package);
 }
