@@ -23,8 +23,9 @@ extension PackageVC {
         func tableView(_ tableView: UITableView,
                        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
             let delete = UIContextualAction(style: .destructive, title: "Delete") { _, _, completionHandler in
-                self.debsProvider.deletePackage(at: indexPath.row)
-                tableView.deleteRows(at: [indexPath], with: .automatic)
+                if self.debsProvider.deletePackage(at: indexPath.row) {
+                    tableView.deleteRows(at: [indexPath], with: .automatic)
+                }
                 completionHandler(true)
             }
 

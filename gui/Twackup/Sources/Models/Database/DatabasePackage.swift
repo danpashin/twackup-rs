@@ -34,4 +34,8 @@ class DatabasePackage: NSManagedObject, Package {
         architecture = package.architecture
         section = package.section
     }
+
+    func isEqualTo(_ other: Package) -> Bool {
+        id == other.id && version == other.version
+    }
 }

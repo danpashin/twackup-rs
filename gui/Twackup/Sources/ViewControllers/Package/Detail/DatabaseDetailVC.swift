@@ -21,7 +21,7 @@ extension PackageVC {
 
         override func didSelectPackage(_ package: Package) {
             super.didSelectPackage(package)
-            
+
             navigationItem.rightBarButtonItem = sharingBtn
         }
 

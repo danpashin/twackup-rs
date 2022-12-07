@@ -77,4 +77,8 @@ class FFIPackage: Package {
     func humanInstalledSize() -> String {
         return ByteCountFormatter.string(fromByteCount: installedSize ?? 0 * 1000, countStyle: .decimal)
     }
+
+    func isEqualTo(_ other: Package) -> Bool {
+        id == other.id && version == other.version
+    }
 }

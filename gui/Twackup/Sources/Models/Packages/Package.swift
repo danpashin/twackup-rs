@@ -21,4 +21,6 @@ protocol Package: AnyObject {
     var depiction: URL? { get }
 
     var humanDescription: String? { get }
+
+    func isEqualTo(_ other: Package) -> Bool
 }
