@@ -21,5 +21,3 @@ class TwoColumnsVC: UISplitViewController, UISplitViewControllerDelegate {
         return true
     }
 }
-
-

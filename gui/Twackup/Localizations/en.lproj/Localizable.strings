@@ -1,0 +1,32 @@
+//
+//  Localizable.lproj
+//  Twackup
+//
+//  Created by Daniil on 08.12.2022.
+//
+
+// Controllers
+"debs-short-title" = "Rebuilded";
+"leaves-pkgs-short-title" = "Leaves";
+"all-pkgs-short-title" = "Installed";
+
+"debs-full-title" = "Rebuilded";
+"leaves-pkgs-full-title" = "Leaves";
+"all-pkgs-full-title" = "Installed";
+
+// Views
+"detailed-view-identifier-lbl" = "Identifier:";
+"detailed-view-version-lbl" = "Version:";
+"detailed-view-section-lbl" = "Section:";
+"detailed-view-learnmore-btn" = "Learn more...";
+"detailed-view-size-lbl" = "Size";
+"detailed-view-installedsize-lbl" = "Installed:";
+"detailed-view-debsize-lbl" = "Packaged";
+"detailed-view-rebuild-btn" = "Package";
+"detailed-view-rebuild-btn-footer" = "Please note that the builded package may be incomplete and \
+may not have some files necessary for the correct operation of the package.";
+
+// Misc
+"search-field-lbl" = "Search";
+"unknown" = "Unknown";
+"remove-btn" = "Remove";

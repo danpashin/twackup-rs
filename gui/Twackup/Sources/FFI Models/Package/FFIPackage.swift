@@ -21,11 +21,22 @@ class FFIPackage: Package {
 
     let depiction: URL?
 
-    let humanDescription: String?
+    var humanDescription: String? {
+        String(ffiSlice: pkg.get_field(pkg.inner_ptr, TwPackageField_t(TW_PACKAGE_FIELD_DESCRIPTION)))
+    }
 
-    let installedSize: Int64?
+    var architecture: String? {
+        String(ffiSlice: pkg.get_field(pkg.inner_ptr, TwPackageField_t(TW_PACKAGE_FIELD_ARCHITECTURE)))
+    }
 
-    let architecture: String?
+    var installedSize: Int64 {
+        let field = TwPackageField_t(TW_PACKAGE_FIELD_INSTALLED_SIZE)
+        guard let stringSize = String(ffiSlice: pkg.get_field(pkg.inner_ptr, field)) else { return 0 }
+        guard let size = Int64(stringSize) else { return 0}
+        return size * 1000
+    }
+
+    var debSize: Int64 = 0
 
     init?(_ pkg: TwPackage_t) {
         self.pkg = pkg
@@ -55,27 +66,10 @@ class FFIPackage: Package {
         } else {
             depiction = nil
         }
-
-        let installedSizeField = TwPackageField_t(TW_PACKAGE_FIELD_INSTALLED_SIZE)
-        if let size = String(ffiSlice: pkg.get_field(pkg.inner_ptr, installedSizeField)) {
-            installedSize = Int64(size)
-        } else {
-            installedSize = nil
-        }
-
-        let descriptionField = TwPackageField_t(TW_PACKAGE_FIELD_DESCRIPTION)
-        humanDescription = String(ffiSlice: pkg.get_field(pkg.inner_ptr, descriptionField))
-
-        let archField = TwPackageField_t(TW_PACKAGE_FIELD_ARCHITECTURE)
-        architecture = String(ffiSlice: pkg.get_field(pkg.inner_ptr, archField))
     }
 
     deinit {
         pkg.deallocate(pkg.inner_ptr)
-    }
-
-    func humanInstalledSize() -> String {
-        return ByteCountFormatter.string(fromByteCount: installedSize ?? 0 * 1000, countStyle: .decimal)
     }
 
     func isEqualTo(_ other: Package) -> Bool {

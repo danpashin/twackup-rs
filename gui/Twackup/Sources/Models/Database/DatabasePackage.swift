@@ -14,7 +14,7 @@ class DatabasePackage: NSManagedObject, Package {
     }
 
     class func fetchSinglePredicate(package: Package) -> NSPredicate {
-        return NSPredicate(format: "id == %@", package.id)
+        return NSPredicate(format: "id == %@ && version == %@", package.id, package.version)
     }
 
     @NSManaged var name: String
@@ -23,6 +23,8 @@ class DatabasePackage: NSManagedObject, Package {
     @NSManaged var version: String
     @NSManaged var section: PackageSection
     @NSManaged var humanDescription: String?
+    @NSManaged var installedSize: Int64
+    @NSManaged var debSize: Int64
 
     var icon: URL?
     var depiction: URL?
@@ -33,6 +35,7 @@ class DatabasePackage: NSManagedObject, Package {
         version = package.version
         architecture = package.architecture
         section = package.section
+        installedSize = package.installedSize
     }
 
     func isEqualTo(_ other: Package) -> Bool {

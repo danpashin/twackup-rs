@@ -12,7 +12,9 @@ class DebPackage: DatabasePackage {
     static let entityName = "DebPackage"
 
     class func fetchRequest() -> NSFetchRequest<DebPackage> {
-        return NSFetchRequest<DebPackage>(entityName: entityName)
+        let request = NSFetchRequest<DebPackage>(entityName: entityName)
+        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        return request
     }
 
     class func fetchRequest(package: Package) -> NSFetchRequest<DebPackage> {
@@ -23,11 +25,10 @@ class DebPackage: DatabasePackage {
 
     @NSManaged var buildDate: Date
     @NSManaged var relPath: String
-    @NSManaged var size: Int64
 
     func setProperties(file: URL, pathRelativeTo: URL) {
         let metadata = try? FileManager.default.attributesOfItem(atPath: file.path)
-        size = (metadata?[.size] as? Int64) ?? 0
+        debSize = (metadata?[.size] as? Int64) ?? 0
 
         relPath = file.path.deletePrefix(pathRelativeTo.path)
     }

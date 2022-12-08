@@ -1,0 +1,32 @@
+//
+//  Localizable.lproj
+//  Twackup
+//
+//  Created by Daniil on 08.12.2022.
+//
+
+// Controllers
+"debs-short-title" = "Собранные";
+"leaves-pkgs-short-title" = "Независимые";
+"all-pkgs-short-title" = "Установленные";
+
+"debs-full-title" = "Собранные";
+"leaves-pkgs-full-title" = "Независимые";
+"all-pkgs-full-title" = "Все пакеты";
+
+// Views
+"detailed-view-identifier-lbl" = "Идентификатор:";
+"detailed-view-version-lbl" = "Версия:";
+"detailed-view-section-lbl" = "Секция:";
+"detailed-view-learnmore-btn" = "Подробнее...";
+"detailed-view-size-lbl" = "Размер:";
+"detailed-view-installedsize-lbl" = "В установленном виде:";
+"detailed-view-debsize-lbl" = "В собранном виде:";
+"detailed-view-rebuild-btn" = "Собрать";
+"detailed-view-rebuild-btn-footer" = "Пожалуйста, обратите внимание, что собранный пакет может быть неполным и \
+не иметь некоторых файлов, необходимых для корректной работы пакета.";
+
+// Misc
+"search-field-lbl" = "Поиск";
+"unknown" = "Неизвестно";
+"remove-btn" = "Удалить";

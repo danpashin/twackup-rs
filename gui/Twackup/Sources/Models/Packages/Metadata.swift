@@ -15,26 +15,29 @@ extension PackageVC {
     }
 
     class AllPkgsMetadata: Metadata {
-        override var navTitle: String { "All packages"}
+        override var navTitle: String { Bundle.appLocalize("all-pkgs-full-title") }
 
         override var tabbarItem: UITabBarItem {
-            UITabBarItem(title: "All", image: UIImage(systemName: "list.bullet.rectangle"), tag: 0)
+            UITabBarItem(title: Bundle.appLocalize("all-pkgs-short-title"),
+                         image: UIImage(systemName: "note.text"), tag: 0)
         }
     }
 
     class LeavesPkgsMetadata: Metadata {
-        override var navTitle: String { "Leaves" }
+        override var navTitle: String { Bundle.appLocalize("leaves-pkgs-full-title") }
 
         override var tabbarItem: UITabBarItem {
-            UITabBarItem(title: "Leaves", image: UIImage(systemName: "cube"), tag: 0)
+            UITabBarItem(title: Bundle.appLocalize("leaves-pkgs-short-title"),
+                         image: UIImage(systemName: "heart.text.square"), tag: 0)
         }
     }
 
     class BuildedPkgsMetadata: Metadata {
-        override var navTitle: String { "DEBs" }
+        override var navTitle: String { Bundle.appLocalize("debs-full-title") }
 
         override var tabbarItem: UITabBarItem {
-            UITabBarItem(title: "DEBs", image: UIImage(systemName: "list.bullet.rectangle"), tag: 0)
+            UITabBarItem(title: Bundle.appLocalize("debs-short-title"),
+                         image: UIImage(systemName: "cube"), tag: 0)
         }
     }
 }

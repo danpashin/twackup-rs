@@ -19,9 +19,26 @@ extension PackageVC {
 
         private(set) var package: Package?
 
-        let identifierLabel = KeyValueLabel(key: "Identifier:")
-        let versionLabel = KeyValueLabel(key: "Version:")
-        let sectionLabel = KeyValueLabel(key: "Section:")
+        let identifierLabel = KeyValueLabel(key: Bundle.appLocalize("detailed-view-identifier-lbl"))
+        let versionLabel = KeyValueLabel(key: Bundle.appLocalize("detailed-view-version-lbl"))
+        let sectionLabel = KeyValueLabel(key: Bundle.appLocalize("detailed-view-section-lbl"))
+        let installedSizeLabel = KeyValueLabel(key: Bundle.appLocalize("detailed-view-installedsize-lbl"))
+
+        lazy private(set) var sizesLabel: UILabel = {
+            let label = UILabel()
+            label.text = Bundle.appLocalize("detailed-view-size-lbl")
+            label.font = UIFont.preferredFont(forTextStyle: .headline)
+            label.textColor = .secondaryLabel
+            return label
+        }()
+
+        lazy private(set) var sizesStackView: UIStackView = {
+            let stack = UIStackView()
+            stack.axis = .vertical
+            stack.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
+            stack.isLayoutMarginsRelativeArrangement = true
+            return stack
+        }()
 
         lazy private(set) var logoHeightConstraint = logoView.heightAnchor.constraint(equalToConstant: 0.0)
         lazy private(set) var logoView: UIImageView = {
@@ -44,7 +61,7 @@ extension PackageVC {
 
         lazy private(set) var learnMoreButton: UIButton = {
             let button = UIButton(type: .system)
-            button.setTitle("Learn More", for: .normal)
+            button.setTitle(Bundle.appLocalize("detailed-view-learnmore-btn"), for: .normal)
             button.addTarget(self, action: #selector(learnMoreTapped), for: .touchUpInside)
             return button
         }()
@@ -59,7 +76,11 @@ extension PackageVC {
             labelsStack.addArrangedSubview(identifierLabel)
             labelsStack.addArrangedSubview(versionLabel)
             labelsStack.addArrangedSubview(sectionLabel)
+            labelsStack.addArrangedSubview(sizesLabel)
+            labelsStack.addArrangedSubview(sizesStackView)
             labelsStack.addArrangedSubview(learnMoreButton)
+
+            sizesStackView.addArrangedSubview(installedSizeLabel)
 
             logoView.translatesAutoresizingMaskIntoConstraints = false
             labelsStack.translatesAutoresizingMaskIntoConstraints = false
@@ -84,6 +105,12 @@ extension PackageVC {
             identifierLabel.valueLabel.text = package.id
             versionLabel.valueLabel.text = package.version
             sectionLabel.valueLabel.text = package.section.humanName()
+
+            if package.installedSize != 0 {
+                installedSizeLabel.valueLabel.text = ByteCountFormatter().string(fromByteCount: package.installedSize)
+            } else {
+                installedSizeLabel.valueLabel.text = Bundle.appLocalize("unknown")
+            }
 
             if let icon = package.icon {
                 if icon.isFileURL {

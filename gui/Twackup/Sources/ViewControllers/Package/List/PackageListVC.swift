@@ -17,7 +17,7 @@ extension PackageVC {
             let controller = UISearchController(searchResultsController: nil)
             controller.obscuresBackgroundDuringPresentation = false
             controller.searchResultsUpdater = self.model
-            controller.searchBar.placeholder = "Search"
+            controller.searchBar.placeholder = Bundle.appLocalize("search-field-lbl")
             return controller
         }()
 

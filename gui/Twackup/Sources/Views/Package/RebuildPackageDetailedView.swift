@@ -18,7 +18,7 @@ extension PackageVC {
             let button = UIButton(type: .system)
             button.addTarget(self, action: #selector(rebuild), for: .touchUpInside)
 
-            button.setTitle("REBUILD", for: .normal)
+            button.setTitle(Bundle.appLocalize("detailed-view-rebuild-btn"), for: .normal)
             button.titleLabel?.font = UIFont.systemFont(ofSize: UIFont.buttonFontSize, weight: .semibold)
 
             button.setImage(UIImage(systemName: "shippingbox"), for: .normal)
@@ -33,15 +33,32 @@ extension PackageVC {
             return button
         }()
 
+        lazy private(set) var rebuildWarningLabel: UILabel = {
+            let label = UILabel()
+
+            label.numberOfLines = 0
+            label.text = Bundle.appLocalize("detailed-view-rebuild-btn-footer")
+            label.font = UIFont.preferredFont(forTextStyle: .footnote)
+            label.textColor = .secondaryLabel
+
+            return label
+        }()
+
         init(delegate: RebuildPackageDetailedViewDelegate) {
             super.init(delegate: delegate)
 
             addSubview(rebuildButton)
+            addSubview(rebuildWarningLabel)
 
             rebuildButton.translatesAutoresizingMaskIntoConstraints = false
+            rebuildWarningLabel.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
+                rebuildWarningLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+                rebuildWarningLabel.heightAnchor.constraint(equalToConstant: 48.0),
+                rebuildWarningLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8.0),
+
                 rebuildButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-                rebuildButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8.0)
+                rebuildButton.bottomAnchor.constraint(equalTo: rebuildWarningLabel.topAnchor, constant: -8.0)
             ])
         }
 
