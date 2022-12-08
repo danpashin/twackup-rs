@@ -18,30 +18,32 @@ class DatabasePackageProvider: PackageDataProvider {
         allPackages = database.fetchBuildedPackages()
     }
 
-    func deletePackage(at index: Int) -> Bool {
-        var package: Package!
-        if self.currentFilter == nil {
-            package = allPackages.remove(at: index)
-        } else {
-            // Find package to delete in filtered
-            // Then find it in allPackages
-            // and finally delete
-            guard let pkgs = filteredPackages,
-                  let toRemove = allPackages.enumerated().first(where: { $1.isEqualTo(pkgs[index]) })
-            else { return false }
+    func deletePackages(at indexes: [Int]) -> Bool {
+        let toDelete = packages.enumerated().filter({ indexes.contains($0.offset) }).map({ $0.element })
 
-            package = allPackages.remove(at: toRemove.offset)
+        // refactor to use of SET
+        allPackages = allPackages.filter({ package in
+            !toDelete.contains(where: { $0.isEqualTo(package) })
+        })
+
+        for package in toDelete {
+            guard let dbPackage = package as? DebPackage else { continue }
+            do {
+                try FileManager.default.removeItem(at: dbPackage.fileURL())
+            } catch {
+                print("\(error)")
+            }
         }
 
-        guard let dbPackage = database.fetch(package: package),
-              (try? FileManager.default.removeItem(at: dbPackage.fileURL())) != nil
-        else { return false }
-
-        database.delete(package: dbPackage)
+        database.delete(packages: toDelete)
 
         // reload filter
         applyFilter(currentFilter)
 
         return true
+    }
+
+    func deletePackage(at index: Int) -> Bool {
+        deletePackages(at: [index])
     }
 }

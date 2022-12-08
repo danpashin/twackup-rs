@@ -52,7 +52,7 @@ class Dpkg {
                 package.deallocate(package.inner_ptr)
                 continue
             }
-            
+
             packages.append(pModel as any Package)
         }
 

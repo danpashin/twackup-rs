@@ -30,6 +30,11 @@
 "detailed-view-rebuild-btn-footer" = "Please note that the builded package may be incomplete and \
 may not have some files necessary for the correct operation of the package.";
 
+"debs-remove-all-btn" = "Remove all";
+"debs-remove-selected-btn" = "Remove selected";
+"debs-share-btn" = "Share";
+"debs-selectall-btn" = "Select all";
+
 // Misc
 "search-field-lbl" = "Search";
 "unknown" = "Unknown";

@@ -5,7 +5,7 @@
 //  Created by Daniil on 28.11.2022.
 //
 
-protocol Package: AnyObject {
+@objc protocol Package {
     var id: String { get }
 
     var name: String { get }

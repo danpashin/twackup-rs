@@ -7,10 +7,12 @@
 
 import UIKit
 
-protocol PackageListDelegate: AnyObject {
+@objc protocol PackageListDelegate {
     func reloadTableView()
 
     func didSelectPackage(_ package: Package)
+
+    @objc optional func tableView(_ tableView: UITableView, didUpdateSelection selected: [IndexPath]?)
 }
 
 extension PackageVC {
@@ -41,6 +43,12 @@ extension PackageVC {
 
         func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             delegate?.didSelectPackage(dataProvider.packages[indexPath.row])
+
+            delegate?.tableView?(tableView, didUpdateSelection: tableView.indexPathsForSelectedRows)
+        }
+
+        func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+            delegate?.tableView?(tableView, didUpdateSelection: tableView.indexPathsForSelectedRows)
         }
 
         func updateSearchResults(for searchController: UISearchController) {

@@ -62,4 +62,15 @@ class Database {
             saveContext()
         }
     }
+
+    func delete(packages: [DebPackage]) {
+        context.perform { [self] in
+            packages.forEach({ context.delete($0) })
+            saveContext()
+        }
+    }
+
+    func delete(packages: [Package]) {
+        delete(packages: packages.compactMap({ $0 as? DebPackage}))
+    }
 }

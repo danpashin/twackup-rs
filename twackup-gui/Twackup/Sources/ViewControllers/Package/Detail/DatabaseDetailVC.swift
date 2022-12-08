@@ -26,7 +26,7 @@ extension PackageVC {
         }
 
         @objc func share() {
-            guard let package = currentPackage, let package = database.fetch(package: package) else { return }
+            guard let package = currentPackage as? DebPackage else { return }
             let items = [package.fileURL()]
 
             let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
