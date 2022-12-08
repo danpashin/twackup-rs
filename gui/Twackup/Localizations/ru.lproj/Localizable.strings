@@ -9,10 +9,14 @@
 "debs-short-title" = "Собранные";
 "leaves-pkgs-short-title" = "Независимые";
 "all-pkgs-short-title" = "Установленные";
+"log-short-title" = "Лог";
+"preferences-short-title" = "Настройки";
 
 "debs-full-title" = "Собранные";
 "leaves-pkgs-full-title" = "Независимые";
 "all-pkgs-full-title" = "Все пакеты";
+"log-full-title" = "Лог";
+"preferences-full-title" = "Настройки";
 
 // Views
 "detailed-view-identifier-lbl" = "Идентификатор:";

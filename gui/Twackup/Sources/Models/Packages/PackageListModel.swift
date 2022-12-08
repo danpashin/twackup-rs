@@ -17,11 +17,11 @@ extension PackageVC {
     class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource {
         private(set) var dataProvider: PackageDataProvider
 
-        private(set) var metadata: Metadata
+        private(set) var metadata: ViewControllerMetadata
 
         var delegate: PackageListDelegate?
 
-        init(dataProvider: PackageDataProvider, metadata: Metadata) {
+        init(dataProvider: PackageDataProvider, metadata: ViewControllerMetadata) {
             self.dataProvider = dataProvider
             self.metadata = metadata
         }

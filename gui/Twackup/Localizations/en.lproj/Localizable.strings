@@ -9,10 +9,14 @@
 "debs-short-title" = "Rebuilded";
 "leaves-pkgs-short-title" = "Leaves";
 "all-pkgs-short-title" = "Installed";
+"log-short-title" = "Log";
+"preferences-short-title" = "Preferences";
 
 "debs-full-title" = "Rebuilded";
 "leaves-pkgs-full-title" = "Leaves";
 "all-pkgs-full-title" = "Installed";
+"log-full-title" = "Log";
+"preferences-full-title" = "Preferences";
 
 // Views
 "detailed-view-identifier-lbl" = "Identifier:";

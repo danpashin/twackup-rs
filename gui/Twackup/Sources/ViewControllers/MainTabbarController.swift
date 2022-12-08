@@ -45,11 +45,19 @@ class MainTabbarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setViewControllers([buildedPackagesVC, leavesPackagesVC, allPackagesVC], animated: false)
+        let logController = UIViewController()
+        logController.tabBarItem = LogVCMetadata().tabbarItem
+
+        let settingsController = UIViewController()
+        settingsController.tabBarItem = PreferencesVCMetadata().tabbarItem
+
+        setViewControllers([
+            buildedPackagesVC, leavesPackagesVC, allPackagesVC, logController, settingsController
+        ], animated: false)
     }
 
     private func makePackagesControler(_ dataProvider: PackageDataProvider,
-                                       _ metadata: PackageVC.Metadata) -> UIViewController {
+                                       _ metadata: ViewControllerMetadata) -> UIViewController {
         let model = PackageVC.PackageListModel(dataProvider: dataProvider, metadata: metadata)
         let detailVC = PackageVC.DpkgDetailVC(dpkg: dpkgInstance, database: database)
 

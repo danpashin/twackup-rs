@@ -15,7 +15,7 @@ extension PackageVC {
             set { }
         }
 
-        init(dataProvider: DatabasePackageProvider, metadata: Metadata) {
+        init(dataProvider: DatabasePackageProvider, metadata: ViewControllerMetadata) {
             debsProvider = dataProvider
             super.init(dataProvider: dataProvider, metadata: metadata)
         }
