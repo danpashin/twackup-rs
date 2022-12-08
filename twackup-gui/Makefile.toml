@@ -1,0 +1,67 @@
+[config]
+default_to_workspace = false
+
+[env]
+CARGO_MAKE_CRATE_VERSION = { script = ["xcrun xcodebuild -showBuildSettings | grep MARKETING_VERSION | tr -d 'MARKETING_VERSION ='"] }
+GUI_ARCHIVE_PATH = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/Twackup.xcarchive"
+GUI_APP_DIR = "${GUI_ARCHIVE_PATH}/Products/Applications/Twackup.app"
+
+DEB_NAME = "Twackup (GUI)"
+DEB_IDENTIFIER = "ru.danpashin.twackup-gui"
+DEB_SECTION = "Utilities"
+DEB_PRIORITY = "optional"
+DEB_ARCHITECTURE = "iphoneos-arm"
+DEB_DEPENDS = "firmware (>= 14.0)"
+DEB_CHANGELOG_FILE = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/changelog"
+DEB_HOMEPAGE = "https://moreinfo.thebigboss.org/moreinfo/depiction.php?file=twackupDp"
+DEB_AUTHOR = "DanP"
+DEB_LICENSE = "GPL-3.0-only"
+DEB_DESCRIPTION = "Safe and fast GUI utility for rebuilding DEBs and backing up packages"
+
+DEB_FILE_NAME = "${DEB_IDENTIFIER}_${CARGO_MAKE_CRATE_VERSION}_${DEB_ARCHITECTURE}.deb"
+DEB_TARGET_FILE = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/${DEB_FILE_NAME}"
+
+[tasks.archive]
+command = "xcrun"
+args = [
+    "xcodebuild",
+    "clean",
+    "archive",
+    "-archivePath", "${GUI_ARCHIVE_PATH}",
+    "-scheme", "Twackup",
+    "-workspace", "Twackup.xcworkspace",
+    "CODE_SIGN_IDENTITY=",
+    "CODE_SIGNING_REQUIRED="
+]
+
+[tasks.sign]
+command = "ldid"
+args = [ "-S", "${GUI_APP_DIR}" ]
+
+[tasks.create-deb]
+command = "fpm"
+args = [
+    "--input-type", "dir",
+    "--output-type", "deb",
+    "--force",
+    "--package", "${DEB_TARGET_FILE}",
+    "--log", "warn",
+    "--name", "${DEB_IDENTIFIER}",
+    "--category", "${DEB_SECTION}",
+    "--depends", "${DEB_DEPENDS}",
+    "--architecture", "${DEB_ARCHITECTURE}",
+    "--maintainer", "${DEB_AUTHOR}",
+    "--deb-priority", "${DEB_PRIORITY}",
+    "--description", "${DEB_DESCRIPTION}",
+    "--version", "${CARGO_MAKE_CRATE_VERSION}",
+    "--license", "${DEB_LICENSE}",
+    "--vendor", "",
+    "--deb-changelog", "${DEB_CHANGELOG_FILE}",
+    "--url", "${DEB_HOMEPAGE}",
+    "--deb-field", "Name: ${DEB_NAME}",
+
+    "${GUI_APP_DIR}=/Applications",
+]
+
+[tasks.create-package]
+dependencies = ["archive", "sign", "create-deb"]
