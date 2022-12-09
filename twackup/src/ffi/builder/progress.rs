@@ -17,47 +17,15 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::{
-    ffi::package::TwPackage,
-    package::Package,
-    progress::{MessageLevel, Progress},
-};
+use crate::{ffi::package::TwPackage, package::Package, progress::Progress};
 use safer_ffi::{derive_ReprC, prelude::c_slice::Raw, slice::Ref};
 use std::{ffi::c_void, os::unix::ffi::OsStrExt, path::Path, ptr::addr_of};
-
-#[derive_ReprC]
-#[repr(u8)]
-#[derive(Copy, Clone)]
-pub enum TwMessageLevel {
-    Debug,
-    Info,
-    Warning,
-    Error,
-}
-
-impl From<MessageLevel> for TwMessageLevel {
-    fn from(level: MessageLevel) -> Self {
-        match level {
-            MessageLevel::Debug => Self::Debug,
-            MessageLevel::Info => Self::Info,
-            MessageLevel::Warning => Self::Warning,
-            MessageLevel::Error => Self::Error,
-        }
-    }
-}
 
 #[derive_ReprC]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct TwProgressFunctions {
     context: Option<std::ptr::NonNull<c_void>>,
-    print_message: Option<
-        unsafe extern "C" fn(
-            Option<std::ptr::NonNull<c_void>>,
-            message: Raw<u8>,
-            level: TwMessageLevel,
-        ),
-    >,
     started_processing: Option<
         unsafe extern "C" fn(context: Option<std::ptr::NonNull<c_void>>, package: *const TwPackage),
     >,
@@ -77,14 +45,6 @@ pub(crate) struct TwProgressImpl {
 }
 
 impl Progress for TwProgressImpl {
-    fn print_message<M: AsRef<str>>(&self, message: M, level: MessageLevel) {
-        if let Some(func) = self.functions.print_message {
-            let message = Ref::from(message.as_ref().as_bytes());
-            let message = Raw::from(message);
-            unsafe { func(self.functions.context, message, level.into()) };
-        }
-    }
-
     fn started_processing(&self, package: &Package) {
         if let Some(func) = self.functions.started_processing {
             let package = TwPackage::from(package);

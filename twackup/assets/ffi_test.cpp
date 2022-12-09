@@ -1,16 +1,6 @@
 #include "twackup.h"
 #include <iostream>
 
-static void print_message(void *context, slice_raw_uint8_t msg, TwMessageLevel_t level) {
-  std::cout
-  << "print_message(\""
-  << std::string((char *)msg.ptr, msg.len)
-  << "\", "
-  << level
-  << ")"
-  << std::endl;
-}
-
 static void started_processing(void *context, TwPackage_t const *package) {
   std::cout
   << "started_processing(\""
@@ -70,7 +60,6 @@ int main(int argc, char *argv[]) {
   rebuild_packages.len = packages.len;
 
   TwProgressFunctions_t functions;
-  functions.print_message = print_message;
   functions.started_processing = started_processing;
   functions.finished_processing = finished_processing;
   functions.finished_all = finished_all;

@@ -21,15 +21,16 @@
 
 pub mod builder;
 pub mod c_dpkg;
+mod logger;
 pub mod package;
 
 use self::{
+    builder::{progress::TwProgressFunctions, TwPackagesRebuildResult},
     c_dpkg::{TwDpkg, TwPackagesSort},
+    logger::{Logger, TwLogFunctions, TwMessageLevel},
     package::{container::TwPackageRef, field::TwPackageField, TwPackage},
 };
-use crate::ffi::builder::TwPackagesRebuildResult;
 use crate::Dpkg;
-use builder::progress::TwProgressFunctions;
 use safer_ffi::{
     derive_ReprC, ffi_export,
     prelude::c_slice,
@@ -154,6 +155,11 @@ fn tw_rebuild_packages(
 #[ffi_export]
 fn tw_free_rebuild_results(results: c_slice::Box<TwPackagesRebuildResult>) {
     drop(results);
+}
+
+#[ffi_export]
+fn tw_enable_logging(functions: TwLogFunctions, level: TwMessageLevel) {
+    Logger::init(functions, level)
 }
 
 /// Generates FFI headers

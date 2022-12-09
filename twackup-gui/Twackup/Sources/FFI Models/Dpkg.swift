@@ -6,7 +6,6 @@
 //
 
 protocol DpkgBuildDelegate: AnyObject {
-    func printMessage(_ message: String, level: Dpkg.MessageLevel)
     func startProcessing(package: Package)
     func finishedProcessing(package: Package, debPath: URL)
     func finishedAll()
@@ -87,15 +86,6 @@ class Dpkg {
     private func createProgressFuncs() -> TwProgressFunctions {
         var funcs = TwProgressFunctions()
         funcs.context = Unmanaged<Dpkg>.passUnretained(self).toOpaque()
-        funcs.print_message = { context, message, msgLevel in
-            guard let context,
-                  let message = String(ffiSlice: message),
-                  let msgLevel = MessageLevel(rawValue: msgLevel)
-            else { return }
-
-            let dpkg = Unmanaged<Dpkg>.fromOpaque(context).takeUnretainedValue()
-            dpkg.buildDelegate?.printMessage(message, level: msgLevel)
-        }
         funcs.started_processing = { context, package in
             guard let context, let package, let ffiPackage = FFIPackage(package.pointee) else { return }
 

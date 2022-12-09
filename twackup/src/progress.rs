@@ -25,18 +25,8 @@
 use crate::package::Package;
 use std::path::Path;
 
-pub enum MessageLevel {
-    Debug,
-    Info,
-    Warning,
-    Error,
-}
-
 /// Allow users to see progress
 pub trait Progress {
-    /// Prints message. Should be probably removed.
-    fn print_message<M: AsRef<str>>(&self, message: M, level: MessageLevel);
-
     /// Sets current progress message
     fn started_processing(&self, package: &Package);
 

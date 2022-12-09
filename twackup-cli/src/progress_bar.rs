@@ -17,13 +17,9 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use console::style;
 use indicatif::ProgressBar as ProgressBarImpl;
 use std::path::Path;
-use twackup::{
-    package::Package,
-    progress::{MessageLevel, Progress},
-};
+use twackup::{package::Package, progress::Progress};
 
 pub(crate) static mut PROGRESS_BAR: Option<&'static ProgressBar> = None;
 
@@ -56,20 +52,6 @@ impl ProgressBar {
 }
 
 impl Progress for ProgressBar {
-    fn print_message<M: AsRef<str>>(&self, message: M, level: MessageLevel) {
-        match level {
-            MessageLevel::Debug | MessageLevel::Info => {
-                self.0.println(message);
-            }
-            MessageLevel::Warning => {
-                self.0.println(style(message.as_ref()).yellow().to_string());
-            }
-            MessageLevel::Error => {
-                self.0.println(style(message.as_ref()).red().to_string());
-            }
-        }
-    }
-
     fn started_processing(&self, package: &Package) {
         let message = format!("Processing {}", package.human_name());
         self.0.set_message(message);

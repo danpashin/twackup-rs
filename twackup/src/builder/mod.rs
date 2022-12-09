@@ -24,14 +24,13 @@
 //!
 //! ```no_run
 //! use twackup::builder::{Worker, Preferences};
-//! use twackup::{Result, Dpkg, progress::{Progress, MessageLevel}, package::Package};
+//! use twackup::{Result, Dpkg, progress::Progress, package::Package};
 //! use std::{collections::HashSet, sync::Arc, path::Path};
 //!
 //! // some progress struct btw
 //! struct ProgressImpl;
 //!
 //! impl Progress for ProgressImpl {
-//!     fn print_message<M: AsRef<str>>(&self, _message: M, _level: MessageLevel) {}
 //!     fn started_processing(&self, _package: &Package) {}
 //!     fn finished_processing<P: AsRef<Path>>(&self, _package: &Package, _deb_path: P) {}
 //!     fn finished_all(&self) {}
@@ -263,7 +262,7 @@ mod tests {
     use crate::{
         builder::{Preferences, Worker},
         package::Package,
-        progress::{MessageLevel, Progress},
+        progress::Progress,
         Dpkg, Result,
     };
     use std::{fs, path::Path, process::Command, sync::Arc};
@@ -271,7 +270,6 @@ mod tests {
     struct ProgressImpl;
 
     impl Progress for ProgressImpl {
-        fn print_message<M: AsRef<str>>(&self, _message: M, _level: MessageLevel) {}
         fn started_processing(&self, _package: &Package) {}
         fn finished_processing<P: AsRef<Path>>(&self, _package: &Package, _deb_path: P) {}
         fn finished_all(&self) {}

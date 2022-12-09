@@ -17,15 +17,15 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-pub mod progress;
+pub(crate) mod progress;
 
-use super::{c_dpkg::TwDpkg, package::TwPackage};
-use crate::progress::Progress;
+use self::progress::{TwProgressFunctions, TwProgressImpl};
 use crate::{
     builder::{Preferences, Worker},
+    ffi::{c_dpkg::TwDpkg, package::TwPackage},
+    progress::Progress,
     Result,
 };
-use progress::{TwProgressFunctions, TwProgressImpl};
 use safer_ffi::{
     derive_ReprC,
     prelude::{
@@ -33,8 +33,7 @@ use safer_ffi::{
         char_p,
     },
 };
-use std::os::unix::ffi::OsStringExt;
-use std::{collections::LinkedList, sync::Arc};
+use std::{collections::LinkedList, os::unix::ffi::OsStringExt, sync::Arc};
 
 #[derive_ReprC]
 #[repr(C)]

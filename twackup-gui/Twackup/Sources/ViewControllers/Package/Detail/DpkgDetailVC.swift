@@ -34,10 +34,6 @@ extension PackageVC {
             }
         }
 
-        func printMessage(_ message: String, level: Dpkg.MessageLevel) {
-
-        }
-
         func startProcessing(package: Package) {
 
         }
