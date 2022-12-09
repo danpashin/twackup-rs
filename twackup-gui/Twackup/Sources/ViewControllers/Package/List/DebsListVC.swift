@@ -107,7 +107,7 @@ extension PackageVC {
 
         @objc func actionRemoveAll() {
             actionDoneEdit()
-            
+
             var indexPaths: [IndexPath] = []
             for row in 0..<debsModel.dataProvider.packages.count {
                 indexPaths.append(IndexPath(row: row, section: 0))

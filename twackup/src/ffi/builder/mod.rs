@@ -34,7 +34,7 @@ use safer_ffi::{
     },
     ptr::NonNullMut,
 };
-use std::{collections::LinkedList, mem, os::unix::ffi::OsStringExt, sync::Arc};
+use std::{collections::LinkedList, os::unix::ffi::OsStringExt, sync::Arc};
 
 #[derive_ReprC]
 #[repr(C)]

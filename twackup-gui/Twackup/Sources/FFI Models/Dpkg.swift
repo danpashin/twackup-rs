@@ -66,7 +66,6 @@ class Dpkg {
         }
 
         var ffiResults = slice_boxed_TwPackagesRebuildResult()
-        print(MemoryLayout<TwPackagesRebuildResult>.size)
         let status = outDir.path.utf8CString.withUnsafeBufferPointer {
             // safe to unwrap?
             tw_rebuild_packages(innerDpkg, ffiPackages, createProgressFuncs(), $0.baseAddress!, &ffiResults)

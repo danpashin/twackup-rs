@@ -23,23 +23,34 @@ use std::ffi::c_void;
 
 #[derive_ReprC]
 #[repr(u8)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialOrd, PartialEq, Eq)]
 pub enum TwMessageLevel {
     Off,
-    Debug,
-    Info,
-    Warning,
     Error,
+    Warning,
+    Info,
+    Debug,
 }
 
 impl From<TwMessageLevel> for LevelFilter {
     fn from(level: TwMessageLevel) -> Self {
         match level {
             TwMessageLevel::Off => Self::Off,
-            TwMessageLevel::Debug => Self::Debug,
-            TwMessageLevel::Info => Self::Info,
-            TwMessageLevel::Warning => Self::Warn,
             TwMessageLevel::Error => Self::Error,
+            TwMessageLevel::Warning => Self::Warn,
+            TwMessageLevel::Info => Self::Info,
+            TwMessageLevel::Debug => Self::Debug,
+        }
+    }
+}
+
+impl From<log::Level> for TwMessageLevel {
+    fn from(level: log::Level) -> Self {
+        match level {
+            log::Level::Error => Self::Error,
+            log::Level::Warn => Self::Warning,
+            log::Level::Info => Self::Info,
+            log::Level::Debug | log::Level::Trace => Self::Debug,
         }
     }
 }
@@ -82,8 +93,9 @@ impl Logger {
 }
 
 impl Log for Logger {
-    fn enabled(&self, _metadata: &Metadata<'_>) -> bool {
-        true
+    fn enabled(&self, metadata: &Metadata<'_>) -> bool {
+        let level: TwMessageLevel = metadata.level().into();
+        level > self.level
     }
 
     fn log(&self, record: &Record<'_>) {
@@ -97,7 +109,7 @@ impl Log for Logger {
                 Box::from(msg.into_bytes().into_boxed_slice())
             },
         };
-        unsafe { (self.functions.log)(self.functions.context, message, self.level) };
+        unsafe { (self.functions.log)(self.functions.context, message, record.level().into()) };
     }
 
     fn flush(&self) {

@@ -25,7 +25,7 @@ extension PackageVC {
 
         func rebuild(_ package: Package) {
             let hud = RJTHud.show()
-            
+
             let rebuilder = PackagesRebuilder(dpkg: dpkg, database: database)
             rebuilder.rebuild(packages: [package]) {
                 hud?.hide(animated: true)

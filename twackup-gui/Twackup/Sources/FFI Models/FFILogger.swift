@@ -16,16 +16,16 @@ protocol FFILoggerSubscriber: NSObjectProtocol {
 class FFILogger {
     @objc enum Level: UInt8 {
         case off
-        case debug
-        case info
-        case warning
         case error
+        case warning
+        case info
+        case debug
     }
 
     struct Message {
         let text: String
 
-        var target: String? = nil
+        var target: String?
     }
 
     private var subscribers: [FFILoggerSubscriber] = []
@@ -54,6 +54,10 @@ class FFILogger {
                 subscriber.log(message: message, level: level)
             }
         }
+    }
+
+    func log(_ text: String, level: Level = .info) {
+        log(message: Message(text: text), level: level)
     }
 
     func addSubsriber(_ subscriber: FFILoggerSubscriber) {

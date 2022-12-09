@@ -44,11 +44,11 @@ class PackagesRebuilder: DpkgBuildDelegate {
                     switch result {
                     case .success: continue
                     case .failure(let error):
-                        appDelegate.logger.log(message: FFILogger.Message(text: "\(error)"), level: .error)
+                        appDelegate.logger.log("\(error)", level: .error)
                     }
                 }
             } catch {
-                appDelegate.logger.log(message: FFILogger.Message(text: "\(error)"), level: .error)
+                appDelegate.logger.log("\(error)", level: .error)
             }
 
             completion?()

@@ -31,7 +31,10 @@ class DatabasePackageProvider: PackageDataProvider {
             do {
                 try FileManager.default.removeItem(at: dbPackage.fileURL())
             } catch {
-                print("\(error)")
+                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                    let err = error as NSError
+                    appDelegate.logger.log(err.localizedDescription, level: .warning)
+                }
             }
         }
 

@@ -69,12 +69,13 @@ class LoggerViewController: UIViewController, FFILoggerSubscriber {
             var targetColor: UIColor
             switch level {
             case .off: targetColor = .clear
-            case .debug: targetColor = .systemYellow
+            case .debug: targetColor = .systemIndigo
             case .info: targetColor = .systemBlue
-            case .warning, .error: targetColor = .systemRed
+            case .warning: targetColor = .systemOrange
+            case .error: targetColor = .systemRed
             }
 
-            let string = NSMutableAttributedString(string: "[\(message.target)]  ", attributes: [
+            let string = NSMutableAttributedString(string: "[\(message.target ?? "")]  ", attributes: [
                 .font: UIFont.boldSystemFont(ofSize: UIFont.systemFontSize),
                 .foregroundColor: targetColor as Any
             ])
