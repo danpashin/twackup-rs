@@ -21,7 +21,7 @@ use super::package::TwPackage;
 use crate::{dpkg::PackagesSort, Dpkg};
 use safer_ffi::{derive_ReprC, prelude::c_slice, ptr};
 use std::{ffi::c_void, mem::ManuallyDrop};
-use tokio::runtime::Runtime;
+use tokio::runtime::{Builder, Runtime};
 
 #[derive_ReprC]
 #[repr(u8)]
@@ -52,15 +52,18 @@ pub struct TwDpkg {
 
 impl TwDpkg {
     pub(crate) fn new(inner: Dpkg) -> Self {
-        let dpkg_ptr = Box::leak(Box::new(inner));
+        let dpkg_ptr = Box::into_raw(Box::new(inner));
 
-        let tokio_rt = Runtime::new().expect("Cannot start tokio runtime");
-        let runtime_ptr = Box::leak(Box::new(tokio_rt));
+        let tokio_rt = Builder::new_multi_thread()
+            .max_blocking_threads(2)
+            .build()
+            .expect("Cannot start tokio runtime");
+        let runtime_ptr = Box::into_raw(Box::new(tokio_rt));
 
         unsafe {
             Self {
-                dpkg_ptr: ptr::NonNull::new_unchecked((dpkg_ptr as *mut Dpkg).cast()),
-                runtime_ptr: ptr::NonNull::new_unchecked((runtime_ptr as *mut Runtime).cast()),
+                dpkg_ptr: ptr::NonNull::new_unchecked(dpkg_ptr.cast()),
+                runtime_ptr: ptr::NonNull::new_unchecked(runtime_ptr.cast()),
             }
         }
     }

@@ -30,8 +30,7 @@ class Database {
             try context.save()
         } catch {
             context.rollback()
-            let nserror = error as NSError
-            fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            print("Unresolved error \(error), \((error as NSError).userInfo)")
         }
     }
 
