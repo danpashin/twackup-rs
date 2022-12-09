@@ -45,6 +45,8 @@
 		0BF07A502941027800EEC8FC /* TwoColumnsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A4F2941027800EEC8FC /* TwoColumnsVC.swift */; };
 		0BF07A5C2941D8D100EEC8FC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0BF07A592941D8D100EEC8FC /* Localizable.strings */; };
 		0BF07A5E2941D91200EEC8FC /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A5D2941D91200EEC8FC /* Bundle.swift */; };
+		0BF07A62294335F700EEC8FC /* FFILogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A61294335F700EEC8FC /* FFILogger.swift */; };
+		0BF07A6429433BE100EEC8FC /* LoggerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A6329433BE100EEC8FC /* LoggerVC.swift */; };
 		6DD25E80695E2BDA484FEFFE /* Pods_Twackup.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E868F451985FB9D360C4198E /* Pods_Twackup.framework */; };
 /* End PBXBuildFile section */
 
@@ -95,6 +97,8 @@
 		0BF07A5A2941D8D100EEC8FC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0BF07A5B2941D8D100EEC8FC /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0BF07A5D2941D91200EEC8FC /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
+		0BF07A61294335F700EEC8FC /* FFILogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FFILogger.swift; sourceTree = "<group>"; };
+		0BF07A6329433BE100EEC8FC /* LoggerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerVC.swift; sourceTree = "<group>"; };
 		E868F451985FB9D360C4198E /* Pods_Twackup.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Twackup.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4A8FB183915E3D413DF2C45 /* Pods-Twackup.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Twackup.debug.xcconfig"; path = "Target Support Files/Pods-Twackup/Pods-Twackup.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -176,6 +180,7 @@
 		0B8661872930AF7100EA4301 /* FFI Models */ = {
 			isa = PBXGroup;
 			children = (
+				0BF07A61294335F700EEC8FC /* FFILogger.swift */,
 				0B8661882930AF7100EA4301 /* Dpkg.swift */,
 				0B88C3052930B2EB00BA5312 /* Package */,
 			);
@@ -186,6 +191,7 @@
 			isa = PBXGroup;
 			children = (
 				0B86616C2930ADA300EA4301 /* MainTabbarController.swift */,
+				0BF07A6329433BE100EEC8FC /* LoggerVC.swift */,
 				0BF07A4F2941027800EEC8FC /* TwoColumnsVC.swift */,
 				0B88C3202930E35800BA5312 /* Package */,
 			);
@@ -488,6 +494,7 @@
 				0B0F22C6293CA01E002128EA /* DatabasePackage.swift in Sources */,
 				0B88C30D2930B88800BA5312 /* PackageTableViewCell.swift in Sources */,
 				0B88C3172930CE3900BA5312 /* Metadata.swift in Sources */,
+				0BF07A6429433BE100EEC8FC /* LoggerVC.swift in Sources */,
 				0B463A9B29389EBB00021EF7 /* DebsListModel.swift in Sources */,
 				0B5D3F9C2934D2EB00AE50F2 /* Database.swift in Sources */,
 				0B88C31E2930DEA200BA5312 /* PackageDetailView.swift in Sources */,
@@ -503,6 +510,7 @@
 				0B434F982935DEFA00311FB6 /* RebuildPackageDetailedView.swift in Sources */,
 				0B8661692930ADA300EA4301 /* AppDelegate.swift in Sources */,
 				0BB1B68E293DCB600050FEB5 /* Collection.swift in Sources */,
+				0BF07A62294335F700EEC8FC /* FFILogger.swift in Sources */,
 				0B434F9C2935E90000311FB6 /* DatabaseDetailVC.swift in Sources */,
 				0B0F22C7293CA01E002128EA /* DebPackage.swift in Sources */,
 				0B5D3F9E2934D85500AE50F2 /* DatabasePackageProvider.swift in Sources */,

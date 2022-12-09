@@ -45,8 +45,9 @@ class MainTabbarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let logController = UIViewController()
-        logController.tabBarItem = LogVCMetadata().tabbarItem
+        let logMetadata = LogVCMetadata()
+        let logController = UINavigationController(rootViewController: LoggerViewController(metadata: logMetadata))
+        logController.tabBarItem = logMetadata.tabbarItem
 
         let settingsController = UIViewController()
         settingsController.tabBarItem = PreferencesVCMetadata().tabbarItem

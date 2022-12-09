@@ -188,7 +188,7 @@ impl<'a, T: Progress> Worker<'a, T> {
             let name = file.trim_start_matches('/');
             let res = archiver.get_mut().append_path_with_name(&file, name).await;
             if let Err(error) = res {
-                log::warn!("[{}] {}", self.package.id, error);
+                log::warn!(target: &self.package.id, "{}", error);
             }
         }
 
@@ -228,7 +228,7 @@ impl<'a, T: Progress> Worker<'a, T> {
         for (path, ext) in contents {
             let res = archiver.get_mut().append_path_with_name(path, ext).await;
             if let Err(error) = res {
-                log::warn!("[{}] {}", self.package.id, error);
+                log::warn!(target: &self.package.id, "{}", error);
             }
         }
 

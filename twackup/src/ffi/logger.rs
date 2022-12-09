@@ -18,10 +18,7 @@
  */
 
 use log::{LevelFilter, Log, Metadata, Record};
-use safer_ffi::{
-    derive_ReprC,
-    prelude::c_slice::{Raw, Ref},
-};
+use safer_ffi::{derive_ReprC, prelude::c_slice::Box};
 use std::ffi::c_void;
 
 #[derive_ReprC]
@@ -49,12 +46,19 @@ impl From<TwMessageLevel> for LevelFilter {
 
 #[derive_ReprC]
 #[repr(C)]
+pub struct TwLogMessage {
+    text: Box<u8>,
+    target: Box<u8>,
+}
+
+#[derive_ReprC]
+#[repr(C)]
 #[derive(Copy, Clone)]
 pub struct TwLogFunctions {
     context: Option<std::ptr::NonNull<c_void>>,
     log: unsafe extern "C" fn(
         Option<std::ptr::NonNull<c_void>>,
-        message: Raw<u8>,
+        message: TwLogMessage,
         level: TwMessageLevel,
     ),
     flush: unsafe extern "C" fn(Option<std::ptr::NonNull<c_void>>),
@@ -73,7 +77,7 @@ impl Logger {
         let logger = Self { functions, level };
 
         ::log::set_max_level(level.into());
-        ::log::set_boxed_logger(Box::new(logger)).expect("Logger failed");
+        ::log::set_boxed_logger(std::boxed::Box::new(logger)).expect("Logger failed");
     }
 }
 
@@ -83,8 +87,16 @@ impl Log for Logger {
     }
 
     fn log(&self, record: &Record<'_>) {
-        let message = record.args().to_string();
-        let message = Raw::from(Ref::from(message.as_bytes()));
+        let message = TwLogMessage {
+            text: {
+                let message = record.args().to_string();
+                Box::from(message.into_bytes().into_boxed_slice())
+            },
+            target: {
+                let msg = record.target().to_string();
+                Box::from(msg.into_bytes().into_boxed_slice())
+            },
+        };
         unsafe { (self.functions.log)(self.functions.context, message, self.level) };
     }
 
