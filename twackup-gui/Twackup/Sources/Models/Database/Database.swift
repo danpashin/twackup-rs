@@ -40,10 +40,12 @@ class Database {
         return package
     }
 
-    func addBuildedPackage(_ package: DebPackage) {
+    func addBuildedPackages(_ packages: [DebPackage]) {
         context.perform { [self] in
-            context.insert(package)
-            saveContext()
+            for package in packages {
+                context.insert(package)
+                saveContext()
+            }
         }
     }
 

@@ -58,29 +58,42 @@ class Dpkg {
         return packages
     }
 
-    func rebuild(packages: [Package], outDir: URL = defaultSaveDirectory) -> Bool {
+    func rebuild(packages: [Package], outDir: URL = defaultSaveDirectory) throws -> [Result<URL, NSError>] {
         let innerPkgs = packages.compactMap({ ($0 as? FFIPackage)?.pkg })
         let ffiPackages = innerPkgs.withUnsafeBufferPointer {
             // safe to unwrap?
             slice_ref_TwPackage_t(ptr: $0.baseAddress!, len: $0.count)
         }
 
-        var results = slice_boxed_TwPackagesRebuildResult()
+        var ffiResults = slice_boxed_TwPackagesRebuildResult()
+        print(MemoryLayout<TwPackagesRebuildResult>.size)
         let status = outDir.path.utf8CString.withUnsafeBufferPointer {
             // safe to unwrap?
-            tw_rebuild_packages(innerDpkg, ffiPackages, createProgressFuncs(), $0.baseAddress!, &results)
+            tw_rebuild_packages(innerDpkg, ffiPackages, createProgressFuncs(), $0.baseAddress!, &ffiResults)
         }
 
-        let resultsBuf = UnsafeConsumingCollection(raw: results.ptr, length: results.len)
-        for result in resultsBuf {
-            let error = String(ffiSlice: result.error, deallocate: true)
-            let path = String(ffiSlice: result.deb_path, deallocate: true)
-
-            print("success = \(result.success)")
-            print("path = \"\(String(describing: path))\"; error = \(String(describing: error))")
+        if status != TwResult_t(TW_RESULT_OK) {
+            fatalError()
         }
 
-        return status == TwResult_t(TW_RESULT_OK)
+        var results: [Result<URL, NSError>] = []
+        results.reserveCapacity(ffiResults.len)
+
+        for result in UnsafeBufferPointer(start: ffiResults.ptr, count: ffiResults.len) {
+            if result.success {
+                // safe to unwrap here 'cause Rust string is UTF-8 encoded string
+                let path = String(ffiSlice: result.deb_path)!
+                results.append(.success(URL(fileURLWithPath: path)))
+            } else {
+                results.append(.failure(NSError(domain: "ru.danpashin.twackup", code: 0, userInfo: [
+                    NSLocalizedDescriptionKey: "\(String(ffiSlice: result.error) ?? "")"
+                ])))
+            }
+        }
+
+        tw_free_rebuild_results(ffiResults)
+
+        return results
     }
 
     private func createProgressFuncs() -> TwProgressFunctions {

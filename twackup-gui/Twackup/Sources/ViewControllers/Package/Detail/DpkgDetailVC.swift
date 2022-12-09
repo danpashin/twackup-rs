@@ -8,13 +8,11 @@
 import UIKit
 
 extension PackageVC {
-    class DpkgDetailVC: DetailVC, DpkgBuildDelegate, RebuildPackageDetailedViewDelegate {
+    class DpkgDetailVC: DetailVC, RebuildPackageDetailedViewDelegate {
         private lazy var _container = RebuildPackageDetailedView(delegate: self)
         override var containerView: PackageDetailedView { _container }
 
         let dpkg: Dpkg
-
-        var hud: RJTHud?
 
         init(dpkg: Dpkg, database: Database) {
             self.dpkg = dpkg
@@ -26,30 +24,12 @@ extension PackageVC {
         }
 
         func rebuild(_ package: Package) {
-            hud = RJTHud.show()
-            dpkg.buildDelegate = self
-
-            DispatchQueue.global().async {
-                self.dpkg.rebuild(packages: [package])
+            let hud = RJTHud.show()
+            
+            let rebuilder = PackagesRebuilder(dpkg: dpkg, database: database)
+            rebuilder.rebuild(packages: [package]) {
+                hud?.hide(animated: true)
             }
-        }
-
-        func startProcessing(package: Package) {
-
-        }
-
-        func finishedProcessing(package: Package, debPath: URL) {
-            let model = database.createBuildedPackage()
-            model.setProperties(package: package)
-            model.setProperties(file: debPath, pathRelativeTo: Dpkg.defaultSaveDirectory)
-
-            database.addBuildedPackage(model)
-        }
-
-        func finishedAll() {
-            hud?.hide(animated: true)
-
-            NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
         }
     }
 }

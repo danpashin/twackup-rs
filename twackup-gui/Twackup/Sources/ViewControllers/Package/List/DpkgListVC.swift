@@ -8,13 +8,11 @@
 import Foundation
 
 extension PackageVC {
-    class DpkgListVC: PackageSelectableListVC, DpkgBuildDelegate {
+    class DpkgListVC: PackageSelectableListVC {
 
         let dpkg: Dpkg
 
         let database: Database
-
-        var hud: RJTHud?
 
         private var isAnyPackageSelected: Bool = false
 
@@ -77,32 +75,12 @@ extension PackageVC {
         }
 
         func rebuild(packages: [Package]) {
+            let hud = RJTHud.show()
 
-            hud = RJTHud.show()
-            dpkg.buildDelegate = self
-
-            DispatchQueue.global().async { [self] in
-                dpkg.rebuild(packages: packages)
+            let rebuilder = PackagesRebuilder(dpkg: dpkg, database: database)
+            rebuilder.rebuild(packages: packages) {
+                hud?.hide(animated: true)
             }
-        }
-
-        func startProcessing(package: Package) {
-
-        }
-
-        func finishedProcessing(package: Package, debPath: URL) {
-            let model = database.createBuildedPackage()
-            model.setProperties(package: package)
-            model.setProperties(file: debPath, pathRelativeTo: Dpkg.defaultSaveDirectory)
-
-            database.addBuildedPackage(model)
-        }
-
-        func finishedAll() {
-            hud?.hide(animated: true)
-            dpkg.buildDelegate = nil
-
-            NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
         }
     }
 }

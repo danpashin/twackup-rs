@@ -25,7 +25,7 @@ class FFILogger {
     struct Message {
         let text: String
 
-        let target: String
+        var target: String? = nil
     }
 
     private var subscribers: [FFILoggerSubscriber] = []
@@ -41,17 +41,19 @@ class FFILogger {
                 return
             }
 
-            let message = Message(text: msgText, target: msgTarget)
-
-            DispatchQueue.global().async {
-                let logger = Unmanaged<FFILogger>.fromOpaque(context).takeUnretainedValue()
-                for subscriber in logger.subscribers {
-                    subscriber.log(message: message, level: level)
-                }
-            }
+            let logger = Unmanaged<FFILogger>.fromOpaque(context).takeUnretainedValue()
+            logger.log(message: Message(text: msgText, target: msgTarget), level: level)
         }
 
         tw_enable_logging(funcs, level.rawValue)
+    }
+
+    func log(message: Message, level: Level) {
+        DispatchQueue.global().async { [self] in
+            for subscriber in subscribers {
+                subscriber.log(message: message, level: level)
+            }
+        }
     }
 
     func addSubsriber(_ subscriber: FFILoggerSubscriber) {

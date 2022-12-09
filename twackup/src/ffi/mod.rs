@@ -35,6 +35,7 @@ use safer_ffi::{
     derive_ReprC, ffi_export,
     prelude::c_slice,
     prelude::{char_p, repr_c},
+    ptr::NonNullMut,
     slice::Ref,
 };
 
@@ -140,7 +141,7 @@ fn tw_rebuild_packages(
     packages: Ref<'_, TwPackage>,
     functions: TwProgressFunctions,
     out_dir: char_p::Ref<'_>,
-    results: Option<&mut c_slice::Box<TwPackagesRebuildResult>>,
+    results: Option<NonNullMut<c_slice::Box<TwPackagesRebuildResult>>>,
 ) -> TwResult {
     if builder::rebuild_packages(dpkg, packages, functions, out_dir, results).is_ok() {
         TwResult::Ok

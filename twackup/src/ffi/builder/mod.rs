@@ -32,8 +32,9 @@ use safer_ffi::{
         c_slice::{Box, Ref},
         char_p,
     },
+    ptr::NonNullMut,
 };
-use std::{collections::LinkedList, os::unix::ffi::OsStringExt, sync::Arc};
+use std::{collections::LinkedList, mem, os::unix::ffi::OsStringExt, sync::Arc};
 
 #[derive_ReprC]
 #[repr(C)]
@@ -48,7 +49,7 @@ pub(crate) fn rebuild_packages(
     packages: Ref<'_, TwPackage>,
     functions: TwProgressFunctions,
     out_dir: char_p::Ref<'_>,
-    results: Option<&mut Box<TwPackagesRebuildResult>>,
+    results: Option<NonNullMut<Box<TwPackagesRebuildResult>>>,
 ) -> Result<()> {
     let progress = TwProgressImpl { functions };
 
@@ -76,9 +77,11 @@ pub(crate) fn rebuild_packages(
     tokio_rt.block_on(async {
         for worker in workers {
             let result = match worker.await {
-                Ok(result) if results.is_some() => result,
+                Ok(result) => result,
                 _ => continue,
             };
+
+            log::debug!("rebuild result = {:?}", result);
 
             let (path, error) = match result {
                 Ok(path) => (Some(path), None),
@@ -105,11 +108,10 @@ pub(crate) fn rebuild_packages(
 
     progress.finished_all();
 
-    if let Some(results_ref) = results {
-        let new_results = Box::from(errors_vec.into_boxed_slice());
+    if let Some(mut results_ptr) = results {
         unsafe {
-            let ptr = results_ref as *mut Box<TwPackagesRebuildResult>;
-            ptr.write(new_results);
+            let boxed = Box::from(errors_vec.into_boxed_slice());
+            results_ptr.as_mut_ptr().write(boxed);
         }
     }
 
