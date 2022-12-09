@@ -8,7 +8,14 @@
 import UIKit
 
 class MainTabbarController: UITabBarController {
-    lazy private var dpkgInstance = Dpkg()
+    lazy private var dpkgInstance: Dpkg = {
+        var path = "/var/lib/dpkg"
+        if !FileManager.default.fileExists(atPath: path) {
+            path = "/var/jb/dpkg"
+        }
+
+        return Dpkg(path: path)
+    }()
 
     lazy private var database = Database()
 
