@@ -6,20 +6,12 @@
 //
 
 extension PackageVC {
-    class DebsListVC: PackageListVC {
+    class DebsListVC: PackageSelectableListVC {
         private var debsModel: DebsListModel
         override var model: PackageListModel {
             get { return debsModel }
             set { }
         }
-
-        private lazy var editBarBtn: UIBarButtonItem = {
-            UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(actionEdit))
-        }()
-
-        private lazy var editDoneBarBtn: UIBarButtonItem = {
-            UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(actionDoneEdit))
-        }()
 
         private lazy var removeAllBarBtn: UIBarButtonItem = {
             let title = Bundle.appLocalize("debs-remove-all-btn")
@@ -29,11 +21,6 @@ extension PackageVC {
         private lazy var removeSelectedBarBtn: UIBarButtonItem = {
             let title = Bundle.appLocalize("debs-remove-selected-btn")
             return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionRemoveSelected))
-        }()
-
-        private lazy var selectAllBarBtn: UIBarButtonItem = {
-            let title = Bundle.appLocalize("debs-selectall-btn")
-            return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionSelectAll))
         }()
 
         private var isAnyPackageSelected: Bool = false
@@ -49,14 +36,12 @@ extension PackageVC {
 
         override func viewDidLoad() {
             super.viewDidLoad()
-            tableView.allowsMultipleSelectionDuringEditing = true
 
             let center = NotificationCenter.default
             center.addObserver(forName: DebsListModel.NotificationName, object: nil, queue: .current) { _ in
                 self.reload()
             }
 
-            navigationItem.rightBarButtonItem = editBarBtn
         }
 
         func reload() {
@@ -76,11 +61,8 @@ extension PackageVC {
             if isAnyPackageSelected != selected?.isEmpty ?? true { return }
             isAnyPackageSelected = !isAnyPackageSelected
 
-            // 3 items in toolbar - remove all, space and share
-            guard var buttons = toolbarItems, buttons.count == 3 else { return }
-
+            guard var buttons = toolbarItems, !buttons.isEmpty else { return }
             buttons[0] = (selected?.isEmpty ?? true) ? removeAllBarBtn : removeSelectedBarBtn
-
             setToolbarItems(buttons, animated: false)
         }
 
@@ -97,26 +79,22 @@ extension PackageVC {
             present(activityViewController, animated: true, completion: nil)
         }
 
-        @objc func actionEdit() {
-            tableView.setEditing(true, animated: true)
+        override func actionEdit() {
+            super.actionEdit()
 
-            navigationItem.leftBarButtonItem = selectAllBarBtn
-            navigationItem.rightBarButtonItem = editDoneBarBtn
-            navigationController?.setToolbarHidden(false, animated: true)
             setToolbarItems([
                 removeAllBarBtn,
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
                 UIBarButtonItem(title: Bundle.appLocalize("debs-share-btn"),
                                 style: .plain, target: self, action: #selector(actionShare))
             ], animated: false)
+            navigationController?.setToolbarHidden(false, animated: true)
         }
 
-        @objc func actionDoneEdit() {
+        override func actionDoneEdit() {
+            super.actionDoneEdit()
             isAnyPackageSelected = false
-            tableView.setEditing(false, animated: true)
 
-            navigationItem.leftBarButtonItem = nil
-            navigationItem.rightBarButtonItem = editBarBtn
             navigationController?.setToolbarHidden(true, animated: true)
         }
 
@@ -128,6 +106,8 @@ extension PackageVC {
         }
 
         @objc func actionRemoveAll() {
+            actionDoneEdit()
+            
             var indexPaths: [IndexPath] = []
             for row in 0..<debsModel.dataProvider.packages.count {
                 indexPaths.append(IndexPath(row: row, section: 0))
@@ -135,12 +115,6 @@ extension PackageVC {
 
             if debsModel.debsProvider.deletePackages(at: indexPaths.map({ $0.row })) {
                 tableView.deleteRows(at: indexPaths, with: .automatic)
-            }
-        }
-
-        @objc func actionSelectAll() {
-            for row in 0..<debsModel.dataProvider.packages.count {
-                tableView.selectRow(at: IndexPath(row: row, section: 0), animated: true, scrollPosition: .none)
             }
         }
     }

@@ -47,6 +47,8 @@
 		0BF07A5E2941D91200EEC8FC /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A5D2941D91200EEC8FC /* Bundle.swift */; };
 		0BF07A62294335F700EEC8FC /* FFILogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A61294335F700EEC8FC /* FFILogger.swift */; };
 		0BF07A6429433BE100EEC8FC /* LoggerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A6329433BE100EEC8FC /* LoggerVC.swift */; };
+		0BF07A662943537A00EEC8FC /* PackageSelectableListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A652943537A00EEC8FC /* PackageSelectableListVC.swift */; };
+		0BF07A68294354E800EEC8FC /* DpkgListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A67294354E800EEC8FC /* DpkgListVC.swift */; };
 		6DD25E80695E2BDA484FEFFE /* Pods_Twackup.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E868F451985FB9D360C4198E /* Pods_Twackup.framework */; };
 /* End PBXBuildFile section */
 
@@ -99,6 +101,8 @@
 		0BF07A5D2941D91200EEC8FC /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		0BF07A61294335F700EEC8FC /* FFILogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FFILogger.swift; sourceTree = "<group>"; };
 		0BF07A6329433BE100EEC8FC /* LoggerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerVC.swift; sourceTree = "<group>"; };
+		0BF07A652943537A00EEC8FC /* PackageSelectableListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageSelectableListVC.swift; sourceTree = "<group>"; };
+		0BF07A67294354E800EEC8FC /* DpkgListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgListVC.swift; sourceTree = "<group>"; };
 		E868F451985FB9D360C4198E /* Pods_Twackup.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Twackup.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4A8FB183915E3D413DF2C45 /* Pods-Twackup.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Twackup.debug.xcconfig"; path = "Target Support Files/Pods-Twackup/Pods-Twackup.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -296,7 +300,9 @@
 			isa = PBXGroup;
 			children = (
 				0B86617C2930AE5E00EA4301 /* PackageListVC.swift */,
+				0BF07A652943537A00EEC8FC /* PackageSelectableListVC.swift */,
 				0BAAD99629388D310089C8FB /* DebsListVC.swift */,
+				0BF07A67294354E800EEC8FC /* DpkgListVC.swift */,
 			);
 			path = List;
 			sourceTree = "<group>";
@@ -484,6 +490,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BF07A68294354E800EEC8FC /* DpkgListVC.swift in Sources */,
 				0B86618B2930AF7100EA4301 /* FFIPackage.swift in Sources */,
 				0BAAD99C293893EF0089C8FB /* DpkgDataProvider.swift in Sources */,
 				0B88C30B2930B58D00BA5312 /* DetailVC.swift in Sources */,
@@ -512,6 +519,7 @@
 				0BB1B68E293DCB600050FEB5 /* Collection.swift in Sources */,
 				0BF07A62294335F700EEC8FC /* FFILogger.swift in Sources */,
 				0B434F9C2935E90000311FB6 /* DatabaseDetailVC.swift in Sources */,
+				0BF07A662943537A00EEC8FC /* PackageSelectableListVC.swift in Sources */,
 				0B0F22C7293CA01E002128EA /* DebPackage.swift in Sources */,
 				0B5D3F9E2934D85500AE50F2 /* DatabasePackageProvider.swift in Sources */,
 				0BF07A502941027800EEC8FC /* TwoColumnsVC.swift in Sources */,

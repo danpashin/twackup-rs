@@ -29,12 +29,6 @@ extension PackageVC {
             return table
         }()
 
-        var selectedPackages: [Package]? {
-            guard let selected = tableView.indexPathsForSelectedRows?.map({ $0.row }) else { return nil }
-            let enumerated = model.dataProvider.packages.enumerated()
-            return enumerated.filter({ selected.contains($0.offset) }).map({ $1 })
-        }
-
         init(model: PackageListModel, detail: DetailVC ) {
             self.model = model
             self.detail = detail

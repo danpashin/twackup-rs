@@ -62,7 +62,7 @@ class MainTabbarController: UITabBarController {
         let model = PackageVC.PackageListModel(dataProvider: dataProvider, metadata: metadata)
         let detailVC = PackageVC.DpkgDetailVC(dpkg: dpkgInstance, database: database)
 
-        let mainVC = PackageVC.PackageListVC(model: model, detail: detailVC)
+        let mainVC = PackageVC.DpkgListVC(dpkg: dpkgInstance, database: database, model: model, detail: detailVC)
 
         let splitVC = TwoColumnsVC()
         splitVC.tabBarItem = metadata.tabbarItem

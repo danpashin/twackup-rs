@@ -35,6 +35,9 @@
 "debs-share-btn" = "Поделиться";
 "debs-selectall-btn" = "Выбрать все";
 
+"debs-rebuildall-btn" = "Собрать все";
+"debs-rebuildselected-btn" = "Собрать выбранные";
+
 // Misc
 "search-field-lbl" = "Поиск";
 "unknown" = "Неизвестно";

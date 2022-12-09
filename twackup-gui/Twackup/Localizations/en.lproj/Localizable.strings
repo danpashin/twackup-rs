@@ -35,6 +35,9 @@ may not have some files necessary for the correct operation of the package.";
 "debs-share-btn" = "Share";
 "debs-selectall-btn" = "Select all";
 
+"debs-rebuildall-btn" = "Rebuild all";
+"debs-rebuildselected-btn" = "Rebuild selected";
+
 // Misc
 "search-field-lbl" = "Search";
 "unknown" = "Unknown";
