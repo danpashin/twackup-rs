@@ -13,17 +13,15 @@ class Database {
         container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         container.loadPersistentStores(completionHandler: { (_, error) in
             if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                FFILogger.shared.log("Unresolved error \(error), \(error.userInfo)")
             }
         })
         return container
     }()
 
-    lazy private var context: NSManagedObjectContext = {
-        return persistentContainer.viewContext
-    }()
+    lazy private var context: NSManagedObjectContext = persistentContainer.newBackgroundContext()
 
-    private func saveContext() {
+    private func saveContext(_ context: NSManagedObjectContext) {
         if !context.hasChanges { return }
 
         do {
@@ -34,18 +32,42 @@ class Database {
         }
     }
 
-    func createBuildedPackage() -> DebPackage {
-        let package = DebPackage(context: context)
-        package.buildDate = Date()
-        return package
+    private func execute(request: NSPersistentStoreRequest,
+                         context: NSManagedObjectContext) -> NSPersistentStoreResult? {
+        do {
+            let result = try context.execute(request)
+            try context.save()
+            return result
+        } catch {
+            context.rollback()
+            print("Unresolved error \(error), \((error as NSError).userInfo)")
+        }
+
+        return nil
     }
 
-    func addBuildedPackages(_ packages: [DebPackage]) {
-        context.perform { [self] in
-            for package in packages {
-                context.insert(package)
-                saveContext()
-            }
+    func addBuildedPackages(_ packages: [BuildedPackage], completion: (() -> Void)? = nil) {
+        persistentContainer.performBackgroundTask { context in
+            var index = 0
+            let total = packages.count
+
+            let request = NSBatchInsertRequest(entity: DebPackage.entity(), managedObjectHandler: { object in
+                guard index < total else { return true }
+
+                if let debPackage = object as? DebPackage {
+                    let package = packages[index]
+
+                    debPackage.setProperties(package: package.package)
+                    debPackage.setProperties(file: package.debURL)
+                }
+
+                index += 1
+                return false
+            })
+
+            _ = self.execute(request: request, context: context)
+
+            completion?()
         }
     }
 
@@ -58,16 +80,13 @@ class Database {
     }
 
     func delete(package: DebPackage) {
-        context.perform { [self] in
-            context.delete(package)
-            saveContext()
-        }
+        delete(packages: [package])
     }
 
     func delete(packages: [DebPackage]) {
-        context.perform { [self] in
-            packages.forEach({ context.delete($0) })
-            saveContext()
+        persistentContainer.performBackgroundTask { context in
+            let request = NSBatchDeleteRequest(objectIDs: packages.map({ $0.objectID }))
+            _ = self.execute(request: request, context: context)
         }
     }
 

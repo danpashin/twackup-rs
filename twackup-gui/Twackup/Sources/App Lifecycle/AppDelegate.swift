@@ -9,5 +9,5 @@ import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    let logger = FFILogger(level: .debug)
+    let logger = FFILogger.shared
 }

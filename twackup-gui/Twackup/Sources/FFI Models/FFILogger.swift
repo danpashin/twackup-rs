@@ -28,6 +28,8 @@ class FFILogger {
         var target: String?
     }
 
+    static let shared = FFILogger(level: .debug)
+
     private var subscribers: [FFILoggerSubscriber] = []
 
     init(level: Level) {

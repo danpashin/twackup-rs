@@ -45,11 +45,9 @@ extension PackageVC {
         }
 
         func reload() {
-            DispatchQueue.global().async {
-                self.debsModel.debsProvider.reload()
-                DispatchQueue.main.async {
-                    self.reloadTableView()
-                }
+            self.debsModel.debsProvider.reload()
+            DispatchQueue.main.async {
+                self.reloadTableView()
             }
         }
 

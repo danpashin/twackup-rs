@@ -75,7 +75,7 @@ class LoggerViewController: UIViewController, FFILoggerSubscriber {
             case .error: targetColor = .systemRed
             }
 
-            let string = NSMutableAttributedString(string: "[\(message.target ?? "")]  ", attributes: [
+            let string = NSMutableAttributedString(string: "[\(message.target ?? "nil")]  ", attributes: [
                 .font: UIFont.boldSystemFont(ofSize: UIFont.systemFontSize),
                 .foregroundColor: targetColor as Any
             ])

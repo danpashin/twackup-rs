@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="22A400" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="DatabasePackage" representedClassName=".DatabasePackage" syncable="YES">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21513" systemVersion="22A400" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="DebPackage" representedClassName=".DebPackage" syncable="YES">
         <attribute name="architecture" optional="YES" attributeType="String"/>
+        <attribute name="buildDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="debSize" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="humanDescription" optional="YES" attributeType="String"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="installedSize" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
+        <attribute name="relPath" attributeType="String"/>
         <attribute name="section" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="version" attributeType="String"/>
         <uniquenessConstraints>
@@ -17,9 +19,5 @@
                 <constraint value="version"/>
             </uniquenessConstraint>
         </uniquenessConstraints>
-    </entity>
-    <entity name="DebPackage" representedClassName=".DebPackage" parentEntity="DatabasePackage" syncable="YES">
-        <attribute name="buildDate" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="relPath" attributeType="String"/>
     </entity>
 </model>

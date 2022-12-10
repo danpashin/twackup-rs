@@ -12,30 +12,17 @@ class PackagesRebuilder: DpkgBuildDelegate {
 
     let database: Database
 
-    private var rebuildedPackages: [DebPackage] = []
+    private var rebuildedPackages: [BuildedPackage] = []
 
-    private lazy var rebuildedLock: UnsafeMutablePointer<os_unfair_lock> = {
-        let lock = UnsafeMutablePointer<os_unfair_lock>.allocate(capacity: 1)
-        lock.initialize(to: .init())
-        return lock
-    }()
+    private let dbSaveQueue: DispatchQueue = DispatchQueue(label: "database-save", qos: .default)
 
     init(dpkg: Dpkg, database: Database) {
         self.dpkg = dpkg
         self.database = database
     }
 
-    deinit {
-        rebuildedLock.deinitialize(count: 1)
-        rebuildedLock.deallocate()
-    }
-
     func rebuild(packages: [Package], completion: (() -> Void)? = nil) {
         dpkg.buildDelegate = self
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            completion?()
-            return
-        }
 
         DispatchQueue.global().async {
             do {
@@ -44,11 +31,11 @@ class PackagesRebuilder: DpkgBuildDelegate {
                     switch result {
                     case .success: continue
                     case .failure(let error):
-                        appDelegate.logger.log("\(error)", level: .error)
+                        FFILogger.shared.log("\(error)", level: .error)
                     }
                 }
             } catch {
-                appDelegate.logger.log("\(error)", level: .error)
+                FFILogger.shared.log("\(error)", level: .error)
             }
 
             completion?()
@@ -60,17 +47,16 @@ class PackagesRebuilder: DpkgBuildDelegate {
     }
 
     func finishedProcessing(package: Package, debPath: URL) {
-        let model = database.createBuildedPackage()
-        model.setProperties(package: package)
-        model.setProperties(file: debPath, pathRelativeTo: Dpkg.defaultSaveDirectory)
-
-        os_unfair_lock_lock(rebuildedLock)
-        rebuildedPackages.append(model)
-        os_unfair_lock_unlock(rebuildedLock)
+        dbSaveQueue.async { [self] in
+            rebuildedPackages.append(BuildedPackage(package: package, debURL: debPath))
+        }
     }
 
     func finishedAll() {
-        database.addBuildedPackages(rebuildedPackages)
-        NotificationCenter.default.post(name: PackageVC.DebsListModel.NotificationName, object: nil)
+        dbSaveQueue.async { [self] in
+            database.addBuildedPackages(rebuildedPackages) {
+                NotificationCenter.default.post(name: PackageVC.DebsListModel.NotificationName, object: nil)
+            }
+        }
     }
 }
