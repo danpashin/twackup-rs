@@ -38,7 +38,8 @@ extension PackageVC {
 
             label.numberOfLines = 0
             label.text = Bundle.appLocalize("detailed-view-rebuild-btn-footer")
-            label.font = UIFont.preferredFont(forTextStyle: .footnote)
+            label.font = UIFont.preferredFont(forTextStyle: .caption1)
+            label.textAlignment = .center
             label.textColor = .secondaryLabel
 
             return label
@@ -53,8 +54,8 @@ extension PackageVC {
             rebuildButton.translatesAutoresizingMaskIntoConstraints = false
             rebuildWarningLabel.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
-                rebuildWarningLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-                rebuildWarningLabel.heightAnchor.constraint(equalToConstant: 48.0),
+                rebuildWarningLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+                rebuildWarningLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
                 rebuildWarningLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8.0),
 
                 rebuildButton.centerXAnchor.constraint(equalTo: centerXAnchor),

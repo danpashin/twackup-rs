@@ -61,6 +61,13 @@ extension PackageVC {
         }
 
         func didSelectPackage(_ package: Package) {
+            guard !tableView.isEditing else { return }
+
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                tableView.deselectRow(at: tableView.indexPathForSelectedRow!, animated: true)
+                navigationController?.pushViewController(detail, animated: true)
+            }
+
             detail.didSelectPackage(package)
         }
     }

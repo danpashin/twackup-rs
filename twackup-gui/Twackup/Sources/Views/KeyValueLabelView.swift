@@ -18,6 +18,7 @@ class KeyValueLabel: UIView {
 
     lazy private(set) var valueLabel: UILabel = {
         var label = UILabel()
+        label.adjustsFontSizeToFitWidth = true
 
         return label
     }()
@@ -40,6 +41,7 @@ class KeyValueLabel: UIView {
             keyLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
 
             valueLabel.leadingAnchor.constraint(equalTo: keyLabel.trailingAnchor, constant: 8.0),
+            valueLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
             valueLabel.topAnchor.constraint(equalTo: topAnchor),
             valueLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])

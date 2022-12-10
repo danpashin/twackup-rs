@@ -41,7 +41,6 @@ extension PackageVC {
             center.addObserver(forName: DebsListModel.NotificationName, object: nil, queue: .current) { _ in
                 self.reload()
             }
-
         }
 
         func reload() {

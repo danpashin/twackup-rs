@@ -41,6 +41,10 @@ extension PackageVC {
                 containerView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 8.0),
                 containerView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8.0)
             ])
+
+            if let currentPackage {
+                didSelectPackage(currentPackage)
+            }
         }
 
         func didSelectPackage(_ package: Package) {
