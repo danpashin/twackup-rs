@@ -38,6 +38,10 @@
 "debs-rebuildall-btn" = "Собрать все";
 "debs-rebuildselected-btn" = "Собрать выбранные";
 
+"disk-usage-app" = "Кэш Twackup";
+"disk-usage-other" = "Другие приложения";
+"disk-usage-total-space" = "Всего доступно";
+
 // Misc
 "search-field-lbl" = "Поиск";
 "unknown" = "Неизвестно";

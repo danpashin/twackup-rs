@@ -10,4 +10,6 @@ import UIKit
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     let logger = FFILogger.shared
+
+    private(set) lazy var database = Database()
 }

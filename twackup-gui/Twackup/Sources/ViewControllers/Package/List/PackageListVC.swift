@@ -53,7 +53,8 @@ extension PackageVC {
             navigationController?.navigationBar.prefersLargeTitles = true
 
             tableView.backgroundColor = .systemBackground
-            tableView.register(SimpleTableViewCell.self, forCellReuseIdentifier: "PackageCell")
+            let cellClass = PackageTableViewCell.self
+            tableView.register(cellClass, forCellReuseIdentifier: String(describing: cellClass))
         }
 
         func reloadTableView() {

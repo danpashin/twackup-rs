@@ -10,12 +10,12 @@ import CoreData
 class Database {
     lazy private var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Twackup")
-        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         container.loadPersistentStores(completionHandler: { (_, error) in
             if let error = error as NSError? {
                 FFILogger.shared.log("Unresolved error \(error), \(error.userInfo)")
             }
         })
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         return container
     }()
 
@@ -92,5 +92,28 @@ class Database {
 
     func delete(packages: [Package]) {
         delete(packages: packages.compactMap({ $0 as? DebPackage}))
+    }
+
+    func packagesSize() -> Int64 {
+        guard let results = try? self.context.fetch(DebPackage.debsSizeRequest()) else { return 0 }
+        guard let results = results as? [[String: Int64]] else { return 0 }
+        guard let result = results.first else { return 0 }
+
+        return result["totalSize"] ?? 0
+    }
+
+    func databaseSize() -> Int64 {
+        var size: Int64 = 0
+
+        for store in persistentContainer.persistentStoreCoordinator.persistentStores {
+            guard let url = store.url, url.isFileURL else { continue }
+            guard let attributes = try? FileManager.default.attributesOfItem(atPath: url.path) else { continue }
+
+            size += (attributes[.size] as? Int64) ?? 0
+        }
+
+        print(size)
+
+        return size
     }
 }

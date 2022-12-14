@@ -25,12 +25,22 @@ class DebPackage: NSManagedObject, Package {
 
     class func fetchRequest(package: Package) -> NSFetchRequest<DebPackage> {
         let request = NSFetchRequest<DebPackage>(entityName: entityName)
-        request.predicate = fetchSinglePredicate(package: package)
+        request.predicate = NSPredicate(format: "id == %@ && version == %@", package.id, package.version)
         return request
     }
 
-    class func fetchSinglePredicate(package: Package) -> NSPredicate {
-        return NSPredicate(format: "id == %@ && version == %@", package.id, package.version)
+    class func debsSizeRequest() -> NSFetchRequest<NSFetchRequestResult> {
+        let sumDesc = NSExpressionDescription()
+        sumDesc.expression = NSExpression(forFunction: "sum:", arguments: [NSExpression(forKeyPath: "debSize")])
+        sumDesc.name = "totalSize"
+        sumDesc.expressionResultType = .integer64AttributeType
+
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+        request.returnsObjectsAsFaults = false
+        request.propertiesToFetch = [sumDesc]
+        request.resultType = .dictionaryResultType
+
+        return request
     }
 
     @NSManaged var name: String

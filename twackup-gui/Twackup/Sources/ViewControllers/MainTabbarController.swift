@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class MainTabbarController: UITabBarController {
     lazy private var dpkgInstance: Dpkg = {
@@ -17,7 +18,17 @@ class MainTabbarController: UITabBarController {
         return Dpkg(path: path)
     }()
 
-    lazy private var database = Database()
+    let database: Database
+
+    init(database: Database) {
+        self.database = database
+
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     lazy private var buildedPackagesVC: UIViewController = {
         let provider = DatabasePackageProvider(database)
@@ -56,7 +67,8 @@ class MainTabbarController: UITabBarController {
         let logController = UINavigationController(rootViewController: LoggerViewController(metadata: logMetadata))
         logController.tabBarItem = logMetadata.tabbarItem
 
-        let settingsController = UIViewController()
+        let settingsController = UIHostingController(rootView: SettingsViewController())
+        settingsController.navigationItem.title = "Host"
         settingsController.tabBarItem = PreferencesVCMetadata().tabbarItem
 
         setViewControllers([

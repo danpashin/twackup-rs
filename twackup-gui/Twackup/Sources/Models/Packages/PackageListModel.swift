@@ -33,8 +33,9 @@ extension PackageVC {
         }
 
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "PackageCell", for: indexPath)
-            if let cell = cell as? SimpleTableViewCell {
+            let cellID = String(describing: PackageTableViewCell.self)
+            let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
+            if let cell = cell as? PackageTableViewCell {
                 cell.package = dataProvider.packages[indexPath.row]
             }
 

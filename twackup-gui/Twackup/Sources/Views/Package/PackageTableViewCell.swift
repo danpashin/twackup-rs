@@ -8,7 +8,7 @@
 import UIKit
 
 extension PackageVC {
-    class SimpleTableViewCell: UITableViewCell {
+    class PackageTableViewCell: UITableViewCell {
 
         var package: Package? {
             didSet {
