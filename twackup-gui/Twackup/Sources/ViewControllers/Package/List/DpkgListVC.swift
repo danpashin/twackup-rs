@@ -75,6 +75,7 @@ extension PackageVC {
         }
 
         func rebuild(packages: [Package]) {
+            guard !packages.isEmpty else { return }
             let hud = RJTHud.show()
 
             let rebuilder = PackagesRebuilder(dpkg: dpkg, database: database)
