@@ -8,18 +8,18 @@
 import CoreData
 
 class Database {
-    lazy private var persistentContainer: NSPersistentContainer = {
+    private lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Twackup")
-        container.loadPersistentStores(completionHandler: { (_, error) in
+        container.loadPersistentStores { _, error in
             if let error = error as NSError? {
                 FFILogger.shared.log("Unresolved error \(error), \(error.userInfo)")
             }
-        })
+        }
         container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         return container
     }()
 
-    lazy private var context: NSManagedObjectContext = persistentContainer.newBackgroundContext()
+    private lazy var context: NSManagedObjectContext = persistentContainer.newBackgroundContext()
 
     private func saveContext(_ context: NSManagedObjectContext) {
         if !context.hasChanges { return }
@@ -32,8 +32,10 @@ class Database {
         }
     }
 
-    private func execute(request: NSPersistentStoreRequest,
-                         context: NSManagedObjectContext) -> NSPersistentStoreResult? {
+    private func execute(
+        request: NSPersistentStoreRequest,
+        context: NSManagedObjectContext
+    ) -> NSPersistentStoreResult? {
         do {
             let result = try context.execute(request)
             try context.save()
@@ -51,6 +53,7 @@ class Database {
             var index = 0
             let total = packages.count
 
+            // swiftlint:disable trailing_closure
             let request = NSBatchInsertRequest(entity: DebPackage.entity(), managedObjectHandler: { object in
                 guard index < total else { return true }
 
@@ -89,8 +92,8 @@ class Database {
                 completion?()
                 return
             }
-            
-            let request = NSBatchDeleteRequest(objectIDs: packages.map({ $0.objectID }))
+
+            let request = NSBatchDeleteRequest(objectIDs: packages.map { $0.objectID })
             _ = self.execute(request: request, context: context)
 
             completion?()
@@ -98,7 +101,7 @@ class Database {
     }
 
     func delete(packages: [Package], completion: (() -> Void)? = nil) {
-        delete(packages: packages.compactMap({ $0 as? DebPackage}), completion: completion)
+        delete(packages: packages.compactMap { $0 as? DebPackage }, completion: completion)
     }
 
     func packagesSize() -> Int64 {

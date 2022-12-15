@@ -26,10 +26,11 @@ extension PackageVC {
         func rebuild(_ package: Package) {
             let hud = RJTHud.show()
 
+            // swiftlint:disable trailing_closure
             let rebuilder = PackagesRebuilder(dpkg: dpkg, database: database)
-            rebuilder.rebuild(packages: [package]) {
+            rebuilder.rebuild(packages: [package], completion: {
                 hud?.hide(animated: true)
-            }
+            })
         }
     }
 }

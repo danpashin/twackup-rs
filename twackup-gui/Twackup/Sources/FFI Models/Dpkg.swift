@@ -12,7 +12,6 @@ protocol DpkgBuildDelegate: AnyObject {
 }
 
 class Dpkg {
-
     enum MessageLevel: UInt8 {
         case debug
         case info
@@ -24,7 +23,7 @@ class Dpkg {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }()
 
-    var buildDelegate: DpkgBuildDelegate?
+    weak var buildDelegate: DpkgBuildDelegate?
 
     private let innerDpkg: UnsafeMutablePointer<TwDpkg_t>
 
@@ -61,10 +60,10 @@ class Dpkg {
     func rebuild(packages: [Package], outDir: URL = defaultSaveDirectory) throws -> [Result<URL, NSError>] {
         let preferences = Preferences()
 
-        let innerPkgs = packages.compactMap({ ($0 as? FFIPackage)?.pkg })
-        let ffiPackages = innerPkgs.withUnsafeBufferPointer {
+        let innerPkgs = packages.compactMap { ($0 as? FFIPackage)?.pkg }
+        let ffiPackages = innerPkgs.withUnsafeBufferPointer { pointer in
             // safe to unwrap?
-            slice_ref_TwPackage_t(ptr: $0.baseAddress!, len: $0.count)
+            slice_ref_TwPackage_t(ptr: pointer.baseAddress!, len: pointer.count)
         }
 
         var ffiResults = slice_boxed_TwPackagesRebuildResult()
@@ -75,13 +74,11 @@ class Dpkg {
         buildParameters.preferences.compression_level = TwCompressionLevel_t(preferences.compression.level.rawValue)
         buildParameters.preferences.compression_type = TwCompressionType_t(preferences.compression.kind.rawValue)
 
-        withUnsafeMutablePointer(to: &ffiResults) {
-            buildParameters.results = $0
-        }
+        withUnsafeMutablePointer(to: &ffiResults) { buildParameters.results = $0 }
 
-        let status = outDir.path.utf8CString.withUnsafeBufferPointer {
+        let status = outDir.path.utf8CString.withUnsafeBufferPointer { pointer in
             // safe to unwrap?
-            buildParameters.out_dir = $0.baseAddress!
+            buildParameters.out_dir = pointer.baseAddress!
             return tw_rebuild_packages(innerDpkg, buildParameters)
         }
 

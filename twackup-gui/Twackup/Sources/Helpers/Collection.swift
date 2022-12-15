@@ -6,7 +6,6 @@
 //
 
 class UnsafeCollection<T>: Collection {
-
     typealias Index = Int
     typealias Element = T
     typealias Iterator = UnsafeBufferPointer<T>.Iterator
@@ -15,7 +14,7 @@ class UnsafeCollection<T>: Collection {
 
     var endIndex: Int { pointer.endIndex }
 
-    fileprivate let pointer: UnsafeBufferPointer<T>
+    let pointer: UnsafeBufferPointer<T>
 
     init(buffer pointer: UnsafeBufferPointer<T>) {
         self.pointer = pointer
@@ -25,16 +24,16 @@ class UnsafeCollection<T>: Collection {
         pointer = UnsafeBufferPointer(start: raw, count: length)
     }
 
-    subscript(position: Int) -> T {
-        pointer[position]
-    }
-
     func index(after idx: Int) -> Int {
         pointer.index(after: idx)
     }
 
     func makeIterator() -> UnsafeBufferPointer<T>.Iterator {
         pointer.makeIterator()
+    }
+
+    subscript(position: Int) -> T {
+        pointer[position]
     }
 }
 

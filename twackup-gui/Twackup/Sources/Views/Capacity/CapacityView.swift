@@ -26,7 +26,6 @@ class CapacityChartView: UIView {
             legendsStack.axis = .vertical
             legendsStack.spacing = 6.0
             legendsStack.alignment = .leading
-
         } else {
             legendsStack.axis = .horizontal
             legendsStack.spacing = 16.0
@@ -38,7 +37,7 @@ class CapacityChartView: UIView {
     private(set) var items: [CapacityItem] = []
 
     var sortedItems: [CapacityItem] {
-        items.sorted(by: { $0.bytes < $1.bytes })
+        items.sorted { $0.bytes < $1.bytes }
     }
 
     override var intrinsicContentSize: CGSize {
@@ -77,7 +76,7 @@ class CapacityChartView: UIView {
     }
 
     func set(items: [CapacityItem], animated: Bool = false) {
-        let sortedItems = items.sorted(by: { $0.bytes < $1.bytes })
+        let sortedItems = items.sorted { $0.bytes < $1.bytes }
         self.items = sortedItems
 
         bar.items = sortedItems

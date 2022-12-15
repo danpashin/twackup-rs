@@ -7,7 +7,7 @@
 
 extension PackageVC {
     class DebsListModel: PackageListModel {
-        static let NotificationName = NSNotification.Name("twackup/reloadDEBS")
+        static let NotificationName = Notification.Name("twackup/reloadDEBS")
 
         private(set) var debsProvider: DatabasePackageProvider
         override var dataProvider: PackageDataProvider {
@@ -20,8 +20,10 @@ extension PackageVC {
             super.init(dataProvider: dataProvider, metadata: metadata)
         }
 
-        func tableView(_ tableView: UITableView,
-                       trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        func tableView(
+            _ tableView: UITableView,
+            trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
+        ) -> UISwipeActionsConfiguration? {
             let delTtl = Bundle.appLocalize("remove-btn")
             let delete = UIContextualAction(style: .destructive, title: delTtl) { _, _, completionHandler in
                 if self.debsProvider.deletePackage(at: indexPath.row) {

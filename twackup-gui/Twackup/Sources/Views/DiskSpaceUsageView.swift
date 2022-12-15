@@ -5,8 +5,8 @@
 //  Created by Daniil on 14.12.2022.
 //
 
-import UIKit
 import SwiftUI
+import UIKit
 
 class DiskSpaceUsageView: UIView {
     let diskStats = DiskStats()
@@ -86,9 +86,11 @@ struct DiskSpaceUsage: UIViewRepresentable {
         let view = DiskSpaceUsageView()
         self.view = view
 
-        reloadObserver = NotificationCenter.default.addObserver(forName: PackageVC.DebsListModel.NotificationName,
-                                                                object: nil,
-                                                                queue: .current) { _  in
+        reloadObserver = NotificationCenter.default.addObserver(
+            forName: PackageVC.DebsListModel.NotificationName,
+            object: nil,
+            queue: .current
+        ) { _  in
             DispatchQueue.main.async {
                 view.update()
             }

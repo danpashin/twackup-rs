@@ -36,11 +36,11 @@ class PackageDataProvider {
             return
         }
 
-        filteredPackages = allPackages.filter({ package in
+        filteredPackages = allPackages.filter { package in
             switch filter {
             case .name(let name):
                 return package.name.contains(name)
             }
-        })
+        }
     }
 }

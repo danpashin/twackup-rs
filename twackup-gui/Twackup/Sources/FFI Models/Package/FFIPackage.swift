@@ -6,7 +6,6 @@
 //
 
 class FFIPackage: Package {
-
     let pkg: TwPackage_t
 
     let id: String
@@ -32,8 +31,8 @@ class FFIPackage: Package {
     var installedSize: Int64 {
         let field = TwPackageField_t(TW_PACKAGE_FIELD_INSTALLED_SIZE)
         guard let stringSize = String(ffiSlice: pkg.get_field(pkg.inner_ptr, field)) else { return 0 }
-        guard let size = Int64(stringSize) else { return 0}
-        return size * 1000
+        guard let size = Int64(stringSize) else { return 0 }
+        return size * 1_000
     }
 
     var debSize: Int64 = 0

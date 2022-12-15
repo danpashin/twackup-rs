@@ -9,7 +9,6 @@ import Foundation
 
 extension PackageVC {
     class DpkgListVC: PackageSelectableListVC {
-
         let dpkg: Dpkg
 
         let database: Database
@@ -38,7 +37,7 @@ extension PackageVC {
 
         func tableView(_ tableView: UITableView, didUpdateSelection selected: [IndexPath]?) {
             if isAnyPackageSelected != selected?.isEmpty ?? true { return }
-            isAnyPackageSelected = !isAnyPackageSelected
+            isAnyPackageSelected.toggle()
 
             guard var buttons = toolbarItems, !buttons.isEmpty else { return }
             buttons[0] = (selected?.isEmpty ?? true) ? rebuildAllBarBtn : rebuildSelectedBarBtn
@@ -63,12 +62,14 @@ extension PackageVC {
             navigationController?.setToolbarHidden(true, animated: true)
         }
 
-        @objc func actionRebuildSelected() {
+        @objc
+        func actionRebuildSelected() {
             guard let selectedPackages else { return }
             rebuild(packages: selectedPackages)
         }
 
-        @objc func actionRebuildAll() {
+        @objc
+        func actionRebuildAll() {
             actionDoneEdit()
 
             rebuild(packages: model.dataProvider.packages)
@@ -82,9 +83,12 @@ extension PackageVC {
 
             let rebuilder = PackagesRebuilder(dpkg: dpkg, database: database)
             rebuilder.rebuild(packages: packages) { progress in
-                hud?.detailedText = String(format: "rebuild-packages-status".localized,
-                                           progress.completedUnitCount, progress.totalUnitCount,
-                                           Int(progress.fractionCompleted * 100))
+                hud?.detailedText = String(
+                    format: "rebuild-packages-status".localized,
+                    progress.completedUnitCount,
+                    progress.totalUnitCount,
+                    Int(progress.fractionCompleted * 100)
+                )
             } completion: {
                 hud?.hide(animated: true)
             }

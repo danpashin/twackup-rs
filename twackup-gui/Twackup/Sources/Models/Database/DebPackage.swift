@@ -70,7 +70,7 @@ class DebPackage: NSManagedObject, Package {
     }
 
     func setProperties(package: Package) {
-        assert(package.name != "")
+        assert(!package.name.isEmpty)
         name = package.name
         id = package.id
         version = package.version

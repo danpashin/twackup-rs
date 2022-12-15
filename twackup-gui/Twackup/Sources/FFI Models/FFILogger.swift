@@ -14,7 +14,8 @@ protocol FFILoggerSubscriber: NSObjectProtocol {
 }
 
 class FFILogger {
-    @objc enum Level: UInt8 {
+    @objc
+    enum Level: UInt8 {
         case off
         case error
         case warning

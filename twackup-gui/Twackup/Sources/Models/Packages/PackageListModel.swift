@@ -7,12 +7,14 @@
 
 import UIKit
 
-@objc protocol PackageListDelegate {
+@objc
+protocol PackageListDelegate {
     func reloadTableView()
 
     func didSelectPackage(_ package: Package)
 
-    @objc optional func tableView(_ tableView: UITableView, didUpdateSelection selected: [IndexPath]?)
+    @objc
+    optional func tableView(_ tableView: UITableView, didUpdateSelection selected: [IndexPath]?)
 }
 
 extension PackageVC {
@@ -21,7 +23,7 @@ extension PackageVC {
 
         private(set) var metadata: ViewControllerMetadata
 
-        var delegate: PackageListDelegate?
+        weak var delegate: PackageListDelegate?
 
         init(dataProvider: PackageDataProvider, metadata: ViewControllerMetadata) {
             self.dataProvider = dataProvider

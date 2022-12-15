@@ -9,14 +9,13 @@ import UIKit
 
 extension PackageVC {
     class PackageTableViewCell: UITableViewCell {
-
         var package: Package? {
             didSet {
                 updateUI()
             }
         }
 
-        lazy private var config: UIListContentConfiguration = {
+        private lazy var config: UIListContentConfiguration = {
             var cfg = defaultContentConfiguration()
 
             cfg.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 6.0, leading: 0.0, bottom: 6.0, trailing: 0.0)
@@ -44,7 +43,7 @@ extension PackageVC {
         private func updateUI() {
             guard let package else { return }
 
-            config.image = UIImage(systemName: package.section.systemImageName())
+            config.image = UIImage(systemName: package.section.systemImageName)
             config.text = package.name
             config.secondaryText = package.humanDescription?.truncate(70)
 

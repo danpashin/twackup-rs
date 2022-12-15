@@ -13,7 +13,7 @@ extension PackageVC {
 
         private(set) var detail: DetailVC
 
-        lazy private(set) var searchController: UISearchController = {
+        private(set) lazy var searchController: UISearchController = {
             let controller = UISearchController(searchResultsController: nil)
             controller.obscuresBackgroundDuringPresentation = false
             controller.searchResultsUpdater = self.model
@@ -21,7 +21,7 @@ extension PackageVC {
             return controller
         }()
 
-        lazy private(set) var tableView: UITableView = {
+        private(set) lazy var tableView: UITableView = {
             let table = UITableView(frame: .zero, style: .insetGrouped)
             table.delegate = model
             table.dataSource = model

@@ -5,17 +5,16 @@
 //  Created by Daniil on 25.11.2022.
 //
 
-import UIKit
 import SDWebImage
+import UIKit
 
 protocol PackageDetailViewDelegate: AnyObject {
     func openExternalPackageInfo(_ package: Package)
-
 }
 
 extension PackageVC {
     class PackageDetailedView: UIView {
-        private(set) var delegate: PackageDetailViewDelegate?
+        private(set) weak var delegate: PackageDetailViewDelegate?
 
         private(set) var package: Package?
 
@@ -24,7 +23,7 @@ extension PackageVC {
         let sectionLabel = KeyValueLabel(key: Bundle.appLocalize("detailed-view-section-lbl"))
         let installedSizeLabel = KeyValueLabel(key: Bundle.appLocalize("detailed-view-installedsize-lbl"))
 
-        lazy private(set) var sizesLabel: UILabel = {
+        private(set) lazy var sizesLabel: UILabel = {
             let label = UILabel()
             label.text = Bundle.appLocalize("detailed-view-size-lbl")
             label.font = UIFont.preferredFont(forTextStyle: .headline)
@@ -32,7 +31,7 @@ extension PackageVC {
             return label
         }()
 
-        lazy private(set) var sizesStackView: UIStackView = {
+        private(set) lazy var sizesStackView: UIStackView = {
             let stack = UIStackView()
             stack.axis = .vertical
             stack.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
@@ -40,8 +39,8 @@ extension PackageVC {
             return stack
         }()
 
-        lazy private(set) var logoHeightConstraint = logoView.heightAnchor.constraint(equalToConstant: 0.0)
-        lazy private(set) var logoView: UIImageView = {
+        private(set) lazy var logoHeightConstraint = logoView.heightAnchor.constraint(equalToConstant: 0.0)
+        private(set) lazy var logoView: UIImageView = {
             let view = UIImageView()
 
             view.contentMode = .scaleAspectFit
@@ -51,7 +50,7 @@ extension PackageVC {
             return view
         }()
 
-        lazy private(set) var labelsStack: UIStackView = {
+        private(set) lazy var labelsStack: UIStackView = {
             let stack = UIStackView()
             stack.spacing = 8.0
             stack.axis = .vertical
@@ -59,7 +58,7 @@ extension PackageVC {
             return stack
         }()
 
-        lazy private(set) var learnMoreButton: UIButton = {
+        private(set) lazy var learnMoreButton: UIButton = {
             let button = UIButton(type: .system)
             button.setTitle(Bundle.appLocalize("detailed-view-learnmore-btn"), for: .normal)
             button.addTarget(self, action: #selector(learnMoreTapped), for: .touchUpInside)
@@ -104,7 +103,7 @@ extension PackageVC {
 
             identifierLabel.valueLabel.text = package.id
             versionLabel.valueLabel.text = package.version
-            sectionLabel.valueLabel.text = package.section.humanName()
+            sectionLabel.valueLabel.text = package.section.humanName
 
             if package.installedSize != 0 {
                 installedSizeLabel.valueLabel.text = ByteCountFormatter().string(fromByteCount: package.installedSize)
@@ -126,7 +125,8 @@ extension PackageVC {
             }
         }
 
-        @objc func learnMoreTapped() {
+        @objc
+        func learnMoreTapped() {
             guard let package = self.package else { return }
             delegate?.openExternalPackageInfo(package)
         }

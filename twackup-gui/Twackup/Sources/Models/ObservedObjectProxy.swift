@@ -11,7 +11,6 @@ import SwiftUI
 @propertyWrapper
 struct ObservedObjectProxy<Value>
 where Value: ObservableObject, Value.ObjectWillChangePublisher == ObservableObjectPublisher {
-
     private class Proxy<T: ObservableObject>
     where T.ObjectWillChangePublisher == ObservableObjectPublisher {
         var subscriber: AnyCancellable?
@@ -19,9 +18,9 @@ where Value: ObservableObject, Value.ObjectWillChangePublisher == ObservableObje
         var target: ObservableObjectPublisher?
 
         init(proxySource: T) {
-            subscriber = proxySource.objectWillChange.sink(receiveValue: { _ in
+            subscriber = proxySource.objectWillChange.sink { _ in
                 self.target?.send()
-            })
+            }
         }
     }
 

@@ -22,6 +22,10 @@ class CapacityBarView: UIView {
         layer.masksToBounds = true
     }
 
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
+
     override func draw(_ rect: CGRect) {
         guard let context = UIGraphicsGetCurrentContext() else { return }
         guard let maxValue = items.map({ $0.bytes }).max() else { return }
@@ -46,10 +50,6 @@ class CapacityBarView: UIView {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         update()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) is not supported")
     }
 
     func update() {

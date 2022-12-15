@@ -6,10 +6,9 @@
 //
 
 class LoggerViewController: UIViewController, FFILoggerSubscriber {
-
     let metadata: ViewControllerMetadata
 
-    lazy private var logTextView: UITextView = {
+    private lazy var logTextView: UITextView = {
         let view = UITextView()
         view.isScrollEnabled = true
         view.isEditable = false
@@ -65,7 +64,6 @@ class LoggerViewController: UIViewController, FFILoggerSubscriber {
 
     func log(message: FFILogger.Message, level: FFILogger.Level) {
         DispatchQueue.main.async { [self] in
-
             var targetColor: UIColor
             switch level {
             case .off: targetColor = .clear
@@ -93,6 +91,5 @@ class LoggerViewController: UIViewController, FFILoggerSubscriber {
     }
 
     func flush() {
-
     }
 }

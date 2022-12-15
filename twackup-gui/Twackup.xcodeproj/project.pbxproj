@@ -45,6 +45,7 @@
 		0B88C3172930CE3900BA5312 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3162930CE3900BA5312 /* Metadata.swift */; };
 		0B88C31C2930DE8C00BA5312 /* KeyValueLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C31B2930DE8C00BA5312 /* KeyValueLabelView.swift */; };
 		0B88C31E2930DEA200BA5312 /* PackageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C31D2930DEA200BA5312 /* PackageDetailView.swift */; };
+		0B9EB5E2294B8C7700DED54D /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 0B9EB5E1294B8C7700DED54D /* .swiftlint.yml */; };
 		0BAAD9922937BE360089C8FB /* RJTHudProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BAAD98F2937BE350089C8FB /* RJTHudProgressView.m */; };
 		0BAAD9932937BE360089C8FB /* RJTHud.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BAAD9902937BE350089C8FB /* RJTHud.m */; };
 		0BAAD99729388D310089C8FB /* DebsListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAAD99629388D310089C8FB /* DebsListVC.swift */; };
@@ -103,6 +104,7 @@
 		0B88C3162930CE3900BA5312 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		0B88C31B2930DE8C00BA5312 /* KeyValueLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueLabelView.swift; sourceTree = "<group>"; };
 		0B88C31D2930DEA200BA5312 /* PackageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageDetailView.swift; sourceTree = "<group>"; };
+		0B9EB5E1294B8C7700DED54D /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		0BAAD98E2937BE350089C8FB /* RJTHudProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RJTHudProgressView.h; sourceTree = "<group>"; };
 		0BAAD98F2937BE350089C8FB /* RJTHudProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RJTHudProgressView.m; sourceTree = "<group>"; };
 		0BAAD9902937BE350089C8FB /* RJTHud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RJTHud.m; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 		0B86615C2930ADA300EA4301 = {
 			isa = PBXGroup;
 			children = (
+				0B9EB5E1294B8C7700DED54D /* .swiftlint.yml */,
 				0B8661832930AF4E00EA4301 /* common-include */,
 				0B8661672930ADA300EA4301 /* Twackup */,
 				0B8661662930ADA300EA4301 /* Products */,
@@ -454,6 +457,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B9EB5E2294B8C7700DED54D /* .swiftlint.yml in Resources */,
 				0B8661752930ADA400EA4301 /* LaunchScreen.storyboard in Resources */,
 				0BF07A5C2941D8D100EEC8FC /* Localizable.strings in Resources */,
 				0B8661722930ADA400EA4301 /* Assets.xcassets in Resources */,

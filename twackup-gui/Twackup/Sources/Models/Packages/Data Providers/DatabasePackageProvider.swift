@@ -19,16 +19,16 @@ class DatabasePackageProvider: PackageDataProvider {
     }
 
     func deletePackages(at indexes: [Int], completion: (() -> Void)? = nil) -> Bool {
-        let toDelete = packages.enumerated().filter({ indexes.contains($0.offset) }).map({ $0.element })
+        let toDelete = packages.enumerated().filter { indexes.contains($0.offset) }.map { $0.element }
         if toDelete.isEmpty {
             completion?()
             return false
         }
 
         // refactor to use of SET
-        allPackages = allPackages.filter({ package in
-            !toDelete.contains(where: { $0.isEqualTo(package) })
-        })
+        allPackages = allPackages.filter { package in
+            !toDelete.contains { $0.isEqualTo(package) }
+        }
 
         for package in toDelete {
             guard let dbPackage = package as? DebPackage else { continue }
@@ -51,6 +51,6 @@ class DatabasePackageProvider: PackageDataProvider {
     }
 
     func deleteAll(completion: (() -> Void)? = nil) -> Bool {
-        deletePackages(at: allPackages.enumerated().map({ $0.offset }), completion: completion)
+        deletePackages(at: allPackages.enumerated().map { $0.offset }, completion: completion)
     }
 }

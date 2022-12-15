@@ -8,7 +8,7 @@
 import UIKit
 
 class KeyValueLabel: UIView {
-    lazy private(set) var keyLabel: UILabel = {
+    private(set) lazy var keyLabel: UILabel = {
         var label = UILabel()
         label.textColor = .secondaryLabel
         label.font = UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: .semibold)
@@ -16,7 +16,7 @@ class KeyValueLabel: UIView {
         return label
     }()
 
-    lazy private(set) var valueLabel: UILabel = {
+    private(set) lazy var valueLabel: UILabel = {
         var label = UILabel()
         label.adjustsFontSizeToFitWidth = true
 

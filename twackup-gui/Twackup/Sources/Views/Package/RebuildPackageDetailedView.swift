@@ -13,8 +13,7 @@ protocol RebuildPackageDetailedViewDelegate: PackageDetailViewDelegate {
 
 extension PackageVC {
     class RebuildPackageDetailedView: PackageDetailedView {
-
-        lazy private(set) var rebuildButton: UIButton = {
+        private(set) lazy var rebuildButton: UIButton = {
             let button = UIButton(type: .system)
             button.addTarget(self, action: #selector(rebuild), for: .touchUpInside)
 
@@ -33,7 +32,7 @@ extension PackageVC {
             return button
         }()
 
-        lazy private(set) var rebuildWarningLabel: UILabel = {
+        private(set) lazy var rebuildWarningLabel: UILabel = {
             let label = UILabel()
 
             label.numberOfLines = 0
@@ -71,7 +70,8 @@ extension PackageVC {
             super.init(coder: coder)
         }
 
-        @objc func rebuild() {
+        @objc
+        func rebuild() {
             guard let package = self.package else { return }
             (delegate as? any RebuildPackageDetailedViewDelegate)?.rebuild(package)
         }

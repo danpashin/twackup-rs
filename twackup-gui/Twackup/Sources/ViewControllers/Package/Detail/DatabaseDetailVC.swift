@@ -25,7 +25,8 @@ extension PackageVC {
             navigationItem.rightBarButtonItem = sharingBtn
         }
 
-        @objc func share() {
+        @objc
+        func share() {
             guard let package = currentPackage as? DebPackage else { return }
             let items = [package.fileURL()]
 

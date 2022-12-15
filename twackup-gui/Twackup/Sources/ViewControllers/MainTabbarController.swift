@@ -5,11 +5,11 @@
 //  Created by Daniil on 25.11.2022.
 //
 
-import UIKit
 import SwiftUI
+import UIKit
 
 class MainTabbarController: UITabBarController {
-    lazy private var dpkgInstance: Dpkg = {
+    private lazy var dpkgInstance: Dpkg = {
         var path = "/var/lib/dpkg"
         if !FileManager.default.fileExists(atPath: path) {
             path = "/var/jb/dpkg"
@@ -30,7 +30,7 @@ class MainTabbarController: UITabBarController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    lazy private var buildedPackagesVC: UIViewController = {
+    private lazy var buildedPackagesVC: UIViewController = {
         let provider = DatabasePackageProvider(database)
         let metadata = PackageVC.BuildedPkgsMetadata()
         let model = PackageVC.DebsListModel(dataProvider: provider, metadata: metadata)
@@ -48,13 +48,13 @@ class MainTabbarController: UITabBarController {
         return splitVC
     }()
 
-    lazy private var leavesPackagesVC: UIViewController = {
+    private lazy var leavesPackagesVC: UIViewController = {
         let provider = DpkgDataProvier(dpkgInstance, leaves: true)
         let metadata = PackageVC.LeavesPkgsMetadata()
         return makePackagesControler(provider, metadata)
     }()
 
-    lazy private var allPackagesVC: UIViewController = {
+    private lazy var allPackagesVC: UIViewController = {
         let provider = DpkgDataProvier(dpkgInstance)
         let metadata = PackageVC.AllPkgsMetadata()
         return makePackagesControler(provider, metadata)
@@ -76,8 +76,10 @@ class MainTabbarController: UITabBarController {
         ], animated: false)
     }
 
-    private func makePackagesControler(_ dataProvider: PackageDataProvider,
-                                       _ metadata: ViewControllerMetadata) -> UIViewController {
+    private func makePackagesControler(
+        _ dataProvider: PackageDataProvider,
+        _ metadata: ViewControllerMetadata
+    ) -> UIViewController {
         let model = PackageVC.PackageListModel(dataProvider: dataProvider, metadata: metadata)
         let detailVC = PackageVC.DpkgDetailVC(dpkg: dpkgInstance, database: database)
 

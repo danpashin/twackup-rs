@@ -39,9 +39,11 @@ extension PackageVC {
         override func viewDidLoad() {
             super.viewDidLoad()
 
-            reloadObserver = NotificationCenter.default.addObserver(forName: DebsListModel.NotificationName,
-                                                                    object: nil,
-                                                                    queue: .current) {[weak self] _  in
+            reloadObserver = NotificationCenter.default.addObserver(
+                forName: DebsListModel.NotificationName,
+                object: nil,
+                queue: .current
+            ) { [weak self] _  in
                 guard let self else { return }
                 self.debsModel.debsProvider.reload()
                 DispatchQueue.main.async {
@@ -56,19 +58,20 @@ extension PackageVC {
 
         func tableView(_ tableView: UITableView, didUpdateSelection selected: [IndexPath]?) {
             if isAnyPackageSelected != selected?.isEmpty ?? true { return }
-            isAnyPackageSelected = !isAnyPackageSelected
+            isAnyPackageSelected.toggle()
 
             guard var buttons = toolbarItems, !buttons.isEmpty else { return }
             buttons[0] = (selected?.isEmpty ?? true) ? removeAllBarBtn : removeSelectedBarBtn
             setToolbarItems(buttons, animated: false)
         }
 
-        @objc func actionShare() {
+        @objc
+        func actionShare() {
             guard let selected = selectedPackages else { return }
-            let debURLS: [URL] = selected.compactMap({
-                guard let package = $0 as? DebPackage else { return nil }
+            let debURLS: [URL] = selected.compactMap { package in
+                guard let package = package as? DebPackage else { return nil }
                 return package.fileURL()
-            })
+            }
 
             let activityViewController = UIActivityViewController(activityItems: debURLS, applicationActivities: nil)
             activityViewController.popoverPresentationController?.sourceView = view
@@ -82,8 +85,12 @@ extension PackageVC {
             setToolbarItems([
                 removeAllBarBtn,
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-                UIBarButtonItem(title: Bundle.appLocalize("debs-share-btn"),
-                                style: .plain, target: self, action: #selector(actionShare))
+                UIBarButtonItem(
+                    title: Bundle.appLocalize("debs-share-btn"),
+                    style: .plain,
+                    target: self,
+                    action: #selector(actionShare)
+                )
             ], animated: false)
             navigationController?.setToolbarHidden(false, animated: true)
         }
@@ -95,14 +102,16 @@ extension PackageVC {
             navigationController?.setToolbarHidden(true, animated: true)
         }
 
-        @objc func actionRemoveSelected() {
+        @objc
+        func actionRemoveSelected() {
             guard let indexPaths = tableView.indexPathsForSelectedRows else { return }
             if debsModel.debsProvider.deletePackages(at: indexPaths.map({ $0.row })) {
                 tableView.deleteRows(at: indexPaths, with: .automatic)
             }
         }
 
-        @objc func actionRemoveAll() {
+        @objc
+        func actionRemoveAll() {
             actionDoneEdit()
 
             var indexPaths: [IndexPath] = []

@@ -37,6 +37,7 @@ class PackagesRebuilder: DpkgBuildDelegate {
                 for result in results {
                     switch result {
                     case .success: continue
+
                     case .failure(let error):
                         FFILogger.shared.log("\(error)", level: .error)
                     }
@@ -50,7 +51,6 @@ class PackagesRebuilder: DpkgBuildDelegate {
     }
 
     func startProcessing(package: Package) {
-
     }
 
     func finishedProcessing(package: Package, debPath: URL) {

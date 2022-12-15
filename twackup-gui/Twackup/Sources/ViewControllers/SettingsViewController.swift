@@ -65,10 +65,13 @@ struct SettingsViewController: View {
                 })
 
                 Section(content: {
-                    Link("settings-donate-button".localized,
-                         destination: URL(string: "https://my.qiwi.com/Danyyl-PFxEvxeqrC")!)
-                    Link("settings-reportabug-button".localized,
-                         destination: URL(string: "https://github.com/danpashin/twackup-rs/issues/new")!
+                    Link(
+                        "settings-donate-button".localized,
+                        destination: URL(string: "https://my.qiwi.com/Danyyl-PFxEvxeqrC")!
+                    )
+                    Link(
+                        "settings-reportabug-button".localized,
+                        destination: URL(string: "https://github.com/danpashin/twackup-rs/issues/new")!
                     )
                 }, footer: {
                     Text("Copyright (c) 2022 danpashin. All rights reserved")

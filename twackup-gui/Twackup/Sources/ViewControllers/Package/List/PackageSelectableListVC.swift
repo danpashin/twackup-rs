@@ -12,7 +12,7 @@ extension PackageVC {
         var selectedPackages: [Package]? {
             guard let selected = tableView.indexPathsForSelectedRows?.map({ $0.row }) else { return nil }
             let enumerated = model.dataProvider.packages.enumerated()
-            return enumerated.filter({ selected.contains($0.offset) }).map({ $1 })
+            return enumerated.filter { selected.contains($0.offset) }.map { $1 }
         }
 
         private(set) lazy var editBarBtn: UIBarButtonItem = {
@@ -35,25 +35,27 @@ extension PackageVC {
             navigationItem.rightBarButtonItem = editBarBtn
         }
 
-        @objc func actionEdit() {
+        @objc
+        func actionEdit() {
             tableView.setEditing(true, animated: true)
 
             navigationItem.leftBarButtonItem = selectAllBarBtn
             navigationItem.rightBarButtonItem = editDoneBarBtn
         }
 
-        @objc func actionDoneEdit() {
+        @objc
+        func actionDoneEdit() {
             tableView.setEditing(false, animated: true)
 
             navigationItem.leftBarButtonItem = nil
             navigationItem.rightBarButtonItem = editBarBtn
         }
 
-        @objc func actionSelectAll() {
+        @objc
+        func actionSelectAll() {
             for row in 0..<model.dataProvider.packages.count {
                 tableView.selectRow(at: IndexPath(row: row, section: 0), animated: true, scrollPosition: .none)
             }
         }
-
     }
 }

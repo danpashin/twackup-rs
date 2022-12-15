@@ -9,7 +9,7 @@ import UIKit
 
 extension PackageVC {
     class DetailVC: UIViewController, PackageDetailViewDelegate {
-        lazy private(set) var containerView: PackageDetailedView = PackageDetailedView(delegate: self)
+        private(set) lazy var containerView: PackageDetailedView = PackageDetailedView(delegate: self)
 
         let database: Database
 
