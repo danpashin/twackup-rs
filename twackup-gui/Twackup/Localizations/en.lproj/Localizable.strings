@@ -40,7 +40,7 @@
 // Settings
 "settings-compression-header" = "Packages compression";
 "settings-compression-type" = "Compression type";
-"settings-compression-level" = "compression level";
+"settings-compression-level" = "Compression level";
 "settings-compression-footer" = "Compression will affect the build time of deb packages and the space they occupy. Choose the right type based on your needs.";
 
 "compression-level-none" = "None";
