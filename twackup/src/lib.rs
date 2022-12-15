@@ -30,7 +30,7 @@
     clippy::redundant_feature_names
 )]
 #![warn(clippy::unused_self, missing_docs)]
-#![allow(clippy::expl_impl_clone_on_copy)]
+#![allow(clippy::expl_impl_clone_on_copy, clippy::uninlined_format_args)]
 
 //! A Tokio-based DPKG database parsing library.
 //!

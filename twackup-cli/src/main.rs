@@ -30,6 +30,7 @@
 )]
 #![deny(rust_2018_idioms, clippy::pedantic, unreachable_pub)]
 #![warn(clippy::single_match_else, clippy::unused_self)]
+#![allow(clippy::print_stdout, clippy::uninlined_format_args)]
 
 mod commands;
 mod error;

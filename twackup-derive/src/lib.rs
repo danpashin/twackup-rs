@@ -21,6 +21,7 @@
 //! Not intended to be used in any crate except Twackup
 
 #![deny(rust_2018_idioms, clippy::pedantic, unreachable_pub)]
+#![allow(clippy::uninlined_format_args)]
 
 mod enum_derive;
 
