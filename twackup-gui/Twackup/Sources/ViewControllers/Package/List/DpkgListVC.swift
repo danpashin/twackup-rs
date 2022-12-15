@@ -77,9 +77,15 @@ extension PackageVC {
         func rebuild(packages: [Package]) {
             guard !packages.isEmpty else { return }
             let hud = RJTHud.show()
+            hud?.text = "rebuild-packages-status-title".localized
+            hud?.style = .spinner
 
             let rebuilder = PackagesRebuilder(dpkg: dpkg, database: database)
-            rebuilder.rebuild(packages: packages) {
+            rebuilder.rebuild(packages: packages) { progress in
+                hud?.detailedText = String(format: "rebuild-packages-status".localized,
+                                           progress.completedUnitCount, progress.totalUnitCount,
+                                           Int(progress.fractionCompleted * 100))
+            } completion: {
                 hud?.hide(animated: true)
             }
         }

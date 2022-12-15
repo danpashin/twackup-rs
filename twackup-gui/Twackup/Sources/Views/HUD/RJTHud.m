@@ -262,7 +262,7 @@ static CGFloat const RJTHudContentSize = 140.0;
     }
 
     _text = text;
-    [self setText:text forLabel:self.textLabel heightConstraint:self.textLabelHeightConstraint];
+    [self setText:text forLabel:self.textLabel];
 }
 
 - (void)setDetailedText:(NSString *)detailedText {
@@ -271,7 +271,7 @@ static CGFloat const RJTHudContentSize = 140.0;
     }
 
     _detailedText = detailedText;
-    [self setText:detailedText forLabel:self.detailedTextLabel heightConstraint:self.detailedTextLabelHeightConstraint];
+    [self setText:detailedText forLabel:self.detailedTextLabel];
 }
 
 - (void)setBlurStyle:(UIBlurEffectStyle)blurStyle {
@@ -311,18 +311,10 @@ static CGFloat const RJTHudContentSize = 140.0;
 
 #pragma mark -
 
-- (void)setText:(NSString *)text forLabel:(UILabel *)label heightConstraint:(NSLayoutConstraint *)heightConstraint {
+- (void)setText:(NSString *)text forLabel:(UILabel *)label {
     [self performOnMainThread:^{
-        CATransition *textTransition = [CATransition animation];
-        textTransition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        textTransition.type = kCATransitionFade;
-        textTransition.duration = 0.5;
-        [label.layer addAnimation:textTransition forKey:@"textChangeAnimation"];
         label.text = text;
-
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self updateHudSizeWithCompletion:nil];
-        });
+        [self updateHudSizeWithCompletion:nil];
     }];
 }
 

@@ -37,6 +37,9 @@
 "debs-rebuildall-btn" = "Rebuild all";
 "debs-rebuildselected-btn" = "Rebuild selected";
 
+"rebuild-packages-status-title" = "Please, wait...";
+"rebuild-packages-status" = "Rebuilded %i of %i";
+
 // Settings
 "settings-compression-header" = "Packages compression";
 "settings-compression-type" = "Compression type";

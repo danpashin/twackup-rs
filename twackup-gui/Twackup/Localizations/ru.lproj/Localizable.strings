@@ -37,6 +37,9 @@
 "debs-rebuildall-btn" = "Собрать все";
 "debs-rebuildselected-btn" = "Собрать выбранные";
 
+"rebuild-packages-status-title" = "Пожалуйста, подождите...";
+"rebuild-packages-status" = "Собрано %i из %i \n(%i%%)";
+
 // Settings
 "settings-compression-header" = "Сжатие deb-пакетов";
 "settings-compression-type" = "Тип сжатия";
