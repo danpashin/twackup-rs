@@ -33,10 +33,10 @@ class Compression: ObservableObject {
     }
 
     enum Level: Int, Identifiable, AsString, CaseIterable {
-        case none = 0
-        case fast = 1
-        case normal = 6
-        case best = 9
+        case none
+        case fast
+        case normal
+        case best
 
         var id: RawValue { rawValue }
 

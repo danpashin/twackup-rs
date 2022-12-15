@@ -44,24 +44,79 @@ pub struct TwPackagesRebuildResult {
     error: Option<Box<u8>>,
 }
 
-pub(crate) fn rebuild_packages(
-    dpkg: &TwDpkg,
-    packages: Ref<'_, TwPackage>,
+#[derive_ReprC]
+#[repr(u8)]
+pub enum TwCompressionType {
+    Gz,
+    Xz,
+    Zst,
+}
+
+impl From<TwCompressionType> for crate::archiver::Type {
+    fn from(value: TwCompressionType) -> Self {
+        match value {
+            TwCompressionType::Gz => Self::Gz,
+            TwCompressionType::Xz => Self::Xz,
+            TwCompressionType::Zst => Self::Zst,
+        }
+    }
+}
+
+#[derive_ReprC]
+#[repr(u8)]
+#[derive(Copy, Clone)]
+pub enum TwCompressionLevel {
+    None,
+    Fast,
+    Normal,
+    Best,
+}
+
+impl From<TwCompressionLevel> for crate::archiver::Level {
+    fn from(level: TwCompressionLevel) -> Self {
+        match level {
+            TwCompressionLevel::None => Self::None,
+            TwCompressionLevel::Fast => Self::Fast,
+            TwCompressionLevel::Normal => Self::Normal,
+            TwCompressionLevel::Best => Self::Best,
+        }
+    }
+}
+
+#[derive_ReprC]
+#[repr(C)]
+pub struct TwBuildPreferences {
+    compression_type: TwCompressionType,
+    compression_level: TwCompressionLevel,
+}
+
+#[derive_ReprC]
+#[repr(C)]
+pub struct TwBuildParameters<'a> {
+    packages: Ref<'a, TwPackage>,
     functions: TwProgressFunctions,
-    out_dir: char_p::Ref<'_>,
+    out_dir: char_p::Ref<'a>,
+    preferences: TwBuildPreferences,
     results: Option<NonNullMut<Box<TwPackagesRebuildResult>>>,
-) -> Result<()> {
-    let progress = TwProgressImpl { functions };
+}
+
+pub(crate) fn rebuild_packages(dpkg: &TwDpkg, parameters: TwBuildParameters<'_>) -> Result<()> {
+    let progress = TwProgressImpl {
+        functions: parameters.functions,
+    };
 
     let tokio_rt = dpkg.inner_tokio_rt();
 
     let dpkg_paths = &dpkg.inner_dpkg().paths;
-    let out_dir = out_dir.to_str();
-    let preferences = Preferences::new(dpkg_paths, out_dir);
+    let out_dir = parameters.out_dir.to_str();
+    let mut preferences = Preferences::new(dpkg_paths, out_dir);
+    preferences.compression.level = parameters.preferences.compression_level.into();
+    preferences.compression.r#type = parameters.preferences.compression_type.into();
+
     let dpkg_contents = Arc::new(dpkg.inner_dpkg().info_dir_contents()?);
 
     let mut workers = LinkedList::new();
-    for package in packages.iter() {
+    for package in parameters.packages.iter() {
         let package = package.inner_ptr;
         let dpkg_contents = dpkg_contents.clone();
         let preferences = preferences.clone();
@@ -108,7 +163,7 @@ pub(crate) fn rebuild_packages(
 
     progress.finished_all();
 
-    if let Some(mut results_ptr) = results {
+    if let Some(mut results_ptr) = parameters.results {
         unsafe {
             let boxed = Box::from(errors_vec.into_boxed_slice());
             results_ptr.as_mut_ptr().write(boxed);

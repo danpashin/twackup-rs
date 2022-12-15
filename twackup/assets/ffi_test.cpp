@@ -65,7 +65,14 @@ int main(int argc, char *argv[]) {
   functions.finished_all = finished_all;
 
   slice_boxed_TwPackagesRebuildResult_t results;
-  auto result_code = tw_rebuild_packages(dpkg, rebuild_packages, functions, "/tmp", &results);
+
+  TwBuildParameters_t parameters{};
+  parameters.packages = rebuild_packages;
+  parameters.functions = functions;
+  parameters.out_dir = "/tmp";
+  parameters.results = &results;
+
+  auto result_code = tw_rebuild_packages(dpkg, parameters);
   std::cout << "result code = " << int(result_code) << std::endl;
   for (int i = 0; i < results.len; i++) {
     auto result = results.ptr[i];

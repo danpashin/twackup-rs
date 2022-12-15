@@ -25,7 +25,7 @@ mod logger;
 pub mod package;
 
 use self::{
-    builder::{progress::TwProgressFunctions, TwPackagesRebuildResult},
+    builder::{TwBuildParameters, TwPackagesRebuildResult},
     c_dpkg::{TwDpkg, TwPackagesSort},
     logger::{Logger, TwLogFunctions, TwMessageLevel},
     package::{container::TwPackageRef, field::TwPackageField, TwPackage},
@@ -35,8 +35,6 @@ use safer_ffi::{
     derive_ReprC, ffi_export,
     prelude::c_slice,
     prelude::{char_p, repr_c},
-    ptr::NonNullMut,
-    slice::Ref,
 };
 
 #[derive_ReprC]
@@ -136,14 +134,8 @@ fn tw_package_free(package: TwPackageRef) {
 /// \returns Vector with errors. You MUST free result and all errors inside.
 ///
 #[ffi_export]
-fn tw_rebuild_packages(
-    dpkg: &TwDpkg,
-    packages: Ref<'_, TwPackage>,
-    functions: TwProgressFunctions,
-    out_dir: char_p::Ref<'_>,
-    results: Option<NonNullMut<c_slice::Box<TwPackagesRebuildResult>>>,
-) -> TwResult {
-    if builder::rebuild_packages(dpkg, packages, functions, out_dir, results).is_ok() {
+fn tw_rebuild_packages(dpkg: &TwDpkg, parameters: TwBuildParameters<'_>) -> TwResult {
+    if builder::rebuild_packages(dpkg, parameters).is_ok() {
         TwResult::Ok
     } else {
         TwResult::Error

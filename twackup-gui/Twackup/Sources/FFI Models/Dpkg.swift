@@ -52,13 +52,15 @@ class Dpkg {
                 continue
             }
 
-            packages.append(pModel as any Package)
+            packages.append(pModel as Package)
         }
 
         return packages
     }
 
     func rebuild(packages: [Package], outDir: URL = defaultSaveDirectory) throws -> [Result<URL, NSError>] {
+        let preferences = Preferences()
+
         let innerPkgs = packages.compactMap({ ($0 as? FFIPackage)?.pkg })
         let ffiPackages = innerPkgs.withUnsafeBufferPointer {
             // safe to unwrap?
@@ -66,9 +68,21 @@ class Dpkg {
         }
 
         var ffiResults = slice_boxed_TwPackagesRebuildResult()
+
+        var buildParameters = TwBuildParameters_t()
+        buildParameters.packages = ffiPackages
+        buildParameters.functions = createProgressFuncs()
+        buildParameters.preferences.compression_level = TwCompressionLevel_t(preferences.compression.level.rawValue)
+        buildParameters.preferences.compression_type = TwCompressionType_t(preferences.compression.kind.rawValue)
+
+        withUnsafeMutablePointer(to: &ffiResults) {
+            buildParameters.results = $0
+        }
+
         let status = outDir.path.utf8CString.withUnsafeBufferPointer {
             // safe to unwrap?
-            tw_rebuild_packages(innerDpkg, ffiPackages, createProgressFuncs(), $0.baseAddress!, &ffiResults)
+            buildParameters.out_dir = $0.baseAddress!
+            return tw_rebuild_packages(innerDpkg, buildParameters)
         }
 
         if status != TwResult_t(TW_RESULT_OK) {
