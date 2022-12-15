@@ -57,7 +57,7 @@ class DiskSpaceUsageView: UIView {
 
         diskStats.update { [self] in
             appItem.bytes = diskStats.appSpace
-            appItem.title = Bundle.appLocalize("disk-usage-app") + " •"
+            appItem.title = Bundle.appLocalize("disk-usage-app") + " • "
 
             deviceItem.bytes = diskStats.usedSpace
             deviceItem.title = Bundle.appLocalize("disk-usage-other") + " • "

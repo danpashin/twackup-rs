@@ -42,14 +42,14 @@
 
 // Settings
 "settings-compression-header" = "Сжатие deb-пакетов";
-"settings-compression-type" = "Тип сжатия";
-"settings-compression-level" = "Уровень сжатия";
-"settings-compression-footer" = "Сжатие повлияет на время сборки deb-пакетов и занимаемое ими место. Правильно выбирайте тип, исходя из ваших потребностей.";
+"settings-compression-level" = "Cжатие";
+"settings-compression-type" = "Тип контейнера";
+"settings-compression-footer" = "Сжатие влияет на время сборки deb-пакетов и занимаемое ими место. Правильно выбирайте тип, исходя из ваших потребностей.";
 
 "compression-level-none" = "Не сжимать";
 "compression-level-fast" = "Быстрое";
 "compression-level-normal" = "Оптимальное";
-"compression-level-best" = "Лучшее";
+"compression-level-best" = "Наилучшее";
 
 "settings-disk-usage-header" = "Использование дискового пространства";
 "disk-usage-app" = "Кэш Twackup";

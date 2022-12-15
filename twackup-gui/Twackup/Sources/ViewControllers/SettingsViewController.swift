@@ -26,14 +26,14 @@ struct SettingsViewController: View {
         NavigationView {
             List {
                 Section(content: {
-                    Picker("settings-compression-type".localized, selection: preferences.$compression.kind) {
-                        ForEach(Compression.Kind.allCases) { element in
+                    Picker("settings-compression-level".localized, selection: preferences.compression.$level) {
+                        ForEach(Compression.Level.allCases) { element in
                             Text(element.localized).tag(element)
                         }
                     }
 
-                    Picker("settings-compression-level".localized, selection: preferences.compression.$level) {
-                        ForEach(Compression.Level.allCases) { element in
+                    Picker("settings-compression-type".localized, selection: preferences.$compression.kind) {
+                        ForEach(Compression.Kind.allCases) { element in
                             Text(element.localized).tag(element)
                         }
                     }
@@ -66,7 +66,7 @@ struct SettingsViewController: View {
 
                 Section(content: {
                     Link("settings-donate-button".localized,
-                         destination: URL(string: "https://github.com/danpashin/twackup-rs")!)
+                         destination: URL(string: "https://my.qiwi.com/Danyyl-PFxEvxeqrC")!)
                     Link("settings-reportabug-button".localized,
                          destination: URL(string: "https://github.com/danpashin/twackup-rs/issues/new")!
                     )

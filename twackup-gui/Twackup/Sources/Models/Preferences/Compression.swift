@@ -23,9 +23,9 @@ class Compression: ObservableObject {
 
         var asString: String {
             switch self {
-            case .gzip: return "gz"
-            case .xzip: return "xz"
-            case .zst: return "zst"
+            case .gzip: return "gzip"
+            case .xzip: return "xzip"
+            case .zst: return "zstd"
             }
         }
 
