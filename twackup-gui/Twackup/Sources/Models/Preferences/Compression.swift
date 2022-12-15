@@ -5,26 +5,38 @@
 //  Created by Daniil on 13.12.2022.
 //
 
-struct Compression {
-    enum Kind: String, Identifiable, AsString {
-        case gzip = "GZip"
-        case xzip = "XZip"
-        case zst = "ZStd"
+import SwiftUI
 
-        static let allValues: [Kind] = [.gzip, .xzip, .zst]
+protocol AsString {
+    var asString: String { get }
+
+    var localized: String { get }
+}
+
+class Compression: ObservableObject {
+    enum Kind: Int, Identifiable, AsString, CaseIterable, Equatable {
+        case gzip
+        case xzip
+        case zst
 
         var id: RawValue { rawValue }
 
-        var asString: String { rawValue }
+        var asString: String {
+            switch self {
+            case .gzip: return "gz"
+            case .xzip: return "xz"
+            case .zst: return "zst"
+            }
+        }
+
+        var localized: String { asString.capitalized }
     }
 
-    enum Level: Int, Identifiable, AsString {
+    enum Level: Int, Identifiable, AsString, CaseIterable {
         case none = 0
         case fast = 1
         case normal = 6
         case best = 9
-
-        static let allValues: [Level] = [.none, .fast, .normal, .best]
 
         var id: RawValue { rawValue }
 
@@ -36,8 +48,15 @@ struct Compression {
             case .best: return "Best"
             }
         }
+
+        var localized: String {
+            Bundle.appLocalize("compression-level-\(asString.lowercased())")
+        }
     }
 
+    @AppStorage("package-compression-kind")
     var kind: Kind = .gzip
+
+    @AppStorage("package-compression-level")
     var level: Level = .normal
 }

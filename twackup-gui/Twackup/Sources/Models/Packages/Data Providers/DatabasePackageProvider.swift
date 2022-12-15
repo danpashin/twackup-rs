@@ -18,8 +18,12 @@ class DatabasePackageProvider: PackageDataProvider {
         allPackages = database.fetchBuildedPackages()
     }
 
-    func deletePackages(at indexes: [Int]) -> Bool {
+    func deletePackages(at indexes: [Int], completion: (() -> Void)? = nil) -> Bool {
         let toDelete = packages.enumerated().filter({ indexes.contains($0.offset) }).map({ $0.element })
+        if toDelete.isEmpty {
+            completion?()
+            return false
+        }
 
         // refactor to use of SET
         allPackages = allPackages.filter({ package in
@@ -36,15 +40,17 @@ class DatabasePackageProvider: PackageDataProvider {
             }
         }
 
-        database.delete(packages: toDelete)
-
-        // reload filter
+        database.delete(packages: toDelete, completion: completion)
         applyFilter(currentFilter)
 
         return true
     }
 
-    func deletePackage(at index: Int) -> Bool {
-        deletePackages(at: [index])
+    func deletePackage(at index: Int, completion: (() -> Void)? = nil) -> Bool {
+        deletePackages(at: [index], completion: completion)
+    }
+
+    func deleteAll(completion: (() -> Void)? = nil) -> Bool {
+        deletePackages(at: allPackages.enumerated().map({ $0.offset }), completion: completion)
     }
 }

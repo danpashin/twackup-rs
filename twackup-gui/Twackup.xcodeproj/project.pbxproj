@@ -13,7 +13,6 @@
 		0B0F22C7293CA01E002128EA /* DebPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0F22C5293CA01E002128EA /* DebPackage.swift */; };
 		0B2636DF2948B867003EA806 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2636DE2948B867003EA806 /* Preferences.swift */; };
 		0B2636E12948B887003EA806 /* Compression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2636E02948B887003EA806 /* Compression.swift */; };
-		0B2636E42948B8F3003EA806 /* SelectionCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2636E32948B8F3003EA806 /* SelectionCellView.swift */; };
 		0B2636E62948B92E003EA806 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2636E52948B92E003EA806 /* SettingsViewController.swift */; };
 		0B2636F02948EC0A003EA806 /* CapacityBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2636EF2948EC0A003EA806 /* CapacityBarView.swift */; };
 		0B434F982935DEFA00311FB6 /* RebuildPackageDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F972935DEFA00311FB6 /* RebuildPackageDetailedView.swift */; };
@@ -30,6 +29,7 @@
 		0B5D3F9A2934D0C300AE50F2 /* Twackup.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F982934D0C300AE50F2 /* Twackup.xcdatamodeld */; };
 		0B5D3F9C2934D2EB00AE50F2 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F9B2934D2EB00AE50F2 /* Database.swift */; };
 		0B5D3F9E2934D85500AE50F2 /* DatabasePackageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F9D2934D85500AE50F2 /* DatabasePackageProvider.swift */; };
+		0B6BB2F1294A599D001E3B43 /* ObservedObjectProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6BB2F0294A599D001E3B43 /* ObservedObjectProxy.swift */; };
 		0B8661692930ADA300EA4301 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8661682930ADA300EA4301 /* AppDelegate.swift */; };
 		0B86616B2930ADA300EA4301 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86616A2930ADA300EA4301 /* SceneDelegate.swift */; };
 		0B86616D2930ADA300EA4301 /* MainTabbarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86616C2930ADA300EA4301 /* MainTabbarController.swift */; };
@@ -68,7 +68,6 @@
 		0B0F22C5293CA01E002128EA /* DebPackage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebPackage.swift; sourceTree = "<group>"; };
 		0B2636DE2948B867003EA806 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		0B2636E02948B887003EA806 /* Compression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compression.swift; sourceTree = "<group>"; };
-		0B2636E32948B8F3003EA806 /* SelectionCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionCellView.swift; sourceTree = "<group>"; };
 		0B2636E52948B92E003EA806 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		0B2636EF2948EC0A003EA806 /* CapacityBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapacityBarView.swift; sourceTree = "<group>"; };
 		0B434F972935DEFA00311FB6 /* RebuildPackageDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RebuildPackageDetailedView.swift; sourceTree = "<group>"; };
@@ -86,6 +85,7 @@
 		0B5D3F992934D0C300AE50F2 /* DBPackage.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DBPackage.xcdatamodel; sourceTree = "<group>"; };
 		0B5D3F9B2934D2EB00AE50F2 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		0B5D3F9D2934D85500AE50F2 /* DatabasePackageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackageProvider.swift; sourceTree = "<group>"; };
+		0B6BB2F0294A599D001E3B43 /* ObservedObjectProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservedObjectProxy.swift; sourceTree = "<group>"; };
 		0B8661652930ADA300EA4301 /* Twackup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Twackup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B8661682930ADA300EA4301 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0B86616A2930ADA300EA4301 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -262,7 +262,6 @@
 				0B50FF6C2949B7F500CF4BCF /* Capacity */,
 				0BAAD9942937BE3A0089C8FB /* HUD */,
 				0B88C3212930E36000BA5312 /* Package */,
-				0B2636E32948B8F3003EA806 /* SelectionCellView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -274,6 +273,7 @@
 				0B88C31A2930CE4D00BA5312 /* Packages */,
 				0B2636E22948B8B4003EA806 /* Preferences */,
 				0B50FF712949EA7700CF4BCF /* DiskStats.swift */,
+				0B6BB2F0294A599D001E3B43 /* ObservedObjectProxy.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -551,12 +551,12 @@
 				0B0DBB6F2934FA58002F3BB2 /* String.swift in Sources */,
 				0B50FF6E2949B80900CF4BCF /* CapacityBarLabel.swift in Sources */,
 				0B5B328C2943827500B51274 /* PackagesRebuilder.swift in Sources */,
-				0B2636E42948B8F3003EA806 /* SelectionCellView.swift in Sources */,
 				0B2636F02948EC0A003EA806 /* CapacityBarView.swift in Sources */,
 				0B5D3F972934CB2C00AE50F2 /* PackageDataProvider.swift in Sources */,
 				0B86616D2930ADA300EA4301 /* MainTabbarController.swift in Sources */,
 				0BAAD9932937BE360089C8FB /* RJTHud.m in Sources */,
 				0B50FF702949B82900CF4BCF /* CapacityView.swift in Sources */,
+				0B6BB2F1294A599D001E3B43 /* ObservedObjectProxy.swift in Sources */,
 				0B2636E62948B92E003EA806 /* SettingsViewController.swift in Sources */,
 				0B0DBB742935081B002F3BB2 /* Namespaces.swift in Sources */,
 				0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */,

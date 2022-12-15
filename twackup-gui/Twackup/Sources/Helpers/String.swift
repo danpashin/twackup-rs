@@ -6,6 +6,8 @@
 //
 
 extension String {
+    var localized: String { Bundle.appLocalize(self) }
+
     init?(ffiSlice slice: slice_raw_uint8_t, deallocate: Bool = false) {
         if slice.ptr == nil || slice.len == 0 {
             return nil

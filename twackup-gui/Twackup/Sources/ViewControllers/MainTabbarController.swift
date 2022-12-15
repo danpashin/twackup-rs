@@ -67,9 +67,9 @@ class MainTabbarController: UITabBarController {
         let logController = UINavigationController(rootViewController: LoggerViewController(metadata: logMetadata))
         logController.tabBarItem = logMetadata.tabbarItem
 
-        let settingsController = UIHostingController(rootView: SettingsViewController())
-        settingsController.navigationItem.title = "Host"
-        settingsController.tabBarItem = PreferencesVCMetadata().tabbarItem
+        let prefsMetadata = PreferencesVCMetadata()
+        let settingsController = UIHostingController(rootView: SettingsViewController(metadata: prefsMetadata))
+        settingsController.tabBarItem = prefsMetadata.tabbarItem
 
         setViewControllers([
             buildedPackagesVC, leavesPackagesVC, allPackagesVC, logController, settingsController

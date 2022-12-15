@@ -5,8 +5,15 @@
 //  Created by Daniil on 13.12.2022.
 //
 
-class Preferences {
+import SwiftUI
+
+class Preferences: ObservableObject {
     static let `default` = Preferences()
 
-    var compression: Compression = Compression()
+    @ObservedObjectProxy
+    private(set) var compression: Compression = Compression()
+
+    init() {
+        _compression.setPublisher(objectWillChange)
+    }
 }

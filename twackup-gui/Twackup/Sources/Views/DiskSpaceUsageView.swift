@@ -84,8 +84,26 @@ class DiskSpaceUsageView: UIView {
 
 struct DiskSpaceUsage: UIViewRepresentable {
     typealias UIViewType = DiskSpaceUsageView
+
+    let view: DiskSpaceUsageView
+
+    private var reloadObserver: NSObjectProtocol
+
+    init() {
+        let view = DiskSpaceUsageView()
+        self.view = view
+
+        reloadObserver = NotificationCenter.default.addObserver(forName: PackageVC.DebsListModel.NotificationName,
+                                                                object: nil,
+                                                                queue: .current) { _  in
+            DispatchQueue.main.async {
+                view.update()
+            }
+        }
+    }
+
     func makeUIView(context: Context) -> UIViewType {
-        DiskSpaceUsageView()
+        view
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {

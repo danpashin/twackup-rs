@@ -79,19 +79,26 @@ class Database {
         try? context.fetch(DebPackage.fetchRequest(package: package)).first
     }
 
-    func delete(package: DebPackage) {
-        delete(packages: [package])
+    func delete(package: DebPackage, completion: (() -> Void)? = nil) {
+        delete(packages: [package], completion: completion)
     }
 
-    func delete(packages: [DebPackage]) {
+    func delete(packages: [DebPackage], completion: (() -> Void)? = nil) {
         persistentContainer.performBackgroundTask { context in
+            if packages.isEmpty {
+                completion?()
+                return
+            }
+            
             let request = NSBatchDeleteRequest(objectIDs: packages.map({ $0.objectID }))
             _ = self.execute(request: request, context: context)
+
+            completion?()
         }
     }
 
-    func delete(packages: [Package]) {
-        delete(packages: packages.compactMap({ $0 as? DebPackage}))
+    func delete(packages: [Package], completion: (() -> Void)? = nil) {
+        delete(packages: packages.compactMap({ $0 as? DebPackage}), completion: completion)
     }
 
     func packagesSize() -> Int64 {
@@ -111,8 +118,6 @@ class Database {
 
             size += (attributes[.size] as? Int64) ?? 0
         }
-
-        print(size)
 
         return size
     }

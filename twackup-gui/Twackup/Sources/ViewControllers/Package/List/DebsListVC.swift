@@ -25,6 +25,8 @@ extension PackageVC {
 
         private var isAnyPackageSelected: Bool = false
 
+        private var reloadObserver: NSObjectProtocol?
+
         init(model: DebsListModel, detail: PackageVC.DetailVC) {
             debsModel = model
             super.init(model: model, detail: detail)
@@ -37,21 +39,19 @@ extension PackageVC {
         override func viewDidLoad() {
             super.viewDidLoad()
 
-            let center = NotificationCenter.default
-            center.addObserver(forName: DebsListModel.NotificationName, object: nil, queue: .current) { _ in
-                self.reload()
+            reloadObserver = NotificationCenter.default.addObserver(forName: DebsListModel.NotificationName,
+                                                                    object: nil,
+                                                                    queue: .current) {[weak self] _  in
+                guard let self else { return }
+                self.debsModel.debsProvider.reload()
+                DispatchQueue.main.async {
+                    self.reloadTableView()
+                }
             }
         }
 
-        func reload() {
-            self.debsModel.debsProvider.reload()
-            DispatchQueue.main.async {
-                self.reloadTableView()
-            }
-        }
-
-        override func reloadTableView() {
-            super.reloadTableView()
+        deinit {
+            NotificationCenter.default.removeObserver(reloadObserver as Any)
         }
 
         func tableView(_ tableView: UITableView, didUpdateSelection selected: [IndexPath]?) {

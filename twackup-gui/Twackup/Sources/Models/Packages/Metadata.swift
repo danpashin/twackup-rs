@@ -8,7 +8,7 @@
 import UIKit
 
 class ViewControllerMetadata {
-    var navTitle: String? { .none }
+    var navTitle: String { "" }
 
     var tabbarItem: UITabBarItem? { .none }
 }
