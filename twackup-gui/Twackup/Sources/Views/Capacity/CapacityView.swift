@@ -12,7 +12,7 @@ struct CapacityItem {
 
     var color: UIColor
 
-    var bytes: UInt64 = 0
+    var bytes: Int64 = 0
 }
 
 class CapacityChartView: UIView {
@@ -20,9 +20,17 @@ class CapacityChartView: UIView {
 
     private let legendsStack: UIStackView = {
         let legendsStack = UIStackView()
-        legendsStack.axis = .horizontal
         legendsStack.distribution = .equalSpacing
-        legendsStack.spacing = 16.0
+
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            legendsStack.axis = .vertical
+            legendsStack.spacing = 6.0
+            legendsStack.alignment = .leading
+
+        } else {
+            legendsStack.axis = .horizontal
+            legendsStack.spacing = 16.0
+        }
 
         return legendsStack
     }()
@@ -37,7 +45,7 @@ class CapacityChartView: UIView {
         setNeedsDisplay()
         layoutIfNeeded()
 
-        let spacer = 8.0
+        let spacer = 10.0
         let height = bar.frame.size.height + spacer + legendsStack.frame.size.height
 
         return CGSize(width: max(bar.frame.size.width, legendsStack.frame.size.width), height: height)
@@ -58,7 +66,7 @@ class CapacityChartView: UIView {
             bar.leadingAnchor.constraint(equalTo: leadingAnchor),
             bar.trailingAnchor.constraint(equalTo: trailingAnchor),
 
-            legendsStack.topAnchor.constraint(equalTo: bar.bottomAnchor, constant: 8.0),
+            legendsStack.topAnchor.constraint(equalTo: bar.bottomAnchor, constant: 10.0),
             legendsStack.leadingAnchor.constraint(equalTo: leadingAnchor),
             legendsStack.bottomAnchor.constraint(greaterThanOrEqualTo: bottomAnchor)
         ])
@@ -79,10 +87,13 @@ class CapacityChartView: UIView {
             subview.removeFromSuperview()
         }
 
+        let formatter = ByteCountFormatter()
+
         for item in sortedItems {
             let label = CapacityBarLabel()
             label.colorDotView.backgroundColor = item.color
             label.nameLabel.text = item.title
+            label.valueLabel.text = formatter.string(fromByteCount: item.bytes)
 
             legendsStack.addArrangedSubview(label)
         }

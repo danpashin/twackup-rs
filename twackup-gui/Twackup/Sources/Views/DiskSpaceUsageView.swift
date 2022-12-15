@@ -17,9 +17,9 @@ class DiskSpaceUsageView: UIView {
 
     private(set) lazy var appItem = CapacityItem(title: "app", color: tintColor)
 
-    private(set) var deviceItem = CapacityItem(title: "", color: .systemGray3)
+    private(set) var deviceItem = CapacityItem(title: "device", color: .systemGray3)
 
-    private(set) var totalItem = CapacityItem(title: "", color: .systemGray5)
+    private(set) var totalItem = CapacityItem(title: "total", color: .systemGray5)
 
     override var intrinsicContentSize: CGSize {
         chart.intrinsicContentSize
@@ -56,21 +56,14 @@ class DiskSpaceUsageView: UIView {
         activityIndicator.startAnimating()
 
         diskStats.update { [self] in
-            let fmt = ByteCountFormatter()
-            fmt.countStyle = .file
-            fmt.allowedUnits = [.useMB, .useGB, .usePB]
+            appItem.bytes = diskStats.appSpace
+            appItem.title = Bundle.appLocalize("disk-usage-app") + " •"
 
-            let appSpaceString = fmt.string(fromByteCount: diskStats.appSpace)
-            appItem.bytes = UInt64(diskStats.appSpace)
-            appItem.title = Bundle.appLocalize("disk-usage-app") + " • \(appSpaceString)"
+            deviceItem.bytes = diskStats.usedSpace
+            deviceItem.title = Bundle.appLocalize("disk-usage-other") + " • "
 
-            let usedSpaceString = fmt.string(fromByteCount: diskStats.usedSpace)
-            deviceItem.bytes = UInt64(diskStats.usedSpace)
-            deviceItem.title = Bundle.appLocalize("disk-usage-other") + " • \(usedSpaceString)"
-
-            let totalSpaceString = fmt.string(fromByteCount: diskStats.totalSpace)
-            totalItem.bytes = UInt64(diskStats.totalSpace)
-            totalItem.title = Bundle.appLocalize("disk-usage-total-space") + " • \(totalSpaceString)"
+            totalItem.bytes = diskStats.totalSpace
+            totalItem.title = Bundle.appLocalize("disk-usage-total-space") + " • "
 
             DispatchQueue.main.sync {
                 chart.set(items: [appItem, deviceItem, totalItem])

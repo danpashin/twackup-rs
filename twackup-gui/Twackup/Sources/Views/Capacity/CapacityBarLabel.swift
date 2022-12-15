@@ -31,14 +31,25 @@ class CapacityBarLabel: UIView {
         return label
     }()
 
+    let valueLabel: UILabel = {
+        let label = UILabel()
+
+        let font = UIFont.preferredFont(forTextStyle: .subheadline)
+        label.font = UIFont.boldSystemFont(ofSize: font.fontDescriptor.pointSize)
+
+        return label
+    }()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         addSubview(colorDotView)
         addSubview(nameLabel)
+        addSubview(valueLabel)
 
         colorDotView.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        valueLabel.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             colorDotView.widthAnchor.constraint(equalToConstant: 8.0),
@@ -48,8 +59,12 @@ class CapacityBarLabel: UIView {
 
             nameLabel.topAnchor.constraint(equalTo: topAnchor),
             nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
-            nameLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-            nameLabel.leadingAnchor.constraint(equalTo: colorDotView.trailingAnchor, constant: 8.0)
+            nameLabel.leadingAnchor.constraint(equalTo: colorDotView.trailingAnchor, constant: 8.0),
+
+            valueLabel.topAnchor.constraint(equalTo: topAnchor),
+            valueLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
+            valueLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+            valueLabel.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor)
         ])
     }
 
