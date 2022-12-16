@@ -61,3 +61,6 @@ console = { version = "0.15", default-features = false, features = [], optional 
 
 [dev-dependencies]
 criterion = { version = "0.4", features = ["async_tokio"] }
+
+[build-dependencies]
+vergen = { version = "7.4", features = ["git"] }

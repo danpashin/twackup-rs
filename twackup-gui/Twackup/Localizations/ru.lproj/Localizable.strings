@@ -62,8 +62,9 @@
 Желаете продолжить?";
 "settings-clear-appdata-warning-clear-anyway" = "Да, мне всё равно";
 
-"settings-donate-button" =  "☕️ Задонатить на кофеёк :)";
+"settings-donate-button" =  "☕️ Подарить чашечку кофейка :)";
 "settings-reportabug-button" = "🪲 Сообщить о баге на GitHub";
+"settings-app-version-label" = "Версия приложения";
 
 
 // Misc

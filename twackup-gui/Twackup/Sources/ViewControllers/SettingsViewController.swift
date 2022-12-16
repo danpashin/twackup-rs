@@ -73,6 +73,10 @@ struct SettingsViewController: View {
                         "settings-reportabug-button".localized,
                         destination: URL(string: "https://github.com/danpashin/twackup-rs/issues/new")!
                     )
+                    DetailedLabelSUI(
+                        "settings-app-version-label".localized,
+                        detailed: String(utf8String: tw_library_version()) ?? "unknown"
+                    )
                 }, footer: {
                     Text("Copyright (c) 2022 danpashin. All rights reserved")
                 })
