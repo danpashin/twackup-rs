@@ -13,7 +13,7 @@ class DpkgDataProvier: PackageDataProvider {
     init(_ dpkg: Dpkg, leaves: Bool = false) {
         self.dpkg = dpkg
 
-        let transaction = SentrySDK.startTransaction(name: "Parse database", operation: "lib")
+        let transaction = SentrySDK.startTransaction(name: "database-parse", operation: "lib")
 
         super.init(packages: dpkg.parsePackages(leaves: leaves))
 

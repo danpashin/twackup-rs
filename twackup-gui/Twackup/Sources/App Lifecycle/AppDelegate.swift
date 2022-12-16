@@ -20,9 +20,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         SentrySDK.start { options in
             options.dsn = "https://fe79331fe69841ddabaf9b5161d50e00@o4504339145555968.ingest.sentry.io/4504339146670080"
-            options.tracesSampleRate = 1.0
-            options.enableFileIOTracking = true
+            options.tracesSampleRate = 0.7
             options.enableCoreDataTracking = true
+            options.enableUIViewControllerTracking = false
+            options.enableNetworkBreadcrumbs = false
         }
 
         return true

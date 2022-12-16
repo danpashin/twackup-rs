@@ -21,7 +21,7 @@ class PackagesRebuilder: DpkgBuildDelegate {
 
     private var progress: Progress?
 
-    private var performanceRootTransaction: Span?
+    private var pfmcRootTransaction: Span?
 
     private var performanceTransactions: NSCache<NSString, Span> = NSCache()
 
@@ -37,7 +37,7 @@ class PackagesRebuilder: DpkgBuildDelegate {
         progress = Progress(totalUnitCount: Int64(packages.count))
 
         DispatchQueue.global().async { [self] in
-            performanceRootTransaction = SentrySDK.startTransaction(name: "Rebuild debs", operation: "lib")
+            pfmcRootTransaction = SentrySDK.startTransaction(name: "multiple-debs-rebuild", operation: "lib")
 
             do {
                 let results = try self.dpkg.rebuild(packages: packages)
@@ -47,21 +47,25 @@ class PackagesRebuilder: DpkgBuildDelegate {
 
                     case .failure(let error):
                         FFILogger.shared.log("\(error)", level: .error)
+                        SentrySDK.capture(error: error)
                     }
                 }
             } catch {
                 FFILogger.shared.log("\(error)", level: .error)
+                SentrySDK.capture(error: error)
             }
 
-            performanceRootTransaction?.finish()
+            pfmcRootTransaction?.finish()
+            pfmcRootTransaction = nil
 
             completion?()
         }
     }
 
     func startProcessing(package: Package) {
-        let transaction = performanceRootTransaction?.startChild(operation: package.id)
-        performanceTransactions.setObject(transaction!, forKey: package.id as NSString)
+        guard let pfmcRootTransaction else { return }
+        let transaction = pfmcRootTransaction.startChild(operation: "single-deb-rebuild", description: package.id)
+        performanceTransactions.setObject(transaction, forKey: package.id as NSString)
     }
 
     func finishedProcessing(package: Package, debPath: URL) {
@@ -73,10 +77,7 @@ class PackagesRebuilder: DpkgBuildDelegate {
         dbSaveQueue.async { [self] in
             if let progress {
                 progress.completedUnitCount += 1
-
-                if let updateHandler {
-                    updateHandler(progress)
-                }
+                updateHandler?(progress)
             }
 
             rebuildedPackages.append(BuildedPackage(package: package, debURL: debPath))
@@ -85,8 +86,13 @@ class PackagesRebuilder: DpkgBuildDelegate {
 
     func finishedAll() {
         dbSaveQueue.async { [self] in
-            database.addBuildedPackages(rebuildedPackages) {
+            let databaseTransaction = pfmcRootTransaction?.startChild(operation: "database-packages-save")
+            database.addBuildedPackages(rebuildedPackages) { [self] in
                 NotificationCenter.default.post(name: PackageVC.DebsListModel.NotificationName, object: nil)
+
+                databaseTransaction?.finish()
+                pfmcRootTransaction?.finish()
+                pfmcRootTransaction = nil
             }
         }
     }
