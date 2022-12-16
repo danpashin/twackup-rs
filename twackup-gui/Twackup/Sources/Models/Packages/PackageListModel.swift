@@ -25,6 +25,13 @@ extension PackageVC {
 
         weak var delegate: PackageListDelegate?
 
+        var tableView: UITableView? {
+            didSet {
+                let cellID = String(describing: PackageTableViewCell.self)
+                tableView?.register(PackageTableViewCell.self, forCellReuseIdentifier: cellID)
+            }
+        }
+
         init(dataProvider: PackageDataProvider, metadata: ViewControllerMetadata) {
             self.dataProvider = dataProvider
             self.metadata = metadata

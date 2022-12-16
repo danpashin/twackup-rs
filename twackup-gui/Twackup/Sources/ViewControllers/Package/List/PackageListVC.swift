@@ -25,6 +25,7 @@ extension PackageVC {
             let table = UITableView(frame: .zero, style: .insetGrouped)
             table.delegate = model
             table.dataSource = model
+            table.backgroundColor = .systemBackground
 
             return table
         }()
@@ -43,6 +44,7 @@ extension PackageVC {
 
         override func loadView() {
             self.view = tableView
+            model.tableView = tableView
         }
 
         override func viewDidLoad() {
@@ -51,10 +53,6 @@ extension PackageVC {
             navigationItem.title = model.metadata.navTitle
             navigationItem.searchController = searchController
             navigationController?.navigationBar.prefersLargeTitles = true
-
-            tableView.backgroundColor = .systemBackground
-            let cellClass = PackageTableViewCell.self
-            tableView.register(cellClass, forCellReuseIdentifier: String(describing: cellClass))
         }
 
         func reloadTableView() {
@@ -62,10 +60,10 @@ extension PackageVC {
         }
 
         func didSelectPackage(_ package: Package) {
-            guard !tableView.isEditing else { return }
+            guard !tableView.isEditing, let selected = tableView.indexPathForSelectedRow else { return }
 
             if UIDevice.current.userInterfaceIdiom == .phone {
-                tableView.deselectRow(at: tableView.indexPathForSelectedRow!, animated: true)
+                tableView.deselectRow(at: selected, animated: true)
                 navigationController?.pushViewController(detail, animated: true)
             }
 

@@ -7,8 +7,8 @@
 
 // Controllers
 "debs-short-title" = "Собранные";
-"leaves-pkgs-short-title" = "Независимые";
-"all-pkgs-short-title" = "Установленные";
+"leaves-pkgs-short-title" = "Без связей";
+"all-pkgs-short-title" = "Доступные";
 "log-short-title" = "Лог";
 "preferences-short-title" = "Настройки";
 

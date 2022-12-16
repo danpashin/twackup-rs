@@ -15,13 +15,13 @@ extension PackageVC {
             }
         }
 
-        private lazy var config: UIListContentConfiguration = {
+        lazy var config: UIListContentConfiguration = {
             var cfg = defaultContentConfiguration()
 
             cfg.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 6.0, leading: 0.0, bottom: 6.0, trailing: 0.0)
 
             cfg.textProperties.font = UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: .semibold)
-            cfg.textToSecondaryTextVerticalPadding = 0.0
+            cfg.textToSecondaryTextVerticalPadding = 2.0
 
             cfg.secondaryTextProperties.font = UIFont.systemFont(ofSize: UIFont.smallSystemFontSize, weight: .regular)
             cfg.secondaryTextProperties.color = .secondaryLabel
@@ -40,7 +40,7 @@ extension PackageVC {
             fatalError("init(coder:) has not been implemented")
         }
 
-        private func updateUI() {
+        func updateUI() {
             guard let package else { return }
 
             config.image = UIImage(systemName: package.section.systemImageName)

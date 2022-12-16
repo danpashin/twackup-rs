@@ -31,6 +31,7 @@
 		0B5D3F9E2934D85500AE50F2 /* DatabasePackageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F9D2934D85500AE50F2 /* DatabasePackageProvider.swift */; };
 		0B6BB2F1294A599D001E3B43 /* ObservedObjectProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6BB2F0294A599D001E3B43 /* ObservedObjectProxy.swift */; };
 		0B85ABB3294C712A00B6C5CF /* LeavesListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B85ABB2294C712A00B6C5CF /* LeavesListVC.swift */; };
+		0B85ABB5294C80B200B6C5CF /* DebTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B85ABB4294C80B200B6C5CF /* DebTableViewCell.swift */; };
 		0B8661692930ADA300EA4301 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8661682930ADA300EA4301 /* AppDelegate.swift */; };
 		0B86616B2930ADA300EA4301 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86616A2930ADA300EA4301 /* SceneDelegate.swift */; };
 		0B86616D2930ADA300EA4301 /* MainTabbarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86616C2930ADA300EA4301 /* MainTabbarController.swift */; };
@@ -88,6 +89,7 @@
 		0B5D3F9D2934D85500AE50F2 /* DatabasePackageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackageProvider.swift; sourceTree = "<group>"; };
 		0B6BB2F0294A599D001E3B43 /* ObservedObjectProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservedObjectProxy.swift; sourceTree = "<group>"; };
 		0B85ABB2294C712A00B6C5CF /* LeavesListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeavesListVC.swift; sourceTree = "<group>"; };
+		0B85ABB4294C80B200B6C5CF /* DebTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebTableViewCell.swift; sourceTree = "<group>"; };
 		0B8661652930ADA300EA4301 /* Twackup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Twackup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B8661682930ADA300EA4301 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0B86616A2930ADA300EA4301 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -322,6 +324,7 @@
 			isa = PBXGroup;
 			children = (
 				0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */,
+				0B85ABB4294C80B200B6C5CF /* DebTableViewCell.swift */,
 				0B88C31D2930DEA200BA5312 /* PackageDetailView.swift */,
 				0B434F9D2935E97200311FB6 /* DatabasePackageDetailedView.swift */,
 				0B434F972935DEFA00311FB6 /* RebuildPackageDetailedView.swift */,
@@ -577,6 +580,7 @@
 				0B5D3F9E2934D85500AE50F2 /* DatabasePackageProvider.swift in Sources */,
 				0BF07A502941027800EEC8FC /* TwoColumnsVC.swift in Sources */,
 				0B88C31C2930DE8C00BA5312 /* KeyValueLabelView.swift in Sources */,
+				0B85ABB5294C80B200B6C5CF /* DebTableViewCell.swift in Sources */,
 				0B434F9E2935E97200311FB6 /* DatabasePackageDetailedView.swift in Sources */,
 				0B2636DF2948B867003EA806 /* Preferences.swift in Sources */,
 				0B5D3F9A2934D0C300AE50F2 /* Twackup.xcdatamodeld in Sources */,

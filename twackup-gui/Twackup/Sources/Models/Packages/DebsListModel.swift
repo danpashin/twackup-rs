@@ -15,9 +15,26 @@ extension PackageVC {
             set { }
         }
 
+        override var tableView: UITableView? {
+            didSet {
+                let cellID = String(describing: DebTableViewCell.self)
+                tableView?.register(DebTableViewCell.self, forCellReuseIdentifier: cellID)
+            }
+        }
+
         init(dataProvider: DatabasePackageProvider, metadata: ViewControllerMetadata) {
             debsProvider = dataProvider
             super.init(dataProvider: dataProvider, metadata: metadata)
+        }
+
+        override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+            let cellID = String(describing: DebTableViewCell.self)
+            let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
+            if let cell = cell as? DebTableViewCell {
+                cell.package = dataProvider.packages[indexPath.row]
+            }
+
+            return cell
         }
 
         func tableView(
