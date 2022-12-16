@@ -2,17 +2,23 @@ PODS:
   - SDWebImage (5.13.2):
     - SDWebImage/Core (= 5.13.2)
   - SDWebImage/Core (5.13.2)
+  - Sentry (7.31.4):
+    - Sentry/Core (= 7.31.4)
+  - Sentry/Core (7.31.4)
 
 DEPENDENCIES:
   - SDWebImage
+  - Sentry
 
 SPEC REPOS:
   trunk:
     - SDWebImage
+    - Sentry
 
 SPEC CHECKSUMS:
   SDWebImage: 72f86271a6f3139cc7e4a89220946489d4b9a866
+  Sentry: d9567fc53799651f79593c69054c58d436930213
 
-PODFILE CHECKSUM: 557492ab6d19ca5d5141071887176f85668fc11e
+PODFILE CHECKSUM: 8f96315bc98bd80227a17148eafe72324a1748a8
 
 COCOAPODS: 1.11.3

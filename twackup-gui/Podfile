@@ -3,6 +3,7 @@ target "Twackup" do
   use_frameworks!
 
   pod "SDWebImage"
+  pod "Sentry"
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|
