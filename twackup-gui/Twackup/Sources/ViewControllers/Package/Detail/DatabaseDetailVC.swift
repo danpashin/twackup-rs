@@ -14,26 +14,23 @@ extension PackageVC {
 
         private var debURL: URL?
 
-        private lazy var sharingBtn: UIBarButtonItem = {
-            let shareImage = UIImage(systemName: "square.and.arrow.up")
-            return UIBarButtonItem(image: shareImage, style: .plain, target: self, action: #selector(share))
+        private lazy var shareDebButton: UIBarButtonItem = {
+            UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareDeb))
         }()
 
         override func didSelectPackage(_ package: Package) {
             super.didSelectPackage(package)
 
-            navigationItem.rightBarButtonItem = sharingBtn
+            navigationItem.rightBarButtonItem = shareDebButton
         }
 
         @objc
-        func share() {
+        func shareDeb() {
             guard let package = currentPackage as? DebPackage else { return }
-            let items = [package.fileURL()]
 
-            let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
-            activityViewController.popoverPresentationController?.sourceView = view
-
-            present(activityViewController, animated: true, completion: nil)
+            let activityVC = UIActivityViewController(activityItems: [package.fileURL()], applicationActivities: nil)
+            activityVC.popoverPresentationController?.barButtonItem = shareDebButton
+            present(activityVC, animated: true, completion: nil)
         }
     }
 }

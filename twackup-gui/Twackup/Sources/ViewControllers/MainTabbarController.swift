@@ -9,7 +9,9 @@ import SwiftUI
 import UIKit
 
 class MainTabbarController: UITabBarController {
-    private lazy var dpkgInstance: Dpkg = {
+    let database: Database
+
+    private(set) lazy var dpkgInstance: Dpkg = {
         var path = "/var/lib/dpkg"
         if !FileManager.default.fileExists(atPath: path) {
             path = "/var/jb/dpkg"
@@ -18,7 +20,54 @@ class MainTabbarController: UITabBarController {
         return Dpkg(path: path)
     }()
 
-    let database: Database
+    private(set) lazy var buildedPackagesVC: UIViewController = {
+        let provider = DatabasePackageProvider(database)
+        let metadata = PackageVC.BuildedPkgsMetadata()
+        let model = PackageVC.DebsListModel(dataProvider: provider, metadata: metadata)
+
+        let detailVC = PackageVC.DatabaseDetailVC(database: database)
+        let mainVC = PackageVC.DebsListVC(model: model, detail: detailVC)
+
+        return TwoColumnsVC(first: mainVC, second: detailVC, tabBarItem: metadata.tabbarItem)
+    }()
+
+    private(set) lazy var leavesPackagesVC: UIViewController = {
+        let provider = DpkgDataProvier(dpkgInstance, leaves: true)
+        let metadata = PackageVC.LeavesPkgsMetadata()
+
+        let model = PackageVC.PackageListModel(dataProvider: provider, metadata: metadata)
+        let detailVC = PackageVC.DpkgDetailVC(dpkg: dpkgInstance, database: database)
+        let mainVC = PackageVC.LeavesListVC(dpkg: dpkgInstance, database: database, model: model, detail: detailVC)
+
+        return TwoColumnsVC(first: mainVC, second: detailVC, tabBarItem: metadata.tabbarItem)
+    }()
+
+    private(set) lazy var allPackagesVC: UIViewController = {
+        let provider = DpkgDataProvier(dpkgInstance)
+        let metadata = PackageVC.AllPkgsMetadata()
+
+        let model = PackageVC.PackageListModel(dataProvider: provider, metadata: metadata)
+        let detailVC = PackageVC.DpkgDetailVC(dpkg: dpkgInstance, database: database)
+        let mainVC = PackageVC.DpkgListVC(dpkg: dpkgInstance, database: database, model: model, detail: detailVC)
+
+        return TwoColumnsVC(first: mainVC, second: detailVC, tabBarItem: metadata.tabbarItem)
+    }()
+
+    private(set) lazy var logVC: UIViewController = {
+        let logMetadata = LogVCMetadata()
+        let logController = UINavigationController(rootViewController: LoggerViewController(metadata: logMetadata))
+        logController.tabBarItem = logMetadata.tabbarItem
+
+        return logController
+    }()
+
+    private(set) lazy var settingsVC: UIViewController = {
+        let prefsMetadata = PreferencesVCMetadata()
+        let settingsController = UIHostingController(rootView: SettingsViewController(metadata: prefsMetadata))
+        settingsController.tabBarItem = prefsMetadata.tabbarItem
+
+        return settingsController
+    }()
 
     init(database: Database) {
         self.database = database
@@ -30,68 +79,11 @@ class MainTabbarController: UITabBarController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private lazy var buildedPackagesVC: UIViewController = {
-        let provider = DatabasePackageProvider(database)
-        let metadata = PackageVC.BuildedPkgsMetadata()
-        let model = PackageVC.DebsListModel(dataProvider: provider, metadata: metadata)
-
-        let detailVC = PackageVC.DatabaseDetailVC(database: database)
-
-        let mainVC = PackageVC.DebsListVC(model: model, detail: detailVC)
-
-        let splitVC = TwoColumnsVC()
-        splitVC.tabBarItem = metadata.tabbarItem
-        splitVC.viewControllers = [
-            UINavigationController(rootViewController: mainVC),
-            UINavigationController(rootViewController: detailVC)
-        ]
-        return splitVC
-    }()
-
-    private lazy var leavesPackagesVC: UIViewController = {
-        let provider = DpkgDataProvier(dpkgInstance, leaves: true)
-        let metadata = PackageVC.LeavesPkgsMetadata()
-        return makePackagesControler(provider, metadata)
-    }()
-
-    private lazy var allPackagesVC: UIViewController = {
-        let provider = DpkgDataProvier(dpkgInstance)
-        let metadata = PackageVC.AllPkgsMetadata()
-        return makePackagesControler(provider, metadata)
-    }()
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let logMetadata = LogVCMetadata()
-        let logController = UINavigationController(rootViewController: LoggerViewController(metadata: logMetadata))
-        logController.tabBarItem = logMetadata.tabbarItem
-
-        let prefsMetadata = PreferencesVCMetadata()
-        let settingsController = UIHostingController(rootView: SettingsViewController(metadata: prefsMetadata))
-        settingsController.tabBarItem = prefsMetadata.tabbarItem
-
         setViewControllers([
-            buildedPackagesVC, leavesPackagesVC, allPackagesVC, logController, settingsController
+            buildedPackagesVC, leavesPackagesVC, allPackagesVC, logVC, settingsVC
         ], animated: false)
-    }
-
-    private func makePackagesControler(
-        _ dataProvider: PackageDataProvider,
-        _ metadata: ViewControllerMetadata
-    ) -> UIViewController {
-        let model = PackageVC.PackageListModel(dataProvider: dataProvider, metadata: metadata)
-        let detailVC = PackageVC.DpkgDetailVC(dpkg: dpkgInstance, database: database)
-
-        let mainVC = PackageVC.DpkgListVC(dpkg: dpkgInstance, database: database, model: model, detail: detailVC)
-
-        let splitVC = TwoColumnsVC()
-        splitVC.tabBarItem = metadata.tabbarItem
-        splitVC.viewControllers = [
-            UINavigationController(rootViewController: mainVC),
-            UINavigationController(rootViewController: detailVC)
-        ]
-
-        return splitVC
     }
 }
