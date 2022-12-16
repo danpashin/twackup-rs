@@ -1,6 +1,6 @@
 [package]
 name = "twackup"
-version = "2.0.0"
+version = "2.0.1"
 description = "Tokio-based dpkg database parser and .deb packages rebuilder library"
 edition = "2021"
 license = "GPL-3.0-only"
@@ -32,7 +32,7 @@ harness = false
 [dependencies]
 
 # Core
-twackup-derive = { version = "0.1.0", path = "../twackup-derive" }
+twackup-derive = { version = "2.0.1", path = "../twackup-derive" }
 tokio = { version = "1.5", features = ["rt-multi-thread", "sync", "macros", "fs"] }
 memmem = "0.1"
 memmap2 = "0.5"

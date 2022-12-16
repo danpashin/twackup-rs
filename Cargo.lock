@@ -1559,7 +1559,7 @@ dependencies = [
 
 [[package]]
 name = "twackup"
-version = "2.0.0"
+version = "2.0.1"
 dependencies = [
  "ar",
  "console",
@@ -1583,7 +1583,7 @@ dependencies = [
 
 [[package]]
 name = "twackup-cli"
-version = "2.0.0"
+version = "2.0.1"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1610,7 +1610,7 @@ dependencies = [
 
 [[package]]
 name = "twackup-derive"
-version = "0.1.0"
+version = "2.0.1"
 dependencies = [
  "convert_case",
  "quote",
