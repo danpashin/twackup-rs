@@ -17,6 +17,11 @@ class LoggerViewController: UIViewController, FFILoggerSubscriber {
         return view
     }()
 
+    private lazy var clearLogButton: UIBarButtonItem = {
+        let title = Bundle.appLocalize("log-clear-btn")
+        return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionClearLog))
+    }()
+
     init(metadata: ViewControllerMetadata) {
         self.metadata = metadata
         super.init(nibName: nil, bundle: nil)
@@ -45,6 +50,7 @@ class LoggerViewController: UIViewController, FFILoggerSubscriber {
 
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = metadata.navTitle
+        navigationItem.rightBarButtonItem = clearLogButton
     }
 
     private func insert(attributedString: NSAttributedString) {
@@ -91,5 +97,10 @@ class LoggerViewController: UIViewController, FFILoggerSubscriber {
     }
 
     func flush() {
+    }
+
+    @objc
+    func actionClearLog() {
+        logTextView.text = ""
     }
 }

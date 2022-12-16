@@ -21,6 +21,8 @@ extension PackageVC {
 
         @objc
         func shareList() {
+            if model.dataProvider.packages.isEmpty { return }
+
             let packagesText = model.dataProvider.packages
                 .enumerated()
                 .map { index, package in
