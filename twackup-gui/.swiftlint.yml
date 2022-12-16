@@ -58,3 +58,10 @@ analyzer_rules:
     - static_operator
     - strict_fileprivate
     - toggle_bool
+custom_rules:
+    print_using:
+        regex: 'print'
+        message: "Print decrease performance of the app"
+    foundation_using:
+        regex: 'import Foundation'
+        message: "Do you really need for Foundation ???"

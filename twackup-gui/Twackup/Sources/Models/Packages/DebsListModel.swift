@@ -24,14 +24,14 @@ extension PackageVC {
             _ tableView: UITableView,
             trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
         ) -> UISwipeActionsConfiguration? {
-            let delTtl = Bundle.appLocalize("remove-btn")
-            let delete = UIContextualAction(style: .destructive, title: delTtl) { _, _, completionHandler in
+            let delete = UIContextualAction(style: .destructive, title: nil) { _, _, completionHandler in
                 if self.debsProvider.deletePackage(at: indexPath.row) {
                     tableView.deleteRows(at: [indexPath], with: .automatic)
                 }
                 completionHandler(true)
             }
             delete.image = UIImage(systemName: "trash.fill")
+            delete.title = Bundle.appLocalize("remove-btn")
 
             return UISwipeActionsConfiguration(actions: [delete])
         }

@@ -5,8 +5,6 @@
 //  Created by Daniil on 25.11.2022.
 //
 
-import Foundation
-
 @objc
 enum PackageSection: UInt16 {
     case archiving
@@ -52,21 +50,23 @@ enum PackageSection: UInt16 {
         case .other: return "Other"
         }
     }
+}
 
-    init(_ section: TwPackageSection_t) {
-        switch section {
-        case TwPackageSection_t(TW_PACKAGE_SECTION_ARCHIVING): self = .archiving
-        case TwPackageSection_t(TW_PACKAGE_SECTION_DEVELOPMENT): self = .development
-        case TwPackageSection_t(TW_PACKAGE_SECTION_NETWORKING): self = .networking
-        case TwPackageSection_t(TW_PACKAGE_SECTION_PACKAGING): self = .packaging
-        case TwPackageSection_t(TW_PACKAGE_SECTION_SYSTEM): self = .system
-        case TwPackageSection_t(TW_PACKAGE_SECTION_TERMINAL_SUPPORT): self = .terminalSupport
-        case TwPackageSection_t(TW_PACKAGE_SECTION_TEXT_EDITORS): self = .textEditors
-        case TwPackageSection_t(TW_PACKAGE_SECTION_THEMES): self = .themes
-        case TwPackageSection_t(TW_PACKAGE_SECTION_TWEAKS): self = .tweaks
-        case TwPackageSection_t(TW_PACKAGE_SECTION_UTILITIES): self = .utilities
+extension TwPackageSection_t {
+    var swiftSection: PackageSection {
+        switch self {
+        case TwPackageSection_t(TW_PACKAGE_SECTION_ARCHIVING): return .archiving
+        case TwPackageSection_t(TW_PACKAGE_SECTION_DEVELOPMENT): return .development
+        case TwPackageSection_t(TW_PACKAGE_SECTION_NETWORKING): return .networking
+        case TwPackageSection_t(TW_PACKAGE_SECTION_PACKAGING): return .packaging
+        case TwPackageSection_t(TW_PACKAGE_SECTION_SYSTEM): return .system
+        case TwPackageSection_t(TW_PACKAGE_SECTION_TERMINAL_SUPPORT): return .terminalSupport
+        case TwPackageSection_t(TW_PACKAGE_SECTION_TEXT_EDITORS): return .textEditors
+        case TwPackageSection_t(TW_PACKAGE_SECTION_THEMES): return .themes
+        case TwPackageSection_t(TW_PACKAGE_SECTION_TWEAKS): return .tweaks
+        case TwPackageSection_t(TW_PACKAGE_SECTION_UTILITIES): return .utilities
 
-        default: self = .other
+        default: return .other
         }
     }
 }

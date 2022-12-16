@@ -5,8 +5,6 @@
 //  Created by Daniil on 09.12.2022.
 //
 
-import Foundation
-
 protocol FFILoggerSubscriber: NSObjectProtocol {
     func log(message: FFILogger.Message, level: FFILogger.Level)
 

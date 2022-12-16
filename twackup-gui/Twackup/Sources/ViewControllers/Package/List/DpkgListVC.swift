@@ -5,8 +5,6 @@
 //  Created by Daniil on 09.12.2022.
 //
 
-import Foundation
-
 extension PackageVC {
     class DpkgListVC: PackageSelectableListVC {
         let dpkg: Dpkg

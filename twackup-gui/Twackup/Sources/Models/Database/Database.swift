@@ -6,6 +6,7 @@
 //
 
 import CoreData
+import os
 
 class Database {
     private lazy var persistentContainer: NSPersistentContainer = {
@@ -28,7 +29,7 @@ class Database {
             try context.save()
         } catch {
             context.rollback()
-            print("Unresolved error \(error), \((error as NSError).userInfo)")
+            os_log("Unresolved error \(error), \((error as NSError).userInfo)")
         }
     }
 
@@ -42,7 +43,7 @@ class Database {
             return result
         } catch {
             context.rollback()
-            print("Unresolved error \(error), \((error as NSError).userInfo)")
+            os_log("Unresolved error \(error), \((error as NSError).userInfo)")
         }
 
         return nil

@@ -14,7 +14,9 @@ class FFIPackage: Package {
 
     let version: String
 
-    let section: PackageSection
+    var section: PackageSection {
+        return pkg.section.swiftSection
+    }
 
     let icon: URL?
 
@@ -50,7 +52,6 @@ class FFIPackage: Package {
         // Here unwrap is safe too
         name = String(ffiSlice: pkg.name)!
         version = String(ffiSlice: pkg.version)!
-        section = PackageSection(pkg.section)
 
         let iconField = TwPackageField_t(TW_PACKAGE_FIELD_ICON)
         if let iconString = String(ffiSlice: pkg.get_field(pkg.inner_ptr, iconField)) {
