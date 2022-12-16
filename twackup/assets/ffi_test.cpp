@@ -1,24 +1,24 @@
 #include "twackup.h"
 #include <iostream>
 
-static void progress_did_increment(uint64_t delta) {
-  std::cout << "progress_did_increment(" << delta << ")" <<  std::endl;
+static void started_processing(void *context, TwPackage_t const *package) {
+  std::cout
+  << "started_processing(\""
+  << std::string((char *)package->identifier.ptr, package->identifier.len)
+  << "\")"
+  << std::endl;
 }
 
-static void progress_set_message(slice_raw_uint8_t msg) {
-  std::cout << "progress_set_message(\"" << std::string((char *)msg.ptr, msg.len) << "\")" <<  std::endl;
+static void finished_processing(void *context, TwPackage_t const *package, slice_raw_uint8_t deb_path) {
+  std::cout
+  << "finished_processing(\""
+  << std::string((char *)package->identifier.ptr, package->identifier.len)
+  << "\")"
+  << std::endl;
 }
 
-static void progress_print_message(slice_raw_uint8_t msg) {
-  std::cout << "progress_print_message(\"" << std::string((char *)msg.ptr, msg.len) << "\")" <<  std::endl;
-}
-
-static void progress_print_warning(slice_raw_uint8_t msg) {
-  std::cout << "progress_print_warning(\"" << std::string((char *)msg.ptr, msg.len) << "\")" <<  std::endl;
-}
-
-static void progress_print_error(slice_raw_uint8_t msg) {
-  std::cout << "progress_print_error(\"" << std::string((char *)msg.ptr, msg.len) << "\")" <<  std::endl;
+static void finished_all(void *context) {
+  std::cout << "finished_all()" <<  std::endl;
 }
 
 
@@ -30,7 +30,8 @@ int main(int argc, char *argv[]) {
 
   auto dpkg = tw_init(argv[1], false);
 
-  auto packages = tw_get_packages(dpkg, true, TW_PACKAGES_SORT_UNSORTED);
+  slice_boxed_TwPackage_t packages;
+  assert(tw_get_packages(dpkg, true, TW_PACKAGES_SORT_UNSORTED, &packages) == TW_RESULT_OK);
 
   std::cout << "packages_ptr = "<< packages.ptr << ", count = " << packages.len << std::endl;
 
@@ -59,19 +60,30 @@ int main(int argc, char *argv[]) {
   rebuild_packages.len = packages.len;
 
   TwProgressFunctions_t functions;
-  functions.did_increment = progress_did_increment;
-  functions.set_message = progress_set_message;
-  functions.print_message = progress_print_message;
-  functions.print_warning = progress_print_warning;
-  functions.print_error = progress_print_error;
+  functions.started_processing = started_processing;
+  functions.finished_processing = finished_processing;
+  functions.finished_all = finished_all;
 
-  auto errors = tw_rebuild_packages(dpkg, rebuild_packages, functions, "/tmp");
-  for (int i = 0; i < errors.len; i++) {
-    auto error = errors.ptr[i];
-    std::cout << "dep: " << std::string((char *)error.ptr, error.len) << std::endl;
+  slice_boxed_TwPackagesRebuildResult_t results;
+
+  TwBuildParameters_t parameters{};
+  parameters.packages = rebuild_packages;
+  parameters.functions = functions;
+  parameters.out_dir = "/tmp";
+  parameters.results = &results;
+
+  auto result_code = tw_rebuild_packages(dpkg, parameters);
+  std::cout << "result code = " << int(result_code) << std::endl;
+  for (int i = 0; i < results.len; i++) {
+    auto result = results.ptr[i];
+    if (result.success) {
+      std::cout << "build deb path: " << std::string((char *) result.deb_path.ptr, result.deb_path.len) << std::endl;
+    } else {
+      std::cout << "build error: " << std::string((char *) result.error.ptr, result.error.len) << std::endl;
+    }
   }
 
-  free_packages_rebuild_result(errors);
+  tw_free_rebuild_results(results);
 
   tw_free(dpkg);
 

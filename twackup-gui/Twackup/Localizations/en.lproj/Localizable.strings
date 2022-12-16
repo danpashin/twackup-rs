@@ -1,0 +1,74 @@
+//
+//  Localizable.lproj
+//  Twackup
+//
+//  Created by Daniil on 08.12.2022.
+//
+
+// Controllers
+"debs-short-title" = "Rebuilded";
+"leaves-pkgs-short-title" = "Leaves";
+"all-pkgs-short-title" = "Installed";
+"log-short-title" = "Log";
+"preferences-short-title" = "Preferences";
+
+"debs-full-title" = "Rebuilded";
+"leaves-pkgs-full-title" = "Leaves";
+"all-pkgs-full-title" = "Installed";
+"log-full-title" = "Log";
+"preferences-full-title" = "Preferences";
+
+// Views
+"detailed-view-identifier-lbl" = "Identifier:";
+"detailed-view-version-lbl" = "Version:";
+"detailed-view-section-lbl" = "Section:";
+"detailed-view-learnmore-btn" = "Learn more...";
+"detailed-view-size-lbl" = "Size";
+"detailed-view-installedsize-lbl" = "Installed:";
+"detailed-view-debsize-lbl" = "Packaged";
+"detailed-view-rebuild-btn" = "Package";
+"detailed-view-rebuild-btn-footer" = "Please note that the builded package may be incomplete and may not have some files necessary for the correct operation of the package.";
+
+"debs-remove-all-btn" = "Remove all";
+"debs-remove-selected-btn" = "Remove selected";
+"debs-share-btn" = "Share";
+"debs-selectall-btn" = "Select all";
+
+"debs-rebuildall-btn" = "Rebuild all";
+"debs-rebuildselected-btn" = "Rebuild selected";
+
+"rebuild-packages-status-title" = "Please, wait...";
+"rebuild-packages-status" = "Rebuilded %i of %i";
+
+// Settings
+"settings-compression-header" = "Packages compression";
+"settings-compression-level" = "Compression";
+"settings-compression-type" = "Compression container";
+"settings-compression-footer" = "Compression will affect the build time of deb packages and the space they occupy. Choose the right type based on your needs.";
+
+"compression-level-none" = "None";
+"compression-level-fast" = "Fast";
+"compression-level-normal" = "Optimal";
+"compression-level-best" = "Best";
+
+"settings-disk-usage-header" = "Disk space usage";
+"disk-usage-app" = "Twackup cache";
+"disk-usage-other" = "Other apps";
+"disk-usage-total-space" = "Total available";
+"settings-clear-appdata-button" = "Clear app data";
+"settings-clear-appdata-warning-title" = "Warning!";
+"settings-clear-appdata-warning-message" = "Clearing the data will result in the deletion of all collected packages. This action is irreversible.
+
+Would you like to continue?";
+"settings-clear-appdata-warning-clear-anyway" = "Yes, I don't care";
+
+"settings-donate-button" =  "☕️ Buy me a cup of coffee :)";
+"settings-reportabug-button" = "🪲 Report a bug on GitHub";
+"settings-app-version-label" = "App version";
+
+
+// Misc
+"search-field-lbl" = "Search";
+"unknown" = "Unknown";
+"remove-btn" = "Remove";
+"log-clear-btn" = "Clear log";

@@ -19,31 +19,20 @@
 
 //! This module represents some traits used for allowing
 //! user to see packages build progress.
-//!
-//! Should be probably refactored.
 
 #![allow(unused_variables)]
 
+use crate::package::Package;
+use std::path::Path;
+
 /// Allow users to see progress
 pub trait Progress {
-    /// Should construct self for total packages/items
-    fn new(total: u64) -> Self;
+    /// Sets current progress message
+    fn started_processing(&self, package: &Package);
 
     /// Will be called when total progress is incrementing
-    fn increment(&self, delta: u64) {}
+    fn finished_processing<P: AsRef<Path>>(&self, package: &Package, deb_path: P);
 
     /// For cleanup and finish
-    fn finish(&self) {}
-
-    /// Prints message. Should be probably removed.
-    fn print<M: AsRef<str>>(&self, message: M) {}
-
-    /// Prints or logs warning message
-    fn print_warning<M: AsRef<str>>(&self, message: M) {}
-
-    /// Prints or logs error message
-    fn print_error<M: AsRef<str>>(&self, message: M) {}
-
-    /// Sets current progress message
-    fn set_message<M: AsRef<str>>(&self, message: M) {}
+    fn finished_all(&self);
 }

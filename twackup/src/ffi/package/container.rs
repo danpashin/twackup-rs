@@ -18,38 +18,38 @@
  */
 
 use crate::package::Package;
-#[cfg(feature = "ffi-headers")]
-use safer_ffi::headers::Definer;
-use safer_ffi::{layout::OpaqueKind, ptr};
-use std::{ffi::c_void, mem::ManuallyDrop};
+use safer_ffi::layout::OpaqueKind;
+use std::ptr::NonNull;
+
+enum Contents {
+    Owned(Package),
+    Borrowed(NonNull<Package>),
+}
 
 #[repr(transparent)]
 #[derive(Copy, Clone)]
-pub struct TwPackageRef(ptr::NonNull<c_void>);
+pub struct TwPackageRef(NonNull<Contents>);
 
 impl TwPackageRef {
-    pub(crate) fn from_package(package: Package) -> Self {
-        let package = Box::leak(Box::new(package));
-        Self(ptr::NonNull::new(package as *const Package as *mut c_void).unwrap())
+    pub(crate) fn owned(package: Package) -> Self {
+        let contents = Box::new(Contents::Owned(package));
+        Self(NonNull::new(Box::into_raw(contents)).unwrap())
     }
 
-    #[inline]
-    pub(crate) fn drop_self(&mut self) {
-        unsafe {
-            ManuallyDrop::<Package>::drop(self.as_mut());
+    pub(crate) fn unowned(package: &Package) -> Self {
+        let contents = Box::new(Contents::Borrowed(
+            NonNull::new(package as *const Package as *mut Package).unwrap(),
+        ));
+        Self(NonNull::new(Box::into_raw(contents)).unwrap())
+    }
+}
+
+impl AsRef<Package> for TwPackageRef {
+    fn as_ref(&self) -> &Package {
+        match unsafe { self.0.as_ref() } {
+            Contents::Owned(package) => package,
+            Contents::Borrowed(package) => unsafe { package.as_ref() },
         }
-    }
-}
-
-impl AsRef<ManuallyDrop<Package>> for TwPackageRef {
-    fn as_ref(&self) -> &ManuallyDrop<Package> {
-        unsafe { &*self.0.as_ptr().cast() }
-    }
-}
-
-impl AsMut<ManuallyDrop<Package>> for TwPackageRef {
-    fn as_mut(&mut self) -> &mut ManuallyDrop<Package> {
-        unsafe { &mut *self.0.as_ptr().cast() }
     }
 }
 
@@ -72,7 +72,7 @@ unsafe impl safer_ffi::layout::CType for TwPackageRef {
     }
 
     #[cfg(feature = "ffi-headers")]
-    fn c_define_self(definer: &'_ mut dyn Definer) -> std::io::Result<()> {
+    fn c_define_self(definer: &'_ mut dyn safer_ffi::headers::Definer) -> std::io::Result<()> {
         let me = &Self::c_short_name().to_string();
         definer.define_once(me, &mut |definer| {
             writeln!(definer.out(), "typedef void *{};", me)

@@ -1,0 +1,67 @@
+force_cast: warning
+force_try: warning
+excluded:
+    - Pods
+analyzer_rules:
+    - unused_import
+    - weak_delegate
+    - empty_string
+    - attributes
+    - closure_end_indentation
+    - closure_spacing
+    - collection_alignment
+    - comma_inheritance
+    - explicit_self
+    - file_header
+    - let_var_whitespace
+    - literal_expression_end_indentation
+    - modifier_order
+    - number_separator
+    - operator_usage_whitespace
+    - optional_enum_case_matching
+    - prefer_self_in_static_references
+    - prefer_self_type_over_type_of_self
+    - prefixed_toplevel_constant
+    - self_binding
+    - single_test_class
+    - sorted_imports
+    - trailing_closure
+    - unneeded_parentheses_in_closure_argument
+    - vertical_parameter_alignment_on_call
+    - vertical_whitespace_between_cases
+    - vertical_whitespace_closing_braces
+    - vertical_whitespace_opening_braces
+    - multiline_arguments_brackets
+    - multiline_function_chains
+    - multiline_literal_brackets
+    - multiline_parameters
+    - multiline_parameters_brackets
+    - anonymous_argument_in_multiline_closure
+    - convenience_type
+    - extension_access_modifier
+    - fallthrough
+    - function_default_parameter_at_end
+    - implicitly_unwrapped_optional
+    - joined_default_parameter
+    - legacy_multiple
+    - legacy_objc_type
+    - nimble_operator
+    - no_extension_access_modifier
+    - no_grouping_extension
+    - object_literal
+    - pattern_matching_keywords
+    - prefer_nimble
+    - prefer_zero_over_explicit_init
+    - redundant_nil_coalescing
+    - return_value_from_void_function
+    - shorthand_optional_binding
+    - static_operator
+    - strict_fileprivate
+    - toggle_bool
+custom_rules:
+    print_using:
+        regex: 'print'
+        message: "Print decrease performance of the app"
+    foundation_using:
+        regex: 'import Foundation'
+        message: "Do you really need for Foundation ???"

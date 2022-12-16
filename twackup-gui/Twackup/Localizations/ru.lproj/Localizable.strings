@@ -1,0 +1,74 @@
+//
+//  Localizable.lproj
+//  Twackup
+//
+//  Created by Daniil on 08.12.2022.
+//
+
+// Controllers
+"debs-short-title" = "Собранные";
+"leaves-pkgs-short-title" = "Без связей";
+"all-pkgs-short-title" = "Доступные";
+"log-short-title" = "Лог";
+"preferences-short-title" = "Настройки";
+
+"debs-full-title" = "Собранные";
+"leaves-pkgs-full-title" = "Независимые";
+"all-pkgs-full-title" = "Все пакеты";
+"log-full-title" = "Лог";
+"preferences-full-title" = "Настройки";
+
+// Views
+"detailed-view-identifier-lbl" = "Идентификатор:";
+"detailed-view-version-lbl" = "Версия:";
+"detailed-view-section-lbl" = "Секция:";
+"detailed-view-learnmore-btn" = "Подробнее...";
+"detailed-view-size-lbl" = "Размер:";
+"detailed-view-installedsize-lbl" = "В установленном виде:";
+"detailed-view-debsize-lbl" = "В собранном виде:";
+"detailed-view-rebuild-btn" = "Собрать";
+"detailed-view-rebuild-btn-footer" = "Пожалуйста, обратите внимание, что собранный пакет может быть неполным и не иметь некоторых файлов, необходимых для корректной работы пакета.";
+
+"debs-remove-all-btn" = "Удалить все";
+"debs-remove-selected-btn" = "Удалить выбранные";
+"debs-share-btn" = "Поделиться";
+"debs-selectall-btn" = "Выбрать все";
+
+"debs-rebuildall-btn" = "Собрать все";
+"debs-rebuildselected-btn" = "Собрать выбранные";
+
+"rebuild-packages-status-title" = "Пожалуйста, подождите...";
+"rebuild-packages-status" = "Собрано %i из %i \n(%i%%)";
+
+// Settings
+"settings-compression-header" = "Сжатие deb-пакетов";
+"settings-compression-level" = "Cжатие";
+"settings-compression-type" = "Тип контейнера";
+"settings-compression-footer" = "Сжатие влияет на время сборки deb-пакетов и занимаемое ими место. Правильно выбирайте тип, исходя из ваших потребностей.";
+
+"compression-level-none" = "Не сжимать";
+"compression-level-fast" = "Быстрое";
+"compression-level-normal" = "Оптимальное";
+"compression-level-best" = "Наилучшее";
+
+"settings-disk-usage-header" = "Использование дискового пространства";
+"disk-usage-app" = "Кэш Twackup";
+"disk-usage-other" = "Другие приложения";
+"disk-usage-total-space" = "Всего доступно";
+"settings-clear-appdata-button" = "Очистить данные приложения";
+"settings-clear-appdata-warning-title" = "Предупреждение!";
+"settings-clear-appdata-warning-message" = "Очистка данных повлечет за собой удаление всех собранных пакетов. Это действие необратимо.
+
+Желаете продолжить?";
+"settings-clear-appdata-warning-clear-anyway" = "Да, мне всё равно";
+
+"settings-donate-button" =  "☕️ Подарить чашечку кофейка :)";
+"settings-reportabug-button" = "🪲 Сообщить о баге на GitHub";
+"settings-app-version-label" = "Версия приложения";
+
+
+// Misc
+"search-field-lbl" = "Поиск";
+"unknown" = "Неизвестно";
+"remove-btn" = "Удалить";
+"log-clear-btn" = "Очистить лог";

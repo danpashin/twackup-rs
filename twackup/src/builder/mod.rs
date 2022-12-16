@@ -23,16 +23,17 @@
 //! ### Example usage
 //!
 //! ```no_run
-//! use twackup::{builder::{Worker, Preferences}, Result, progress::Progress, Dpkg, package::Package};
-//! use std::{collections::HashSet, sync::Arc};
+//! use twackup::builder::{Worker, Preferences};
+//! use twackup::{Result, Dpkg, progress::Progress, package::Package};
+//! use std::{collections::HashSet, sync::Arc, path::Path};
 //!
 //! // some progress struct btw
 //! struct ProgressImpl;
 //!
 //! impl Progress for ProgressImpl {
-//!     fn new(_total: u64) -> Self {
-//!         Self
-//!     }
+//!     fn started_processing(&self, _package: &Package) {}
+//!     fn finished_processing<P: AsRef<Path>>(&self, _package: &Package, _deb_path: P) {}
+//!     fn finished_all(&self) {}
 //! }
 //!
 //! #[tokio::main]
@@ -126,7 +127,7 @@ impl Preferences {
 }
 
 impl<'a, T: Progress> Worker<'a, T> {
-    /// Constructs workder instance
+    /// Constructs worker instance
     ///
     /// # Parameters
     /// - `package` - Package model which needs to be rebuild
@@ -157,6 +158,8 @@ impl<'a, T: Progress> Worker<'a, T> {
     /// Returns error if temp dir creation or any of underlying package operation failed
     #[inline]
     pub async fn run(&self) -> Result<PathBuf> {
+        self.progress.started_processing(self.package);
+
         let deb_name = format!("{}.deb", self.package.canonical_name());
         let deb_path = self.preferences.destination_dir.join(deb_name);
 
@@ -165,6 +168,9 @@ impl<'a, T: Progress> Worker<'a, T> {
         self.archive_metadata(deb.control_mut_ref()).await?;
         deb.build().await?;
 
+        self.add_to_archive(&deb_path).await?;
+
+        self.progress.finished_processing(self.package, &deb_path);
         Ok(deb_path)
     }
 
@@ -182,7 +188,7 @@ impl<'a, T: Progress> Worker<'a, T> {
             let name = file.trim_start_matches('/');
             let res = archiver.get_mut().append_path_with_name(&file, name).await;
             if let Err(error) = res {
-                log::warn!("[{}] {}", self.package.id, error);
+                log::warn!(target: &self.package.id, "{}", error);
             }
         }
 
@@ -222,29 +228,9 @@ impl<'a, T: Progress> Worker<'a, T> {
         for (path, ext) in contents {
             let res = archiver.get_mut().append_path_with_name(path, ext).await;
             if let Err(error) = res {
-                log::warn!("[{}] {}", self.package.id, error);
+                log::warn!(target: &self.package.id, "{}", error);
             }
         }
-
-        Ok(())
-    }
-
-    /// Creates package debian archive and optionally add it to shared TAR archive
-    ///
-    /// # Errors
-    /// Returns error if any of underlying operations failed
-    #[inline]
-    pub async fn work(&self) -> Result<()> {
-        let progress = format!("Processing {}", self.package.human_name());
-        self.progress.set_message(progress);
-
-        let file = self.run().await?;
-        self.progress.increment(1);
-
-        let progress = format!("Done {}", self.package.human_name());
-        self.progress.set_message(progress);
-
-        self.add_to_archive(file).await?;
 
         Ok(())
     }
@@ -253,7 +239,7 @@ impl<'a, T: Progress> Worker<'a, T> {
     ///
     /// # Errors
     /// Returns error if any of underlying operations failed
-    async fn add_to_archive(&self, file: PathBuf) -> Result<()> {
+    async fn add_to_archive(&self, file: &PathBuf) -> Result<()> {
         if let Some(ref archive) = self.archive {
             let mut archive = archive.try_lock().map_err(|_| Generic::Lock)?;
 
@@ -275,17 +261,18 @@ impl<'a, T: Progress> Worker<'a, T> {
 mod tests {
     use crate::{
         builder::{Preferences, Worker},
+        package::Package,
         progress::Progress,
         Dpkg, Result,
     };
-    use std::{fs, process::Command, sync::Arc};
+    use std::{fs, path::Path, process::Command, sync::Arc};
 
     struct ProgressImpl;
 
     impl Progress for ProgressImpl {
-        fn new(_total: u64) -> Self {
-            Self
-        }
+        fn started_processing(&self, _package: &Package) {}
+        fn finished_processing<P: AsRef<Path>>(&self, _package: &Package, _deb_path: P) {}
+        fn finished_all(&self) {}
     }
 
     #[tokio::test]

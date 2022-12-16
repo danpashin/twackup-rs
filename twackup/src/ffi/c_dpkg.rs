@@ -21,7 +21,7 @@ use super::package::TwPackage;
 use crate::{dpkg::PackagesSort, Dpkg};
 use safer_ffi::{derive_ReprC, prelude::c_slice, ptr};
 use std::{ffi::c_void, mem::ManuallyDrop};
-use tokio::runtime::Runtime;
+use tokio::runtime::{Builder, Runtime};
 
 #[derive_ReprC]
 #[repr(u8)]
@@ -52,15 +52,18 @@ pub struct TwDpkg {
 
 impl TwDpkg {
     pub(crate) fn new(inner: Dpkg) -> Self {
-        let dpkg_ptr = Box::leak(Box::new(inner));
+        let dpkg_ptr = Box::into_raw(Box::new(inner));
 
-        let tokio_rt = Runtime::new().expect("Cannot start tokio runtime");
-        let runtime_ptr = Box::leak(Box::new(tokio_rt));
+        let tokio_rt = Builder::new_multi_thread()
+            .max_blocking_threads(2)
+            .build()
+            .expect("Cannot start tokio runtime");
+        let runtime_ptr = Box::into_raw(Box::new(tokio_rt));
 
         unsafe {
             Self {
-                dpkg_ptr: ptr::NonNull::new_unchecked((dpkg_ptr as *mut Dpkg).cast()),
-                runtime_ptr: ptr::NonNull::new_unchecked((runtime_ptr as *mut Runtime).cast()),
+                dpkg_ptr: ptr::NonNull::new_unchecked(dpkg_ptr.cast()),
+                runtime_ptr: ptr::NonNull::new_unchecked(runtime_ptr.cast()),
             }
         }
     }
@@ -81,25 +84,27 @@ impl TwDpkg {
         &self,
         leaves_only: bool,
         sort: TwPackagesSort,
-    ) -> c_slice::Box<TwPackage> {
+    ) -> Option<c_slice::Box<TwPackage>> {
         let dpkg = self.inner_dpkg();
         let tokio_rt = self.inner_tokio_rt();
 
-        let packages: Vec<_> = tokio_rt
-            .block_on(async {
-                if sort == TwPackagesSort::Unsorted {
-                    let packages = dpkg.unsorted_packages(leaves_only).await;
-                    let pkgs = packages.map(|pkgs| pkgs.into_iter().map(TwPackage::from));
-                    pkgs.map(Iterator::collect)
-                } else {
-                    let packages = dpkg.packages(leaves_only, sort.into()).await;
-                    let pkgs = packages.map(|packages| packages.into_iter().map(|(_, pkg)| pkg));
-                    pkgs.map(|pkgs| pkgs.map(TwPackage::from).collect())
-                }
-            })
-            .expect("dpkg database parsing failed");
+        let packages: Result<Vec<_>, _> = tokio_rt.block_on(async {
+            if sort == TwPackagesSort::Unsorted {
+                let packages = dpkg.unsorted_packages(leaves_only).await;
+                let pkgs = packages.map(|pkgs| pkgs.into_iter().map(TwPackage::from));
+                pkgs.map(Iterator::collect)
+            } else {
+                let packages = dpkg.packages(leaves_only, sort.into()).await;
+                let pkgs = packages.map(|packages| packages.into_iter().map(|(_, pkg)| pkg));
+                pkgs.map(|pkgs| pkgs.map(TwPackage::from).collect())
+            }
+        });
 
-        c_slice::Box::from(packages.into_boxed_slice())
+        if let Ok(packages) = packages {
+            Some(c_slice::Box::from(packages.into_boxed_slice()))
+        } else {
+            None
+        }
     }
 }
 

@@ -17,63 +17,57 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use crate::progress::Progress;
+use crate::{ffi::package::TwPackage, package::Package, progress::Progress};
 use safer_ffi::{derive_ReprC, prelude::c_slice::Raw, slice::Ref};
+use std::{ffi::c_void, os::unix::ffi::OsStrExt, path::Path, ptr::addr_of};
 
 #[derive_ReprC]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct TwProgressFunctions {
-    did_increment: unsafe extern "C" fn(delta: u64),
-    set_message: unsafe extern "C" fn(message: Raw<u8>),
-    print_message: unsafe extern "C" fn(message: Raw<u8>),
-    print_warning: unsafe extern "C" fn(warning: Raw<u8>),
-    print_error: unsafe extern "C" fn(error: Raw<u8>),
+    context: Option<std::ptr::NonNull<c_void>>,
+    started_processing: Option<
+        unsafe extern "C" fn(context: Option<std::ptr::NonNull<c_void>>, package: *const TwPackage),
+    >,
+    finished_processing: Option<
+        unsafe extern "C" fn(
+            context: Option<std::ptr::NonNull<c_void>>,
+            package: *const TwPackage,
+            deb_path: Raw<u8>,
+        ),
+    >,
+    finished_all: Option<unsafe extern "C" fn(context: Option<std::ptr::NonNull<c_void>>)>,
 }
 
 #[derive(Copy, Clone)]
 pub(crate) struct TwProgressImpl {
-    pub(crate) functions: Option<TwProgressFunctions>,
-}
-
-impl TwProgressImpl {
-    fn get_functions(&self) -> &TwProgressFunctions {
-        self.functions.as_ref().expect("Set functions first")
-    }
+    pub(crate) functions: TwProgressFunctions,
 }
 
 impl Progress for TwProgressImpl {
-    fn new(_total: u64) -> Self {
-        Self { functions: None }
+    fn started_processing(&self, package: &Package) {
+        if let Some(func) = self.functions.started_processing {
+            let package = TwPackage::from(package);
+            unsafe { func(self.functions.context, addr_of!(package)) };
+        }
     }
 
-    fn increment(&self, delta: u64) {
-        unsafe { (self.get_functions().did_increment)(delta) };
+    fn finished_processing<P: AsRef<Path>>(&self, package: &Package, deb_path: P) {
+        if let Some(func) = self.functions.finished_processing {
+            let package = TwPackage::from(package);
+            let deb_path = deb_path.as_ref().as_os_str().as_bytes();
+            let deb_path = Raw::from(Ref::from(deb_path));
+
+            unsafe { func(self.functions.context, addr_of!(package), deb_path) };
+        }
     }
 
-    fn finish(&self) {}
-
-    fn print<M: AsRef<str>>(&self, message: M) {
-        let message = Ref::from(message.as_ref().as_bytes());
-        let message = Raw::from(message);
-        unsafe { (self.get_functions().print_message)(message) };
-    }
-
-    fn print_warning<M: AsRef<str>>(&self, message: M) {
-        let message = Ref::from(message.as_ref().as_bytes());
-        let message = Raw::from(message);
-        unsafe { (self.get_functions().print_warning)(message) };
-    }
-
-    fn print_error<M: AsRef<str>>(&self, message: M) {
-        let message = Ref::from(message.as_ref().as_bytes());
-        let message = Raw::from(message);
-        unsafe { (self.get_functions().print_error)(message) };
-    }
-
-    fn set_message<M: AsRef<str>>(&self, message: M) {
-        let message = Ref::from(message.as_ref().as_bytes());
-        let message = Raw::from(message);
-        unsafe { (self.get_functions().set_message)(message) };
+    fn finished_all(&self) {
+        if let Some(func) = self.functions.finished_all {
+            unsafe { func(self.functions.context) };
+        }
     }
 }
+
+unsafe impl Send for TwProgressFunctions {}
+unsafe impl Sync for TwProgressFunctions {}

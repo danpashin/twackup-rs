@@ -47,6 +47,7 @@ pub struct TwPackage {
     get_field: extern "C" fn(TwPackageRef, TwPackageField) -> Raw<u8>,
     build_control: extern "C" fn(TwPackageRef) -> Box<u8>,
     get_dependencies: extern "C" fn(TwPackageRef) -> Box<Raw<u8>>,
+    deallocate: extern "C" fn(TwPackageRef),
 }
 
 impl From<TwPackageRef> for TwPackage {
@@ -64,19 +65,20 @@ impl From<TwPackageRef> for TwPackage {
             get_field,
             build_control,
             get_dependencies,
+            deallocate,
         }
     }
 }
 
 impl From<Package> for TwPackage {
     fn from(package: Package) -> Self {
-        Self::from(TwPackageRef::from_package(package))
+        Self::from(TwPackageRef::owned(package))
     }
 }
 
-impl Drop for TwPackage {
-    fn drop(&mut self) {
-        self.inner_ptr.drop_self();
+impl From<&Package> for TwPackage {
+    fn from(package: &Package) -> Self {
+        Self::from(TwPackageRef::unowned(package))
     }
 }
 
@@ -102,10 +104,11 @@ pub(crate) extern "C" fn build_control(package: TwPackageRef) -> Box<u8> {
 pub(crate) extern "C" fn get_dependencies(package: TwPackageRef) -> Box<Raw<u8>> {
     let dependencies = package.as_ref().dependencies();
     let dependencies: Vec<_> = dependencies
-        .map(|dep| {
-            let dep = Ref::from(dep.as_bytes());
-            Raw::from(dep)
-        })
+        .map(|dep| Raw::from(Ref::from(dep.as_bytes())))
         .collect();
     Box::from(dependencies.into_boxed_slice())
+}
+
+extern "C" fn deallocate(package: TwPackageRef) {
+    drop(package);
 }

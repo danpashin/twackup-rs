@@ -97,6 +97,8 @@ pub enum Field {
     Tag,
     /// Like homepage
     Depiction,
+    /// Package icon. Can be file or http URL
+    Icon,
 
     /// Other field that is not in the list
     Custom(String),

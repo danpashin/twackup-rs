@@ -17,9 +17,9 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use console::style;
 use indicatif::ProgressBar as ProgressBarImpl;
-use twackup::progress::Progress;
+use std::path::Path;
+use twackup::{package::Package, progress::Progress};
 
 pub(crate) static mut PROGRESS_BAR: Option<&'static ProgressBar> = None;
 
@@ -52,15 +52,19 @@ impl ProgressBar {
 }
 
 impl Progress for ProgressBar {
-    fn new(total: u64) -> Self {
-        Self(ProgressBarImpl::new(total))
+    fn started_processing(&self, package: &Package) {
+        let message = format!("Processing {}", package.human_name());
+        self.0.set_message(message);
     }
 
-    fn increment(&self, delta: u64) {
-        self.0.inc(delta);
+    fn finished_processing<P: AsRef<Path>>(&self, package: &Package, _deb_path: P) {
+        self.0.inc(1);
+
+        let message = format!("Done {}", package.human_name());
+        self.0.set_message(message);
     }
 
-    fn finish(&self) {
+    fn finished_all(&self) {
         self.0.finish_and_clear();
 
         unsafe {
@@ -72,21 +76,5 @@ impl Progress for ProgressBar {
                 PROGRESS_BAR = None;
             }
         }
-    }
-
-    fn print<M: AsRef<str>>(&self, message: M) {
-        self.0.println(message);
-    }
-
-    fn print_warning<M: AsRef<str>>(&self, message: M) {
-        self.print(style(message.as_ref()).yellow().to_string());
-    }
-
-    fn print_error<M: AsRef<str>>(&self, message: M) {
-        self.print(style(message.as_ref()).red().to_string());
-    }
-
-    fn set_message<M: AsRef<str>>(&self, message: M) {
-        self.0.set_message(message.as_ref().to_string());
     }
 }

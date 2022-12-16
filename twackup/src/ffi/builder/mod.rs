@@ -17,49 +17,106 @@
  * along with Twackup. If not, see <http://www.gnu.org/licenses/>.
  */
 
-pub mod progress;
+pub(crate) mod progress;
 
-use super::{c_dpkg::TwDpkg, package::TwPackage};
+use self::progress::{TwProgressFunctions, TwProgressImpl};
 use crate::{
     builder::{Preferences, Worker},
+    ffi::{c_dpkg::TwDpkg, package::TwPackage},
     progress::Progress,
+    Result,
 };
-use progress::{TwProgressFunctions, TwProgressImpl};
 use safer_ffi::{
     derive_ReprC,
     prelude::{
         c_slice::{Box, Ref},
         char_p,
     },
+    ptr::NonNullMut,
 };
-use std::{collections::LinkedList, sync::Arc};
+use std::{collections::LinkedList, os::unix::ffi::OsStringExt, sync::Arc};
 
 #[derive_ReprC]
-#[repr(transparent)]
-pub struct TwPackagesRebuildResult(Box<Box<u8>>);
+#[repr(C)]
+pub struct TwPackagesRebuildResult {
+    success: bool,
+    deb_path: Option<Box<u8>>,
+    error: Option<Box<u8>>,
+}
 
-pub(crate) fn rebuild_packages(
-    dpkg: &TwDpkg,
-    packages: Ref<'_, TwPackage>,
+#[derive_ReprC]
+#[repr(u8)]
+pub enum TwCompressionType {
+    Gz,
+    Xz,
+    Zst,
+}
+
+impl From<TwCompressionType> for crate::archiver::Type {
+    fn from(value: TwCompressionType) -> Self {
+        match value {
+            TwCompressionType::Gz => Self::Gz,
+            TwCompressionType::Xz => Self::Xz,
+            TwCompressionType::Zst => Self::Zst,
+        }
+    }
+}
+
+#[derive_ReprC]
+#[repr(u8)]
+#[derive(Copy, Clone)]
+pub enum TwCompressionLevel {
+    None,
+    Fast,
+    Normal,
+    Best,
+}
+
+impl From<TwCompressionLevel> for crate::archiver::Level {
+    fn from(level: TwCompressionLevel) -> Self {
+        match level {
+            TwCompressionLevel::None => Self::None,
+            TwCompressionLevel::Fast => Self::Fast,
+            TwCompressionLevel::Normal => Self::Normal,
+            TwCompressionLevel::Best => Self::Best,
+        }
+    }
+}
+
+#[derive_ReprC]
+#[repr(C)]
+pub struct TwBuildPreferences {
+    compression_type: TwCompressionType,
+    compression_level: TwCompressionLevel,
+}
+
+#[derive_ReprC]
+#[repr(C)]
+pub struct TwBuildParameters<'a> {
+    packages: Ref<'a, TwPackage>,
     functions: TwProgressFunctions,
-    out_dir: char_p::Ref<'_>,
-) -> TwPackagesRebuildResult {
-    let mut progress = TwProgressImpl::new(packages.len() as u64);
-    progress.functions = Some(functions);
+    out_dir: char_p::Ref<'a>,
+    preferences: TwBuildPreferences,
+    results: Option<NonNullMut<Box<TwPackagesRebuildResult>>>,
+}
+
+pub(crate) fn rebuild_packages(dpkg: &TwDpkg, parameters: TwBuildParameters<'_>) -> Result<()> {
+    let progress = TwProgressImpl {
+        functions: parameters.functions,
+    };
 
     let tokio_rt = dpkg.inner_tokio_rt();
 
     let dpkg_paths = &dpkg.inner_dpkg().paths;
-    let out_dir = out_dir.to_str();
-    let preferences = Preferences::new(dpkg_paths, out_dir);
-    let dpkg_contents = dpkg
-        .inner_dpkg()
-        .info_dir_contents()
-        .expect("Cannot get dpkg contents");
-    let dpkg_contents = Arc::new(dpkg_contents);
+    let out_dir = parameters.out_dir.to_str();
+    let mut preferences = Preferences::new(dpkg_paths, out_dir);
+    preferences.compression.level = parameters.preferences.compression_level.into();
+    preferences.compression.r#type = parameters.preferences.compression_type.into();
+
+    let dpkg_contents = Arc::new(dpkg.inner_dpkg().info_dir_contents()?);
 
     let mut workers = LinkedList::new();
-    for package in packages.iter() {
+    for package in parameters.packages.iter() {
         let package = package.inner_ptr;
         let dpkg_contents = dpkg_contents.clone();
         let preferences = preferences.clone();
@@ -71,16 +128,47 @@ pub(crate) fn rebuild_packages(
         }));
     }
 
-    let mut errors = vec![];
+    let mut errors_vec = vec![];
     tokio_rt.block_on(async {
         for worker in workers {
-            if let Ok(Err(error)) = worker.await {
-                let error = error.to_string();
-                let error = Box::from(error.into_bytes().into_boxed_slice());
-                errors.push(error);
-            }
+            let result = match worker.await {
+                Ok(result) => result,
+                _ => continue,
+            };
+
+            log::debug!("rebuild result = {:?}", result);
+
+            let (path, error) = match result {
+                Ok(path) => (Some(path), None),
+                Err(error) => (None, Some(error)),
+            };
+
+            let deb_path = path.map(|path| {
+                let path = OsStringExt::into_vec(path.into_os_string());
+                Box::from(path.into_boxed_slice())
+            });
+
+            let error = error.map(|error| {
+                let error = error.to_string().into_bytes();
+                Box::from(error.into_boxed_slice())
+            });
+
+            errors_vec.push(TwPackagesRebuildResult {
+                success: deb_path.is_some(),
+                deb_path,
+                error,
+            });
         }
     });
 
-    TwPackagesRebuildResult(Box::from(errors.into_boxed_slice()))
+    progress.finished_all();
+
+    if let Some(mut results_ptr) = parameters.results {
+        unsafe {
+            let boxed = Box::from(errors_vec.into_boxed_slice());
+            results_ptr.as_mut_ptr().write(boxed);
+        }
+    }
+
+    Ok(())
 }

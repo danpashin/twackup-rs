@@ -9,6 +9,15 @@ workspace = false
 env = { "CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS" = ["twackup"] }
 run_task = { name = "create-package", fork = true }
 
+[tasks.build-gui-package]
+workspace = false
+command = "cargo"
+args = [
+    "make",
+    "--cwd", "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/twackup-gui",
+    "create-package"
+]
+
 [tasks.build-all]
 workspace = false
-dependencies = ["test", "build-cli-package", "build-lib-package"]
+dependencies = ["test", "build-cli-package", "build-lib-package", "build-gui-package"]

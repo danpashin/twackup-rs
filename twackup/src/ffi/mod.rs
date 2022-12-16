@@ -21,21 +21,29 @@
 
 pub mod builder;
 pub mod c_dpkg;
+mod logger;
 pub mod package;
 
 use self::{
+    builder::{TwBuildParameters, TwPackagesRebuildResult},
     c_dpkg::{TwDpkg, TwPackagesSort},
+    logger::{Logger, TwLogFunctions, TwMessageLevel},
     package::{container::TwPackageRef, field::TwPackageField, TwPackage},
 };
-use crate::ffi::builder::TwPackagesRebuildResult;
 use crate::Dpkg;
-use builder::progress::TwProgressFunctions;
 use safer_ffi::{
-    ffi_export,
+    derive_ReprC, ffi_export,
     prelude::c_slice,
     prelude::{char_p, repr_c},
-    slice::Ref,
 };
+use std::ptr;
+
+#[derive_ReprC]
+#[repr(i8)]
+pub enum TwResult {
+    Ok,
+    Error = -1,
+}
 
 /// Initialises dpkg database parser
 ///
@@ -68,8 +76,17 @@ fn tw_get_packages(
     dpkg: &TwDpkg,
     leaves_only: bool,
     sort: TwPackagesSort,
-) -> c_slice::Box<TwPackage> {
-    dpkg.get_packages(leaves_only, sort)
+    output: &mut c_slice::Box<TwPackage>,
+) -> TwResult {
+    if let Some(packages) = dpkg.get_packages(leaves_only, sort) {
+        unsafe {
+            let ptr = output as *mut c_slice::Box<TwPackage>;
+            ptr.write(packages);
+        }
+        TwResult::Ok
+    } else {
+        TwResult::Error
+    }
 }
 
 /// Returns package section description
@@ -101,31 +118,58 @@ fn tw_package_build_control(package: TwPackageRef) -> c_slice::Box<u8> {
     package::build_control(package)
 }
 
+/// Deallocated package instance. Nothing else
+#[ffi_export]
+fn tw_package_free(package: TwPackageRef) {
+    drop(package)
+}
+
 /// Rebuilds package to deb file.
 ///
 /// \param[in] dpkg dpkg instance to run tasks
-/// \param[in] packages packages to rebuild
-/// \param[in] functions different functions used to report about progress
-/// \param[in] out_dir directory to write deb files
+/// \param[in] parameters Different build parameters
 ///
-/// \returns Vector with errors. You MUST free result and all errors inside.
+/// \returns TW_RESULT_OK if rebuild is success
 ///
 #[ffi_export]
-fn tw_rebuild_packages(
-    dpkg: &TwDpkg,
-    packages: Ref<'_, TwPackage>,
-    functions: TwProgressFunctions,
-    out_dir: char_p::Ref<'_>,
-) -> TwPackagesRebuildResult {
-    builder::rebuild_packages(dpkg, packages, functions, out_dir)
+fn tw_rebuild_packages(dpkg: &TwDpkg, parameters: TwBuildParameters<'_>) -> TwResult {
+    if builder::rebuild_packages(dpkg, parameters).is_ok() {
+        TwResult::Ok
+    } else {
+        TwResult::Error
+    }
 }
 
 /// Deallocates memory allocated from *tw_rebuild_packages*
 ///
-/// \param[in] result *tw_rebuild_packages* result
+/// \param[in] results *tw_rebuild_packages* result
 #[ffi_export]
-fn free_packages_rebuild_result(result: TwPackagesRebuildResult) {
-    drop(result);
+fn tw_free_rebuild_results(results: c_slice::Box<TwPackagesRebuildResult>) {
+    drop(results);
+}
+
+/// Enables library internal logging
+///
+/// \param[in] functions Different log functions that will be used to called outside lib
+/// \param[in] level Logging level
+#[ffi_export]
+fn tw_enable_logging(functions: TwLogFunctions, level: TwMessageLevel) {
+    Logger::init(functions, level)
+}
+
+/// Returns library version. It is static - no need to deallocate it.
+#[ffi_export]
+fn tw_library_version() -> char_p::Ref<'static> {
+    static VERSION: &str = concat!(
+        env!("CARGO_PKG_VERSION"),
+        "-",
+        env!("VERGEN_GIT_SEMVER"),
+        "\0",
+    );
+
+    unsafe {
+        char_p::Ref::from_ptr_unchecked(ptr::NonNull::new_unchecked(VERSION.as_ptr() as *mut _))
+    }
 }
 
 /// Generates FFI headers
