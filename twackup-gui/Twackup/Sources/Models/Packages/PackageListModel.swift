@@ -9,6 +9,10 @@ import UIKit
 
 protocol PackageListDelegate: AnyObject {
     func didSelect(packages: [PackageListModel.TableViewPackage], inEditState: Bool)
+
+    func reloadData(completion: (() -> Void)?)
+
+    func endReloadingData()
 }
 
 class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource {

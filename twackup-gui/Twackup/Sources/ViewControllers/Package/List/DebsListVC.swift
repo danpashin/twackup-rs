@@ -36,28 +36,19 @@ class DebsListVC: PackageSelectableListVC {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let spinner = UIActivityIndicatorView(style: .large)
-        tableView.backgroundView = spinner
-        spinner.startAnimating()
-
-        debsModel.debsProvider.reload {
-            DispatchQueue.main.async { [self] in
-                spinner.stopAnimating()
-                tableView.reloadData()
-            }
-        }
-
         reloadObserver = NotificationCenter.default.addObserver(
             forName: DebsListModel.NotificationName,
             object: nil,
             queue: .current
         ) { [weak self] _  in
             guard let self else { return }
-            self.debsModel.debsProvider.reload {
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-            }
+            self.reloadData()
+        }
+    }
+
+    override func reloadData(completion: (() -> Void)? = nil) {
+        debsModel.debsProvider.reload {
+            super.reloadData(completion: completion)
         }
     }
 
@@ -115,6 +106,7 @@ class DebsListVC: PackageSelectableListVC {
         guard let indexPaths = tableView.indexPathsForSelectedRows else { return }
         if debsModel.debsProvider.deletePackages(at: indexPaths.map({ $0.row })) {
             tableView.deleteRows(at: indexPaths, with: .automatic)
+            endReloadingData()
         }
     }
 
@@ -129,6 +121,7 @@ class DebsListVC: PackageSelectableListVC {
 
         if debsModel.debsProvider.deletePackages(at: indexPaths.map({ $0.row })) {
             tableView.deleteRows(at: indexPaths, with: .automatic)
+            endReloadingData()
         }
     }
 }

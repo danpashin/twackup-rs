@@ -45,6 +45,7 @@ class DebsListModel: PackageListModel {
         let delete = UIContextualAction(style: .destructive, title: nil) { _, _, completionHandler in
             if self.debsProvider.deletePackage(at: indexPath.row) {
                 tableView.deleteRows(at: [indexPath], with: .automatic)
+                self.delegate?.endReloadingData()
             }
             completionHandler(true)
         }

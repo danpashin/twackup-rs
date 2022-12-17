@@ -56,6 +56,26 @@ class PackageListVC: UIViewController, PackageListDelegate {
 
         navigationItem.title = model.metadata.navTitle
         navigationItem.searchController = searchController
+
+        let spinner = UIActivityIndicatorView(style: .large)
+        tableView.backgroundView = spinner
+        spinner.startAnimating()
+
+        reloadData {
+            spinner.stopAnimating()
+        }
+    }
+
+    func reloadData(completion: (() -> Void)? = nil) {
+        DispatchQueue.main.async { [self] in
+            completion?()
+
+            tableView.reloadData()
+            endReloadingData()
+        }
+    }
+
+    func endReloadingData() {
     }
 
     func didSelect(packages: [PackageListModel.TableViewPackage], inEditState: Bool) {

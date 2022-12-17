@@ -27,18 +27,9 @@ class DpkgListVC: PackageSelectableListVC {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        let spinner = UIActivityIndicatorView(style: .large)
-        tableView.backgroundView = spinner
-        spinner.startAnimating()
-
+    override func reloadData(completion: (() -> Void)? = nil) {
         dpkgModel.dpkgProvider.reload {
-            DispatchQueue.main.async { [self] in
-                spinner.stopAnimating()
-                tableView.reloadData()
-            }
+            super.reloadData(completion: completion)
         }
     }
 

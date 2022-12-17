@@ -28,6 +28,12 @@ class PackageSelectableListVC: PackageListVC {
         navigationItem.rightBarButtonItem = editBarBtn
     }
 
+    override func endReloadingData() {
+        super.endReloadingData()
+
+        editBarBtn.isEnabled = !model.dataProvider.packages.isEmpty
+    }
+
     @objc
     func actionEdit() {
         tableView.setEditing(true, animated: true)
