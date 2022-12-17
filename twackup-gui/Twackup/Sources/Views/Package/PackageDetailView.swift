@@ -41,19 +41,22 @@ class PackageDetailedView: UIView {
     private(set) lazy var logoHeightConstraint = logoView.heightAnchor.constraint(equalToConstant: 0.0)
     private(set) lazy var logoView: UIImageView = {
         let view = UIImageView()
-
+        view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleAspectFit
         view.layer.cornerCurve = .continuous
         view.layer.cornerRadius = 14
         view.layer.masksToBounds = true
+
         return view
     }()
 
     private(set) lazy var labelsStack: UIStackView = {
         let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
         stack.spacing = 8.0
         stack.axis = .vertical
         stack.alignment = .top
+
         return stack
     }()
 
@@ -63,6 +66,8 @@ class PackageDetailedView: UIView {
         button.addTarget(self, action: #selector(learnMoreTapped), for: .touchUpInside)
         return button
     }()
+
+    private(set) var generalConstraints: [NSLayoutConstraint]?
 
     init(delegate: PackageDetailViewDelegate) {
         self.delegate = delegate
@@ -79,22 +84,29 @@ class PackageDetailedView: UIView {
         labelsStack.addArrangedSubview(learnMoreButton)
 
         sizesStackView.addArrangedSubview(installedSizeLabel)
-
-        logoView.translatesAutoresizingMaskIntoConstraints = false
-        labelsStack.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            logoView.topAnchor.constraint(equalTo: topAnchor),
-            logoHeightConstraint,
-            logoView.centerXAnchor.constraint(equalTo: centerXAnchor),
-
-            labelsStack.topAnchor.constraint(equalTo: logoView.bottomAnchor, constant: 8.0),
-            labelsStack.leadingAnchor.constraint(equalTo: leadingAnchor),
-            labelsStack.trailingAnchor.constraint(equalTo: trailingAnchor)
-        ])
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func updateConstraints() {
+        super.updateConstraints()
+
+        if generalConstraints == nil {
+            let constraints = [
+                logoView.topAnchor.constraint(equalTo: topAnchor),
+                logoHeightConstraint,
+                logoView.centerXAnchor.constraint(equalTo: centerXAnchor),
+
+                labelsStack.topAnchor.constraint(equalTo: logoView.bottomAnchor, constant: 8.0),
+                labelsStack.leadingAnchor.constraint(equalTo: leadingAnchor),
+                labelsStack.trailingAnchor.constraint(equalTo: trailingAnchor)
+            ]
+
+            NSLayoutConstraint.activate(constraints)
+            generalConstraints = constraints
+        }
     }
 
     func updateContents(forPackage package: Package) {

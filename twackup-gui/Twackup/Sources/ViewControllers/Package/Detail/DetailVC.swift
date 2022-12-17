@@ -25,6 +25,8 @@ class DetailVC: UIViewController, PackageDetailViewDelegate {
         }
     }
 
+    private(set) var generalConstraints: [NSLayoutConstraint]?
+
     init(mainModel: MainModel) {
         self.mainModel = mainModel
         super.init(nibName: nil, bundle: nil)
@@ -40,16 +42,25 @@ class DetailVC: UIViewController, PackageDetailViewDelegate {
         view.addSubview(containerView)
         view.backgroundColor = .systemBackground
 
-        let safeArea = view.safeAreaLayoutGuide
-
         containerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.isHidden = true
-        NSLayoutConstraint.activate([
-            containerView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 8.0),
-            containerView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -8.0),
-            containerView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 8.0),
-            containerView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8.0)
-        ])
+    }
+
+    override func updateViewConstraints() {
+        super.updateViewConstraints()
+
+        if generalConstraints == nil {
+            let safeArea = view.safeAreaLayoutGuide
+            let constraints = [
+                containerView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 8.0),
+                containerView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -8.0),
+                containerView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 8.0),
+                containerView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8.0)
+            ]
+
+            NSLayoutConstraint.activate(constraints)
+            generalConstraints = constraints
+        }
     }
 
     func openExternalPackageInfo(_ package: Package) {

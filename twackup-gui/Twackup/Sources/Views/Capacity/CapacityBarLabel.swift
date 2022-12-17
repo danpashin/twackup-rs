@@ -26,6 +26,7 @@ class CapacityBarLabel: UIView {
 
     let nameLabel: UILabel = {
         let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.preferredFont(forTextStyle: .subheadline)
 
         return label
@@ -33,12 +34,15 @@ class CapacityBarLabel: UIView {
 
     let valueLabel: UILabel = {
         let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
 
         let font = UIFont.preferredFont(forTextStyle: .subheadline)
         label.font = UIFont.boldSystemFont(ofSize: font.fontDescriptor.pointSize)
 
         return label
     }()
+
+    private(set) var generalConstraints: [NSLayoutConstraint]?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -48,27 +52,34 @@ class CapacityBarLabel: UIView {
         addSubview(valueLabel)
 
         colorDotView.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        valueLabel.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            colorDotView.widthAnchor.constraint(equalToConstant: 8.0),
-            colorDotView.heightAnchor.constraint(equalToConstant: 8.0),
-            colorDotView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            colorDotView.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
-
-            nameLabel.topAnchor.constraint(equalTo: topAnchor),
-            nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
-            nameLabel.leadingAnchor.constraint(equalTo: colorDotView.trailingAnchor, constant: 8.0),
-
-            valueLabel.topAnchor.constraint(equalTo: topAnchor),
-            valueLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
-            valueLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-            valueLabel.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor)
-        ])
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func updateConstraints() {
+        super.updateConstraints()
+
+        if generalConstraints == nil {
+            let constraints = [
+                colorDotView.widthAnchor.constraint(equalToConstant: 8.0),
+                colorDotView.heightAnchor.constraint(equalToConstant: 8.0),
+                colorDotView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                colorDotView.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
+
+                nameLabel.topAnchor.constraint(equalTo: topAnchor),
+                nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
+                nameLabel.leadingAnchor.constraint(equalTo: colorDotView.trailingAnchor, constant: 8.0),
+
+                valueLabel.topAnchor.constraint(equalTo: topAnchor),
+                valueLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
+                valueLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+                valueLabel.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor)
+            ]
+
+            NSLayoutConstraint.activate(constraints)
+            generalConstraints = constraints
+        }
     }
 }

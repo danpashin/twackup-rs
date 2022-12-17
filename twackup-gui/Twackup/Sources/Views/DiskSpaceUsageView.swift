@@ -21,6 +21,8 @@ class DiskSpaceUsageView: UIView {
 
     private(set) var totalItem = CapacityItem(title: "total", color: .systemGray5)
 
+    private(set) var generalConstraints: [NSLayoutConstraint]?
+
     override var intrinsicContentSize: CGSize {
         chart.intrinsicContentSize
     }
@@ -35,21 +37,30 @@ class DiskSpaceUsageView: UIView {
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         chart.translatesAutoresizingMaskIntoConstraints = false
 
-        NSLayoutConstraint.activate([
-            chart.topAnchor.constraint(equalTo: topAnchor),
-            chart.bottomAnchor.constraint(equalTo: bottomAnchor),
-            chart.leadingAnchor.constraint(equalTo: leadingAnchor),
-            chart.trailingAnchor.constraint(equalTo: trailingAnchor),
-
-            activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor),
-            activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor)
-        ])
-
         chart.set(items: [appItem, deviceItem, totalItem])
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func updateConstraints() {
+        super.updateConstraints()
+
+        if generalConstraints == nil {
+            let constraints = [
+                chart.topAnchor.constraint(equalTo: topAnchor),
+                chart.bottomAnchor.constraint(equalTo: bottomAnchor),
+                chart.leadingAnchor.constraint(equalTo: leadingAnchor),
+                chart.trailingAnchor.constraint(equalTo: trailingAnchor),
+
+                activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor),
+                activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor)
+            ]
+
+            NSLayoutConstraint.activate(constraints)
+            generalConstraints = constraints
+        }
     }
 
     func update() {

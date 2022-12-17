@@ -15,6 +15,7 @@ class RebuildPackageDetailedView: PackageDetailedView {
     private(set) lazy var rebuildButton: UIButton = {
         let button = UIButton(type: .system)
         button.addTarget(self, action: #selector(rebuild), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
 
         button.setTitle("detailed-view-rebuild-btn".localized, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: UIFont.buttonFontSize, weight: .semibold)
@@ -33,6 +34,7 @@ class RebuildPackageDetailedView: PackageDetailedView {
 
     private(set) lazy var rebuildWarningLabel: UILabel = {
         let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
 
         label.numberOfLines = 0
         label.text = "detailed-view-rebuild-btn-footer".localized
@@ -43,30 +45,35 @@ class RebuildPackageDetailedView: PackageDetailedView {
         return label
     }()
 
+    private(set) var rebuildButtonConstraints: [NSLayoutConstraint]?
+
     init(delegate: RebuildPackageDetailedViewDelegate) {
         super.init(delegate: delegate)
 
         addSubview(rebuildButton)
         addSubview(rebuildWarningLabel)
-
-        rebuildButton.translatesAutoresizingMaskIntoConstraints = false
-        rebuildWarningLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            rebuildWarningLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-            rebuildWarningLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-            rebuildWarningLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8.0),
-
-            rebuildButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-            rebuildButton.bottomAnchor.constraint(equalTo: rebuildWarningLabel.topAnchor, constant: -8.0)
-        ])
-    }
-
-    override init(delegate: PackageDetailViewDelegate) {
-        fatalError("Wrong delegate")
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+    }
+
+    override func updateConstraints() {
+        super.updateConstraints()
+
+        if rebuildButtonConstraints == nil {
+            let constraints = [
+                rebuildWarningLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+                rebuildWarningLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+                rebuildWarningLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8.0),
+
+                rebuildButton.centerXAnchor.constraint(equalTo: centerXAnchor),
+                rebuildButton.bottomAnchor.constraint(equalTo: rebuildWarningLabel.topAnchor, constant: -8.0)
+            ]
+
+            NSLayoutConstraint.activate(constraints)
+            rebuildButtonConstraints = constraints
+        }
     }
 
     @objc

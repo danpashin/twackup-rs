@@ -31,55 +31,55 @@ struct SettingsViewController: View {
         NavigationView {
             List {
                 Section(content: {
-                    Picker("settings-compression-level".localized, selection: preferences.compression.$level) {
+                    Picker("settings-compression-level", selection: preferences.compression.$level) {
                         ForEach(Compression.Level.allCases) { element in
                             Text(element.localized).tag(element)
                         }
                     }
 
-                    Picker("settings-compression-type".localized, selection: preferences.$compression.kind) {
+                    Picker("settings-compression-type", selection: preferences.$compression.kind) {
                         ForEach(Compression.Kind.allCases) { element in
                             Text(element.localized).tag(element)
                         }
                     }
                 }, header: {
-                    Text("settings-compression-header".localized)
+                    Text("settings-compression-header")
                 }, footer: {
-                    Text("settings-compression-footer".localized)
+                    Text("settings-compression-footer")
                 })
 
                 Section(content: {
                     diskUsageView
                         .padding(.vertical, 8.0)
-                    Button("settings-clear-appdata-button".localized) {
+                    Button("settings-clear-appdata-button") {
                         showClearDataAlert = true
                     }
                     .alert(isPresented: $showClearDataAlert) {
                         Alert(
-                            title: Text("settings-clear-appdata-warning-title".localized),
-                            message: Text("settings-clear-appdata-warning-message".localized),
+                            title: Text("settings-clear-appdata-warning-title"),
+                            message: Text("settings-clear-appdata-warning-message"),
                             primaryButton: .cancel(),
                             secondaryButton: .destructive(
-                                Text("settings-clear-appdata-warning-clear-anyway".localized),
+                                Text("settings-clear-appdata-warning-clear-anyway"),
                                 action: clearAppData
                             )
                         )
                     }
                 }, header: {
-                    Text("settings-disk-usage-header".localized)
+                    Text("settings-disk-usage-header")
                 })
 
                 Section(content: {
                     Link(
-                        "settings-donate-button".localized,
+                        "settings-donate-button",
                         destination: URL(string: "https://my.qiwi.com/Danyyl-PFxEvxeqrC")!
                     )
                     Link(
-                        "settings-reportabug-button".localized,
+                        "settings-reportabug-button",
                         destination: URL(string: "https://github.com/danpashin/twackup-rs/issues/new")!
                     )
                     DetailedLabelSUI(
-                        "settings-app-version-label".localized,
+                        "settings-app-version-label",
                         detailed: String(utf8String: tw_library_version()) ?? "unknown".localized
                     )
                 }, footer: {

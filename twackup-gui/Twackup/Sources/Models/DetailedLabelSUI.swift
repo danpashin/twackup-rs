@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DetailedLabelSUI: View {
-    let text: any StringProtocol
+    let text: LocalizedStringKey
 
     let detailed: any StringProtocol
 
@@ -21,7 +21,7 @@ struct DetailedLabelSUI: View {
         }
     }
 
-    init(_ text: any StringProtocol, detailed: any StringProtocol) {
+    init(_ text: LocalizedStringKey, detailed: any StringProtocol) {
         self.text = text
         self.detailed = detailed
     }
