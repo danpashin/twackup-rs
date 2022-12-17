@@ -89,6 +89,6 @@ class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, 
 
         dataProvider.applyFilter(filter)
 
-        tableView?.reloadData()
+        delegate?.reloadData(completion: nil)
     }
 }

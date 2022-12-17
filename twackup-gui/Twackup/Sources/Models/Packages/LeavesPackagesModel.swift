@@ -8,7 +8,7 @@
 class LeavesPackagesModel: DpkgListModel {
     init(mainModel: MainModel) {
         let provider = DpkgDataProvier(mainModel.dpkg, leaves: true)
-        let metadata = AllPkgsMetadata()
+        let metadata = LeavesPkgsMetadata()
 
         super.init(mainModel: mainModel, dataProvider: provider, metadata: metadata)
     }

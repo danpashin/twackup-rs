@@ -80,7 +80,7 @@ struct SettingsViewController: View {
                     )
                     DetailedLabelSUI(
                         "settings-app-version-label".localized,
-                        detailed: String(utf8String: tw_library_version()) ?? "unknown"
+                        detailed: String(utf8String: tw_library_version()) ?? "unknown".localized
                     )
                 }, footer: {
                     Text("Copyright (c) 2022 danpashin. All rights reserved")

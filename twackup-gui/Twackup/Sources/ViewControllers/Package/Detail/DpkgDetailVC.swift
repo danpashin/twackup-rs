@@ -15,7 +15,7 @@ class DpkgDetailVC: DetailVC, RebuildPackageDetailedViewDelegate {
         let hud = RJTHud.show()
 
         // swiftlint:disable trailing_closure
-        let rebuilder = PackagesRebuilder(dpkg: mainModel.dpkg, database: mainModel.database)
+        let rebuilder = PackagesRebuilder(mainModel: mainModel)
         rebuilder.rebuild(packages: [package], completion: {
             hud?.hide(animated: true)
         })

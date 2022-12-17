@@ -32,7 +32,7 @@
 		0B5D3F9A2934D0C300AE50F2 /* Twackup.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F982934D0C300AE50F2 /* Twackup.xcdatamodeld */; };
 		0B5D3F9C2934D2EB00AE50F2 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F9B2934D2EB00AE50F2 /* Database.swift */; };
 		0B5D3F9E2934D85500AE50F2 /* DatabasePackageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F9D2934D85500AE50F2 /* DatabasePackageProvider.swift */; };
-		0B6BB2F1294A599D001E3B43 /* ObservedObjectProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6BB2F0294A599D001E3B43 /* ObservedObjectProxy.swift */; };
+		0B6BB2F1294A599D001E3B43 /* ProxiedObservedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6BB2F0294A599D001E3B43 /* ProxiedObservedObject.swift */; };
 		0B85ABB3294C712A00B6C5CF /* LeavesListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B85ABB2294C712A00B6C5CF /* LeavesListVC.swift */; };
 		0B85ABB5294C80B200B6C5CF /* DebTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B85ABB4294C80B200B6C5CF /* DebTableViewCell.swift */; };
 		0B85ABB7294C8E4C00B6C5CF /* DetailedLabelSUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B85ABB6294C8E4C00B6C5CF /* DetailedLabelSUI.swift */; };
@@ -94,7 +94,7 @@
 		0B5D3F992934D0C300AE50F2 /* DBPackage.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DBPackage.xcdatamodel; sourceTree = "<group>"; };
 		0B5D3F9B2934D2EB00AE50F2 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		0B5D3F9D2934D85500AE50F2 /* DatabasePackageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackageProvider.swift; sourceTree = "<group>"; };
-		0B6BB2F0294A599D001E3B43 /* ObservedObjectProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservedObjectProxy.swift; sourceTree = "<group>"; };
+		0B6BB2F0294A599D001E3B43 /* ProxiedObservedObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxiedObservedObject.swift; sourceTree = "<group>"; };
 		0B85ABB2294C712A00B6C5CF /* LeavesListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeavesListVC.swift; sourceTree = "<group>"; };
 		0B85ABB4294C80B200B6C5CF /* DebTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebTableViewCell.swift; sourceTree = "<group>"; };
 		0B85ABB6294C8E4C00B6C5CF /* DetailedLabelSUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedLabelSUI.swift; sourceTree = "<group>"; };
@@ -288,7 +288,7 @@
 				0B2636E22948B8B4003EA806 /* Preferences */,
 				0B50FF712949EA7700CF4BCF /* DiskStats.swift */,
 				0B85ABB6294C8E4C00B6C5CF /* DetailedLabelSUI.swift */,
-				0B6BB2F0294A599D001E3B43 /* ObservedObjectProxy.swift */,
+				0B6BB2F0294A599D001E3B43 /* ProxiedObservedObject.swift */,
 				0B5B332A294DA9F00097398F /* MainModel.swift */,
 			);
 			path = Models;
@@ -580,7 +580,7 @@
 				0B86616D2930ADA300EA4301 /* MainTabbarController.swift in Sources */,
 				0BAAD9932937BE360089C8FB /* RJTHud.m in Sources */,
 				0B50FF702949B82900CF4BCF /* CapacityView.swift in Sources */,
-				0B6BB2F1294A599D001E3B43 /* ObservedObjectProxy.swift in Sources */,
+				0B6BB2F1294A599D001E3B43 /* ProxiedObservedObject.swift in Sources */,
 				0B2636E62948B92E003EA806 /* SettingsViewController.swift in Sources */,
 				0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */,
 				0B434F982935DEFA00311FB6 /* RebuildPackageDetailedView.swift in Sources */,

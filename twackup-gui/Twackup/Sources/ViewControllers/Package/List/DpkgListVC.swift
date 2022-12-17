@@ -76,7 +76,7 @@ class DpkgListVC: PackageSelectableListVC {
         hud?.text = "rebuild-packages-status-title".localized
         hud?.style = .spinner
 
-        let rebuilder = PackagesRebuilder(dpkg: model.mainModel.dpkg, database: model.mainModel.database)
+        let rebuilder = PackagesRebuilder(mainModel: model.mainModel)
         rebuilder.rebuild(packages: packages) { progress in
             hud?.detailedText = String(
                 format: "rebuild-packages-status".localized,

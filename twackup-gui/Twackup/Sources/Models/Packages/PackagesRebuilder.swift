@@ -9,9 +9,7 @@ import Sentry
 
 // swiftlint:disable legacy_objc_type
 class PackagesRebuilder: DpkgBuildDelegate {
-    let dpkg: Dpkg
-
-    let database: Database
+    let mainModel: MainModel
 
     private var rebuildedPackages: [BuildedPackage] = []
 
@@ -25,13 +23,12 @@ class PackagesRebuilder: DpkgBuildDelegate {
 
     private var performanceTransactions: NSCache<NSString, Span> = NSCache()
 
-    init(dpkg: Dpkg, database: Database) {
-        self.dpkg = dpkg
-        self.database = database
+    init(mainModel: MainModel) {
+        self.mainModel = mainModel
     }
 
     func rebuild(packages: [Package], updateHandler: ((Progress) -> Void)? = nil, completion: (() -> Void)? = nil) {
-        dpkg.buildDelegate = self
+        mainModel.dpkg.buildDelegate = self
         self.updateHandler = updateHandler
 
         progress = Progress(totalUnitCount: Int64(packages.count))
@@ -40,7 +37,7 @@ class PackagesRebuilder: DpkgBuildDelegate {
             pfmcRootTransaction = SentrySDK.startTransaction(name: "multiple-debs-rebuild", operation: "lib")
 
             do {
-                let results = try self.dpkg.rebuild(packages: packages)
+                let results = try mainModel.dpkg.rebuild(packages: packages)
                 for result in results {
                     switch result {
                     case .success: continue
@@ -87,12 +84,12 @@ class PackagesRebuilder: DpkgBuildDelegate {
     func finishedAll() {
         dbSaveQueue.async { [self] in
             let databaseTransaction = pfmcRootTransaction?.startChild(operation: "database-packages-save")
-            database.addBuildedPackages(rebuildedPackages) { [self] in
-                NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
-
+            mainModel.database.addBuildedPackages(rebuildedPackages) { [self] in
                 databaseTransaction?.finish()
                 pfmcRootTransaction?.finish()
                 pfmcRootTransaction = nil
+
+                NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
             }
         }
     }

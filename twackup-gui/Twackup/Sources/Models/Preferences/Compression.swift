@@ -7,32 +7,31 @@
 
 import SwiftUI
 
-protocol AsString {
-    var asString: String { get }
-
+protocol Localized {
     var localized: String { get }
 }
 
 class Compression: ObservableObject {
-    enum Kind: Int, Identifiable, AsString, CaseIterable, Equatable {
+    enum Kind: Int, Identifiable, Localized, CaseIterable {
         case gzip
         case xzip
         case zst
 
         var id: RawValue { rawValue }
 
-        var asString: String {
+        var localized: String {
+            var stringRepr: String
             switch self {
-            case .gzip: return "gzip"
-            case .xzip: return "xzip"
-            case .zst: return "zstd"
+            case .gzip: stringRepr = "gzip"
+            case .xzip: stringRepr = "xzip"
+            case .zst: stringRepr = "zstd"
             }
-        }
 
-        var localized: String { asString.capitalized }
+            return stringRepr.capitalized
+        }
     }
 
-    enum Level: Int, Identifiable, AsString, CaseIterable {
+    enum Level: Int, Identifiable, Localized, CaseIterable {
         case none
         case fast
         case normal
@@ -40,17 +39,16 @@ class Compression: ObservableObject {
 
         var id: RawValue { rawValue }
 
-        var asString: String {
-            switch self {
-            case .none: return "None"
-            case .fast: return "Fast"
-            case .normal: return "Normal"
-            case .best: return "Best"
-            }
-        }
-
         var localized: String {
-            "compression-level-\(asString.lowercased())".localized
+            var suffix: String
+            switch self {
+            case .none: suffix = "none"
+            case .fast: suffix = "fast"
+            case .normal: suffix = "normal"
+            case .best: suffix = "best"
+            }
+
+            return "compression-level-\(suffix)".localized
         }
     }
 

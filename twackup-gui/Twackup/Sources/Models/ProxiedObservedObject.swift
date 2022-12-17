@@ -1,5 +1,5 @@
 //
-//  ObservedObjectProxy.swift
+//  ProxiedObservedObject.swift
 //  Twackup
 //
 //  Created by Daniil on 14.12.2022.
@@ -9,7 +9,7 @@ import Combine
 import SwiftUI
 
 @propertyWrapper
-struct ObservedObjectProxy<Value>
+struct ProxiedObservedObject<Value>
 where Value: ObservableObject, Value.ObjectWillChangePublisher == ObservableObjectPublisher {
     private class Proxy<T: ObservableObject>
     where T.ObjectWillChangePublisher == ObservableObjectPublisher {
