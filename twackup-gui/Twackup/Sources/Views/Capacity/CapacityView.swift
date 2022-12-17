@@ -42,13 +42,12 @@ class CapacityChartView: UIView {
     }
 
     override var intrinsicContentSize: CGSize {
-        setNeedsDisplay()
         layoutIfNeeded()
 
         let spacer = 10.0
         let height = bar.frame.size.height + spacer + legendsStack.frame.size.height
 
-        return CGSize(width: max(bar.frame.size.width, legendsStack.frame.size.width), height: height)
+        return CGSize(width: UIView.noIntrinsicMetric, height: height)
     }
 
     private(set) var generalConstraints: [NSLayoutConstraint]?

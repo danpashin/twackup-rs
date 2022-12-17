@@ -23,6 +23,8 @@ class DiskSpaceUsageView: UIView {
 
     private(set) var generalConstraints: [NSLayoutConstraint]?
 
+    private var reloadObserver: NSObjectProtocol?
+
     override var intrinsicContentSize: CGSize {
         chart.intrinsicContentSize
     }
@@ -38,10 +40,23 @@ class DiskSpaceUsageView: UIView {
         chart.translatesAutoresizingMaskIntoConstraints = false
 
         chart.set(items: [appItem, deviceItem, totalItem])
+
+        reloadObserver = NotificationCenter.default.addObserver(
+            forName: DebsListModel.NotificationName,
+            object: nil,
+            queue: .main
+        ) { [weak self] _  in
+            guard let self else { return }
+            self.update()
+        }
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(reloadObserver as Any)
     }
 
     override func updateConstraints() {
@@ -94,28 +109,19 @@ struct DiskSpaceUsage: UIViewRepresentable {
 
     let mainModel: MainModel
 
-    private var reloadObserver: NSObjectProtocol
-
     init(mainModel: MainModel) {
         self.mainModel = mainModel
 
         let view = DiskSpaceUsageView(mainModel: mainModel)
         self.view = view
-
-        reloadObserver = NotificationCenter.default.addObserver(
-            forName: DebsListModel.NotificationName,
-            object: nil,
-            queue: .main
-        ) { _  in
-            view.update()
-        }
     }
 
     func makeUIView(context: Context) -> UIViewType {
-        view
+        view.update()
+
+        return view
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
-        uiView.update()
     }
 }
