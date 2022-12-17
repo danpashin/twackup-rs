@@ -5,30 +5,28 @@
 //  Created by Daniil on 29.11.2022.
 //
 
-extension PackageVC {
-    class DatabasePackageDetailedView: PackageDetailedView {
-        let debSizeLabel = KeyValueLabel(key: "detailed-view-debsize-lbl".localized)
+class DatabasePackageDetailedView: PackageDetailedView {
+    let debSizeLabel = KeyValueLabel(key: "detailed-view-debsize-lbl".localized)
 
-        override init(delegate: PackageDetailViewDelegate) {
-            super.init(delegate: delegate)
+    override init(delegate: PackageDetailViewDelegate) {
+        super.init(delegate: delegate)
 
-            learnMoreButton.isHidden = true
+        learnMoreButton.isHidden = true
 
-            sizesStackView.addArrangedSubview(debSizeLabel)
-        }
+        sizesStackView.addArrangedSubview(debSizeLabel)
+    }
 
-        required init?(coder: NSCoder) {
-            super.init(coder: coder)
-        }
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
 
-        override func updateContents(forPackage package: Package) {
-            super.updateContents(forPackage: package)
+    override func updateContents(forPackage package: Package) {
+        super.updateContents(forPackage: package)
 
-            if package.debSize != 0 {
-                debSizeLabel.valueLabel.text = ByteCountFormatter().string(fromByteCount: package.debSize)
-            } else {
-                debSizeLabel.valueLabel.text = "unknown".localized
-            }
+        if package.debSize != 0 {
+            debSizeLabel.valueLabel.text = ByteCountFormatter().string(fromByteCount: package.debSize)
+        } else {
+            debSizeLabel.valueLabel.text = "unknown".localized
         }
     }
 }

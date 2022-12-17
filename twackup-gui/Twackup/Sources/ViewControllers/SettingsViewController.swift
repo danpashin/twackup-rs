@@ -94,7 +94,7 @@ struct SettingsViewController: View {
 
     func clearAppData() {
         _ = mainModel.databasePackageProvider.deleteAll {
-            NotificationCenter.default.post(name: PackageVC.DebsListModel.NotificationName, object: nil)
+            NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
         }
     }
 }

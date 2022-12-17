@@ -5,13 +5,11 @@
 //  Created by Daniil on 17.12.2022.
 //
 
-extension PackageVC {
-    class LeavesPackagesModel: DpkgListModel {
-        init(mainModel: MainModel) {
-            let provider = DpkgDataProvier(mainModel.dpkg, leaves: true)
-            let metadata = AllPkgsMetadata()
+class LeavesPackagesModel: DpkgListModel {
+    init(mainModel: MainModel) {
+        let provider = DpkgDataProvier(mainModel.dpkg, leaves: true)
+        let metadata = AllPkgsMetadata()
 
-            super.init(mainModel: mainModel, dataProvider: provider, metadata: metadata)
-        }
+        super.init(mainModel: mainModel, dataProvider: provider, metadata: metadata)
     }
 }

@@ -5,54 +5,52 @@
 //  Created by Daniil on 01.12.2022.
 //
 
-extension PackageVC {
-    class DebsListModel: PackageListModel {
-        static let NotificationName = Notification.Name("twackup/reloadDEBS")
+class DebsListModel: PackageListModel {
+    static let NotificationName = Notification.Name("twackup/reloadDEBS")
 
-        private(set) var debsProvider: DatabasePackageProvider
-        override var dataProvider: PackageDataProvider {
-            get { return debsProvider }
-            set { }
-        }
+    private(set) var debsProvider: DatabasePackageProvider
+    override var dataProvider: PackageDataProvider {
+        get { return debsProvider }
+        set { }
+    }
 
-        override var tableView: UITableView? {
-            didSet {
-                let cellID = String(describing: DebTableViewCell.self)
-                tableView?.register(DebTableViewCell.self, forCellReuseIdentifier: cellID)
-            }
-        }
-
-        init(mainModel: MainModel) {
-            debsProvider = mainModel.databasePackageProvider
-            let metadata = BuildedPkgsMetadata()
-
-            super.init(mainModel: mainModel, dataProvider: debsProvider, metadata: metadata)
-        }
-
-        override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override var tableView: UITableView? {
+        didSet {
             let cellID = String(describing: DebTableViewCell.self)
-            let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
-            if let cell = cell as? DebTableViewCell {
-                cell.package = dataProvider.packages[indexPath.row]
-            }
+            tableView?.register(DebTableViewCell.self, forCellReuseIdentifier: cellID)
+        }
+    }
 
-            return cell
+    init(mainModel: MainModel) {
+        debsProvider = mainModel.databasePackageProvider
+        let metadata = BuildedPkgsMetadata()
+
+        super.init(mainModel: mainModel, dataProvider: debsProvider, metadata: metadata)
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cellID = String(describing: DebTableViewCell.self)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
+        if let cell = cell as? DebTableViewCell {
+            cell.package = dataProvider.packages[indexPath.row]
         }
 
-        func tableView(
-            _ tableView: UITableView,
-            trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
-        ) -> UISwipeActionsConfiguration? {
-            let delete = UIContextualAction(style: .destructive, title: nil) { _, _, completionHandler in
-                if self.debsProvider.deletePackage(at: indexPath.row) {
-                    tableView.deleteRows(at: [indexPath], with: .automatic)
-                }
-                completionHandler(true)
-            }
-            delete.image = UIImage(systemName: "trash.fill")
-            delete.title = "remove-btn".localized
+        return cell
+    }
 
-            return UISwipeActionsConfiguration(actions: [delete])
+    func tableView(
+        _ tableView: UITableView,
+        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
+    ) -> UISwipeActionsConfiguration? {
+        let delete = UIContextualAction(style: .destructive, title: nil) { _, _, completionHandler in
+            if self.debsProvider.deletePackage(at: indexPath.row) {
+                tableView.deleteRows(at: [indexPath], with: .automatic)
+            }
+            completionHandler(true)
         }
+        delete.image = UIImage(systemName: "trash.fill")
+        delete.title = "remove-btn".localized
+
+        return UISwipeActionsConfiguration(actions: [delete])
     }
 }

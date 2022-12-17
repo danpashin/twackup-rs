@@ -7,19 +7,17 @@
 
 import UIKit
 
-extension PackageVC {
-    class DpkgDetailVC: DetailVC, RebuildPackageDetailedViewDelegate {
-        private lazy var _container = RebuildPackageDetailedView(delegate: self)
-        override var containerView: PackageDetailedView { _container }
+class DpkgDetailVC: DetailVC, RebuildPackageDetailedViewDelegate {
+    private lazy var _container = RebuildPackageDetailedView(delegate: self)
+    override var containerView: PackageDetailedView { _container }
 
-        func rebuild(_ package: Package) {
-            let hud = RJTHud.show()
+    func rebuild(_ package: Package) {
+        let hud = RJTHud.show()
 
-            // swiftlint:disable trailing_closure
-            let rebuilder = PackagesRebuilder(dpkg: mainModel.dpkg, database: mainModel.database)
-            rebuilder.rebuild(packages: [package], completion: {
-                hud?.hide(animated: true)
-            })
-        }
+        // swiftlint:disable trailing_closure
+        let rebuilder = PackagesRebuilder(dpkg: mainModel.dpkg, database: mainModel.database)
+        rebuilder.rebuild(packages: [package], completion: {
+            hud?.hide(animated: true)
+        })
     }
 }

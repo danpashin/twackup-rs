@@ -7,16 +7,14 @@
 
 import UIKit
 
-extension PackageVC {
-    class DebTableViewCell: PackageTableViewCell {
-        override func updateUI() {
-            guard let package else { return }
+class DebTableViewCell: PackageTableViewCell {
+    override func updateUI() {
+        guard let package else { return }
 
-            config.image = UIImage(systemName: package.section.systemImageName)
-            config.text = package.name
-            config.secondaryText = package.version
+        config.image = UIImage(systemName: package.section.systemImageName)
+        config.text = package.name
+        config.secondaryText = package.version
 
-            contentConfiguration = config
-        }
+        contentConfiguration = config
     }
 }

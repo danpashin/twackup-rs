@@ -7,69 +7,84 @@
 
 import UIKit
 
-@objc
-protocol PackageListDelegate {
-    func reloadTableView()
-
-    func didSelectPackage(_ package: Package)
-
-    @objc
-    optional func tableView(_ tableView: UITableView, didUpdateSelection selected: [IndexPath]?)
+protocol PackageListDelegate: AnyObject {
+    func didSelect(packages: [PackageListModel.TableViewPackage], inEditState: Bool)
 }
 
-extension PackageVC {
-    class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource {
-        private(set) var dataProvider: PackageDataProvider
+class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource {
+    struct TableViewPackage {
+        var indexPath: IndexPath
 
-        private(set) var metadata: ViewControllerMetadata
+        var object: Package
+    }
 
-        let mainModel: MainModel
+    private(set) var dataProvider: PackageDataProvider
 
-        weak var delegate: PackageListDelegate?
+    private(set) var metadata: ViewControllerMetadata
 
-        var tableView: UITableView? {
-            didSet {
-                let cellID = String(describing: PackageTableViewCell.self)
-                tableView?.register(PackageTableViewCell.self, forCellReuseIdentifier: cellID)
-            }
-        }
+    let mainModel: MainModel
 
-        init(mainModel: MainModel, dataProvider: PackageDataProvider, metadata: ViewControllerMetadata) {
-            self.mainModel = mainModel
-            self.dataProvider = dataProvider
-            self.metadata = metadata
-        }
+    weak var delegate: PackageListDelegate?
 
-        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return dataProvider.packages.count
-        }
-
-        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    var tableView: UITableView? {
+        didSet {
             let cellID = String(describing: PackageTableViewCell.self)
-            let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
-            if let cell = cell as? PackageTableViewCell {
-                cell.package = dataProvider.packages[indexPath.row]
+            tableView?.register(PackageTableViewCell.self, forCellReuseIdentifier: cellID)
+        }
+    }
+
+    var selectedPackages: [TableViewPackage] {
+        guard let tableView else { return [] }
+        guard let rows = tableView.indexPathsForSelectedRows?.map({ $0.row }) else { return [] }
+
+        return dataProvider.packages.enumerated()
+            .filter { rows.contains($0.offset) }
+            .map { index, object in
+                TableViewPackage(indexPath: IndexPath(row: index, section: 0), object: object)
             }
+    }
 
-            return cell
+    init(mainModel: MainModel, dataProvider: PackageDataProvider, metadata: ViewControllerMetadata) {
+        self.mainModel = mainModel
+        self.dataProvider = dataProvider
+        self.metadata = metadata
+    }
+
+    func selectAll() {
+        guard let tableView else { return }
+        for row in 0..<dataProvider.packages.count {
+            tableView.selectRow(at: IndexPath(row: row, section: 0), animated: true, scrollPosition: .none)
+        }
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return dataProvider.packages.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cellID = String(describing: PackageTableViewCell.self)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
+        if let cell = cell as? PackageTableViewCell {
+            cell.package = dataProvider.packages[indexPath.row]
         }
 
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            delegate?.didSelectPackage(dataProvider.packages[indexPath.row])
+        return cell
+    }
 
-            delegate?.tableView?(tableView, didUpdateSelection: tableView.indexPathsForSelectedRows)
-        }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        delegate?.didSelect(packages: selectedPackages, inEditState: tableView.isEditing)
+    }
 
-        func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-            delegate?.tableView?(tableView, didUpdateSelection: tableView.indexPathsForSelectedRows)
-        }
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        delegate?.didSelect(packages: selectedPackages, inEditState: tableView.isEditing)
+    }
 
-        func updateSearchResults(for searchController: UISearchController) {
-            var filter: PackageDataProvider.Filter?
-            if let text = searchController.searchBar.text, !text.isEmpty { filter = .name(text) }
+    func updateSearchResults(for searchController: UISearchController) {
+        var filter: PackageDataProvider.Filter?
+        if let text = searchController.searchBar.text, !text.isEmpty { filter = .name(text) }
 
-            dataProvider.applyFilter(filter)
-            delegate?.reloadTableView()
-        }
+        dataProvider.applyFilter(filter)
+
+        tableView?.reloadData()
     }
 }

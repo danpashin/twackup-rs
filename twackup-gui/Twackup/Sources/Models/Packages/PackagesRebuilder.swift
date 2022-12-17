@@ -88,7 +88,7 @@ class PackagesRebuilder: DpkgBuildDelegate {
         dbSaveQueue.async { [self] in
             let databaseTransaction = pfmcRootTransaction?.startChild(operation: "database-packages-save")
             database.addBuildedPackages(rebuildedPackages) { [self] in
-                NotificationCenter.default.post(name: PackageVC.DebsListModel.NotificationName, object: nil)
+                NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
 
                 databaseTransaction?.finish()
                 pfmcRootTransaction?.finish()

@@ -92,7 +92,7 @@ struct DiskSpaceUsage: UIViewRepresentable {
         self.view = view
 
         reloadObserver = NotificationCenter.default.addObserver(
-            forName: PackageVC.DebsListModel.NotificationName,
+            forName: DebsListModel.NotificationName,
             object: nil,
             queue: .current
         ) { _  in

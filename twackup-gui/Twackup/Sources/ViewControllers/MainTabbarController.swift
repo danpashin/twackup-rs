@@ -12,25 +12,25 @@ class MainTabbarController: UITabBarController {
     let mainModel: MainModel
 
     private(set) lazy var buildedPackagesVC: UIViewController = {
-        let model = PackageVC.DebsListModel(mainModel: mainModel)
-        let detailVC = PackageVC.DatabaseDetailVC(mainModel: mainModel)
-        let mainVC = PackageVC.DebsListVC(model: model, detail: detailVC)
+        let model = DebsListModel(mainModel: mainModel)
+        let detailVC = DatabaseDetailVC(mainModel: mainModel)
+        let mainVC = DebsListVC(model: model, detail: detailVC)
 
         return TwoColumnsVC(first: mainVC, second: detailVC)
     }()
 
     private(set) lazy var leavesPackagesVC: UIViewController = {
-        let model = PackageVC.LeavesPackagesModel(mainModel: mainModel)
-        let detailVC = PackageVC.DpkgDetailVC(mainModel: mainModel)
-        let mainVC = PackageVC.LeavesListVC(model: model, detail: detailVC)
+        let model = LeavesPackagesModel(mainModel: mainModel)
+        let detailVC = DpkgDetailVC(mainModel: mainModel)
+        let mainVC = LeavesListVC(model: model, detail: detailVC)
 
         return TwoColumnsVC(first: mainVC, second: detailVC)
     }()
 
     private(set) lazy var allPackagesVC: UIViewController = {
-        let model = PackageVC.InstalledPackagesModel(mainModel: mainModel)
-        let detailVC = PackageVC.DpkgDetailVC(mainModel: mainModel)
-        let mainVC = PackageVC.DpkgListVC(model: model, detail: detailVC)
+        let model = InstalledPackagesModel(mainModel: mainModel)
+        let detailVC = DpkgDetailVC(mainModel: mainModel)
+        let mainVC = DpkgListVC(model: model, detail: detailVC)
 
         return TwoColumnsVC(first: mainVC, second: detailVC)
     }()

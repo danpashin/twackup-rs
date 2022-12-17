@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0B0DBB6F2934FA58002F3BB2 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB6E2934FA58002F3BB2 /* String.swift */; };
 		0B0DBB72293501DE002F3BB2 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB71293501DE002F3BB2 /* Package.swift */; };
-		0B0DBB742935081B002F3BB2 /* Namespaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB732935081B002F3BB2 /* Namespaces.swift */; };
 		0B0F22C7293CA01E002128EA /* DebPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0F22C5293CA01E002128EA /* DebPackage.swift */; };
 		0B2636DF2948B867003EA806 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2636DE2948B867003EA806 /* Preferences.swift */; };
 		0B2636E12948B887003EA806 /* Compression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2636E02948B887003EA806 /* Compression.swift */; };
@@ -71,7 +70,6 @@
 		007C412C6D65357FB85FA8C6 /* Pods-Twackup.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Twackup.release.xcconfig"; path = "Target Support Files/Pods-Twackup/Pods-Twackup.release.xcconfig"; sourceTree = "<group>"; };
 		0B0DBB6E2934FA58002F3BB2 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		0B0DBB71293501DE002F3BB2 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
-		0B0DBB732935081B002F3BB2 /* Namespaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Namespaces.swift; sourceTree = "<group>"; };
 		0B0F22C5293CA01E002128EA /* DebPackage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebPackage.swift; sourceTree = "<group>"; };
 		0B2636DE2948B867003EA806 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		0B2636E02948B887003EA806 /* Compression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compression.swift; sourceTree = "<group>"; };
@@ -315,7 +313,6 @@
 		0B88C31F2930E32800BA5312 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				0B0DBB732935081B002F3BB2 /* Namespaces.swift */,
 				0B0DBB6D2934FA4F002F3BB2 /* Helpers */,
 				0B88C3132930CE1F00BA5312 /* Models */,
 				0B86618D2930AF9700EA4301 /* App Lifecycle */,
@@ -585,7 +582,6 @@
 				0B50FF702949B82900CF4BCF /* CapacityView.swift in Sources */,
 				0B6BB2F1294A599D001E3B43 /* ObservedObjectProxy.swift in Sources */,
 				0B2636E62948B92E003EA806 /* SettingsViewController.swift in Sources */,
-				0B0DBB742935081B002F3BB2 /* Namespaces.swift in Sources */,
 				0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */,
 				0B434F982935DEFA00311FB6 /* RebuildPackageDetailedView.swift in Sources */,
 				0B8661692930ADA300EA4301 /* AppDelegate.swift in Sources */,

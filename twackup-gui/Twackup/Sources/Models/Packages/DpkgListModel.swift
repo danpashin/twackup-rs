@@ -5,14 +5,12 @@
 //  Created by Daniil on 17.12.2022.
 //
 
-extension PackageVC {
-    class DpkgListModel: PackageListModel {
-        let dpkgProvider: DpkgDataProvier
+class DpkgListModel: PackageListModel {
+    let dpkgProvider: DpkgDataProvier
 
-        init(mainModel: MainModel, dataProvider: DpkgDataProvier, metadata: ViewControllerMetadata) {
-            dpkgProvider = dataProvider
+    init(mainModel: MainModel, dataProvider: DpkgDataProvier, metadata: ViewControllerMetadata) {
+        dpkgProvider = dataProvider
 
-            super.init(mainModel: mainModel, dataProvider: dataProvider, metadata: metadata)
-        }
+        super.init(mainModel: mainModel, dataProvider: dataProvider, metadata: metadata)
     }
 }
