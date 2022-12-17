@@ -17,7 +17,7 @@ extension PackageVC {
             let button = UIButton(type: .system)
             button.addTarget(self, action: #selector(rebuild), for: .touchUpInside)
 
-            button.setTitle(Bundle.appLocalize("detailed-view-rebuild-btn"), for: .normal)
+            button.setTitle("detailed-view-rebuild-btn".localized, for: .normal)
             button.titleLabel?.font = UIFont.systemFont(ofSize: UIFont.buttonFontSize, weight: .semibold)
 
             button.setImage(UIImage(systemName: "shippingbox"), for: .normal)
@@ -36,7 +36,7 @@ extension PackageVC {
             let label = UILabel()
 
             label.numberOfLines = 0
-            label.text = Bundle.appLocalize("detailed-view-rebuild-btn-footer")
+            label.text = "detailed-view-rebuild-btn-footer".localized
             label.font = UIFont.preferredFont(forTextStyle: .caption1)
             label.textAlignment = .center
             label.textColor = .secondaryLabel

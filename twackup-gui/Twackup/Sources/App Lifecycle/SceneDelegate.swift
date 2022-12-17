@@ -18,9 +18,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
         guard let delegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
-        let window = UIWindow(frame: windowScene.coordinateSpace.bounds)
-        window.windowScene = windowScene
-        window.rootViewController = MainTabbarController(database: delegate.database)
+        let window = UIWindow(windowScene: windowScene)
+        window.rootViewController = MainTabbarController(mainModel: delegate.mainModel)
         window.makeKeyAndVisible()
 
         self.window = window

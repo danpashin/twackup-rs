@@ -10,13 +10,24 @@ import Sentry
 class DpkgDataProvier: PackageDataProvider {
     let dpkg: Dpkg
 
+    let leavesOnly: Bool
+
     init(_ dpkg: Dpkg, leaves: Bool = false) {
         self.dpkg = dpkg
+        leavesOnly = leaves
 
-        let transaction = SentrySDK.startTransaction(name: "database-parse", operation: "lib")
+        super.init(packages: [])
+    }
 
-        super.init(packages: dpkg.parsePackages(leaves: leaves))
+    func reload(completion: (() -> Void)? = nil) {
+        DispatchQueue.global(qos: .userInitiated).async { [self] in
+            let transaction = SentrySDK.startTransaction(name: "database-parse", operation: "lib")
 
-        transaction.finish()
+            allPackages = dpkg.parsePackages(leaves: leavesOnly)
+
+            transaction.finish()
+
+            completion?()
+        }
     }
 }

@@ -10,16 +10,21 @@ import SwiftUI
 struct SettingsViewController: View {
     let metadata: ViewControllerMetadata
 
+    let mainModel: MainModel
+
     @ObservedObject
     private var preferences = Preferences.default
 
     @State
     private var showClearDataAlert = false
 
-    private let diskUsageView = DiskSpaceUsage()
+    let diskUsageView: DiskSpaceUsage
 
-    init(metadata: ViewControllerMetadata) {
+    init(mainModel: MainModel, metadata: ViewControllerMetadata) {
+        self.mainModel = mainModel
         self.metadata = metadata
+
+        diskUsageView = DiskSpaceUsage(mainModel: mainModel)
     }
 
     var body: some View {
@@ -88,10 +93,7 @@ struct SettingsViewController: View {
     }
 
     func clearAppData() {
-        guard let delegate = UIApplication.shared.delegate as? AppDelegate else { return }
-
-        let provider = DatabasePackageProvider(delegate.database)
-        _ = provider.deleteAll {
+        _ = mainModel.databasePackageProvider.deleteAll {
             NotificationCenter.default.post(name: PackageVC.DebsListModel.NotificationName, object: nil)
         }
     }

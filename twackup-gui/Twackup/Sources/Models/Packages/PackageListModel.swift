@@ -23,6 +23,8 @@ extension PackageVC {
 
         private(set) var metadata: ViewControllerMetadata
 
+        let mainModel: MainModel
+
         weak var delegate: PackageListDelegate?
 
         var tableView: UITableView? {
@@ -32,7 +34,8 @@ extension PackageVC {
             }
         }
 
-        init(dataProvider: PackageDataProvider, metadata: ViewControllerMetadata) {
+        init(mainModel: MainModel, dataProvider: PackageDataProvider, metadata: ViewControllerMetadata) {
+            self.mainModel = mainModel
             self.dataProvider = dataProvider
             self.metadata = metadata
         }

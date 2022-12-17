@@ -12,22 +12,11 @@ extension PackageVC {
         private lazy var _container = RebuildPackageDetailedView(delegate: self)
         override var containerView: PackageDetailedView { _container }
 
-        let dpkg: Dpkg
-
-        init(dpkg: Dpkg, database: Database) {
-            self.dpkg = dpkg
-            super.init(database: database)
-        }
-
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-
         func rebuild(_ package: Package) {
             let hud = RJTHud.show()
 
             // swiftlint:disable trailing_closure
-            let rebuilder = PackagesRebuilder(dpkg: dpkg, database: database)
+            let rebuilder = PackagesRebuilder(dpkg: mainModel.dpkg, database: mainModel.database)
             rebuilder.rebuild(packages: [package], completion: {
                 hud?.hide(animated: true)
             })

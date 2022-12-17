@@ -14,12 +14,12 @@ extension PackageVC {
         }
 
         private lazy var removeAllBarBtn: UIBarButtonItem = {
-            let title = Bundle.appLocalize("debs-remove-all-btn")
+            let title = "debs-remove-all-btn".localized
             return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionRemoveAll))
         }()
 
         private lazy var removeSelectedBarBtn: UIBarButtonItem = {
-            let title = Bundle.appLocalize("debs-remove-selected-btn")
+            let title = "debs-remove-selected-btn".localized
             return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionRemoveSelected))
         }()
 
@@ -39,15 +39,27 @@ extension PackageVC {
         override func viewDidLoad() {
             super.viewDidLoad()
 
+            let spinner = UIActivityIndicatorView(style: .large)
+            tableView.backgroundView = spinner
+            spinner.startAnimating()
+
+            debsModel.debsProvider.reload {
+                DispatchQueue.main.async { [self] in
+                    spinner.stopAnimating()
+                    tableView.reloadData()
+                }
+            }
+
             reloadObserver = NotificationCenter.default.addObserver(
                 forName: DebsListModel.NotificationName,
                 object: nil,
                 queue: .current
             ) { [weak self] _  in
                 guard let self else { return }
-                self.debsModel.debsProvider.reload()
-                DispatchQueue.main.async {
-                    self.reloadTableView()
+                self.debsModel.debsProvider.reload {
+                    DispatchQueue.main.async {
+                        self.reloadTableView()
+                    }
                 }
             }
         }
@@ -86,7 +98,7 @@ extension PackageVC {
                 removeAllBarBtn,
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
                 UIBarButtonItem(
-                    title: Bundle.appLocalize("debs-share-btn"),
+                    title: "debs-share-btn".localized,
                     style: .plain,
                     target: self,
                     action: #selector(actionShare)

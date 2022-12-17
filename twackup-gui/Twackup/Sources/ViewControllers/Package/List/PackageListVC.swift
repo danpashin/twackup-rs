@@ -13,11 +13,16 @@ extension PackageVC {
 
         private(set) var detail: DetailVC
 
+        override var tabBarItem: UITabBarItem? {
+            get { model.metadata.tabbarItem }
+            set { }
+        }
+
         private(set) lazy var searchController: UISearchController = {
             let controller = UISearchController(searchResultsController: nil)
             controller.obscuresBackgroundDuringPresentation = false
             controller.searchResultsUpdater = self.model
-            controller.searchBar.placeholder = Bundle.appLocalize("search-field-lbl")
+            controller.searchBar.placeholder = "search-field-lbl".localized
             return controller
         }()
 
@@ -52,7 +57,6 @@ extension PackageVC {
 
             navigationItem.title = model.metadata.navTitle
             navigationItem.searchController = searchController
-            navigationController?.navigationBar.prefersLargeTitles = true
         }
 
         func reloadTableView() {

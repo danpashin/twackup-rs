@@ -24,7 +24,7 @@ extension PackageVC {
         }()
 
         private(set) lazy var selectAllBarBtn: UIBarButtonItem = {
-            let title = Bundle.appLocalize("debs-selectall-btn")
+            let title = "debs-selectall-btn".localized
             return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionSelectAll))
         }()
 

@@ -8,6 +8,8 @@
 class LoggerViewController: UIViewController, FFILoggerSubscriber {
     let metadata: ViewControllerMetadata
 
+    let mainModel: MainModel
+
     private lazy var logTextView: UITextView = {
         let view = UITextView()
         view.isScrollEnabled = true
@@ -18,23 +20,21 @@ class LoggerViewController: UIViewController, FFILoggerSubscriber {
     }()
 
     private lazy var clearLogButton: UIBarButtonItem = {
-        let title = Bundle.appLocalize("log-clear-btn")
+        let title = "log-clear-btn".localized
         return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionClearLog))
     }()
 
-    init(metadata: ViewControllerMetadata) {
+    init(mainModel: MainModel, metadata: ViewControllerMetadata) {
+        self.mainModel = mainModel
         self.metadata = metadata
         super.init(nibName: nil, bundle: nil)
 
-        if let delegate = UIApplication.shared.delegate as? AppDelegate {
-            delegate.logger.addSubsriber(self)
-        }
+        mainModel.logger.addSubsriber(self)
+        tabBarItem = metadata.tabbarItem
     }
 
     deinit {
-        if let delegate = UIApplication.shared.delegate as? AppDelegate {
-            delegate.logger.removeSubscriber(self)
-        }
+        mainModel.logger.removeSubscriber(self)
     }
 
     required init?(coder: NSCoder) {
@@ -48,7 +48,6 @@ class LoggerViewController: UIViewController, FFILoggerSubscriber {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = metadata.navTitle
         navigationItem.rightBarButtonItem = clearLogButton
     }

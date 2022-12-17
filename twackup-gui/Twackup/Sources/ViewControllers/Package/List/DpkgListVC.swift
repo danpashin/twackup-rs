@@ -7,30 +7,42 @@
 
 extension PackageVC {
     class DpkgListVC: PackageSelectableListVC {
-        let dpkg: Dpkg
-
-        let database: Database
-
         private var isAnyPackageSelected: Bool = false
 
+        let dpkgModel: DpkgListModel
+
         private lazy var rebuildAllBarBtn: UIBarButtonItem = {
-            let title = Bundle.appLocalize("debs-rebuildall-btn")
+            let title = "debs-rebuildall-btn".localized
             return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionRebuildAll))
         }()
 
         private lazy var rebuildSelectedBarBtn: UIBarButtonItem = {
-            let title = Bundle.appLocalize("debs-rebuildselected-btn")
+            let title = "debs-rebuildselected-btn".localized
             return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionRebuildSelected))
         }()
 
-        init(dpkg: Dpkg, database: Database, model: PackageListModel, detail: PackageVC.DetailVC) {
-            self.dpkg = dpkg
-            self.database = database
+        init(model: DpkgListModel, detail: DetailVC) {
+            dpkgModel = model
             super.init(model: model, detail: detail)
         }
 
         required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
+        }
+
+        override func viewDidLoad() {
+            super.viewDidLoad()
+
+            let spinner = UIActivityIndicatorView(style: .large)
+            tableView.backgroundView = spinner
+            spinner.startAnimating()
+
+            dpkgModel.dpkgProvider.reload {
+                DispatchQueue.main.async { [self] in
+                    spinner.stopAnimating()
+                    tableView.reloadData()
+                }
+            }
         }
 
         func tableView(_ tableView: UITableView, didUpdateSelection selected: [IndexPath]?) {
@@ -45,10 +57,7 @@ extension PackageVC {
         override func actionEdit() {
             super.actionEdit()
 
-            setToolbarItems([
-                rebuildAllBarBtn,
-                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-            ], animated: false)
+            setToolbarItems([rebuildAllBarBtn], animated: false)
             navigationController?.setToolbarHidden(false, animated: true)
         }
 
@@ -79,7 +88,7 @@ extension PackageVC {
             hud?.text = "rebuild-packages-status-title".localized
             hud?.style = .spinner
 
-            let rebuilder = PackagesRebuilder(dpkg: dpkg, database: database)
+            let rebuilder = PackagesRebuilder(dpkg: model.mainModel.dpkg, database: model.mainModel.database)
             rebuilder.rebuild(packages: packages) { progress in
                 hud?.detailedText = String(
                     format: "rebuild-packages-status".localized,

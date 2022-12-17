@@ -11,12 +11,12 @@ extension PackageVC {
     class DetailVC: UIViewController, PackageDetailViewDelegate {
         private(set) lazy var containerView: PackageDetailedView = PackageDetailedView(delegate: self)
 
-        let database: Database
+        let mainModel: MainModel
 
         private(set) var currentPackage: Package?
 
-        init(database: Database) {
-            self.database = database
+        init(mainModel: MainModel) {
+            self.mainModel = mainModel
             super.init(nibName: nil, bundle: nil)
         }
 
@@ -26,7 +26,6 @@ extension PackageVC {
 
         override func viewDidLoad() {
             super.viewDidLoad()
-            navigationController?.navigationBar.prefersLargeTitles = true
 
             view.addSubview(containerView)
             view.backgroundColor = .systemBackground

@@ -9,7 +9,7 @@ import SwiftUI
 import UIKit
 
 class DiskSpaceUsageView: UIView {
-    let diskStats = DiskStats()
+    let diskStats: DiskStats
 
     let activityIndicator = UIActivityIndicatorView(style: .medium)
 
@@ -25,8 +25,9 @@ class DiskSpaceUsageView: UIView {
         chart.intrinsicContentSize
     }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(mainModel: MainModel) {
+        diskStats = DiskStats(mainModel: mainModel)
+        super.init(frame: .zero)
 
         addSubview(activityIndicator)
         addSubview(chart)
@@ -57,13 +58,13 @@ class DiskSpaceUsageView: UIView {
 
         diskStats.update { [self] in
             appItem.bytes = diskStats.appSpace
-            appItem.title = Bundle.appLocalize("disk-usage-app") + " • "
+            appItem.title = "disk-usage-app".localized + " • "
 
             deviceItem.bytes = diskStats.usedSpace
-            deviceItem.title = Bundle.appLocalize("disk-usage-other") + " • "
+            deviceItem.title = "disk-usage-other".localized + " • "
 
             totalItem.bytes = diskStats.totalSpace
-            totalItem.title = Bundle.appLocalize("disk-usage-total-space") + " • "
+            totalItem.title = "disk-usage-total-space".localized + " • "
 
             DispatchQueue.main.sync {
                 chart.set(items: [appItem, deviceItem, totalItem])
@@ -80,10 +81,14 @@ struct DiskSpaceUsage: UIViewRepresentable {
 
     let view: DiskSpaceUsageView
 
+    let mainModel: MainModel
+
     private var reloadObserver: NSObjectProtocol
 
-    init() {
-        let view = DiskSpaceUsageView()
+    init(mainModel: MainModel) {
+        self.mainModel = mainModel
+
+        let view = DiskSpaceUsageView(mainModel: mainModel)
         self.view = view
 
         reloadObserver = NotificationCenter.default.addObserver(

@@ -6,7 +6,9 @@
 //
 
 extension String {
-    var localized: String { Bundle.appLocalize(self) }
+    var localized: String {
+        Bundle.main.localizedString(forKey: self, value: nil, table: nil)
+    }
 
     init?(ffiSlice slice: slice_raw_uint8_t, deallocate: Bool = false) {
         if slice.ptr == nil || slice.len == 0 {

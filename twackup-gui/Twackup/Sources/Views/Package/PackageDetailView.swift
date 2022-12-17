@@ -18,14 +18,14 @@ extension PackageVC {
 
         private(set) var package: Package?
 
-        let identifierLabel = KeyValueLabel(key: Bundle.appLocalize("detailed-view-identifier-lbl"))
-        let versionLabel = KeyValueLabel(key: Bundle.appLocalize("detailed-view-version-lbl"))
-        let sectionLabel = KeyValueLabel(key: Bundle.appLocalize("detailed-view-section-lbl"))
-        let installedSizeLabel = KeyValueLabel(key: Bundle.appLocalize("detailed-view-installedsize-lbl"))
+        let identifierLabel = KeyValueLabel(key: "detailed-view-identifier-lbl".localized)
+        let versionLabel = KeyValueLabel(key: "detailed-view-version-lbl".localized)
+        let sectionLabel = KeyValueLabel(key: "detailed-view-section-lbl".localized)
+        let installedSizeLabel = KeyValueLabel(key: "detailed-view-installedsize-lbl".localized)
 
         private(set) lazy var sizesLabel: UILabel = {
             let label = UILabel()
-            label.text = Bundle.appLocalize("detailed-view-size-lbl")
+            label.text = "detailed-view-size-lbl".localized
             label.font = UIFont.preferredFont(forTextStyle: .headline)
             label.textColor = .secondaryLabel
             return label
@@ -60,7 +60,7 @@ extension PackageVC {
 
         private(set) lazy var learnMoreButton: UIButton = {
             let button = UIButton(type: .system)
-            button.setTitle(Bundle.appLocalize("detailed-view-learnmore-btn"), for: .normal)
+            button.setTitle("detailed-view-learnmore-btn".localized, for: .normal)
             button.addTarget(self, action: #selector(learnMoreTapped), for: .touchUpInside)
             return button
         }()
@@ -108,7 +108,7 @@ extension PackageVC {
             if package.installedSize != 0 {
                 installedSizeLabel.valueLabel.text = ByteCountFormatter().string(fromByteCount: package.installedSize)
             } else {
-                installedSizeLabel.valueLabel.text = Bundle.appLocalize("unknown")
+                installedSizeLabel.valueLabel.text = "unknown".localized
             }
 
             if let icon = package.icon {

@@ -22,9 +22,11 @@ extension PackageVC {
             }
         }
 
-        init(dataProvider: DatabasePackageProvider, metadata: ViewControllerMetadata) {
-            debsProvider = dataProvider
-            super.init(dataProvider: dataProvider, metadata: metadata)
+        init(mainModel: MainModel) {
+            debsProvider = mainModel.databasePackageProvider
+            let metadata = BuildedPkgsMetadata()
+
+            super.init(mainModel: mainModel, dataProvider: debsProvider, metadata: metadata)
         }
 
         override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -48,7 +50,7 @@ extension PackageVC {
                 completionHandler(true)
             }
             delete.image = UIImage(systemName: "trash.fill")
-            delete.title = Bundle.appLocalize("remove-btn")
+            delete.title = "remove-btn".localized
 
             return UISwipeActionsConfiguration(actions: [delete])
         }

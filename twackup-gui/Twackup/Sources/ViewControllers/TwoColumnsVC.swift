@@ -8,13 +8,13 @@
 import UIKit
 
 class TwoColumnsVC: UISplitViewController, UISplitViewControllerDelegate {
-    init(first: UIViewController, second: UIViewController, tabBarItem: UITabBarItem? = nil) {
+    init(first: UIViewController, second: UIViewController) {
         super.init(nibName: nil, bundle: nil)
 
-        self.tabBarItem = tabBarItem
+        self.tabBarItem = first.tabBarItem
         viewControllers = [
-            UINavigationController(rootViewController: first),
-            UINavigationController(rootViewController: second)
+            SimpleNavController(rootViewController: first),
+            SimpleNavController(rootViewController: second)
         ]
     }
 

@@ -10,9 +10,14 @@ import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    let logger = FFILogger.shared
+    private(set) lazy var mainModel: MainModel = {
+        var path = "/var/lib/dpkg"
+        if !FileManager.default.fileExists(atPath: path) {
+            path = "/var/jb/dpkg"
+        }
 
-    private(set) lazy var database = Database()
+        return MainModel(database: Database(), dpkg: Dpkg(path: path))
+    }()
 
     func application(
         _ application: UIApplication, didFinishLaunchingWithOptions

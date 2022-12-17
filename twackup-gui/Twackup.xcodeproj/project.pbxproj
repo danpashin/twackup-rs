@@ -25,6 +25,10 @@
 		0B50FF722949EA7700CF4BCF /* DiskStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B50FF712949EA7700CF4BCF /* DiskStats.swift */; };
 		0B50FF742949EAB900CF4BCF /* DiskSpaceUsageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B50FF732949EAB900CF4BCF /* DiskSpaceUsageView.swift */; };
 		0B5B328C2943827500B51274 /* PackagesRebuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5B328B2943827500B51274 /* PackagesRebuilder.swift */; };
+		0B5B332B294DA9F00097398F /* MainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5B332A294DA9F00097398F /* MainModel.swift */; };
+		0B5B332D294DB55B0097398F /* SimpleNavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5B332C294DB55B0097398F /* SimpleNavController.swift */; };
+		0B5B332F294DB7770097398F /* InstalledPackagesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5B332E294DB7770097398F /* InstalledPackagesModel.swift */; };
+		0B5B3331294DB8510097398F /* LeavesPackagesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5B3330294DB8510097398F /* LeavesPackagesModel.swift */; };
 		0B5D3F972934CB2C00AE50F2 /* PackageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F962934CB2C00AE50F2 /* PackageDataProvider.swift */; };
 		0B5D3F9A2934D0C300AE50F2 /* Twackup.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F982934D0C300AE50F2 /* Twackup.xcdatamodeld */; };
 		0B5D3F9C2934D2EB00AE50F2 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F9B2934D2EB00AE50F2 /* Database.swift */; };
@@ -53,9 +57,9 @@
 		0BAAD99729388D310089C8FB /* DebsListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAAD99629388D310089C8FB /* DebsListVC.swift */; };
 		0BAAD99C293893EF0089C8FB /* DpkgDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAAD99B293893EF0089C8FB /* DpkgDataProvider.swift */; };
 		0BB1B68E293DCB600050FEB5 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB1B68D293DCB600050FEB5 /* Collection.swift */; };
+		0BE78040294DC60C00AE77CE /* DpkgListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE7803F294DC60C00AE77CE /* DpkgListModel.swift */; };
 		0BF07A502941027800EEC8FC /* TwoColumnsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A4F2941027800EEC8FC /* TwoColumnsVC.swift */; };
 		0BF07A5C2941D8D100EEC8FC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0BF07A592941D8D100EEC8FC /* Localizable.strings */; };
-		0BF07A5E2941D91200EEC8FC /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A5D2941D91200EEC8FC /* Bundle.swift */; };
 		0BF07A62294335F700EEC8FC /* FFILogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A61294335F700EEC8FC /* FFILogger.swift */; };
 		0BF07A6429433BE100EEC8FC /* LoggerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A6329433BE100EEC8FC /* LoggerVC.swift */; };
 		0BF07A662943537A00EEC8FC /* PackageSelectableListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A652943537A00EEC8FC /* PackageSelectableListVC.swift */; };
@@ -84,6 +88,10 @@
 		0B50FF712949EA7700CF4BCF /* DiskStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskStats.swift; sourceTree = "<group>"; };
 		0B50FF732949EAB900CF4BCF /* DiskSpaceUsageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskSpaceUsageView.swift; sourceTree = "<group>"; };
 		0B5B328B2943827500B51274 /* PackagesRebuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesRebuilder.swift; sourceTree = "<group>"; };
+		0B5B332A294DA9F00097398F /* MainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainModel.swift; sourceTree = "<group>"; };
+		0B5B332C294DB55B0097398F /* SimpleNavController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleNavController.swift; sourceTree = "<group>"; };
+		0B5B332E294DB7770097398F /* InstalledPackagesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstalledPackagesModel.swift; sourceTree = "<group>"; };
+		0B5B3330294DB8510097398F /* LeavesPackagesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeavesPackagesModel.swift; sourceTree = "<group>"; };
 		0B5D3F962934CB2C00AE50F2 /* PackageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageDataProvider.swift; sourceTree = "<group>"; };
 		0B5D3F992934D0C300AE50F2 /* DBPackage.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DBPackage.xcdatamodel; sourceTree = "<group>"; };
 		0B5D3F9B2934D2EB00AE50F2 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
@@ -118,10 +126,10 @@
 		0BAAD99629388D310089C8FB /* DebsListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebsListVC.swift; sourceTree = "<group>"; };
 		0BAAD99B293893EF0089C8FB /* DpkgDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgDataProvider.swift; sourceTree = "<group>"; };
 		0BB1B68D293DCB600050FEB5 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
+		0BE7803F294DC60C00AE77CE /* DpkgListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgListModel.swift; sourceTree = "<group>"; };
 		0BF07A4F2941027800EEC8FC /* TwoColumnsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoColumnsVC.swift; sourceTree = "<group>"; };
 		0BF07A5A2941D8D100EEC8FC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0BF07A5B2941D8D100EEC8FC /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
-		0BF07A5D2941D91200EEC8FC /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		0BF07A61294335F700EEC8FC /* FFILogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FFILogger.swift; sourceTree = "<group>"; };
 		0BF07A6329433BE100EEC8FC /* LoggerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerVC.swift; sourceTree = "<group>"; };
 		0BF07A652943537A00EEC8FC /* PackageSelectableListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageSelectableListVC.swift; sourceTree = "<group>"; };
@@ -157,7 +165,6 @@
 			children = (
 				0B0DBB6E2934FA58002F3BB2 /* String.swift */,
 				0BB1B68D293DCB600050FEB5 /* Collection.swift */,
-				0BF07A5D2941D91200EEC8FC /* Bundle.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -238,6 +245,7 @@
 				0B86616C2930ADA300EA4301 /* MainTabbarController.swift */,
 				0BF07A6329433BE100EEC8FC /* LoggerVC.swift */,
 				0BF07A4F2941027800EEC8FC /* TwoColumnsVC.swift */,
+				0B5B332C294DB55B0097398F /* SimpleNavController.swift */,
 				0B88C3202930E35800BA5312 /* Package */,
 				0B2636E52948B92E003EA806 /* SettingsViewController.swift */,
 			);
@@ -283,6 +291,7 @@
 				0B50FF712949EA7700CF4BCF /* DiskStats.swift */,
 				0B85ABB6294C8E4C00B6C5CF /* DetailedLabelSUI.swift */,
 				0B6BB2F0294A599D001E3B43 /* ObservedObjectProxy.swift */,
+				0B5B332A294DA9F00097398F /* MainModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -292,6 +301,9 @@
 			children = (
 				0B0DBB71293501DE002F3BB2 /* Package.swift */,
 				0B88C3142930CE2E00BA5312 /* PackageListModel.swift */,
+				0BE7803F294DC60C00AE77CE /* DpkgListModel.swift */,
+				0B5B332E294DB7770097398F /* InstalledPackagesModel.swift */,
+				0B5B3330294DB8510097398F /* LeavesPackagesModel.swift */,
 				0B463A9A29389EBB00021EF7 /* DebsListModel.swift */,
 				0B88C3162930CE3900BA5312 /* Metadata.swift */,
 				0B5B328B2943827500B51274 /* PackagesRebuilder.swift */,
@@ -540,6 +552,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B5B3331294DB8510097398F /* LeavesPackagesModel.swift in Sources */,
+				0BE78040294DC60C00AE77CE /* DpkgListModel.swift in Sources */,
 				0BF07A68294354E800EEC8FC /* DpkgListVC.swift in Sources */,
 				0B86618B2930AF7100EA4301 /* FFIPackage.swift in Sources */,
 				0BAAD99C293893EF0089C8FB /* DpkgDataProvider.swift in Sources */,
@@ -551,13 +565,14 @@
 				0B88C30D2930B88800BA5312 /* PackageTableViewCell.swift in Sources */,
 				0B88C3172930CE3900BA5312 /* Metadata.swift in Sources */,
 				0B50FF742949EAB900CF4BCF /* DiskSpaceUsageView.swift in Sources */,
+				0B5B332B294DA9F00097398F /* MainModel.swift in Sources */,
 				0BF07A6429433BE100EEC8FC /* LoggerVC.swift in Sources */,
+				0B5B332F294DB7770097398F /* InstalledPackagesModel.swift in Sources */,
 				0B463A9B29389EBB00021EF7 /* DebsListModel.swift in Sources */,
 				0B50FF722949EA7700CF4BCF /* DiskStats.swift in Sources */,
 				0B5D3F9C2934D2EB00AE50F2 /* Database.swift in Sources */,
 				0B88C31E2930DEA200BA5312 /* PackageDetailView.swift in Sources */,
 				0B85ABB7294C8E4C00B6C5CF /* DetailedLabelSUI.swift in Sources */,
-				0BF07A5E2941D91200EEC8FC /* Bundle.swift in Sources */,
 				0BAAD9922937BE360089C8FB /* RJTHudProgressView.m in Sources */,
 				0B88C3152930CE2E00BA5312 /* PackageListModel.swift in Sources */,
 				0B0DBB6F2934FA58002F3BB2 /* String.swift in Sources */,
@@ -581,6 +596,7 @@
 				0BF07A662943537A00EEC8FC /* PackageSelectableListVC.swift in Sources */,
 				0B2636E12948B887003EA806 /* Compression.swift in Sources */,
 				0B0F22C7293CA01E002128EA /* DebPackage.swift in Sources */,
+				0B5B332D294DB55B0097398F /* SimpleNavController.swift in Sources */,
 				0B5D3F9E2934D85500AE50F2 /* DatabasePackageProvider.swift in Sources */,
 				0BF07A502941027800EEC8FC /* TwoColumnsVC.swift in Sources */,
 				0B88C31C2930DE8C00BA5312 /* KeyValueLabelView.swift in Sources */,

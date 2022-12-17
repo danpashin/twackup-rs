@@ -11,11 +11,14 @@ class DatabasePackageProvider: PackageDataProvider {
     init(_ database: Database) {
         self.database = database
 
-        super.init(packages: database.fetchBuildedPackages())
+        super.init()
     }
 
-    func reload() {
-        allPackages = database.fetchBuildedPackages()
+    func reload(completion: (() -> Void)? = nil) {
+        DispatchQueue.global(qos: .userInitiated).async { [self] in
+            allPackages = database.fetchBuildedPackages()
+            completion?()
+        }
     }
 
     func deletePackages(at indexes: [Int], completion: (() -> Void)? = nil) -> Bool {

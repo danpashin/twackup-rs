@@ -50,7 +50,7 @@ class Compression: ObservableObject {
         }
 
         var localized: String {
-            Bundle.appLocalize("compression-level-\(asString.lowercased())")
+            "compression-level-\(asString.lowercased())".localized
         }
     }
 

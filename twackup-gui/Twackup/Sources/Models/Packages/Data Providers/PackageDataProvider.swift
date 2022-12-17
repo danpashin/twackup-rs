@@ -25,7 +25,7 @@ class PackageDataProvider {
 
     private(set) var currentFilter: Filter?
 
-    init(packages: [Package]) {
+    init(packages: [Package] = []) {
         self.allPackages = packages
     }
 

@@ -7,7 +7,7 @@
 
 extension PackageVC {
     class DatabasePackageDetailedView: PackageDetailedView {
-        let debSizeLabel = KeyValueLabel(key: Bundle.appLocalize("detailed-view-debsize-lbl"))
+        let debSizeLabel = KeyValueLabel(key: "detailed-view-debsize-lbl".localized)
 
         override init(delegate: PackageDetailViewDelegate) {
             super.init(delegate: delegate)
@@ -27,7 +27,7 @@ extension PackageVC {
             if package.debSize != 0 {
                 debSizeLabel.valueLabel.text = ByteCountFormatter().string(fromByteCount: package.debSize)
             } else {
-                debSizeLabel.valueLabel.text = Bundle.appLocalize("unknown")
+                debSizeLabel.valueLabel.text = "unknown".localized
             }
         }
     }
