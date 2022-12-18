@@ -33,11 +33,11 @@ fn with_default_convert() {
 
     assert_eq!(TestEnum::from("inner hello").as_str(), "inner hello");
     assert_eq!(TestEnum::TrainCase.as_str(), "Train-Case");
-    assert_eq!(TestEnum::LowerCase.as_str(), "lower case");
-    assert_eq!(TestEnum::UpperCase.as_str(), "UPPER CASE");
+    assert_eq!(TestEnum::LowerCase.as_str(), "lowercase");
+    assert_eq!(TestEnum::UpperCase.as_str(), "UPPERCASE");
     assert_eq!(TestEnum::CamelCase.as_str(), "camelCase");
     assert_eq!(TestEnum::PascalCase.as_str(), "PascalCase");
-    assert_eq!(TestEnum::TitleCase.as_str(), "Title Case");
+    assert_eq!(TestEnum::TitleCase.as_str(), "TitleCase");
     assert_eq!(TestEnum::SnakeCase.as_str(), "snake_case");
     assert_eq!(TestEnum::KebabCase.as_str(), "kebab-case");
 }
@@ -69,7 +69,7 @@ fn with_default_convert_all() {
         SingleCase,
     }
 
-    assert_eq!(TestEnum::LowerCase.as_str(), "lower case");
-    assert_eq!(TestEnum::UpperCase.as_str(), "UPPER CASE");
+    assert_eq!(TestEnum::LowerCase.as_str(), "lowercase");
+    assert_eq!(TestEnum::UpperCase.as_str(), "UPPERCASE");
     assert_eq!(TestEnum::SingleCase.as_str(), "upper");
 }

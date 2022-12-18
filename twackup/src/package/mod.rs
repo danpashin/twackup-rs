@@ -380,11 +380,11 @@ mod tests {
     async fn real_database() -> Result<()> {
         let database = concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/assets/databases/real-system-632"
+            "/assets/databases/real-system-635"
         );
         let parser = Parser::new(database)?;
         let packages = parser.parse::<Package>().await;
-        assert_eq!(packages.len(), 632);
+        assert_eq!(packages.len(), 635);
 
         Ok(())
     }

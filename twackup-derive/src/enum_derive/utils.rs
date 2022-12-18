@@ -45,7 +45,7 @@ pub(crate) fn enum_field_name(variant: &Variant, convert_form: Option<&String>) 
 }
 
 pub(crate) fn convert_string(string: String, form: Option<&str>) -> String {
-    match form {
+    let converted = match form {
         Some("upper") => string.to_case(Case::Upper),
         Some("lower") => string.to_case(Case::Lower),
         Some("camel") => string.to_case(Case::Camel),
@@ -56,7 +56,9 @@ pub(crate) fn convert_string(string: String, form: Option<&str>) -> String {
         Some("snake") => string.to_case(Case::Snake),
         Some(other) => panic!("Unknown convert form {:?}", other),
         None => string,
-    }
+    };
+
+    converted.split_whitespace().collect()
 }
 
 pub(crate) fn twackup_attributes_meta(attributes: &[Attribute]) -> Vec<NestedMeta> {
