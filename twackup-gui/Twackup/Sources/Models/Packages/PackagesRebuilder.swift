@@ -77,8 +77,6 @@ class PackagesRebuilder: DpkgBuildDelegate {
 
         dbSaveQueue.addOperation { [self] in
             rebuildedPackages.append(BuildedPackage(package: package, debURL: debPath))
-
-            dbSaveQueue.progress.completedUnitCount += 1
             updateHandler?(dbSaveQueue.progress)
         }
     }
