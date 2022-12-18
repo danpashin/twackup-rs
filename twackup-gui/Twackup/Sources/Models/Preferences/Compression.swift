@@ -16,6 +16,7 @@ class Compression: ObservableObject {
         case gzip
         case xzip
         case zst
+        case bzip2
 
         var id: RawValue { rawValue }
 
@@ -25,6 +26,7 @@ class Compression: ObservableObject {
             case .gzip: stringRepr = "gzip"
             case .xzip: stringRepr = "xzip"
             case .zst: stringRepr = "zstd"
+            case .bzip2: stringRepr = "bzip2"
             }
 
             return stringRepr.capitalized

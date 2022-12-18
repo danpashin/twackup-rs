@@ -42,7 +42,8 @@ ar = "0.9"
 tokio-tar = "0.3"
 flate2 = "1.0"
 xz2 = "0.1"
-zstd = "0.11.2"
+zstd = "0.12"
+bzip2 = "0.4"
 
 # Serializing
 plist = { version = "1.0", default-features = false, optional = true}

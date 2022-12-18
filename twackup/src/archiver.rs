@@ -36,6 +36,7 @@
 //! ```
 //!
 
+use bzip2::write::BzEncoder;
 use flate2::write::GzEncoder;
 use std::{
     io::{Error, Write},
@@ -59,6 +60,8 @@ pub enum Type {
     Xz,
     /// Super-modern and fast zstd type
     Zst,
+    /// Another old-style bzip2 type
+    Bz2,
 }
 
 /// Defines how much data encoder will compress.
@@ -99,17 +102,19 @@ pub enum Encoder<T: Write> {
     Xz(XzEncoder<T>),
     /// Super-modern and fast zstd type
     Zstd(ZSTDEncoder<'static, T>),
+    /// Another old-style bzip2 type
+    Bzip2(BzEncoder<T>),
 }
 
-impl From<Level> for u32 {
-    #[inline]
-    fn from(level: Level) -> Self {
-        match level {
+impl Level {
+    /// Returns integer level corresponding to self type
+    pub fn raw_value(&self) -> u32 {
+        match self {
             Level::None => 0,
             Level::Fast => 1,
             Level::Normal => 6,
             Level::Best => 9,
-            Level::Custom(custom) => custom,
+            Level::Custom(custom) => *custom,
         }
     }
 }
@@ -128,10 +133,20 @@ impl<T: Write> Encoder<T> {
         match compression.r#type {
             Type::Gz => Ok(Self::Gzip(GzEncoder::new(
                 inner,
-                flate2::Compression::new(compression.level.into()),
+                flate2::Compression::new(compression.level.raw_value()),
             ))),
-            Type::Xz => Ok(Self::Xz(XzEncoder::new(inner, compression.level.into()))),
-            Type::Zst => Ok(Self::Zstd(ZSTDEncoder::new(inner, 0)?)),
+            Type::Xz => Ok(Self::Xz(XzEncoder::new(
+                inner,
+                compression.level.raw_value(),
+            ))),
+            Type::Zst => Ok(Self::Zstd(ZSTDEncoder::new(
+                inner,
+                compression.level.raw_value() as i32,
+            )?)),
+            Type::Bz2 => Ok(Self::Bzip2(BzEncoder::new(
+                inner,
+                bzip2::Compression::new(compression.level.raw_value()),
+            ))),
         }
     }
 
@@ -145,6 +160,7 @@ impl<T: Write> Encoder<T> {
             Self::Gzip(inner) => inner.finish(),
             Self::Xz(inner) => inner.finish(),
             Self::Zstd(inner) => inner.finish(),
+            Self::Bzip2(inner) => inner.finish(),
         }
     }
 }
@@ -162,6 +178,7 @@ impl<T: Write + Unpin> AsyncWrite for Encoder<T> {
             Self::Gzip(inner) => Poll::Ready(inner.write(buf)),
             Self::Xz(inner) => Poll::Ready(inner.write(buf)),
             Self::Zstd(inner) => Poll::Ready(inner.write(buf)),
+            Self::Bzip2(inner) => Poll::Ready(inner.write(buf)),
         }
     }
 
@@ -171,6 +188,7 @@ impl<T: Write + Unpin> AsyncWrite for Encoder<T> {
             Self::Gzip(inner) => Poll::Ready(inner.flush()),
             Self::Xz(inner) => Poll::Ready(inner.flush()),
             Self::Zstd(inner) => Poll::Ready(inner.flush()),
+            Self::Bzip2(inner) => Poll::Ready(inner.flush()),
         }
     }
 
@@ -180,6 +198,7 @@ impl<T: Write + Unpin> AsyncWrite for Encoder<T> {
             Self::Gzip(inner) => Poll::Ready(inner.try_finish()),
             Self::Xz(inner) => Poll::Ready(inner.try_finish()),
             Self::Zstd(inner) => Poll::Ready(inner.do_finish()),
+            Self::Bzip2(inner) => Poll::Ready(inner.try_finish()),
         }
     }
 }

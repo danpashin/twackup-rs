@@ -50,6 +50,7 @@ pub enum TwCompressionType {
     Gz,
     Xz,
     Zst,
+    Bz2,
 }
 
 impl From<TwCompressionType> for crate::archiver::Type {
@@ -58,6 +59,7 @@ impl From<TwCompressionType> for crate::archiver::Type {
             TwCompressionType::Gz => Self::Gz,
             TwCompressionType::Xz => Self::Xz,
             TwCompressionType::Zst => Self::Zst,
+            TwCompressionType::Bz2 => Self::Bz2,
         }
     }
 }

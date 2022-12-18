@@ -40,6 +40,7 @@ enum CompressionType {
     Gzip,
     Xz,
     Zst,
+    Bz2,
 }
 
 impl From<CompressionType> for twackup::archiver::Type {
@@ -48,6 +49,7 @@ impl From<CompressionType> for twackup::archiver::Type {
             CompressionType::Gzip => Self::Gz,
             CompressionType::Xz => Self::Xz,
             CompressionType::Zst => Self::Zst,
+            CompressionType::Bz2 => Self::Bz2,
         }
     }
 }
