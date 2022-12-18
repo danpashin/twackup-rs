@@ -76,12 +76,14 @@ class PackageListVC: UIViewController, PackageListDelegate {
 
     func didSelect(items: [PackageListModel.TableViewItem], inEditState: Bool) {
         guard !inEditState, let item = items.first else { return }
+        guard let detailNav = detail.navigationController else { return }
 
-        if UIDevice.current.userInterfaceIdiom == .phone {
+        if traitCollection.userInterfaceIdiom == .phone || traitCollection.userInterfaceLevel != .base {
             tableView.deselectRow(at: item.indexPath, animated: true)
-            navigationController?.pushViewController(detail, animated: true)
         }
 
         detail.package = item.package
+
+        showDetailViewController(detailNav, sender: nil)
     }
 }

@@ -17,11 +17,10 @@ class DetailVC: UIViewController, PackageDetailViewDelegate {
             navigationItem.title = package?.name
 
             if let package {
-                containerView.isHidden = false
                 containerView.updateContents(forPackage: package)
-            } else {
-                containerView.isHidden = true
             }
+
+            containerView.isHidden = package == nil
         }
     }
 
@@ -43,7 +42,7 @@ class DetailVC: UIViewController, PackageDetailViewDelegate {
         view.backgroundColor = .systemBackground
 
         containerView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.isHidden = true
+        containerView.isHidden = package == nil
     }
 
     override func updateViewConstraints() {
