@@ -13,11 +13,15 @@ class PackagesRebuilder: DpkgBuildDelegate {
 
     private var rebuildedPackages: [BuildedPackage] = []
 
-    private let dbSaveQueue: DispatchQueue = DispatchQueue(label: "database-save", qos: .default)
+    private(set) lazy var dbSaveQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.maxConcurrentOperationCount = 1
+        queue.qualityOfService = .userInitiated
+
+        return queue
+    }()
 
     private var updateHandler: ((Progress) -> Void)?
-
-    private var progress: Progress?
 
     private var pfmcRootTransaction: Span?
 
@@ -31,7 +35,7 @@ class PackagesRebuilder: DpkgBuildDelegate {
         mainModel.dpkg.buildDelegate = self
         self.updateHandler = updateHandler
 
-        progress = Progress(totalUnitCount: Int64(packages.count))
+        dbSaveQueue.progress.totalUnitCount = Int64(packages.count)
 
         DispatchQueue.global().async { [self] in
             pfmcRootTransaction = SentrySDK.startTransaction(name: "multiple-debs-rebuild", operation: "lib")
@@ -71,18 +75,16 @@ class PackagesRebuilder: DpkgBuildDelegate {
         }
         performanceTransactions.removeObject(forKey: package.id as NSString)
 
-        dbSaveQueue.async { [self] in
-            if let progress {
-                progress.completedUnitCount += 1
-                updateHandler?(progress)
-            }
-
+        dbSaveQueue.addOperation { [self] in
             rebuildedPackages.append(BuildedPackage(package: package, debURL: debPath))
+
+            dbSaveQueue.progress.completedUnitCount += 1
+            updateHandler?(dbSaveQueue.progress)
         }
     }
 
     func finishedAll() {
-        dbSaveQueue.async { [self] in
+        dbSaveQueue.addBarrierBlock { [self] in
             let databaseTransaction = pfmcRootTransaction?.startChild(operation: "database-packages-save")
             mainModel.database.addBuildedPackages(rebuildedPackages) { [self] in
                 databaseTransaction?.finish()
