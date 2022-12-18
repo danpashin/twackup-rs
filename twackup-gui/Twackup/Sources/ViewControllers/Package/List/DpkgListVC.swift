@@ -27,18 +27,35 @@ class DpkgListVC: PackageSelectableListVC {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func reloadData(completion: (() -> Void)? = nil) {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let refresh = UIRefreshControl()
+        refresh.addTarget(self, action: #selector(actionRefresh), for: .valueChanged)
+
+        tableView.refreshControl = refresh
+    }
+
+    override func reloadData() {
         dpkgModel.dpkgProvider.reload {
-            super.reloadData(completion: completion)
+            super.reloadData()
         }
     }
 
-    override func didSelect(packages: [PackageListModel.TableViewPackage], inEditState: Bool) {
-        super.didSelect(packages: packages, inEditState: inEditState)
+    override func endReloadingData() {
+        super.endReloadingData()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
+            tableView.refreshControl?.endRefreshing()
+        }
+    }
+
+    override func didSelect(items: [PackageListModel.TableViewItem], inEditState: Bool) {
+        super.didSelect(items: items, inEditState: inEditState)
 
         if inEditState {
             guard var buttons = toolbarItems, !buttons.isEmpty else { return }
-            buttons[0] = packages.isEmpty ? rebuildAllBarBtn : rebuildSelectedBarBtn
+            buttons[0] = items.isEmpty ? rebuildAllBarBtn : rebuildSelectedBarBtn
             setToolbarItems(buttons, animated: false)
         }
     }
@@ -59,7 +76,7 @@ class DpkgListVC: PackageSelectableListVC {
 
     @objc
     func actionRebuildSelected() {
-        rebuild(packages: model.selectedPackages.map { $0.object })
+        rebuild(packages: model.selectedItems.map { $0.package })
     }
 
     @objc
@@ -67,6 +84,12 @@ class DpkgListVC: PackageSelectableListVC {
         actionDoneEdit()
 
         rebuild(packages: model.dataProvider.packages)
+    }
+
+    @objc
+    func actionRefresh() {
+        tableView.refreshControl?.beginRefreshing()
+        reloadData()
     }
 
     func rebuild(packages: [Package]) {

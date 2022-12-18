@@ -8,18 +8,18 @@
 import UIKit
 
 protocol PackageListDelegate: AnyObject {
-    func didSelect(packages: [PackageListModel.TableViewPackage], inEditState: Bool)
+    func didSelect(items: [PackageListModel.TableViewItem], inEditState: Bool)
 
-    func reloadData(completion: (() -> Void)?)
+    func reloadData()
 
     func endReloadingData()
 }
 
 class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource {
-    struct TableViewPackage {
+    struct TableViewItem {
         var indexPath: IndexPath
 
-        var object: Package
+        var package: Package
     }
 
     private(set) var dataProvider: PackageDataProvider
@@ -37,14 +37,14 @@ class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, 
         }
     }
 
-    var selectedPackages: [TableViewPackage] {
+    var selectedItems: [TableViewItem] {
         guard let tableView else { return [] }
         guard let rows = tableView.indexPathsForSelectedRows?.map({ $0.row }) else { return [] }
 
         return dataProvider.packages.enumerated()
             .filter { rows.contains($0.offset) }
-            .map { index, object in
-                TableViewPackage(indexPath: IndexPath(row: index, section: 0), object: object)
+            .map { index, package in
+                TableViewItem(indexPath: IndexPath(row: index, section: 0), package: package)
             }
     }
 
@@ -76,11 +76,11 @@ class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, 
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        delegate?.didSelect(packages: selectedPackages, inEditState: tableView.isEditing)
+        delegate?.didSelect(items: selectedItems, inEditState: tableView.isEditing)
     }
 
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        delegate?.didSelect(packages: selectedPackages, inEditState: tableView.isEditing)
+        delegate?.didSelect(items: selectedItems, inEditState: tableView.isEditing)
     }
 
     func updateSearchResults(for searchController: UISearchController) {
@@ -89,6 +89,6 @@ class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, 
 
         dataProvider.applyFilter(filter)
 
-        delegate?.reloadData(completion: nil)
+        delegate?.reloadData()
     }
 }

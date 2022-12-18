@@ -34,6 +34,8 @@ class PackageListVC: UIViewController, PackageListDelegate {
         return table
     }()
 
+    lazy var tableViewLargeReloadingIndicator = UIActivityIndicatorView(style: .large)
+
     init(model: PackageListModel, detail: DetailVC ) {
         self.model = model
         self.detail = detail
@@ -49,6 +51,7 @@ class PackageListVC: UIViewController, PackageListDelegate {
     override func loadView() {
         view = tableView
         model.tableView = tableView
+        tableView.backgroundView = tableViewLargeReloadingIndicator
     }
 
     override func viewDidLoad() {
@@ -57,35 +60,28 @@ class PackageListVC: UIViewController, PackageListDelegate {
         navigationItem.title = model.metadata.navTitle
         navigationItem.searchController = searchController
 
-        let spinner = UIActivityIndicatorView(style: .large)
-        tableView.backgroundView = spinner
-        spinner.startAnimating()
-
-        reloadData {
-            spinner.stopAnimating()
-        }
+        reloadData()
     }
 
-    func reloadData(completion: (() -> Void)? = nil) {
+    func reloadData() {
         DispatchQueue.main.async { [self] in
-            completion?()
-
             tableView.reloadData()
             endReloadingData()
         }
     }
 
     func endReloadingData() {
+        tableViewLargeReloadingIndicator.stopAnimating()
     }
 
-    func didSelect(packages: [PackageListModel.TableViewPackage], inEditState: Bool) {
-        guard !inEditState, !packages.isEmpty else { return }
+    func didSelect(items: [PackageListModel.TableViewItem], inEditState: Bool) {
+        guard !inEditState, let item = items.first else { return }
 
         if UIDevice.current.userInterfaceIdiom == .phone {
-            tableView.deselectRow(at: packages[0].indexPath, animated: true)
+            tableView.deselectRow(at: item.indexPath, animated: true)
             navigationController?.pushViewController(detail, animated: true)
         }
 
-        detail.package = packages[0].object
+        detail.package = item.package
     }
 }

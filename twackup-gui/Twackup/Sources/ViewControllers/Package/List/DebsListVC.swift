@@ -46,9 +46,9 @@ class DebsListVC: PackageSelectableListVC {
         }
     }
 
-    override func reloadData(completion: (() -> Void)? = nil) {
+    override func reloadData() {
         debsModel.debsProvider.reload {
-            super.reloadData(completion: completion)
+            super.reloadData()
         }
     }
 
@@ -56,20 +56,20 @@ class DebsListVC: PackageSelectableListVC {
         NotificationCenter.default.removeObserver(reloadObserver as Any)
     }
 
-    override func didSelect(packages: [PackageListModel.TableViewPackage], inEditState: Bool) {
-        super.didSelect(packages: packages, inEditState: inEditState)
+    override func didSelect(items: [PackageListModel.TableViewItem], inEditState: Bool) {
+        super.didSelect(items: items, inEditState: inEditState)
 
         if inEditState {
             guard var buttons = toolbarItems, !buttons.isEmpty else { return }
-            buttons[0] = packages.isEmpty ? removeAllBarBtn : removeSelectedBarBtn
+            buttons[0] = items.isEmpty ? removeAllBarBtn : removeSelectedBarBtn
             setToolbarItems(buttons, animated: false)
         }
     }
 
     @objc
     func actionShare() {
-        let debURLS: [URL] = model.selectedPackages.compactMap { package in
-            guard let package = package.object as? DebPackage else { return nil }
+        let debURLS: [URL] = model.selectedItems.compactMap { package in
+            guard let package = package.package as? DebPackage else { return nil }
             return package.fileURL()
         }
 
