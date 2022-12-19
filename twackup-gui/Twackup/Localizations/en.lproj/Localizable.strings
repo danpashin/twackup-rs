@@ -6,13 +6,13 @@
 //
 
 // Controllers
-"debs-short-title" = "Rebuilded";
+"debs-short-title" = "Rebuilt";
 "leaves-pkgs-short-title" = "Leaves";
 "all-pkgs-short-title" = "Installed";
 "log-short-title" = "Log";
 "preferences-short-title" = "Preferences";
 
-"debs-full-title" = "Rebuilded";
+"debs-full-title" = "Rebuilt";
 "leaves-pkgs-full-title" = "Leaves";
 "all-pkgs-full-title" = "Installed";
 "log-full-title" = "Log";
@@ -26,8 +26,8 @@
 "detailed-view-size-lbl" = "Size";
 "detailed-view-installedsize-lbl" = "Installed:";
 "detailed-view-debsize-lbl" = "Packaged";
-"detailed-view-rebuild-btn" = "Package";
-"detailed-view-rebuild-btn-footer" = "Please note that the builded package may be incomplete and may not have some files necessary for the correct operation of the package.";
+"detailed-view-rebuild-btn" = "Rebuild";
+"detailed-view-rebuild-btn-footer" = "Please note that the rebuilt package may be incomplete and may not have some files necessary for the correct operation of the package.";
 
 "debs-remove-all-btn" = "Remove all";
 "debs-remove-selected-btn" = "Remove selected";
@@ -38,7 +38,7 @@
 "debs-rebuildselected-btn" = "Rebuild selected";
 
 "rebuild-packages-status-title" = "Please, wait...";
-"rebuild-packages-status" = "Rebuilded %i of %i";
+"rebuild-packages-status" = "Rebuilt %i of %i";
 
 // Settings
 "settings-compression-header" = "Packages compression";
