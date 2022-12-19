@@ -21,10 +21,15 @@ DEB_AUTHOR = "DanP"
 DEB_FILE_NAME = "${DEB_IDENTIFIER}_${CARGO_MAKE_CRATE_VERSION}_${DEB_ARCHITECTURE}.deb"
 DEB_TARGET_FILE = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/${DEB_FILE_NAME}"
 
-[tasks.build-apple-aarch64]
+[tasks.build-apple-aarch64-ios]
 command = "cargo"
 toolchain = "${CARGO_MAKE_RUST_DEFAULT_TOOLCHAIN}"
 args = ["build", "@@remove-empty(CARGO_BUILD_RELEASE_ARG)", "--target", "aarch64-apple-ios", "--features", "ffi" ]
+
+[tasks.build-apple-x86-ios]
+command = "cargo"
+toolchain = "${CARGO_MAKE_RUST_DEFAULT_TOOLCHAIN}"
+args = ["build", "@@remove-empty(CARGO_BUILD_RELEASE_ARG)", "--target", "x86_64-apple-ios", "--features", "ffi" ]
 
 [tasks.create-headers]
 command = "cargo"
@@ -42,21 +47,23 @@ toolchain = "${CARGO_MAKE_RUST_DEFAULT_TOOLCHAIN}"
 args = [ "build", "@@remove-empty(CARGO_BUILD_RELEASE_ARG)", "--features", "ffi" ]
 
 [tasks.build-fat-dynamic-library]
-dependencies = ["build-apple-aarch64"]
+dependencies = ["build-apple-aarch64-ios", "build-apple-x86-ios"]
 command = "lipo"
 args = [
     "-create",
     "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/aarch64-apple-ios/${CARGO_MAKE_CARGO_PROFILE}/${TWACKUP_DYLIB_NAME}",
+    "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/x86_64-apple-ios/${CARGO_MAKE_CARGO_PROFILE}/${TWACKUP_DYLIB_NAME}",
     "-o",
     "${TWACKUP_FAT_DYLIB}",
 ]
 
 [tasks.build-fat-static-library]
-dependencies = ["build-apple-aarch64"]
+dependencies = ["build-apple-aarch64-ios", "build-apple-x86-ios"]
 command = "lipo"
 args = [
     "-create",
     "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/aarch64-apple-ios/${CARGO_MAKE_CARGO_PROFILE}/${TWACKUP_STATIC_LIB_NAME}",
+    "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/x86_64-apple-ios/${CARGO_MAKE_CARGO_PROFILE}/${TWACKUP_STATIC_LIB_NAME}",
     "-o",
     "${TWACKUP_FAT_STATIC_LIB}",
 ]

@@ -18,26 +18,39 @@ class FFIPackage: Package {
         return pkg.section.swiftSection
     }
 
-    let icon: URL?
+    private(set) lazy var icon: URL? = {
+        let field = TwPackageField_t(TW_PACKAGE_FIELD_ICON)
+        guard let icon = String(ffiSlice: pkg.get_field(pkg.inner_ptr, field)) else { return nil }
 
-    let depiction: URL?
+        return URL(string: icon)
+    }()
 
-    var humanDescription: String? {
+    private(set) lazy var depiction: URL? = {
+        let field = TwPackageField_t(TW_PACKAGE_FIELD_DEPICTION)
+        var depiction = String(ffiSlice: pkg.get_field(pkg.inner_ptr, field))
+        if depiction == nil {
+            let field = TwPackageField_t(TW_PACKAGE_FIELD_HOMEPAGE)
+            depiction = String(ffiSlice: pkg.get_field(pkg.inner_ptr, field))
+        }
+
+        guard let depiction else { return nil }
+        return URL(string: depiction)
+    }()
+
+    private(set) lazy var humanDescription: String? = {
         String(ffiSlice: pkg.get_field(pkg.inner_ptr, TwPackageField_t(TW_PACKAGE_FIELD_DESCRIPTION)))
-    }
+    }()
 
-    var architecture: String? {
+    private(set) lazy var architecture: String? = {
         String(ffiSlice: pkg.get_field(pkg.inner_ptr, TwPackageField_t(TW_PACKAGE_FIELD_ARCHITECTURE)))
-    }
+    }()
 
-    var installedSize: Int64 {
+    private(set) lazy var installedSize: Int64 = {
         let field = TwPackageField_t(TW_PACKAGE_FIELD_INSTALLED_SIZE)
         guard let stringSize = String(ffiSlice: pkg.get_field(pkg.inner_ptr, field)) else { return 0 }
         guard let size = Int64(stringSize) else { return 0 }
         return size * 1_000
-    }
-
-    var debSize: Int64 = 0
+    }()
 
     init?(_ pkg: TwPackage_t) {
         self.pkg = pkg
@@ -52,20 +65,6 @@ class FFIPackage: Package {
         // Here unwrap is safe too
         name = String(ffiSlice: pkg.name)!
         version = String(ffiSlice: pkg.version)!
-
-        let iconField = TwPackageField_t(TW_PACKAGE_FIELD_ICON)
-        if let iconString = String(ffiSlice: pkg.get_field(pkg.inner_ptr, iconField)) {
-            icon = URL(string: iconString)
-        } else {
-            icon = nil
-        }
-
-        let depictionField = TwPackageField_t(TW_PACKAGE_FIELD_DEPICTION)
-        if let depict = String(ffiSlice: pkg.get_field(pkg.inner_ptr, depictionField)) {
-            depiction = URL(string: depict)
-        } else {
-            depiction = nil
-        }
     }
 
     deinit {
