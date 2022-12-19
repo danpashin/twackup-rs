@@ -9,7 +9,7 @@ import UIKit
 
 class DpkgDetailVC: DetailVC, RebuildPackageDetailedViewDelegate {
     private lazy var _container = RebuildPackageDetailedView(delegate: self)
-    override var containerView: PackageDetailedView { _container }
+    override var detailView: PackageDetailedView { _container }
 
     func rebuild(_ package: Package) {
         let hud = RJTHud.show()

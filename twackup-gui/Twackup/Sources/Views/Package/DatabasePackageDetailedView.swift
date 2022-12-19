@@ -11,8 +11,6 @@ class DatabasePackageDetailedView: PackageDetailedView {
     override init(delegate: PackageDetailViewDelegate) {
         super.init(delegate: delegate)
 
-        learnMoreButton.isHidden = true
-
         sizesStackView.addArrangedSubview(debSizeLabel)
     }
 
@@ -22,6 +20,9 @@ class DatabasePackageDetailedView: PackageDetailedView {
 
     override func updateContents(forPackage package: Package) {
         super.updateContents(forPackage: package)
+        learnMoreButton.isHidden = true
+
+        guard let package = package as? DebPackage else { return }
 
         if package.debSize != 0 {
             debSizeLabel.valueLabel.text = ByteCountFormatter().string(fromByteCount: package.debSize)

@@ -9,7 +9,7 @@ import UIKit
 
 class DatabaseDetailVC: DetailVC {
     private lazy var _container = DatabasePackageDetailedView(delegate: self)
-    override var containerView: PackageDetailedView { _container }
+    override var detailView: PackageDetailedView { _container }
 
     private lazy var shareDebButton: UIBarButtonItem = {
         UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareDeb))

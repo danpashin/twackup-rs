@@ -15,7 +15,6 @@ class RebuildPackageDetailedView: PackageDetailedView {
     private(set) lazy var rebuildButton: UIButton = {
         let button = UIButton(type: .system)
         button.addTarget(self, action: #selector(rebuild), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
 
         button.setTitle("detailed-view-rebuild-btn".localized, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: UIFont.buttonFontSize, weight: .semibold)
@@ -34,7 +33,6 @@ class RebuildPackageDetailedView: PackageDetailedView {
 
     private(set) lazy var rebuildWarningLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
 
         label.numberOfLines = 0
         label.text = "detailed-view-rebuild-btn-footer".localized
@@ -45,13 +43,27 @@ class RebuildPackageDetailedView: PackageDetailedView {
         return label
     }()
 
-    private(set) var rebuildButtonConstraints: [NSLayoutConstraint]?
+    private(set) lazy var rebuildFooterView: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [rebuildButton, rebuildWarningLabel])
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.distribution = .equalSpacing
+        stack.spacing = 8.0
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.backgroundColor = .systemBackground
+
+        stack.layoutMargins = UIEdgeInsets(top: 16, left: 0, bottom: 16, right: 0)
+        stack.isLayoutMarginsRelativeArrangement = true
+
+        return stack
+    }()
+
+    private(set) var rebuildFooterConstraints: [NSLayoutConstraint]?
 
     init(delegate: RebuildPackageDetailedViewDelegate) {
         super.init(delegate: delegate)
 
-        addSubview(rebuildButton)
-        addSubview(rebuildWarningLabel)
+        addSubview(rebuildFooterView)
     }
 
     required init?(coder: NSCoder) {
@@ -61,18 +73,16 @@ class RebuildPackageDetailedView: PackageDetailedView {
     override func updateConstraints() {
         super.updateConstraints()
 
-        if rebuildButtonConstraints == nil {
+        if rebuildFooterConstraints == nil {
+            let safeArea = safeAreaLayoutGuide
             let constraints = [
-                rebuildWarningLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
-                rebuildWarningLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-                rebuildWarningLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8.0),
-
-                rebuildButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-                rebuildButton.bottomAnchor.constraint(equalTo: rebuildWarningLabel.topAnchor, constant: -8.0)
+                rebuildFooterView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 8.0),
+                rebuildFooterView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -8.0),
+                rebuildFooterView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
             ]
 
             NSLayoutConstraint.activate(constraints)
-            rebuildButtonConstraints = constraints
+            rebuildFooterConstraints = constraints
         }
     }
 

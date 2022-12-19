@@ -8,7 +8,7 @@
 import UIKit
 
 class DetailVC: UIViewController, PackageDetailViewDelegate {
-    private(set) lazy var containerView: PackageDetailedView = PackageDetailedView(delegate: self)
+    private(set) lazy var detailView = PackageDetailedView(delegate: self)
 
     let mainModel: MainModel
 
@@ -17,14 +17,14 @@ class DetailVC: UIViewController, PackageDetailViewDelegate {
             navigationItem.title = package?.name
 
             if let package {
-                containerView.updateContents(forPackage: package)
+                detailView.updateContents(forPackage: package)
             }
 
-            containerView.isHidden = package == nil
+            detailView.isHidden = package == nil
         }
     }
 
-    private(set) var generalConstraints: [NSLayoutConstraint]?
+    private(set) var detailViewConstraints: [NSLayoutConstraint]?
 
     init(mainModel: MainModel) {
         self.mainModel = mainModel
@@ -38,27 +38,26 @@ class DetailVC: UIViewController, PackageDetailViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.addSubview(containerView)
+        view.addSubview(detailView)
         view.backgroundColor = .systemBackground
 
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.isHidden = package == nil
+        detailView.translatesAutoresizingMaskIntoConstraints = false
+        detailView.isHidden = package == nil
     }
 
     override func updateViewConstraints() {
         super.updateViewConstraints()
 
-        if generalConstraints == nil {
-            let safeArea = view.safeAreaLayoutGuide
+        if detailViewConstraints == nil {
             let constraints = [
-                containerView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 8.0),
-                containerView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -8.0),
-                containerView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 8.0),
-                containerView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -8.0)
+                detailView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                detailView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                detailView.topAnchor.constraint(equalTo: view.topAnchor),
+                detailView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
             ]
 
             NSLayoutConstraint.activate(constraints)
-            generalConstraints = constraints
+            detailViewConstraints = constraints
         }
     }
 

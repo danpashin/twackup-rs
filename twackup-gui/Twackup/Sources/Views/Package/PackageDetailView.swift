@@ -22,6 +22,15 @@ class PackageDetailedView: UIView {
     let sectionLabel = KeyValueLabel(key: "detailed-view-section-lbl".localized)
     let installedSizeLabel = KeyValueLabel(key: "detailed-view-installedsize-lbl".localized)
 
+    private(set) lazy var scrollView: UIScrollView = {
+        let view = UIScrollView()
+        view.alwaysBounceVertical = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.automaticallyAdjustsScrollIndicatorInsets = false
+
+        return view
+    }()
+
     private(set) lazy var sizesLabel: UILabel = {
         let label = UILabel()
         label.text = "detailed-view-size-lbl".localized
@@ -57,6 +66,9 @@ class PackageDetailedView: UIView {
         stack.axis = .vertical
         stack.alignment = .top
 
+        stack.layoutMargins = UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8)
+        stack.isLayoutMarginsRelativeArrangement = true
+
         return stack
     }()
 
@@ -73,8 +85,10 @@ class PackageDetailedView: UIView {
         self.delegate = delegate
         super.init(frame: .zero)
 
-        addSubview(logoView)
-        addSubview(labelsStack)
+        addSubview(scrollView)
+
+        scrollView.addSubview(logoView)
+        scrollView.addSubview(labelsStack)
 
         labelsStack.addArrangedSubview(identifierLabel)
         labelsStack.addArrangedSubview(versionLabel)
@@ -95,13 +109,19 @@ class PackageDetailedView: UIView {
 
         if generalConstraints == nil {
             let constraints = [
-                logoView.topAnchor.constraint(equalTo: topAnchor),
+                logoView.topAnchor.constraint(equalTo: scrollView.topAnchor),
                 logoHeightConstraint,
-                logoView.centerXAnchor.constraint(equalTo: centerXAnchor),
+                logoView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
 
-                labelsStack.topAnchor.constraint(equalTo: logoView.bottomAnchor, constant: 8.0),
-                labelsStack.leadingAnchor.constraint(equalTo: leadingAnchor),
-                labelsStack.trailingAnchor.constraint(equalTo: trailingAnchor)
+                labelsStack.topAnchor.constraint(equalTo: logoView.bottomAnchor),
+                labelsStack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+                labelsStack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+
+                scrollView.topAnchor.constraint(equalTo: topAnchor),
+                scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
+                scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                scrollView.contentLayoutGuide.widthAnchor.constraint(equalTo: widthAnchor)
             ]
 
             NSLayoutConstraint.activate(constraints)
@@ -115,6 +135,8 @@ class PackageDetailedView: UIView {
         identifierLabel.valueLabel.text = package.id
         versionLabel.valueLabel.text = package.version
         sectionLabel.valueLabel.text = package.section.humanName
+
+        learnMoreButton.isHidden = package.depiction == nil
 
         if package.installedSize != 0 {
             installedSizeLabel.valueLabel.text = ByteCountFormatter().string(fromByteCount: package.installedSize)

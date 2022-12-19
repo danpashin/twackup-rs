@@ -25,7 +25,5 @@ protocol Package {
 
     var installedSize: Int64 { get }
 
-    var debSize: Int64 { get }
-
     func isEqualTo(_ other: Package) -> Bool
 }

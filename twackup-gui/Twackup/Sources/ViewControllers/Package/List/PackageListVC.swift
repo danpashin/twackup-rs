@@ -71,6 +71,7 @@ class PackageListVC: UIViewController, PackageListDelegate {
     }
 
     func endReloadingData() {
+        tableView.flashScrollIndicators()
         tableViewLargeReloadingIndicator.stopAnimating()
     }
 
