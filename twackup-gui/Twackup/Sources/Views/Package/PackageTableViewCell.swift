@@ -17,7 +17,8 @@ class PackageTableViewCell: UITableViewCell {
     lazy var config: UIListContentConfiguration = {
         var cfg = defaultContentConfiguration()
 
-        cfg.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 6.0, leading: 0.0, bottom: 6.0, trailing: 0.0)
+        cfg.directionalLayoutMargins.top = 6.0
+        cfg.directionalLayoutMargins.bottom = 6.0
 
         cfg.textProperties.font = UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: .semibold)
         cfg.textToSecondaryTextVerticalPadding = 2.0
