@@ -5,9 +5,16 @@
 //  Created by Daniil on 24.11.2022.
 //
 
-protocol DpkgBuildDelegate: AnyObject {
+import Sentry
+
+protocol DpkgProgressDelegate: AnyObject {
+    /// Being called when package is ready to start it's rebuilding operation
     func startProcessing(package: Package)
+
+    /// Being called when package just finished it's rebuilding operation
     func finishedProcessing(package: Package, debPath: URL)
+
+    /// Being called when all packages are processed
     func finishedAll()
 }
 
@@ -23,83 +30,97 @@ class Dpkg {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }()
 
-    weak var buildDelegate: DpkgBuildDelegate?
+    /// Delegate which will be called on build state update
+    weak var buildProgressDelegate: DpkgProgressDelegate?
 
     private let innerDpkg: UnsafeMutablePointer<TwDpkg_t>
 
-    init(path: String = "/var/lib/dpkg", lock: Bool = false) {
-        innerDpkg = tw_init(path, false)
+    init(path: String, lock: Bool = false) {
+        innerDpkg = tw_init(path, lock)
     }
 
     deinit {
         tw_free(innerDpkg)
     }
 
-    func parsePackages(leaves: Bool) -> [Package] {
+    /// Parses packages from dpkg database
+    /// - Parameter onlyLeaves: True if only leaves packages should be returned. Otherwise, false
+    /// - Returns: Array of parsed packages. Improper packages will be skipped
+    func parsePackages(onlyLeaves: Bool) throws -> [FFIPackage] {
         var rawPkgs = slice_boxed_TwPackage_t()
-        let result = tw_get_packages(innerDpkg, leaves, TwPackagesSort_t(TW_PACKAGES_SORT_NAME), &rawPkgs)
-        if result != TwResult_t(TW_RESULT_OK) { return [] }
+        let result = tw_get_packages(innerDpkg, onlyLeaves, .init(TW_PACKAGES_SORT_NAME), &rawPkgs)
+        if result != .init(TW_RESULT_OK) || rawPkgs.ptr == nil {
+            throw NSError(domain: "ru.danpashin.twackup", code: 0, userInfo: [
+                NSLocalizedDescriptionKey: "FFI returned \(result) code. Critical bug?"
+            ])
+        }
 
-        let ffiPackages = UnsafeConsumingCollection(raw: rawPkgs.ptr, length: rawPkgs.len)
+        let packages = UnsafeBufferPointer(start: rawPkgs.ptr, count: rawPkgs.len)
+            .compactMap { package in
+                let model = FFIPackage(package)
+                if model == nil {
+                    package.deallocate(package.inner_ptr)
+                }
 
-        var packages: [Package] = []
-        packages.reserveCapacity(ffiPackages.count)
-
-        for package in ffiPackages {
-            guard let pModel = FFIPackage(package) else {
-                package.deallocate(package.inner_ptr)
-                continue
+                return model
             }
 
-            packages.append(pModel as Package)
-        }
+        rawPkgs.ptr.deallocate()
 
         return packages
     }
 
-    func rebuild(packages: [Package], outDir: URL = defaultSaveDirectory) throws -> [Result<URL, NSError>] {
+    /// Rebuilds packages and saves them to specified directory
+    /// - Parameters:
+    ///   - packages: Packages that should be rebuilt
+    ///   - outDir: Directory that will contain debs of packages
+    /// - Returns: Array with results.
+    /// Every result contains full deb path if rebuild is success or error if not
+    func rebuild(packages: [FFIPackage], outDir: URL = defaultSaveDirectory) throws -> [Result<URL, NSError>] {
         let preferences = Preferences()
 
-        let innerPkgs = packages.compactMap { ($0 as? FFIPackage)?.pkg }
-        let ffiPackages = innerPkgs.withUnsafeBufferPointer { pointer in
-            // safe to unwrap?
-            slice_ref_TwPackage_t(ptr: pointer.baseAddress!, len: pointer.count)
-        }
+        var buildParameters = TwBuildParameters_t()
+        buildParameters.functions = createProgressFuncs()
+
+        // Since Swift enums have values equal to FFI ones, it is safe to just pass them by without any checks
+        buildParameters.preferences.compression_level = .init(preferences.compression.level.rawValue)
+        buildParameters.preferences.compression_type = .init(preferences.compression.kind.rawValue)
 
         var ffiResults = slice_boxed_TwPackagesRebuildResult()
-
-        var buildParameters = TwBuildParameters_t()
-        buildParameters.packages = ffiPackages
-        buildParameters.functions = createProgressFuncs()
-        buildParameters.preferences.compression_level = TwCompressionLevel_t(preferences.compression.level.rawValue)
-        buildParameters.preferences.compression_type = TwCompressionType_t(preferences.compression.kind.rawValue)
-
         withUnsafeMutablePointer(to: &ffiResults) { buildParameters.results = $0 }
 
         let status = outDir.path.utf8CString.withUnsafeBufferPointer { pointer in
             // safe to unwrap?
             buildParameters.out_dir = pointer.baseAddress!
-            return tw_rebuild_packages(innerDpkg, buildParameters)
-        }
 
-        if status != TwResult_t(TW_RESULT_OK) {
-            fatalError()
-        }
+            return packages.map { $0.pkg }.withUnsafeBufferPointer { pointer in
+                // safe to unwrap?
+                buildParameters.packages = slice_ref_TwPackage_t(ptr: pointer.baseAddress!, len: pointer.count)
 
-        var results: [Result<URL, NSError>] = []
-        results.reserveCapacity(ffiResults.len)
-
-        for result in UnsafeBufferPointer(start: ffiResults.ptr, count: ffiResults.len) {
-            if result.success {
-                // safe to unwrap here 'cause Rust string is UTF-8 encoded string
-                let path = String(ffiSlice: result.deb_path)!
-                results.append(.success(URL(fileURLWithPath: path)))
-            } else {
-                results.append(.failure(NSError(domain: "ru.danpashin.twackup", code: 0, userInfo: [
-                    NSLocalizedDescriptionKey: "\(String(ffiSlice: result.error) ?? "")"
-                ])))
+                return tw_rebuild_packages(innerDpkg, buildParameters)
             }
         }
+
+        if status != .init(TW_RESULT_OK) {
+            tw_free_rebuild_results(ffiResults)
+
+            throw NSError(domain: "ru.danpashin.twackup", code: 0, userInfo: [
+                NSLocalizedDescriptionKey: "FFI returned \(status) code. Critical bug?"
+            ])
+        }
+
+        let results: [Result<URL, NSError>] = UnsafeBufferPointer(start: ffiResults.ptr, count: ffiResults.len)
+            .map { result in
+                if !result.success {
+                    return .failure(NSError(domain: "ru.danpashin.twackup", code: 0, userInfo: [
+                        NSLocalizedDescriptionKey: "\(String(ffiSlice: result.error) ?? "")"
+                    ]))
+                }
+
+                // safe to unwrap here 'cause Rust string is UTF-8 encoded string
+                let path = String(ffiSlice: result.deb_path)!
+                return .success(URL(fileURLWithPath: path))
+            }
 
         tw_free_rebuild_results(ffiResults)
 
@@ -108,14 +129,18 @@ class Dpkg {
 
     private func createProgressFuncs() -> TwProgressFunctions {
         var funcs = TwProgressFunctions()
+
+        // not a memory leak actually. It lives as long as self does
         funcs.context = Unmanaged<Dpkg>.passUnretained(self).toOpaque()
         funcs.started_processing = { context, package in
+            // Package is a stack pointer so it doesn't need to be released
             guard let context, let package, let ffiPackage = FFIPackage(package.pointee) else { return }
 
             let dpkg = Unmanaged<Dpkg>.fromOpaque(context).takeUnretainedValue()
-            dpkg.buildDelegate?.startProcessing(package: ffiPackage)
+            dpkg.buildProgressDelegate?.startProcessing(package: ffiPackage)
         }
         funcs.finished_processing = { context, package, debPath in
+            // Package is a stack pointer so it doesn't need to be released
             guard let context,
                   let package,
                   let ffiPackage = FFIPackage(package.pointee),
@@ -123,12 +148,12 @@ class Dpkg {
             else { return }
 
             let dpkg = Unmanaged<Dpkg>.fromOpaque(context).takeUnretainedValue()
-            dpkg.buildDelegate?.finishedProcessing(package: ffiPackage, debPath: URL(fileURLWithPath: debPath))
+            dpkg.buildProgressDelegate?.finishedProcessing(package: ffiPackage, debPath: URL(fileURLWithPath: debPath))
         }
         funcs.finished_all = { context in
             guard let context else { return }
             let dpkg = Unmanaged<Dpkg>.fromOpaque(context).takeUnretainedValue()
-            dpkg.buildDelegate?.finishedAll()
+            dpkg.buildProgressDelegate?.finishedAll()
         }
 
         return funcs

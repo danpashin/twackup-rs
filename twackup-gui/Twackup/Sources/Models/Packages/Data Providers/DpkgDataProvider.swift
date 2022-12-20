@@ -10,11 +10,11 @@ import Sentry
 class DpkgDataProvier: PackageDataProvider {
     let dpkg: Dpkg
 
-    let leavesOnly: Bool
+    let onlyLeaves: Bool
 
     init(_ dpkg: Dpkg, leaves: Bool = false) {
         self.dpkg = dpkg
-        leavesOnly = leaves
+        onlyLeaves = leaves
 
         super.init(packages: [])
     }
@@ -23,7 +23,12 @@ class DpkgDataProvier: PackageDataProvider {
         DispatchQueue.global(qos: .userInitiated).async { [self] in
             let transaction = SentrySDK.startTransaction(name: "database-parse", operation: "lib")
 
-            allPackages = dpkg.parsePackages(leaves: leavesOnly)
+            do {
+                allPackages = try dpkg.parsePackages(onlyLeaves: onlyLeaves)
+            } catch {
+                FFILogger.shared.log("\(error)", level: .error)
+                SentrySDK.capture(error: error)
+            }
 
             transaction.finish()
 

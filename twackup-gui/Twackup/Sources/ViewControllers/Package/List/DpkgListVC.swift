@@ -100,7 +100,7 @@ class DpkgListVC: PackageSelectableListVC {
         hud?.style = .spinner
 
         let rebuilder = PackagesRebuilder(mainModel: model.mainModel)
-        rebuilder.rebuild(packages: packages) { progress in
+        rebuilder.rebuild(packages: packages.compactMap { $0 as? FFIPackage }) { progress in
             hud?.detailedText = String(
                 format: "rebuild-packages-status".localized,
                 progress.completedUnitCount,

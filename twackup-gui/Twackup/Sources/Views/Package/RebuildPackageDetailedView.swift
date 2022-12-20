@@ -8,7 +8,7 @@
 import UIKit
 
 protocol RebuildPackageDetailedViewDelegate: PackageDetailViewDelegate {
-    func rebuild(_ package: Package)
+    func rebuild(_ package: FFIPackage)
 }
 
 class RebuildPackageDetailedView: PackageDetailedView {
@@ -88,7 +88,7 @@ class RebuildPackageDetailedView: PackageDetailedView {
 
     @objc
     func rebuild() {
-        guard let package = self.package else { return }
+        guard let package = package as? FFIPackage else { return }
         (delegate as? any RebuildPackageDetailedViewDelegate)?.rebuild(package)
     }
 }

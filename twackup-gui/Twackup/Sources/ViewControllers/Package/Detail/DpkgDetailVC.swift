@@ -11,7 +11,7 @@ class DpkgDetailVC: DetailVC, RebuildPackageDetailedViewDelegate {
     private lazy var _container = RebuildPackageDetailedView(delegate: self)
     override var detailView: PackageDetailedView { _container }
 
-    func rebuild(_ package: Package) {
+    func rebuild(_ package: FFIPackage) {
         let hud = RJTHud.show()
 
         // swiftlint:disable trailing_closure

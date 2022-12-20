@@ -8,37 +8,61 @@
 import Sentry
 
 // swiftlint:disable legacy_objc_type
-class PackagesRebuilder: DpkgBuildDelegate {
+class PackagesRebuilder: DpkgProgressDelegate {
     let mainModel: MainModel
 
-    private var rebuildedPackages: [BuildedPackage] = []
+    private class State {
+        var progress: Progress
 
-    private(set) lazy var dbSaveQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 1
-        queue.qualityOfService = .userInitiated
+        let queue: DispatchQueue
 
-        return queue
-    }()
+        let updateHandler: ((Progress) -> Void)?
 
-    private var updateHandler: ((Progress) -> Void)?
+        var donePackages: [BuildedPackage] = []
 
-    private var pfmcRootTransaction: Span?
+        init(progress: Progress, updateHandler: ((Progress) -> Void)?) {
+            self.progress = progress
+            self.updateHandler = updateHandler
 
-    private var performanceTransactions: NSCache<NSString, Span> = NSCache()
+            queue = DispatchQueue(label: "twackup.rebuild", qos: .userInitiated)
+        }
+    }
+
+    private struct PerformanceMeasurer {
+        var rootTransaction: Span
+
+        var childTransactions: NSCache<NSString, Span> = NSCache()
+    }
+
+    private var buildState: State?
+
+    private var performanceMeasurer: PerformanceMeasurer?
 
     init(mainModel: MainModel) {
         self.mainModel = mainModel
     }
 
-    func rebuild(packages: [Package], updateHandler: ((Progress) -> Void)? = nil, completion: (() -> Void)? = nil) {
-        mainModel.dpkg.buildDelegate = self
-        self.updateHandler = updateHandler
+    /// Performs package rebuilding from fs files to debs
+    /// - Parameters:
+    ///   - packages: packages that needs to be rebuild
+    ///   - updateHandler: Handler that contains current progress of rebuild operation
+    ///   - completion: Handler that will be called after rebuild will complete
+    func rebuild(packages: [FFIPackage], updateHandler: ((Progress) -> Void)? = nil, completion: (() -> Void)? = nil) {
+        if packages.isEmpty {
+            completion?()
+            return
+        }
 
-        dbSaveQueue.progress.totalUnitCount = Int64(packages.count)
+        let buildState = State(progress: Progress(totalUnitCount: Int64(packages.count)), updateHandler: updateHandler)
+        self.buildState = buildState
+
+        mainModel.dpkg.buildProgressDelegate = self
 
         DispatchQueue.global().async { [self] in
-            pfmcRootTransaction = SentrySDK.startTransaction(name: "multiple-debs-rebuild", operation: "lib")
+            let measurer = PerformanceMeasurer(
+                rootTransaction: SentrySDK.startTransaction(name: "multiple-debs-rebuild", operation: "lib")
+            )
+            performanceMeasurer = measurer
 
             do {
                 let results = try mainModel.dpkg.rebuild(packages: packages)
@@ -56,41 +80,59 @@ class PackagesRebuilder: DpkgBuildDelegate {
                 SentrySDK.capture(error: error)
             }
 
-            pfmcRootTransaction?.finish()
-            pfmcRootTransaction = nil
+            buildState.queue.async(flags: .barrier) { [self] in
+                addPackagesToDatabase { [self] in
+                    measurer.rootTransaction.finish()
+                    performanceMeasurer = nil
 
-            completion?()
+                    buildState.donePackages.removeAll()
+                }
+
+                completion?()
+            }
         }
     }
 
     func startProcessing(package: Package) {
-        guard let pfmcRootTransaction else { return }
-        let transaction = pfmcRootTransaction.startChild(operation: "single-deb-rebuild", description: package.id)
-        performanceTransactions.setObject(transaction, forKey: package.id as NSString)
+        guard let performanceMeasurer else { return }
+        let transaction = performanceMeasurer.rootTransaction.startChild(
+            operation: "single-deb-rebuild",
+            description: package.id
+        )
+        performanceMeasurer.childTransactions.setObject(transaction, forKey: package.id as NSString)
     }
 
     func finishedProcessing(package: Package, debPath: URL) {
-        if let transaction = performanceTransactions.object(forKey: package.id as NSString) {
-            transaction.finish()
-        }
-        performanceTransactions.removeObject(forKey: package.id as NSString)
+        guard let buildState else { return }
 
-        dbSaveQueue.addOperation { [self] in
-            rebuildedPackages.append(BuildedPackage(package: package, debURL: debPath))
-            updateHandler?(dbSaveQueue.progress)
+        if let performanceMeasurer {
+            if let transaction = performanceMeasurer.childTransactions.object(forKey: package.id as NSString) {
+                transaction.finish()
+            }
+            performanceMeasurer.childTransactions.removeObject(forKey: package.id as NSString)
+        }
+
+        buildState.queue.async {
+            buildState.progress.completedUnitCount += 1
+            buildState.donePackages.append(BuildedPackage(package: package, debURL: debPath))
+            buildState.updateHandler?(buildState.progress)
         }
     }
 
     func finishedAll() {
-        dbSaveQueue.addBarrierBlock { [self] in
-            let databaseTransaction = pfmcRootTransaction?.startChild(operation: "database-packages-save")
-            mainModel.database.addBuildedPackages(rebuildedPackages) { [self] in
-                databaseTransaction?.finish()
-                pfmcRootTransaction?.finish()
-                pfmcRootTransaction = nil
+    }
 
-                NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
-            }
+    /// Adds builded packages to database
+    /// - Parameter completion: completion that will be executed at end of save operation
+    private func addPackagesToDatabase(completion: (() -> Void)? = nil) {
+        guard let buildState, let performanceMeasurer else { return }
+
+        let databaseTransaction = performanceMeasurer.rootTransaction.startChild(operation: "database-packages-save")
+        mainModel.database.addBuildedPackages(buildState.donePackages) {
+            databaseTransaction.finish()
+
+            NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
+            completion?()
         }
     }
 }

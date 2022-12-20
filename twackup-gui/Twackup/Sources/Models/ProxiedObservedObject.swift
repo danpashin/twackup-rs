@@ -18,8 +18,8 @@ where Value: ObservableObject, Value.ObjectWillChangePublisher == ObservableObje
         var target: ObservableObjectPublisher?
 
         init(proxySource: T) {
-            subscriber = proxySource.objectWillChange.sink { _ in
-                self.target?.send()
+            subscriber = proxySource.objectWillChange.sink { [weak self] _ in
+                self?.target?.send()
             }
         }
     }
