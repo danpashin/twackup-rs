@@ -59,6 +59,8 @@ class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, 
         for row in 0..<dataProvider.packages.count {
             tableView.selectRow(at: IndexPath(row: row, section: 0), animated: true, scrollPosition: .none)
         }
+
+        delegate?.didSelect(items: selectedItems, inEditState: tableView.isEditing)
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

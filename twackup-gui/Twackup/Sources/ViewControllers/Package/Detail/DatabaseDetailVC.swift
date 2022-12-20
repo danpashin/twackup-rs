@@ -22,11 +22,11 @@ class DatabaseDetailVC: DetailVC {
     }
 
     @objc
-    func shareDeb() {
+    func shareDeb(_ button: UIBarButtonItem) {
         guard let package = package as? DebPackage else { return }
 
         let activityVC = UIActivityViewController(activityItems: [package.fileURL()], applicationActivities: nil)
-        activityVC.popoverPresentationController?.barButtonItem = shareDebButton
+        activityVC.popoverPresentationController?.barButtonItem = button
         present(activityVC, animated: true, completion: nil)
     }
 }

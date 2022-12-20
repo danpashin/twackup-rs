@@ -22,6 +22,11 @@ class DebsListVC: PackageSelectableListVC {
         return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionRemoveSelected))
     }()
 
+    private lazy var shareSelectedBarBtn: UIBarButtonItem = {
+        let title = "debs-share-btn".localized
+        return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionShareSelected))
+    }()
+
     private var reloadObserver: NSObjectProtocol?
 
     init(model: DebsListModel, detail: DetailVC) {
@@ -60,6 +65,8 @@ class DebsListVC: PackageSelectableListVC {
         super.didSelect(items: items, inEditState: inEditState)
 
         if inEditState {
+            shareSelectedBarBtn.isEnabled = !items.isEmpty
+
             guard var buttons = toolbarItems, !buttons.isEmpty else { return }
             buttons[0] = items.isEmpty ? removeAllBarBtn : removeSelectedBarBtn
             setToolbarItems(buttons, animated: false)
@@ -67,30 +74,29 @@ class DebsListVC: PackageSelectableListVC {
     }
 
     @objc
-    func actionShare() {
-        let debURLS: [URL] = model.selectedItems.compactMap { package in
-            guard let package = package.package as? DebPackage else { return nil }
+    func actionShareSelected(_ button: UIBarButtonItem) {
+        let debURLS: [URL] = model.selectedItems.compactMap { item in
+            guard let package = item.package as? DebPackage else { return nil }
             return package.fileURL()
         }
 
-        let activityViewController = UIActivityViewController(activityItems: debURLS, applicationActivities: nil)
-        activityViewController.popoverPresentationController?.sourceView = view
+        if debURLS.isEmpty { return }
 
-        present(activityViewController, animated: true, completion: nil)
+        let activityVC = UIActivityViewController(activityItems: debURLS, applicationActivities: nil)
+        activityVC.popoverPresentationController?.barButtonItem = button
+
+        present(activityVC, animated: true, completion: nil)
     }
 
     override func actionEdit() {
         super.actionEdit()
 
+        shareSelectedBarBtn.isEnabled = false
+
         setToolbarItems([
             removeAllBarBtn,
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-            UIBarButtonItem(
-                title: "debs-share-btn".localized,
-                style: .plain,
-                target: self,
-                action: #selector(actionShare)
-            )
+            shareSelectedBarBtn
         ], animated: false)
         navigationController?.setToolbarHidden(false, animated: true)
     }

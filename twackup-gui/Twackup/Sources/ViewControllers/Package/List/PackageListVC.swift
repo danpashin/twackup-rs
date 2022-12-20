@@ -79,7 +79,7 @@ class PackageListVC: UIViewController, PackageListDelegate {
         guard !inEditState, let item = items.first else { return }
         guard let detailNav = detail.navigationController else { return }
 
-        if traitCollection.userInterfaceIdiom == .phone || traitCollection.userInterfaceLevel != .base {
+        if splitViewController?.isCollapsed ?? false {
             tableView.deselectRow(at: item.indexPath, animated: true)
         }
 

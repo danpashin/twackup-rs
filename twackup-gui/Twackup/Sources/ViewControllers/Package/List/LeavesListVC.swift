@@ -23,8 +23,14 @@ class LeavesListVC: DpkgListVC {
         shareListButton.isEnabled = !model.dataProvider.packages.isEmpty
     }
 
+    override func actionDoneEdit() {
+        super.actionDoneEdit()
+
+        navigationItem.leftBarButtonItem = shareListButton
+    }
+
     @objc
-    func shareList() {
+    func shareList(_ button: UIBarButtonItem) {
         let packagesText = model.dataProvider.packages
             .enumerated()
             .map { index, package in
@@ -33,7 +39,7 @@ class LeavesListVC: DpkgListVC {
             .joined(separator: "\n")
 
         let activityVC = UIActivityViewController(activityItems: [packagesText], applicationActivities: nil)
-        activityVC.popoverPresentationController?.barButtonItem = shareListButton
+        activityVC.popoverPresentationController?.barButtonItem = button
         present(activityVC, animated: true, completion: nil)
     }
 }
