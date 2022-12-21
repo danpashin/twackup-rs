@@ -5,7 +5,9 @@
 //  Created by Daniil on 09.12.2022.
 //
 
-class LoggerViewController: UIViewController, FFILoggerSubscriber {
+import DZNEmptyDataSet
+
+class LoggerViewController: UIViewController, FFILoggerSubscriber, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     let metadata: ViewControllerMetadata
 
     let mainModel: MainModel
@@ -16,8 +18,13 @@ class LoggerViewController: UIViewController, FFILoggerSubscriber {
         view.isEditable = false
         view.alwaysBounceVertical = true
 
+        view.emptyDataSetSource = self
+        view.emptyDataSetDelegate = self
+
         return view
     }()
+
+    private var logTextViewAppeared: Bool = false
 
     private lazy var clearLogButton: UIBarButtonItem = {
         let title = "log-clear-btn".localized
@@ -50,6 +57,16 @@ class LoggerViewController: UIViewController, FFILoggerSubscriber {
 
         navigationItem.title = metadata.navTitle
         navigationItem.rightBarButtonItem = clearLogButton
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if !logTextViewAppeared {
+            logTextViewAppeared = true
+
+            logTextView.reloadEmptyDataSet()
+        }
     }
 
     private func insert(attributedString: NSAttributedString) {
@@ -92,6 +109,8 @@ class LoggerViewController: UIViewController, FFILoggerSubscriber {
 
             insert(attributedString: string)
             scrollToBottom()
+
+            logTextView.reloadEmptyDataSet()
         }
     }
 
@@ -101,5 +120,29 @@ class LoggerViewController: UIViewController, FFILoggerSubscriber {
     @objc
     func actionClearLog() {
         logTextView.text = ""
+        logTextView.reloadEmptyDataSet()
+    }
+
+    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
+        NSAttributedString(string: "log-controller-empty-title".localized)
+    }
+
+    func description(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
+        NSAttributedString(string: "log-controller-empty-subtitle".localized)
+    }
+
+    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
+        UIImage(
+            systemName: "text.alignleft",
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 120, weight: .light)
+        )
+    }
+
+    func imageTintColor(forEmptyDataSet scrollView: UIScrollView?) -> UIColor? {
+        .tertiaryLabel
+    }
+
+    func emptyDataSetShouldDisplay(_ scrollView: UIScrollView?) -> Bool {
+        logTextView.text.isEmpty
     }
 }

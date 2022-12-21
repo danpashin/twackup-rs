@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import DZNEmptyDataSet
 
 class PackageSelectableListVC: PackageListVC {
     private(set) lazy var editBarBtn: UIBarButtonItem = {
@@ -31,6 +32,7 @@ class PackageSelectableListVC: PackageListVC {
     override func endReloadingData() {
         super.endReloadingData()
 
+        tableView.reloadEmptyDataSet()
         editBarBtn.isEnabled = !model.dataProvider.packages.isEmpty
     }
 

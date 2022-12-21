@@ -18,6 +18,19 @@
 "log-full-title" = "Лог";
 "preferences-full-title" = "Настройки";
 
+"database-controller-no-packages-title" = "Нет доступных пакетов :(";
+"database-controller-no-packages-subtitle" = "Соберите что-нибудь, и этот пакет появится здесь";
+
+"dpkg-controller-no-packages-title" = "Пакеты не обнаружены";
+"dpkg-controller-no-packages-subtitle" = "Пожалуйста, убедитесь, что у вас установлен и включен джейлбрейк.
+
+Некоторые твики также могут блокировать доступ к системным файлам, отключите их, если необходимо.";
+
+"log-controller-empty-title" = "Это лог";
+"log-controller-empty-subtitle" = "Здесь выводятся некоторые сообщения от Twackup.
+
+Заглядывайте сюда, если у вас появились какие-то ошибки при сборке пакетов.";
+
 // Views
 "detailed-view-identifier-lbl" = "Идентификатор:";
 "detailed-view-version-lbl" = "Версия:";

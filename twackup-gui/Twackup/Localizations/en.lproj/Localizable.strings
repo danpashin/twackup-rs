@@ -18,6 +18,17 @@
 "log-full-title" = "Log";
 "preferences-full-title" = "Preferences";
 
+"database-controller-no-packages-title" = "No packages for now :(";
+"database-controller-no-packages-subtitle" = "Start rebuilding packages and they will appear here";
+
+"dpkg-controller-no-packages-title" = "No packages detected";
+"dpkg-controller-no-packages-subtitle" = "Please, ensure you have your jailbreak installed and enabled.\n\nSome tweaks can also block accessing to system files, disable them if needed";
+
+"log-controller-empty-title" = "This is log";
+"log-controller-empty-subtitle" = "Twackup prints some messages here.
+
+Look here if you have any errors when building packages.";
+
 // Views
 "detailed-view-identifier-lbl" = "Identifier:";
 "detailed-view-version-lbl" = "Version:";

@@ -1,4 +1,5 @@
 PODS:
+  - DZNEmptyDataSet (1.8.1)
   - SDWebImage (5.13.2):
     - SDWebImage/Core (= 5.13.2)
   - SDWebImage/Core (5.13.2)
@@ -7,18 +8,21 @@ PODS:
   - Sentry/Core (7.31.4)
 
 DEPENDENCIES:
+  - DZNEmptyDataSet
   - SDWebImage
   - Sentry
 
 SPEC REPOS:
   trunk:
+    - DZNEmptyDataSet
     - SDWebImage
     - Sentry
 
 SPEC CHECKSUMS:
+  DZNEmptyDataSet: 9525833b9e68ac21c30253e1d3d7076cc828eaa7
   SDWebImage: 72f86271a6f3139cc7e4a89220946489d4b9a866
   Sentry: d9567fc53799651f79593c69054c58d436930213
 
-PODFILE CHECKSUM: 8f96315bc98bd80227a17148eafe72324a1748a8
+PODFILE CHECKSUM: 252da59f2ae479b34629ec25e325ddea35b2646e
 
 COCOAPODS: 1.11.3

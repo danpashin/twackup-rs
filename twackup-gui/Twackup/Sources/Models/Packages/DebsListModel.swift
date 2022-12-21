@@ -5,7 +5,9 @@
 //  Created by Daniil on 01.12.2022.
 //
 
-class DebsListModel: PackageListModel {
+import DZNEmptyDataSet
+
+class DebsListModel: PackageListModel, DZNEmptyDataSetSource {
     static let NotificationName = Notification.Name("twackup/reloadDEBS")
 
     private(set) var debsProvider: DatabasePackageProvider
@@ -16,8 +18,11 @@ class DebsListModel: PackageListModel {
 
     override var tableView: UITableView? {
         didSet {
+            guard let tableView else { return }
             let cellID = String(describing: DebTableViewCell.self)
-            tableView?.register(DebTableViewCell.self, forCellReuseIdentifier: cellID)
+            tableView.register(DebTableViewCell.self, forCellReuseIdentifier: cellID)
+
+            tableView.emptyDataSetSource = self
         }
     }
 
@@ -53,5 +58,24 @@ class DebsListModel: PackageListModel {
         delete.title = "remove-btn".localized
 
         return UISwipeActionsConfiguration(actions: [delete])
+    }
+
+    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
+        NSAttributedString(string: "database-controller-no-packages-title".localized)
+    }
+
+    func description(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
+        NSAttributedString(string: "database-controller-no-packages-subtitle".localized)
+    }
+
+    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
+        UIImage(
+            systemName: "shippingbox",
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 120, weight: .light)
+        )
+    }
+
+    func imageTintColor(forEmptyDataSet scrollView: UIScrollView?) -> UIColor? {
+        .tertiaryLabel
     }
 }

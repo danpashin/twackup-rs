@@ -4,6 +4,7 @@ target "Twackup" do
 
   pod "SDWebImage"
   pod "Sentry"
+  pod "DZNEmptyDataSet"
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|
