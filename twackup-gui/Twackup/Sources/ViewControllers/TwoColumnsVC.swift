@@ -8,25 +8,39 @@
 import UIKit
 
 class TwoColumnsVC: UISplitViewController, UISplitViewControllerDelegate {
-    init(first: UIViewController, second: UIViewController) {
+    let primaryVC: ScrollableViewController
+
+    let primaryNavigationVC: SimpleNavController
+
+    let secondaryVC: UIViewController
+
+    init(primaryVC: ScrollableViewController, secondaryVC: UIViewController) {
+        self.primaryVC = primaryVC
+        self.secondaryVC = secondaryVC
+        primaryNavigationVC = SimpleNavController(rootViewController: primaryVC)
+
         super.init(nibName: nil, bundle: nil)
 
-        self.tabBarItem = first.tabBarItem
+        self.tabBarItem = primaryVC.tabBarItem
         viewControllers = [
-            SimpleNavController(rootViewController: first),
-            SimpleNavController(rootViewController: second)
+            primaryNavigationVC,
+            SimpleNavController(rootViewController: secondaryVC)
         ]
+
+        delegate = self
+        preferredDisplayMode = .oneBesideSecondary
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        delegate = self
-        preferredDisplayMode = .oneBesideSecondary
+    func resetNavigation(animated: Bool) {
+        if primaryNavigationVC.topViewController == primaryVC {
+            primaryVC.scrollToTop(animated: animated)
+        } else {
+            primaryNavigationVC.popToRootViewController(animated: animated)
+        }
     }
 
     func splitViewController(
@@ -34,6 +48,6 @@ class TwoColumnsVC: UISplitViewController, UISplitViewControllerDelegate {
         collapseSecondary secondaryViewController: UIViewController,
         onto primaryViewController: UIViewController
     ) -> Bool {
-        return true
+        splitViewController.traitCollection.horizontalSizeClass == .compact
     }
 }

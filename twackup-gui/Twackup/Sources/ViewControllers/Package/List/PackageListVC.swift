@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PackageListVC: UIViewController, PackageListDelegate {
+class PackageListVC: UIViewController, PackageListDelegate, ScrollableViewController {
     private(set) var model: PackageListModel
 
     private(set) var detail: DetailVC
@@ -86,5 +86,10 @@ class PackageListVC: UIViewController, PackageListDelegate {
         detail.package = item.package
 
         showDetailViewController(detailNav, sender: nil)
+    }
+
+    func scrollToTop(animated: Bool) {
+        if model.dataProvider.packages.isEmpty { return }
+        tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: animated)
     }
 }

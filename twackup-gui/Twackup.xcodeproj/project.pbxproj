@@ -56,6 +56,7 @@
 		0BAAD99729388D310089C8FB /* DebsListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAAD99629388D310089C8FB /* DebsListVC.swift */; };
 		0BAAD99C293893EF0089C8FB /* DpkgDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAAD99B293893EF0089C8FB /* DpkgDataProvider.swift */; };
 		0BB1B68E293DCB600050FEB5 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB1B68D293DCB600050FEB5 /* Collection.swift */; };
+		0BB369E52952EF6B004AAFFF /* ScrollableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB369E42952EF6B004AAFFF /* ScrollableViewController.swift */; };
 		0BE78040294DC60C00AE77CE /* DpkgListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE7803F294DC60C00AE77CE /* DpkgListModel.swift */; };
 		0BF07A502941027800EEC8FC /* TwoColumnsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A4F2941027800EEC8FC /* TwoColumnsVC.swift */; };
 		0BF07A5C2941D8D100EEC8FC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0BF07A592941D8D100EEC8FC /* Localizable.strings */; };
@@ -124,6 +125,7 @@
 		0BAAD99629388D310089C8FB /* DebsListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebsListVC.swift; sourceTree = "<group>"; };
 		0BAAD99B293893EF0089C8FB /* DpkgDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgDataProvider.swift; sourceTree = "<group>"; };
 		0BB1B68D293DCB600050FEB5 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
+		0BB369E42952EF6B004AAFFF /* ScrollableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollableViewController.swift; sourceTree = "<group>"; };
 		0BE7803F294DC60C00AE77CE /* DpkgListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgListModel.swift; sourceTree = "<group>"; };
 		0BF07A4F2941027800EEC8FC /* TwoColumnsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoColumnsVC.swift; sourceTree = "<group>"; };
 		0BF07A5A2941D8D100EEC8FC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -243,6 +245,7 @@
 				0B86616C2930ADA300EA4301 /* MainTabbarController.swift */,
 				0BF07A6329433BE100EEC8FC /* LoggerVC.swift */,
 				0BF07A4F2941027800EEC8FC /* TwoColumnsVC.swift */,
+				0BB369E42952EF6B004AAFFF /* ScrollableViewController.swift */,
 				0B5B332C294DB55B0097398F /* SimpleNavController.swift */,
 				0B88C3202930E35800BA5312 /* Package */,
 				0B2636E52948B92E003EA806 /* SettingsViewController.swift */,
@@ -564,6 +567,7 @@
 				0B50FF742949EAB900CF4BCF /* DiskSpaceUsageView.swift in Sources */,
 				0B5B332B294DA9F00097398F /* MainModel.swift in Sources */,
 				0BF07A6429433BE100EEC8FC /* LoggerVC.swift in Sources */,
+				0BB369E52952EF6B004AAFFF /* ScrollableViewController.swift in Sources */,
 				0B5B332F294DB7770097398F /* InstalledPackagesModel.swift in Sources */,
 				0B463A9B29389EBB00021EF7 /* DebsListModel.swift in Sources */,
 				0B50FF722949EA7700CF4BCF /* DiskStats.swift in Sources */,

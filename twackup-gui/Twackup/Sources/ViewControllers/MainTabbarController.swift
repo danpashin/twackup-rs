@@ -8,7 +8,7 @@
 import SwiftUI
 import UIKit
 
-class MainTabbarController: UITabBarController {
+class MainTabbarController: UITabBarController, UITabBarControllerDelegate {
     let mainModel: MainModel
 
     private(set) lazy var buildedPackagesVC: UIViewController = {
@@ -16,7 +16,7 @@ class MainTabbarController: UITabBarController {
         let detailVC = DatabaseDetailVC(mainModel: mainModel)
         let mainVC = DebsListVC(model: model, detail: detailVC)
 
-        return TwoColumnsVC(first: mainVC, second: detailVC)
+        return TwoColumnsVC(primaryVC: mainVC, secondaryVC: detailVC)
     }()
 
     private(set) lazy var leavesPackagesVC: UIViewController = {
@@ -24,7 +24,7 @@ class MainTabbarController: UITabBarController {
         let detailVC = DpkgDetailVC(mainModel: mainModel)
         let mainVC = LeavesListVC(model: model, detail: detailVC)
 
-        return TwoColumnsVC(first: mainVC, second: detailVC)
+        return TwoColumnsVC(primaryVC: mainVC, secondaryVC: detailVC)
     }()
 
     private(set) lazy var allPackagesVC: UIViewController = {
@@ -32,7 +32,7 @@ class MainTabbarController: UITabBarController {
         let detailVC = DpkgDetailVC(mainModel: mainModel)
         let mainVC = DpkgListVC(model: model, detail: detailVC)
 
-        return TwoColumnsVC(first: mainVC, second: detailVC)
+        return TwoColumnsVC(primaryVC: mainVC, secondaryVC: detailVC)
     }()
 
     private(set) lazy var logVC: UIViewController = {
@@ -66,8 +66,22 @@ class MainTabbarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        delegate = self
+
         setViewControllers([
             buildedPackagesVC, leavesPackagesVC, allPackagesVC, logVC, settingsVC
         ], animated: false)
+    }
+
+    func tabBarController(
+        _ tabBarController: UITabBarController,
+        shouldSelect viewController: UIViewController
+    ) -> Bool {
+        // If currently on this tab - try to reset navigation stack
+        if selectedViewController == viewController, let splitVC = viewController as? TwoColumnsVC {
+            splitVC.resetNavigation(animated: true)
+        }
+
+        return true
     }
 }
