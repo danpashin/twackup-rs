@@ -24,7 +24,7 @@
 "dpkg-controller-no-packages-title" = "No packages detected";
 "dpkg-controller-no-packages-subtitle" = "Please, ensure you have your jailbreak installed and enabled.\n\nSome tweaks can also block accessing to system files, disable them if needed";
 
-"log-controller-empty-title" = "This is log";
+"log-controller-empty-title" = "This is a log";
 "log-controller-empty-subtitle" = "Twackup prints some messages here.
 
 Look here if you have any errors when building packages.";
@@ -49,7 +49,7 @@ Look here if you have any errors when building packages.";
 "debs-rebuildselected-btn" = "Rebuild selected";
 
 "rebuild-packages-status-title" = "Please, wait...";
-"rebuild-packages-status" = "Rebuilt %i of %i";
+"rebuild-packages-status" = "Rebuilt %i of %i\n(%i%%)";
 
 // Settings
 "settings-compression-header" = "Packages compression";
