@@ -32,6 +32,8 @@ class PackageSelectableListVC: PackageListVC {
     override func endReloadingData() {
         super.endReloadingData()
 
+        actionDoneEdit()
+
         tableView.reloadEmptyDataSet()
         editBarBtn.isEnabled = !model.dataProvider.packages.isEmpty
     }
