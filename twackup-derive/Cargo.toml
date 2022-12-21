@@ -1,6 +1,6 @@
 [package]
 name = "twackup-derive"
-version = "2.0.1"
+version = "2.0.2"
 edition = "2021"
 rust-version = "1.60.0"
 description = "Derive wrappers for twackup lib. Not intended to use with other crates."

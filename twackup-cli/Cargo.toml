@@ -1,6 +1,6 @@
 [package]
 name = "twackup-cli"
-version = "2.0.1"
+version = "2.0.2"
 description = "Safe and fast iOS CLI utility for rebuilding DEBs and backing up packages"
 edition = "2021"
 publish = false
