@@ -22,15 +22,7 @@ class CapacityChartView: UIView {
         let legendsStack = UIStackView()
         legendsStack.distribution = .equalSpacing
         legendsStack.translatesAutoresizingMaskIntoConstraints = false
-
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            legendsStack.axis = .vertical
-            legendsStack.spacing = 6.0
-            legendsStack.alignment = .leading
-        } else {
-            legendsStack.axis = .horizontal
-            legendsStack.spacing = 16.0
-        }
+        legendsStack.alignment = .leading
 
         return legendsStack
     }()
@@ -76,8 +68,7 @@ class CapacityChartView: UIView {
                 bar.trailingAnchor.constraint(equalTo: trailingAnchor),
 
                 legendsStack.topAnchor.constraint(equalTo: bar.bottomAnchor, constant: 10.0),
-                legendsStack.leadingAnchor.constraint(equalTo: leadingAnchor),
-                legendsStack.bottomAnchor.constraint(greaterThanOrEqualTo: bottomAnchor)
+                legendsStack.leadingAnchor.constraint(equalTo: leadingAnchor)
             ]
 
             NSLayoutConstraint.activate(constraints)
@@ -106,5 +97,19 @@ class CapacityChartView: UIView {
 
             legendsStack.addArrangedSubview(label)
         }
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if traitCollection.horizontalSizeClass == .compact {
+            legendsStack.axis = .vertical
+            legendsStack.spacing = 6.0
+        } else {
+            legendsStack.axis = .horizontal
+            legendsStack.spacing = 16.0
+        }
+
+        setNeedsDisplay()
     }
 }

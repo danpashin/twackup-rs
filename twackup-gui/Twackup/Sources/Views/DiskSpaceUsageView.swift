@@ -17,9 +17,9 @@ class DiskSpaceUsageView: UIView {
 
     private(set) lazy var appItem = CapacityItem(title: "app", color: tintColor)
 
-    private(set) var deviceItem = CapacityItem(title: "device", color: .systemGray3)
+    private(set) var deviceItem = CapacityItem(title: "device", color: .systemGray2)
 
-    private(set) var totalItem = CapacityItem(title: "total", color: .systemGray5)
+    private(set) var totalItem = CapacityItem(title: "total", color: .systemGray4)
 
     private(set) var generalConstraints: [NSLayoutConstraint]?
 
