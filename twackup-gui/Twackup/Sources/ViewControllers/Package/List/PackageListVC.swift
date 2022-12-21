@@ -29,7 +29,7 @@ class PackageListVC: UIViewController, PackageListDelegate, ScrollableViewContro
         let table = UITableView(frame: .zero, style: .insetGrouped)
         table.delegate = model
         table.dataSource = model
-        table.backgroundColor = .systemBackground
+        table.backgroundColor = .systemGroupedBackground
 
         return table
     }()
