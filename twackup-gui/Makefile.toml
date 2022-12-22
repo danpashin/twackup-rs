@@ -63,5 +63,14 @@ args = [
     "${GUI_APP_DIR}=/Applications",
 ]
 
+[tasks.create-ipa]
+script = """
+working_dir=$(realpath ${GUI_APP_DIR}/../../)
+mv "$working_dir/Applications" "$working_dir/Payload"
+cd "$working_dir"
+zip -r "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/Twackup-${CARGO_MAKE_CRATE_VERSION}.ipa" Payload
+mv "$working_dir/Payload" "$working_dir/Applications"
+"""
+
 [tasks.create-package]
 dependencies = ["archive", "sign", "create-deb"]

@@ -34,4 +34,6 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: Twackup-git-${{ env.GIT_SHA }}
-        path: target/*.deb
+        path: |
+          target/*.deb
+          target/*.ipa
