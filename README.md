@@ -2,6 +2,7 @@
 <div align="center">
 <img src="https://github.com/danpashin/twackup-rs/raw/master/assets/logo-rounded.png" alt="Logo"/>
 <br>
+<br>
 
 ![Release](https://img.shields.io/github/v/release/danpashin/twackup-rs)
 ![Supported platforma](https://img.shields.io/badge/supported_platforms-ios-red?style=flat)
@@ -22,6 +23,12 @@ Twackup uses custom dpkg database parser written and Rust - and it parses dpkg d
 It means it can be used on that platforms that have no support of dpkg - primarily, iOS.
 There already are some tweaks for jailbreak with the same target, but they all are poorly 
 written in something like Bash and do not really work as they expected to. That's why Twackup exists at all.
+
+## Screenshots
+
+| Leaves | Detail | Settings |
+|---|---|---|
+| ![First](assets/screenshots/screen-1.png?raw=true) | ![Second](assets/screenshots/screen-2.png?raw=true) | ![Third](assets/screenshots/screen-3.png?raw=true) |
 
 ## Building from source
 
