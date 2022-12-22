@@ -43,15 +43,19 @@ class DebsListModel: PackageListModel, DZNEmptyDataSetSource {
         return cell
     }
 
+    func removePackage(at indexPath: IndexPath) {
+        if debsProvider.deletePackage(at: indexPath.row) {
+            tableView?.deleteRows(at: [indexPath], with: .automatic)
+            delegate?.endReloadingData()
+        }
+    }
+
     func tableView(
         _ tableView: UITableView,
         trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
     ) -> UISwipeActionsConfiguration? {
         let delete = UIContextualAction(style: .destructive, title: nil) { _, _, completionHandler in
-            if self.debsProvider.deletePackage(at: indexPath.row) {
-                tableView.deleteRows(at: [indexPath], with: .automatic)
-                self.delegate?.endReloadingData()
-            }
+            self.removePackage(at: indexPath)
             completionHandler(true)
         }
         delete.image = UIImage(systemName: "trash.fill")
@@ -77,5 +81,32 @@ class DebsListModel: PackageListModel, DZNEmptyDataSetSource {
 
     func imageTintColor(forEmptyDataSet scrollView: UIScrollView?) -> UIColor? {
         .tertiaryLabel
+    }
+
+    func tableView(
+        _ tableView: UITableView,
+        contextMenuConfigurationForRowAt indexPath: IndexPath,
+        point: CGPoint
+    ) -> UIContextMenuConfiguration? {
+        // swiftlint:disable trailing_closure
+        let configurator = UIContextMenuConfiguration(actionProvider: { _ in
+            let copyID = UIAction(title: "copy-id".localized, image: UIImage(systemName: "paperclip")) { _ in
+                let package = self.dataProvider.packages[indexPath.row]
+                UIPasteboard.general.string = package.id
+            }
+
+            let remove = UIAction(
+                title: "remove-btn".localized,
+                image: UIImage(systemName: "trash"),
+                attributes: [.destructive],
+                handler: { _ in
+                    self.removePackage(at: indexPath)
+                }
+            )
+
+            return UIMenu(children: [copyID, remove])
+        })
+
+        return configurator
     }
 }

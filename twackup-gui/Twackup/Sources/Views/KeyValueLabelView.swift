@@ -18,7 +18,7 @@ class KeyValueLabel: UIView {
     }()
 
     private(set) lazy var valueLabel: UILabel = {
-        var label = UILabel()
+        var label = CopyableLabel()
         label.adjustsFontSizeToFitWidth = true
         label.translatesAutoresizingMaskIntoConstraints = false
 

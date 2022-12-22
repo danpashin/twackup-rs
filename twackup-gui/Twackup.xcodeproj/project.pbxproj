@@ -14,6 +14,7 @@
 		0B2636E12948B887003EA806 /* Compression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2636E02948B887003EA806 /* Compression.swift */; };
 		0B2636E62948B92E003EA806 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2636E52948B92E003EA806 /* SettingsViewController.swift */; };
 		0B2636F02948EC0A003EA806 /* CapacityBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2636EF2948EC0A003EA806 /* CapacityBarView.swift */; };
+		0B32B17E2954426D008E2F33 /* CopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B32B17D2954426D008E2F33 /* CopyableLabel.swift */; };
 		0B434F982935DEFA00311FB6 /* RebuildPackageDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F972935DEFA00311FB6 /* RebuildPackageDetailedView.swift */; };
 		0B434F9A2935E29300311FB6 /* DpkgDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F992935E29300311FB6 /* DpkgDetailVC.swift */; };
 		0B434F9C2935E90000311FB6 /* DatabaseDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F9B2935E90000311FB6 /* DatabaseDetailVC.swift */; };
@@ -76,6 +77,7 @@
 		0B2636E02948B887003EA806 /* Compression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compression.swift; sourceTree = "<group>"; };
 		0B2636E52948B92E003EA806 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		0B2636EF2948EC0A003EA806 /* CapacityBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapacityBarView.swift; sourceTree = "<group>"; };
+		0B32B17D2954426D008E2F33 /* CopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyableLabel.swift; sourceTree = "<group>"; };
 		0B434F972935DEFA00311FB6 /* RebuildPackageDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RebuildPackageDetailedView.swift; sourceTree = "<group>"; };
 		0B434F992935E29300311FB6 /* DpkgDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgDetailVC.swift; sourceTree = "<group>"; };
 		0B434F9B2935E90000311FB6 /* DatabaseDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseDetailVC.swift; sourceTree = "<group>"; };
@@ -275,6 +277,7 @@
 			isa = PBXGroup;
 			children = (
 				0B88C31B2930DE8C00BA5312 /* KeyValueLabelView.swift */,
+				0B32B17D2954426D008E2F33 /* CopyableLabel.swift */,
 				0B50FF732949EAB900CF4BCF /* DiskSpaceUsageView.swift */,
 				0B50FF6C2949B7F500CF4BCF /* Capacity */,
 				0BAAD9942937BE3A0089C8FB /* HUD */,
@@ -557,6 +560,7 @@
 				0BF07A68294354E800EEC8FC /* DpkgListVC.swift in Sources */,
 				0B86618B2930AF7100EA4301 /* FFIPackage.swift in Sources */,
 				0BAAD99C293893EF0089C8FB /* DpkgDataProvider.swift in Sources */,
+				0B32B17E2954426D008E2F33 /* CopyableLabel.swift in Sources */,
 				0B88C30B2930B58D00BA5312 /* DetailVC.swift in Sources */,
 				0B434F9A2935E29300311FB6 /* DpkgDetailVC.swift in Sources */,
 				0B86617D2930AE5E00EA4301 /* PackageListVC.swift in Sources */,

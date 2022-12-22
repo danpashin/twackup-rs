@@ -5,8 +5,8 @@
 //  Created by Daniil on 09.12.2022.
 //
 
-import UIKit
 import DZNEmptyDataSet
+import UIKit
 
 class PackageSelectableListVC: PackageListVC {
     private(set) lazy var editBarBtn: UIBarButtonItem = {
