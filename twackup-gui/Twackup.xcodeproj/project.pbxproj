@@ -65,7 +65,7 @@
 		0BF07A6429433BE100EEC8FC /* LoggerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A6329433BE100EEC8FC /* LoggerVC.swift */; };
 		0BF07A662943537A00EEC8FC /* PackageSelectableListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A652943537A00EEC8FC /* PackageSelectableListVC.swift */; };
 		0BF07A68294354E800EEC8FC /* DpkgListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A67294354E800EEC8FC /* DpkgListVC.swift */; };
-		6DD25E80695E2BDA484FEFFE /* Pods_Twackup.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E868F451985FB9D360C4198E /* Pods_Twackup.framework */; };
+		C1FF8C5621CC9FEC564B8CCE /* Pods_Twackup.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEF70D3062CF0C2BA7D149B4 /* Pods_Twackup.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -136,7 +136,7 @@
 		0BF07A6329433BE100EEC8FC /* LoggerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerVC.swift; sourceTree = "<group>"; };
 		0BF07A652943537A00EEC8FC /* PackageSelectableListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageSelectableListVC.swift; sourceTree = "<group>"; };
 		0BF07A67294354E800EEC8FC /* DpkgListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgListVC.swift; sourceTree = "<group>"; };
-		E868F451985FB9D360C4198E /* Pods_Twackup.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Twackup.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEF70D3062CF0C2BA7D149B4 /* Pods_Twackup.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Twackup.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4A8FB183915E3D413DF2C45 /* Pods-Twackup.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Twackup.debug.xcconfig"; path = "Target Support Files/Pods-Twackup/Pods-Twackup.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -145,7 +145,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6DD25E80695E2BDA484FEFFE /* Pods_Twackup.framework in Frameworks */,
+				C1FF8C5621CC9FEC564B8CCE /* Pods_Twackup.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,7 +404,7 @@
 		A9DB1EE24AF2E5EE6554C623 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E868F451985FB9D360C4198E /* Pods_Twackup.framework */,
+				CEF70D3062CF0C2BA7D149B4 /* Pods_Twackup.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -429,7 +429,6 @@
 				0B8661612930ADA300EA4301 /* Sources */,
 				0B8661622930ADA300EA4301 /* Frameworks */,
 				0B8661632930ADA300EA4301 /* Resources */,
-				154E6304DE1415E94BD6E921 /* [CP] Embed Pods Frameworks */,
 				0B0DBB702934FAB5002F3BB2 /* Lint swift sources */,
 			);
 			buildRules = (
@@ -507,23 +506,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export PATH=\"$PATH:/opt/homebrew/bin\"\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		154E6304DE1415E94BD6E921 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Twackup/Pods-Twackup-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Twackup/Pods-Twackup-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Twackup/Pods-Twackup-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		8C5040D30DD7C7249C048804 /* [CP] Check Pods Manifest.lock */ = {
