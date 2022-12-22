@@ -1,22 +1,36 @@
-name: Rust
+name: Build and test project
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   run:
-    runs-on: macos-latest
+    runs-on: macos-12
     steps:
-      - uses: actions/checkout@v3
-      - name: Install test dependencies
-        run: brew install dpkg
-      - name: Build
-        run: cargo build --verbose --all-features
-      - name: Run tests
-        run: cargo test --verbose --all-features
+    - uses: actions/checkout@v3
+    - name: Install build dependencies
+      run: |
+        cargo install cargo-make
+        brew install dpkg ldid
+        bundle install
+    - name: Install GUI build dependencies
+      run: |
+        cd twackup-gui
+        pod install
+    - name: Install rust target support
+      run: |
+        rustup target add aarch64-apple-ios x86_64-apple-ios
+        rustup toolchain install nightly
+        rustup component add rust-src --toolchain nightly
+    - name: Build & test
+      run: |
+        cargo build-ios
+    - uses: actions/upload-artifact@v3
+      with:
+        path: target/*.deb
