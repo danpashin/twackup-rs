@@ -5,7 +5,7 @@
 //  Created by Daniil on 09.12.2022.
 //
 
-class DpkgListVC: PackageSelectableListVC {
+class DpkgListVC: SelectablePackageListVC {
     let dpkgModel: DpkgListModel
 
     private lazy var rebuildAllBarBtn: UIBarButtonItem = {
@@ -18,7 +18,7 @@ class DpkgListVC: PackageSelectableListVC {
         return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionRebuildSelected))
     }()
 
-    init(model: DpkgListModel, detail: DetailVC) {
+    init(model: DpkgListModel, detail: PackageDetailVC) {
         dpkgModel = model
         super.init(model: model, detail: detail)
     }
@@ -45,6 +45,8 @@ class DpkgListVC: PackageSelectableListVC {
     override func endReloadingData() {
         super.endReloadingData()
 
+        // Twackup parses database so quick that user can think it is not working as he expects
+        // That's why there's half-of-a-second delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
             tableView.refreshControl?.endRefreshing()
         }
@@ -59,6 +61,8 @@ class DpkgListVC: PackageSelectableListVC {
             setToolbarItems(buttons, animated: false)
         }
     }
+
+    // MARK: - Actions
 
     override func actionEdit() {
         super.actionEdit()

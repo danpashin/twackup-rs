@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DpkgDetailVC: DetailVC, RebuildPackageDetailedViewDelegate {
+class DpkgDetailVC: PackageDetailVC, RebuildPackageDetailedViewDelegate {
     private lazy var _container = RebuildPackageDetailedView(delegate: self)
     override var detailView: PackageDetailedView { _container }
 

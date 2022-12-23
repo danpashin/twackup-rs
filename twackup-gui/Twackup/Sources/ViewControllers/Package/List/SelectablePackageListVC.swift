@@ -1,5 +1,5 @@
 //
-//  PackageSelectableListVC.swift
+//  SelectablePackageListVC.swift
 //  Twackup
 //
 //  Created by Daniil on 09.12.2022.
@@ -8,7 +8,7 @@
 import DZNEmptyDataSet
 import UIKit
 
-class PackageSelectableListVC: PackageListVC {
+class SelectablePackageListVC: PackageListVC {
     private(set) lazy var editBarBtn: UIBarButtonItem = {
         UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(actionEdit))
     }()
@@ -37,6 +37,8 @@ class PackageSelectableListVC: PackageListVC {
         tableView.reloadEmptyDataSet()
         editBarBtn.isEnabled = !model.dataProvider.packages.isEmpty
     }
+
+    // MARK: - Actions
 
     @objc
     func actionEdit() {

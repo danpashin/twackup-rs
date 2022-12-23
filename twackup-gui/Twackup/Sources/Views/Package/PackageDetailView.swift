@@ -160,7 +160,7 @@ class PackageDetailedView: UIView {
 
     @objc
     func learnMoreTapped() {
-        guard let package = self.package else { return }
+        guard let package else { return }
         delegate?.openExternalPackageInfo(package)
     }
 }

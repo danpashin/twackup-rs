@@ -1,5 +1,5 @@
 //
-//  TwoColumnsVC.swift
+//  SplitController.swift
 //  Twackup
 //
 //  Created by Daniil on 07.12.2022.
@@ -7,24 +7,24 @@
 
 import UIKit
 
-class TwoColumnsVC: UISplitViewController, UISplitViewControllerDelegate {
+class SplitController: UISplitViewController, UISplitViewControllerDelegate {
     let primaryVC: ScrollableViewController
 
-    let primaryNavigationVC: SimpleNavController
+    let primaryNavigationVC: NavigationController
 
     let secondaryVC: UIViewController
 
     init(primaryVC: ScrollableViewController, secondaryVC: UIViewController) {
         self.primaryVC = primaryVC
         self.secondaryVC = secondaryVC
-        primaryNavigationVC = SimpleNavController(rootViewController: primaryVC)
+        primaryNavigationVC = NavigationController(rootViewController: primaryVC)
 
         super.init(nibName: nil, bundle: nil)
 
-        self.tabBarItem = primaryVC.tabBarItem
+        tabBarItem = primaryVC.tabBarItem
         viewControllers = [
             primaryNavigationVC,
-            SimpleNavController(rootViewController: secondaryVC)
+            NavigationController(rootViewController: secondaryVC)
         ]
 
         delegate = self
@@ -35,6 +35,11 @@ class TwoColumnsVC: UISplitViewController, UISplitViewControllerDelegate {
         fatalError("init(coder:) has not been implemented")
     }
 
+    /// Resets current navigation stack.
+    /// If there's controller in navigation - it pops it to root.
+    /// If current nav controller is root - it scrolls it to the top.
+    ///
+    /// - Parameter animated: Pass true if all actions should be animated
     func resetNavigation(animated: Bool) {
         if primaryNavigationVC.topViewController == primaryVC {
             primaryVC.scrollToTop(animated: animated)

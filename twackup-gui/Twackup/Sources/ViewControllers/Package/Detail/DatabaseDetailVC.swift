@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DatabaseDetailVC: DetailVC {
+class DatabaseDetailVC: PackageDetailVC {
     private lazy var _container = DatabasePackageDetailedView(delegate: self)
     override var detailView: PackageDetailedView { _container }
 

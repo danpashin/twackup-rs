@@ -5,7 +5,7 @@
 //  Created by Daniil on 01.12.2022.
 //
 
-class DebsListVC: PackageSelectableListVC, DebsListModelDelegate {
+class DebsListVC: SelectablePackageListVC, DebsListModelDelegate {
     private var debsModel: DebsListModel
     override var model: PackageListModel {
         get { return debsModel }
@@ -29,38 +29,33 @@ class DebsListVC: PackageSelectableListVC, DebsListModelDelegate {
 
     private var reloadObserver: NSObjectProtocol?
 
-    init(model: DebsListModel, detail: DetailVC) {
+    init(model: DebsListModel, detail: PackageDetailVC) {
         debsModel = model
         super.init(model: model, detail: detail)
 
         debsModel.debsModelDelegate = self
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
 
         reloadObserver = NotificationCenter.default.addObserver(
             forName: DebsListModel.NotificationName,
             object: nil,
             queue: .current
         ) { [weak self] _  in
-            guard let self else { return }
-            self.reloadData()
+            self?.reloadData()
         }
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(reloadObserver as Any)
     }
 
     override func reloadData() {
         debsModel.debsProvider.reload {
             super.reloadData()
         }
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(reloadObserver as Any)
     }
 
     override func didSelect(items: [PackageListModel.TableViewItem], inEditState: Bool) {
@@ -132,6 +127,8 @@ class DebsListVC: PackageSelectableListVC, DebsListModelDelegate {
             endReloadingData()
         }
     }
+
+    // MARK: - DebsListModelDelegate
 
     func debsModel(
         _ debsModel: DebsListModel,

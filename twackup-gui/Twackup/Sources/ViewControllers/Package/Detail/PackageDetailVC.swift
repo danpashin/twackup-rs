@@ -1,5 +1,5 @@
 //
-//  PackagesDetailVC.swift
+//  PackageDetailVC.swift
 //  Twackup
 //
 //  Created by Daniil on 25.11.2022.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DetailVC: UIViewController, PackageDetailViewDelegate {
+class PackageDetailVC: UIViewController, PackageDetailViewDelegate {
     private(set) lazy var detailView = PackageDetailedView(delegate: self)
 
     let mainModel: MainModel

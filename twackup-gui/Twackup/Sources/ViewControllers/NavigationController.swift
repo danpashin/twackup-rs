@@ -1,11 +1,11 @@
 //
-//  SimpleNavController.swift
+//  NavigationController.swift
 //  Twackup
 //
 //  Created by Daniil on 17.12.2022.
 //
 
-class SimpleNavController: UINavigationController {
+class NavigationController: UINavigationController {
     override var tabBarItem: UITabBarItem? {
         get { viewControllers.first?.tabBarItem }
         set { }

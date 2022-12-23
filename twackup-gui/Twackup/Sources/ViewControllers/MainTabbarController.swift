@@ -16,7 +16,7 @@ class MainTabbarController: UITabBarController, UITabBarControllerDelegate {
         let detailVC = DatabaseDetailVC(mainModel: mainModel)
         let mainVC = DebsListVC(model: model, detail: detailVC)
 
-        return TwoColumnsVC(primaryVC: mainVC, secondaryVC: detailVC)
+        return SplitController(primaryVC: mainVC, secondaryVC: detailVC)
     }()
 
     private(set) lazy var leavesPackagesVC: UIViewController = {
@@ -24,7 +24,7 @@ class MainTabbarController: UITabBarController, UITabBarControllerDelegate {
         let detailVC = DpkgDetailVC(mainModel: mainModel)
         let mainVC = LeavesListVC(model: model, detail: detailVC)
 
-        return TwoColumnsVC(primaryVC: mainVC, secondaryVC: detailVC)
+        return SplitController(primaryVC: mainVC, secondaryVC: detailVC)
     }()
 
     private(set) lazy var allPackagesVC: UIViewController = {
@@ -32,13 +32,13 @@ class MainTabbarController: UITabBarController, UITabBarControllerDelegate {
         let detailVC = DpkgDetailVC(mainModel: mainModel)
         let mainVC = DpkgListVC(model: model, detail: detailVC)
 
-        return TwoColumnsVC(primaryVC: mainVC, secondaryVC: detailVC)
+        return SplitController(primaryVC: mainVC, secondaryVC: detailVC)
     }()
 
     private(set) lazy var logVC: UIViewController = {
         let logMetadata = LogVCMetadata()
         let logVC = LoggerViewController(mainModel: mainModel, metadata: logMetadata)
-        let logController = SimpleNavController(rootViewController: logVC)
+        let logController = NavigationController(rootViewController: logVC)
         logController.tabBarItem = logMetadata.tabbarItem
 
         return logController
@@ -78,7 +78,7 @@ class MainTabbarController: UITabBarController, UITabBarControllerDelegate {
         shouldSelect viewController: UIViewController
     ) -> Bool {
         // If currently on this tab - try to reset navigation stack
-        if selectedViewController == viewController, let splitVC = viewController as? TwoColumnsVC {
+        if selectedViewController == viewController, let splitVC = viewController as? SplitController {
             splitVC.resetNavigation(animated: true)
         }
 

@@ -22,10 +22,12 @@ class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, 
         var package: Package
     }
 
+    /// Model that provides data for the table
     private(set) var dataProvider: PackageDataProvider
 
     private(set) var metadata: ViewControllerMetadata
 
+    /// Main model instance
     let mainModel: MainModel
 
     weak var delegate: PackageListDelegate?
@@ -37,16 +39,29 @@ class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, 
         }
     }
 
+    /// Items that are currently selected
     var selectedItems: [TableViewItem] {
         guard let tableView else { return [] }
         guard let rows = tableView.indexPathsForSelectedRows?.map({ $0.row }) else { return [] }
 
-        return dataProvider.packages.enumerated()
+        return dataProvider.packages
+            .enumerated()
             .filter { rows.contains($0.offset) }
             .map { index, package in
                 TableViewItem(indexPath: IndexPath(row: index, section: 0), package: package)
             }
     }
+
+    /// All items that table view contains
+    var allItems: [TableViewItem] {
+        dataProvider.packages
+            .enumerated()
+            .map { index, package in
+                TableViewItem(indexPath: IndexPath(row: index, section: 0), package: package)
+            }
+    }
+
+    // MARK: - Public functions
 
     init(mainModel: MainModel, dataProvider: PackageDataProvider, metadata: ViewControllerMetadata) {
         self.mainModel = mainModel
@@ -54,6 +69,7 @@ class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, 
         self.metadata = metadata
     }
 
+    /// Selects all items that are currently on table view
     func selectAll() {
         guard let tableView else { return }
         for row in 0..<dataProvider.packages.count {
@@ -62,6 +78,9 @@ class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, 
 
         delegate?.didSelect(items: selectedItems, inEditState: tableView.isEditing)
     }
+
+
+    // MARK: - UITableViewDataSource
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dataProvider.packages.count
@@ -77,6 +96,8 @@ class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, 
         return cell
     }
 
+    // MARK: - UITableViewDelegate
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         delegate?.didSelect(items: selectedItems, inEditState: tableView.isEditing)
     }
@@ -84,6 +105,8 @@ class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, 
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         delegate?.didSelect(items: selectedItems, inEditState: tableView.isEditing)
     }
+
+    // MARK: - UISearchResultsUpdating
 
     func updateSearchResults(for searchController: UISearchController) {
         var filter: PackageDataProvider.Filter?

@@ -11,11 +11,11 @@ protocol DebsListModelDelegate: PackageListDelegate {
     func debsModel(
         _ debsModel: DebsListModel,
         didRecieveDebRemoveChallenge package: DebPackage,
-        completion:  @escaping  (_ allow: Bool) -> Void
+        completion: @escaping  (_ allow: Bool) -> Void
     )
 }
 
-class DebsListModel: PackageListModel, DZNEmptyDataSetSource {
+class DebsListModel: PackageListModel {
     static let NotificationName = Notification.Name("twackup/reloadDEBS")
 
     private(set) var debsProvider: DatabasePackageProvider
@@ -36,12 +36,23 @@ class DebsListModel: PackageListModel, DZNEmptyDataSetSource {
         }
     }
 
+    // MARK: - Public functions
+
     init(mainModel: MainModel) {
         debsProvider = mainModel.databasePackageProvider
         let metadata = BuildedPkgsMetadata()
 
         super.init(mainModel: mainModel, dataProvider: debsProvider, metadata: metadata)
     }
+
+    func removePackage(at indexPath: IndexPath) {
+        if debsProvider.deletePackage(at: indexPath.row) {
+            tableView?.deleteRows(at: [indexPath], with: .automatic)
+            delegate?.endReloadingData()
+        }
+    }
+
+    // MARK: - UITableViewDelegate
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellID = String(describing: DebTableViewCell.self)
@@ -51,13 +62,6 @@ class DebsListModel: PackageListModel, DZNEmptyDataSetSource {
         }
 
         return cell
-    }
-
-    func removePackage(at indexPath: IndexPath) {
-        if debsProvider.deletePackage(at: indexPath.row) {
-            tableView?.deleteRows(at: [indexPath], with: .automatic)
-            delegate?.endReloadingData()
-        }
     }
 
     func tableView(
@@ -72,25 +76,6 @@ class DebsListModel: PackageListModel, DZNEmptyDataSetSource {
         delete.title = "remove-btn".localized
 
         return UISwipeActionsConfiguration(actions: [delete])
-    }
-
-    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        NSAttributedString(string: "database-controller-no-packages-title".localized)
-    }
-
-    func description(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        NSAttributedString(string: "database-controller-no-packages-subtitle".localized)
-    }
-
-    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        UIImage(
-            systemName: "shippingbox",
-            withConfiguration: UIImage.SymbolConfiguration(pointSize: 120, weight: .light)
-        )
-    }
-
-    func imageTintColor(forEmptyDataSet scrollView: UIScrollView?) -> UIColor? {
-        .tertiaryLabel
     }
 
     func tableView(
@@ -110,7 +95,7 @@ class DebsListModel: PackageListModel, DZNEmptyDataSetSource {
                 image: UIImage(systemName: "trash"),
                 attributes: [.destructive],
                 handler: { [self] _ in
-                    debsModelDelegate?.debsModel(self, didRecieveDebRemoveChallenge: package) { allow in
+                    debsModelDelegate?.debsModel(self, didRecieveDebRemoveChallenge: package) { [self] allow in
                         if allow {
                             removePackage(at: indexPath)
                         }

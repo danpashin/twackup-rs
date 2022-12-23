@@ -10,7 +10,7 @@ import UIKit
 class PackageListVC: UIViewController, PackageListDelegate, ScrollableViewController {
     private(set) var model: PackageListModel
 
-    private(set) var detail: DetailVC
+    private(set) var detail: PackageDetailVC
 
     override var tabBarItem: UITabBarItem? {
         get { model.metadata.tabbarItem }
@@ -36,7 +36,7 @@ class PackageListVC: UIViewController, PackageListDelegate, ScrollableViewContro
 
     lazy var tableViewLargeReloadingIndicator = UIActivityIndicatorView(style: .large)
 
-    init(model: PackageListModel, detail: DetailVC ) {
+    init(model: PackageListModel, detail: PackageDetailVC ) {
         self.model = model
         self.detail = detail
         super.init(nibName: nil, bundle: nil)

@@ -5,7 +5,7 @@
 //  Created by Daniil on 28.11.2022.
 //
 
-/// An abstract instance, describing Debian package format
+/// An abstract class, describing Debian package format
 protocol Package: AnyObject {
     /// Unique package identifier
     var id: String { get }
@@ -46,7 +46,9 @@ protocol Package: AnyObject {
 }
 
 extension Package {
+    /// Casts self as FFIPackage class
     var asFFI: FFIPackage? { self as? FFIPackage }
 
+    /// Casts self as DebPackage class
     var asDEB: DebPackage? { self as? DebPackage }
 }
