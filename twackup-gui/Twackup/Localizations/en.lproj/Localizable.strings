@@ -29,6 +29,10 @@
 
 Look here if you have any errors when building packages.";
 
+"deb-remove-alert-title" = "Warning!";
+"deb-remove-alert-subtitle" = "You cannot undone this action. DEB file will be removed forever!";
+"deb-remove-alert-ok" = "I really want to remove it";
+
 // Views
 "detailed-view-identifier-lbl" = "Identifier:";
 "detailed-view-version-lbl" = "Version:";
@@ -36,7 +40,7 @@ Look here if you have any errors when building packages.";
 "detailed-view-learnmore-btn" = "Learn more...";
 "detailed-view-size-lbl" = "Size";
 "detailed-view-installedsize-lbl" = "Installed:";
-"detailed-view-debsize-lbl" = "Packaged";
+"detailed-view-debsize-lbl" = "Packaged:";
 "detailed-view-rebuild-btn" = "Rebuild";
 "detailed-view-rebuild-btn-footer" = "Please note that the rebuilt package may be incomplete and may not have some files necessary for the correct operation of the package.";
 
@@ -84,3 +88,5 @@ Would you like to continue?";
 "remove-btn" = "Remove";
 "log-clear-btn" = "Clear log";
 "copy-id" = "Copy identifier";
+"cancel" = "Cancel";
+"view-in-filza" = "View in Filza";

@@ -58,7 +58,7 @@ class DebPackage: NSManagedObject, Package {
     var icon: URL?
     var depiction: URL?
 
-    func fileURL() -> URL {
+    var fileURL: URL {
         Dpkg.defaultSaveDirectory.appendingPathComponent(relPath)
     }
 

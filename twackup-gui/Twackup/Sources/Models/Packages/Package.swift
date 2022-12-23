@@ -44,3 +44,9 @@ protocol Package: AnyObject {
 
     func isEqualTo(_ other: Package) -> Bool
 }
+
+extension Package {
+    var asFFI: FFIPackage? { self as? FFIPackage }
+
+    var asDEB: DebPackage? { self as? DebPackage }
+}

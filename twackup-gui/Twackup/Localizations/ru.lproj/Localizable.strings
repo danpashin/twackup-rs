@@ -31,6 +31,10 @@
 
 Заглядывайте сюда, если у вас появились какие-то ошибки при сборке пакетов.";
 
+"deb-remove-alert-title" = "Предупреждение!";
+"deb-remove-alert-subtitle" = "Данное действие отменить невозможно. DEB-файл будет удален навсегда!";
+"deb-remove-alert-ok" = "Я понимаю, удалить";
+
 // Views
 "detailed-view-identifier-lbl" = "Идентификатор:";
 "detailed-view-version-lbl" = "Версия:";
@@ -86,3 +90,5 @@
 "remove-btn" = "Удалить";
 "log-clear-btn" = "Очистить лог";
 "copy-id" = "Копировать идентификатор";
+"cancel" = "Отменить";
+"view-in-filza" = "Открыть в Filza";

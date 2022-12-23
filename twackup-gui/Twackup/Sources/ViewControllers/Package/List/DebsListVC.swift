@@ -5,7 +5,7 @@
 //  Created by Daniil on 01.12.2022.
 //
 
-class DebsListVC: PackageSelectableListVC {
+class DebsListVC: PackageSelectableListVC, DebsListModelDelegate {
     private var debsModel: DebsListModel
     override var model: PackageListModel {
         get { return debsModel }
@@ -32,6 +32,8 @@ class DebsListVC: PackageSelectableListVC {
     init(model: DebsListModel, detail: DetailVC) {
         debsModel = model
         super.init(model: model, detail: detail)
+
+        debsModel.debsModelDelegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -77,7 +79,7 @@ class DebsListVC: PackageSelectableListVC {
     func actionShareSelected(_ button: UIBarButtonItem) {
         let debURLS: [URL] = model.selectedItems.compactMap { item in
             guard let package = item.package as? DebPackage else { return nil }
-            return package.fileURL()
+            return package.fileURL
         }
 
         if debURLS.isEmpty { return }
@@ -129,5 +131,25 @@ class DebsListVC: PackageSelectableListVC {
             tableView.deleteRows(at: indexPaths, with: .automatic)
             endReloadingData()
         }
+    }
+
+    func debsModel(
+        _ debsModel: DebsListModel,
+        didRecieveDebRemoveChallenge package: DebPackage,
+        completion: @escaping (_ allow: Bool) -> Void
+    ) {
+        let alert = UIAlertController(
+            title: "deb-remove-alert-title".localized,
+            message: "deb-remove-alert-subtitle".localized,
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "deb-remove-alert-ok".localized, style: .destructive) { _ in
+            completion(true)
+        })
+
+        alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))
+
+        present(alert, animated: true)
     }
 }

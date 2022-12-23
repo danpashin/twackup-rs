@@ -36,7 +36,7 @@ class DatabasePackageProvider: PackageDataProvider {
         for package in toDelete {
             guard let dbPackage = package as? DebPackage else { continue }
             do {
-                try FileManager.default.removeItem(at: dbPackage.fileURL())
+                try FileManager.default.removeItem(at: dbPackage.fileURL)
             } catch {
                 let err = error as NSError
                 FFILogger.shared.log(err.localizedDescription, level: .warning)

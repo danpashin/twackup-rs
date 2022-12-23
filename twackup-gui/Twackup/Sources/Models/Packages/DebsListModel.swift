@@ -7,6 +7,14 @@
 
 import DZNEmptyDataSet
 
+protocol DebsListModelDelegate: PackageListDelegate {
+    func debsModel(
+        _ debsModel: DebsListModel,
+        didRecieveDebRemoveChallenge package: DebPackage,
+        completion:  @escaping  (_ allow: Bool) -> Void
+    )
+}
+
 class DebsListModel: PackageListModel, DZNEmptyDataSetSource {
     static let NotificationName = Notification.Name("twackup/reloadDEBS")
 
@@ -15,6 +23,8 @@ class DebsListModel: PackageListModel, DZNEmptyDataSetSource {
         get { return debsProvider }
         set { }
     }
+
+    weak var debsModelDelegate: DebsListModelDelegate?
 
     override var tableView: UITableView? {
         didSet {
@@ -90,8 +100,8 @@ class DebsListModel: PackageListModel, DZNEmptyDataSetSource {
     ) -> UIContextMenuConfiguration? {
         // swiftlint:disable trailing_closure
         let configurator = UIContextMenuConfiguration(actionProvider: { _ in
+            guard let package = self.dataProvider.packages[indexPath.row].asDEB else { return nil }
             let copyID = UIAction(title: "copy-id".localized, image: UIImage(systemName: "paperclip")) { _ in
-                let package = self.dataProvider.packages[indexPath.row]
                 UIPasteboard.general.string = package.id
             }
 
@@ -99,12 +109,33 @@ class DebsListModel: PackageListModel, DZNEmptyDataSetSource {
                 title: "remove-btn".localized,
                 image: UIImage(systemName: "trash"),
                 attributes: [.destructive],
-                handler: { _ in
-                    self.removePackage(at: indexPath)
+                handler: { [self] _ in
+                    debsModelDelegate?.debsModel(self, didRecieveDebRemoveChallenge: package) { allow in
+                        if allow {
+                            removePackage(at: indexPath)
+                        }
+                    }
                 }
             )
 
-            return UIMenu(children: [copyID, remove])
+            var children = [copyID, remove]
+
+            // valid url so it's safe to unwrap
+            let filzaURL = URL(string: "filza://\(package.fileURL.path)")!
+            if UIApplication.shared.canOpenURL(filzaURL) {
+                children.insert(
+                    UIAction(
+                        title: "view-in-filza".localized,
+                        image: UIImage(systemName: "arrowshape.turn.up.right"),
+                        handler: { _ in
+                            UIApplication.shared.open(filzaURL)
+                        }
+                    ),
+                    at: 0
+                )
+            }
+
+            return UIMenu(children: children)
         })
 
         return configurator
