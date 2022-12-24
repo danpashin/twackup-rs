@@ -37,7 +37,7 @@ class MainTabbarController: UITabBarController, UITabBarControllerDelegate {
 
     private(set) lazy var logVC: UIViewController = {
         let logMetadata = LogVCMetadata()
-        let logVC = LoggerViewController(mainModel: mainModel, metadata: logMetadata)
+        let logVC = LogViewController(mainModel: mainModel, metadata: logMetadata)
         let logController = NavigationController(rootViewController: logVC)
         logController.tabBarItem = logMetadata.tabbarItem
 

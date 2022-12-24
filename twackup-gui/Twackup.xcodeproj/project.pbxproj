@@ -58,12 +58,13 @@
 		0BAAD99C293893EF0089C8FB /* DpkgDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAAD99B293893EF0089C8FB /* DpkgDataProvider.swift */; };
 		0BAC44D429562BDE0038074C /* DebsListModel+DZNEmptyDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAC44D329562BDE0038074C /* DebsListModel+DZNEmptyDataSet.swift */; };
 		0BAC44D629562C6B0038074C /* DpkgListModel+DZNEmptyDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAC44D529562C6B0038074C /* DpkgListModel+DZNEmptyDataSet.swift */; };
+		0BAC44D92956EFCB0038074C /* LogViewController+DZNEmptyDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAC44D82956EFCB0038074C /* LogViewController+DZNEmptyDataSet.swift */; };
 		0BB369E52952EF6B004AAFFF /* ScrollableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB369E42952EF6B004AAFFF /* ScrollableViewController.swift */; };
 		0BE78040294DC60C00AE77CE /* DpkgListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE7803F294DC60C00AE77CE /* DpkgListModel.swift */; };
 		0BF07A502941027800EEC8FC /* SplitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A4F2941027800EEC8FC /* SplitController.swift */; };
 		0BF07A5C2941D8D100EEC8FC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0BF07A592941D8D100EEC8FC /* Localizable.strings */; };
 		0BF07A62294335F700EEC8FC /* FFILogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A61294335F700EEC8FC /* FFILogger.swift */; };
-		0BF07A6429433BE100EEC8FC /* LoggerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A6329433BE100EEC8FC /* LoggerVC.swift */; };
+		0BF07A6429433BE100EEC8FC /* LogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A6329433BE100EEC8FC /* LogViewController.swift */; };
 		0BF07A662943537A00EEC8FC /* SelectablePackageListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A652943537A00EEC8FC /* SelectablePackageListVC.swift */; };
 		0BF07A68294354E800EEC8FC /* DpkgListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A67294354E800EEC8FC /* DpkgListVC.swift */; };
 		C1FF8C5621CC9FEC564B8CCE /* Pods_Twackup.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEF70D3062CF0C2BA7D149B4 /* Pods_Twackup.framework */; };
@@ -129,13 +130,14 @@
 		0BAAD99B293893EF0089C8FB /* DpkgDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgDataProvider.swift; sourceTree = "<group>"; };
 		0BAC44D329562BDE0038074C /* DebsListModel+DZNEmptyDataSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebsListModel+DZNEmptyDataSet.swift"; sourceTree = "<group>"; };
 		0BAC44D529562C6B0038074C /* DpkgListModel+DZNEmptyDataSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DpkgListModel+DZNEmptyDataSet.swift"; sourceTree = "<group>"; };
+		0BAC44D82956EFCB0038074C /* LogViewController+DZNEmptyDataSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogViewController+DZNEmptyDataSet.swift"; sourceTree = "<group>"; };
 		0BB369E42952EF6B004AAFFF /* ScrollableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollableViewController.swift; sourceTree = "<group>"; };
 		0BE7803F294DC60C00AE77CE /* DpkgListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgListModel.swift; sourceTree = "<group>"; };
 		0BF07A4F2941027800EEC8FC /* SplitController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitController.swift; sourceTree = "<group>"; };
 		0BF07A5A2941D8D100EEC8FC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0BF07A5B2941D8D100EEC8FC /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0BF07A61294335F700EEC8FC /* FFILogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FFILogger.swift; sourceTree = "<group>"; };
-		0BF07A6329433BE100EEC8FC /* LoggerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerVC.swift; sourceTree = "<group>"; };
+		0BF07A6329433BE100EEC8FC /* LogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogViewController.swift; sourceTree = "<group>"; };
 		0BF07A652943537A00EEC8FC /* SelectablePackageListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectablePackageListVC.swift; sourceTree = "<group>"; };
 		0BF07A67294354E800EEC8FC /* DpkgListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgListVC.swift; sourceTree = "<group>"; };
 		CEF70D3062CF0C2BA7D149B4 /* Pods_Twackup.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Twackup.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -246,7 +248,8 @@
 			isa = PBXGroup;
 			children = (
 				0B86616C2930ADA300EA4301 /* MainTabbarController.swift */,
-				0BF07A6329433BE100EEC8FC /* LoggerVC.swift */,
+				0BF07A6329433BE100EEC8FC /* LogViewController.swift */,
+				0BAC44D82956EFCB0038074C /* LogViewController+DZNEmptyDataSet.swift */,
 				0BF07A4F2941027800EEC8FC /* SplitController.swift */,
 				0BB369E42952EF6B004AAFFF /* ScrollableViewController.swift */,
 				0B5B332C294DB55B0097398F /* NavigationController.swift */,
@@ -545,6 +548,7 @@
 				0BF07A68294354E800EEC8FC /* DpkgListVC.swift in Sources */,
 				0B86618B2930AF7100EA4301 /* FFIPackage.swift in Sources */,
 				0BAAD99C293893EF0089C8FB /* DpkgDataProvider.swift in Sources */,
+				0BAC44D92956EFCB0038074C /* LogViewController+DZNEmptyDataSet.swift in Sources */,
 				0B32B17E2954426D008E2F33 /* CopyableLabel.swift in Sources */,
 				0B88C30B2930B58D00BA5312 /* PackageDetailVC.swift in Sources */,
 				0B434F9A2935E29300311FB6 /* DpkgDetailVC.swift in Sources */,
@@ -556,7 +560,7 @@
 				0B88C3172930CE3900BA5312 /* Metadata.swift in Sources */,
 				0B50FF742949EAB900CF4BCF /* DiskSpaceUsageView.swift in Sources */,
 				0B5B332B294DA9F00097398F /* MainModel.swift in Sources */,
-				0BF07A6429433BE100EEC8FC /* LoggerVC.swift in Sources */,
+				0BF07A6429433BE100EEC8FC /* LogViewController.swift in Sources */,
 				0BB369E52952EF6B004AAFFF /* ScrollableViewController.swift in Sources */,
 				0B5B332F294DB7770097398F /* InstalledPackagesModel.swift in Sources */,
 				0B463A9B29389EBB00021EF7 /* DebsListModel.swift in Sources */,

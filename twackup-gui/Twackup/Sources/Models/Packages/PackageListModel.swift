@@ -79,7 +79,6 @@ class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, 
         delegate?.didSelect(items: selectedItems, inEditState: tableView.isEditing)
     }
 
-
     // MARK: - UITableViewDataSource
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
