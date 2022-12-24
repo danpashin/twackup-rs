@@ -49,7 +49,7 @@ and you'll find binary in `target` directory.
         $ cargo install cargo-make
         
         # Install different building utils if you don't have them
-        $ brew install dpkg ldid
+        $ brew install dpkg ldid coreutils
         
         # Install utils from rubygems
         $ bundle install

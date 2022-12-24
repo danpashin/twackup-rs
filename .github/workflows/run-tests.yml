@@ -19,7 +19,7 @@ jobs:
     - name: Install build dependencies
       run: |
         cargo install cargo-make
-        brew install dpkg ldid
+        brew install dpkg ldid coreutils
         bundle install
     - name: Install GUI build dependencies
       run: |
