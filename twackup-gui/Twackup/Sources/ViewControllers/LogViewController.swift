@@ -8,7 +8,7 @@
 import DZNEmptyDataSet
 import StyledTextKit
 
-final class LogViewController: UIViewController, FFILoggerSubscriber {
+final class LogViewController: UIViewController, FFILoggerSubscriber, ScrollableViewController {
     let metadata: ViewControllerMetadata
 
     let mainModel: MainModel
