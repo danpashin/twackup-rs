@@ -78,8 +78,13 @@ class MainTabbarController: UITabBarController, UITabBarControllerDelegate {
         shouldSelect viewController: UIViewController
     ) -> Bool {
         // If currently on this tab - try to reset navigation stack
-        if selectedViewController == viewController, let splitVC = viewController as? SplitController {
-            splitVC.resetNavigation(animated: true)
+        if selectedViewController == viewController {
+            if let splitVC = viewController as? SplitController {
+                splitVC.resetNavigation(animated: true)
+            } else if let nav = viewController as? UINavigationController,
+                      let scrollableVC = nav.viewControllers.first as? ScrollableViewController {
+                scrollableVC.scrollToInitialPosition(animated: true)
+            }
         }
 
         return true

@@ -11,4 +11,9 @@
 #import "twackup.h"
 #import "RJTHUD.h"
 
+@interface UIScrollView (Private)
+@property (assign, nonatomic, readonly, getter=_minimumContentOffset) CGPoint minimumContentOffset;
+@property (assign, nonatomic, readonly, getter=_maximumContentOffset) CGPoint maximumContentOffset;
+@end
+
 #endif /* Twackup_Bridging_Header_h */

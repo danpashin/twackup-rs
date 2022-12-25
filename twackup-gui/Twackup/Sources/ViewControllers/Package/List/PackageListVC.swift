@@ -88,7 +88,7 @@ class PackageListVC: UIViewController, PackageListDelegate, ScrollableViewContro
         showDetailViewController(detailNav, sender: nil)
     }
 
-    func scrollToTop(animated: Bool) {
+    func scrollToInitialPosition(animated: Bool) {
         if model.dataProvider.packages.isEmpty { return }
         tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: animated)
     }

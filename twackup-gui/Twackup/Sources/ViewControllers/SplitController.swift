@@ -42,7 +42,7 @@ class SplitController: UISplitViewController, UISplitViewControllerDelegate {
     /// - Parameter animated: Pass true if all actions should be animated
     func resetNavigation(animated: Bool) {
         if primaryNavigationVC.topViewController == primaryVC {
-            primaryVC.scrollToTop(animated: animated)
+            primaryVC.scrollToInitialPosition(animated: animated)
         } else {
             primaryNavigationVC.popToRootViewController(animated: animated)
         }

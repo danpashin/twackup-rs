@@ -6,6 +6,7 @@
 //
 
 import DZNEmptyDataSet
+import StyledTextKit
 
 final class LogViewController: UIViewController, FFILoggerSubscriber {
     let metadata: ViewControllerMetadata
@@ -18,11 +19,17 @@ final class LogViewController: UIViewController, FFILoggerSubscriber {
 
     private var wantsToScrollBottom: Bool = false
 
-    private(set) lazy var logView: UITextView = {
-        let view = UITextView()
+    private(set) lazy var logView: StyledTextView = {
+        let view = StyledTextView()
+
+        return view
+    }()
+
+    private(set) lazy var scrollView: UIScrollView = {
+        let view = UIScrollView()
         view.isScrollEnabled = true
-        view.isEditable = false
         view.alwaysBounceVertical = true
+        view.addSubview(logView)
 
         view.emptyDataSetSource = self
         view.emptyDataSetDelegate = self
@@ -53,7 +60,7 @@ final class LogViewController: UIViewController, FFILoggerSubscriber {
     }
 
     override func loadView() {
-        self.view = logView
+        self.view = scrollView
     }
 
     override func viewDidLoad() {
@@ -66,19 +73,28 @@ final class LogViewController: UIViewController, FFILoggerSubscriber {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        logView.attributedText = currentText
+        renderLog()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        logView.reloadEmptyDataSet()
+        scrollView.reloadEmptyDataSet()
         scrollToBottomIfNeeded()
+    }
+
+    private func renderLog() {
+        let category = UIApplication.shared.preferredContentSizeCategory
+        let builder = StyledTextBuilder(attributedText: currentText)
+        let renderer = StyledTextRenderer(string: builder.build(), contentSizeCategory: category)
+        logView.configure(with: renderer, width: view.bounds.width)
+
+        scrollView.contentSize = logView.bounds.size
     }
 
     private func scrollToBottomIfNeeded() {
         if wantsToScrollBottom {
-            logView.contentOffset = CGPoint(x: 0, y: logView.contentSize.height)
+            scrollView.contentOffset = scrollView.maximumContentOffset
             wantsToScrollBottom = false
         }
     }
@@ -86,10 +102,10 @@ final class LogViewController: UIViewController, FFILoggerSubscriber {
     @objc
     func actionClearLog() {
         currentText.setAttributedString(NSAttributedString())
-        logView.text = ""
+        renderLog()
 
-        logView.contentOffset = .zero
-        logView.reloadEmptyDataSet()
+        scrollView.contentOffset = scrollView.minimumContentOffset
+        scrollView.reloadEmptyDataSet()
     }
 
     // MARK: - FFILoggerSubscriber
@@ -123,5 +139,12 @@ final class LogViewController: UIViewController, FFILoggerSubscriber {
     }
 
     func flush() {
+    }
+
+    // MARK: - ScrollableViewController
+
+    func scrollToInitialPosition(animated: Bool) {
+        wantsToScrollBottom = true
+        scrollToBottomIfNeeded()
     }
 }
