@@ -64,18 +64,16 @@ class DpkgListVC: SelectablePackageListVC {
 
     // MARK: - Actions
 
-    override func actionEdit() {
-        super.actionEdit()
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
 
-        setToolbarItems([rebuildAllBarBtn], animated: false)
-        navigationController?.setToolbarHidden(false, animated: true)
-    }
+        if editing {
+            setToolbarItems([rebuildAllBarBtn], animated: false)
+        } else {
+            navigationItem.leftBarButtonItem = nil
+        }
 
-    override func actionDoneEdit() {
-        super.actionDoneEdit()
-
-        navigationItem.leftBarButtonItem = nil
-        navigationController?.setToolbarHidden(true, animated: true)
+        navigationController?.setToolbarHidden(!editing, animated: animated)
     }
 
     @objc
@@ -85,7 +83,7 @@ class DpkgListVC: SelectablePackageListVC {
 
     @objc
     func actionRebuildAll() {
-        actionDoneEdit()
+        setEditing(false, animated: true)
 
         rebuild(packages: model.dataProvider.packages)
     }

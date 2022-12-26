@@ -85,23 +85,20 @@ class DebsListVC: SelectablePackageListVC, DebsListModelDelegate {
         present(activityVC, animated: true, completion: nil)
     }
 
-    override func actionEdit() {
-        super.actionEdit()
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
 
-        shareSelectedBarBtn.isEnabled = false
+        if editing {
+            shareSelectedBarBtn.isEnabled = false
 
-        setToolbarItems([
-            removeAllBarBtn,
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-            shareSelectedBarBtn
-        ], animated: false)
-        navigationController?.setToolbarHidden(false, animated: true)
-    }
+            setToolbarItems([
+                removeAllBarBtn,
+                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+                shareSelectedBarBtn
+            ], animated: false)
+        }
 
-    override func actionDoneEdit() {
-        super.actionDoneEdit()
-
-        navigationController?.setToolbarHidden(true, animated: true)
+        navigationController?.setToolbarHidden(!editing, animated: animated)
     }
 
     @objc
@@ -115,7 +112,7 @@ class DebsListVC: SelectablePackageListVC, DebsListModelDelegate {
 
     @objc
     func actionRemoveAll() {
-        actionDoneEdit()
+        setEditing(false, animated: true)
 
         var indexPaths: [IndexPath] = []
         for row in 0..<debsModel.dataProvider.packages.count {

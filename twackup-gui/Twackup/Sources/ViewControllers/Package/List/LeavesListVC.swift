@@ -23,10 +23,12 @@ class LeavesListVC: DpkgListVC {
         shareListButton.isEnabled = !model.dataProvider.packages.isEmpty
     }
 
-    override func actionDoneEdit() {
-        super.actionDoneEdit()
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
 
-        navigationItem.leftBarButtonItem = shareListButton
+        if !editing {
+            navigationItem.leftBarButtonItem = shareListButton
+        }
     }
 
     @objc
