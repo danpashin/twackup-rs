@@ -22,7 +22,7 @@ twackup = { path = "../twackup", features = ["cli", "serde"] }
 clap = { version = "4.0", features = ["derive"] }
 async-trait = "0.1"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
-tokio = { version = "1.5", features = ["rt-multi-thread", "sync", "macros"] }
+tokio = { version = "1.23", features = ["rt-multi-thread", "sync", "macros"] }
 futures = "0.3"
 
 # Archiving

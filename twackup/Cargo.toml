@@ -33,7 +33,7 @@ harness = false
 
 # Core
 twackup-derive = { version = "2.0.2", path = "../twackup-derive" }
-tokio = { version = "1.5", features = ["rt-multi-thread", "sync", "macros", "fs"] }
+tokio = { version = "1.23", features = ["rt-multi-thread", "sync", "macros", "fs"] }
 memmem = "0.1"
 memmap2 = "0.5"
 
