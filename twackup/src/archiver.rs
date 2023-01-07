@@ -108,6 +108,7 @@ pub enum Encoder<T: Write> {
 
 impl Level {
     /// Returns integer level corresponding to self type
+    #[must_use]
     pub fn raw_value(&self) -> u32 {
         match self {
             Level::None => 0,
