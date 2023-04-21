@@ -12,11 +12,9 @@ struct SettingsViewController: View {
 
     let mainModel: MainModel
 
-    @ObservedObject
-    private var preferences = Preferences.default
+    @ObservedObject private var preferences = Preferences.default
 
-    @State
-    private var showClearDataAlert = false
+    @State private var showClearDataAlert = false
 
     let diskUsageView: DiskSpaceUsage
 

@@ -19,5 +19,6 @@ class DpkgDetailVC: PackageDetailVC, RebuildPackageDetailedViewDelegate {
         rebuilder.rebuild(packages: [package], completion: {
             hud?.hide(animated: true)
         })
+        // swiftlint:enable trailing_closure
     }
 }

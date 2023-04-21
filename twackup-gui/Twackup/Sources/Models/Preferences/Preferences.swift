@@ -10,8 +10,7 @@ import SwiftUI
 class Preferences: ObservableObject {
     static let `default` = Preferences()
 
-    @ProxiedObservedObject
-    private(set) var compression = Compression()
+    @ProxiedObservedObject private(set) var compression = Compression()
 
     init() {
         _compression.setPublisher(objectWillChange)

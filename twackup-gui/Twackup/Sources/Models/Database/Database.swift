@@ -68,6 +68,7 @@ class Database {
                 index += 1
                 return false
             })
+            // swiftlint:enable trailing_closure
 
             _ = self.execute(request: request, context: context)
 

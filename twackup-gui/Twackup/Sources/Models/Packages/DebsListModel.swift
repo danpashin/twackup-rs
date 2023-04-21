@@ -122,6 +122,7 @@ class DebsListModel: PackageListModel {
 
             return UIMenu(children: children)
         })
+        // swiftlint:enable trailing_closure
 
         return configurator
     }

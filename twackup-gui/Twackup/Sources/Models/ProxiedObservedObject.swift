@@ -24,8 +24,7 @@ where Value: ObservableObject, Value.ObjectWillChangePublisher == ObservableObje
         }
     }
 
-    @ObservedObject
-    var wrappedValue: Value
+    @ObservedObject var wrappedValue: Value
 
     var projectedValue: ObservedObject<Value>.Wrapper {
         $wrappedValue

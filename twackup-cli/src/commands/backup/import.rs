@@ -66,9 +66,8 @@ impl Import {
     }
 
     async fn import_repositories(data: &ExportData) -> Result<()> {
-        let repos = match &data.repositories {
-            Some(val) => val,
-            None => return Ok(()),
+        let Some(repos) = &data.repositories else {
+            return Ok(())
         };
 
         for repo_group in repos {
@@ -121,9 +120,8 @@ impl Import {
     }
 
     fn import_packages(data: &ExportData) -> Result<()> {
-        let packages = match &data.packages {
-            Some(val) => val,
-            None => return Ok(()),
+        let Some(packages) = &data.packages else {
+            return Ok(())
         };
 
         log::info!("Importing packages...");

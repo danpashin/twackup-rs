@@ -136,3 +136,4 @@ class PackagesRebuilder: DpkgProgressDelegate {
         }
     }
 }
+// swiftlint:enable legacy_objc_type
