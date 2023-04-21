@@ -11,12 +11,15 @@ import UIKit
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     private(set) lazy var mainModel: MainModel = {
-        var path = "/var/lib/dpkg"
-        if !FileManager.default.fileExists(atPath: path) {
-            path = "/var/jb/dpkg"
+        let rootfullDir = "/var/lib/dpkg"
+        let rootlessDir = "/var/jb/var/lib/dpkg"
+
+        var dpkgDir = rootfullDir
+        if !FileManager.default.fileExists(atPath: rootfullDir) {
+            dpkgDir = rootlessDir
         }
 
-        return MainModel(database: Database(), dpkg: Dpkg(path: path))
+        return MainModel(database: Database(), dpkg: Dpkg(path: dpkgDir))
     }()
 
     func application(

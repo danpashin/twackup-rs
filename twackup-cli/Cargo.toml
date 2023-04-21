@@ -19,7 +19,7 @@ ios = ["twackup/ios"]
 twackup = { path = "../twackup", features = ["cli", "serde"] }
 
 # Core
-clap = { version = "4.2", features = ["derive"] }
+clap = { version = "4.2", features = ["derive", "string"] }
 async-trait = "0.1"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
 tokio = { version = "1.27", features = ["rt-multi-thread", "sync", "macros"] }

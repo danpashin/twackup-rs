@@ -18,7 +18,7 @@
  */
 
 use super::{CliCommand, GlobalOptions};
-use crate::{error::Result, progress_bar::ProgressBar, TARGET_DIR};
+use crate::{error::Result, paths, progress_bar::ProgressBar};
 use chrono::Local;
 use console::style;
 use gethostname::gethostname;
@@ -74,7 +74,7 @@ pub(crate) struct Build {
     all: bool,
 
     /// Use custom destination <directory>.
-    #[arg(long, short, default_value = TARGET_DIR, value_parser)]
+    #[arg(long, short, default_value = paths::debs_target_dir(), value_parser)]
     destination_dir: PathBuf,
 
     /// Packs all rebuilded DEB's to single archive

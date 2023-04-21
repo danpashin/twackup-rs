@@ -35,6 +35,7 @@
 mod commands;
 mod error;
 mod logger;
+mod paths;
 mod process;
 mod progress_bar;
 mod serializer;
@@ -44,20 +45,6 @@ use commands::{CliCommand, Command};
 use error::Result;
 use std::fs;
 use std::time::Instant;
-
-#[cfg(not(target_os = "macos"))]
-const ADMIN_DIR: &str = "/var/lib/dpkg";
-
-#[cfg(target_os = "macos")]
-const ADMIN_DIR: &str = "/usr/local/var/lib/dpkg";
-
-#[cfg(target_os = "ios")]
-const TARGET_DIR: &str = "/var/mobile/Documents/twackup";
-
-#[cfg(not(target_os = "ios"))]
-const TARGET_DIR: &str = "./twackup";
-
-const LICENSE_PATH: &str = "/usr/share/doc/ru.danpashin.twackup/LICENSE";
 
 const fn long_version_message() -> &'static str {
     concat!(
@@ -108,7 +95,7 @@ async fn _run() -> Result<()> {
         Command::Import(cmd) => cmd.run().await,
 
         Command::ShowLicense => {
-            let license = fs::read_to_string(LICENSE_PATH)?;
+            let license = fs::read_to_string(paths::LICENSE_PATH)?;
             eprintln!("\n{}\n", license);
 
             Ok(())

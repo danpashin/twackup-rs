@@ -24,7 +24,7 @@ mod list;
 #[cfg(feature = "ios")]
 mod backup;
 
-use crate::{error::Result, ADMIN_DIR};
+use crate::{error::Result, paths};
 use std::{
     collections::{BTreeMap, LinkedList},
     path::PathBuf,
@@ -40,7 +40,7 @@ pub(crate) trait CliCommand {
 struct GlobalOptions {
     /// Use custom dpkg directory.
     /// This option is used for detecting installed packages
-    #[arg(long, default_value = ADMIN_DIR, value_parser)]
+    #[arg(long, default_value = paths::dpkg_admin_dir(), value_parser)]
     #[arg(help_heading = "GLOBAL OPTIONS", global = true)]
     admin_dir: PathBuf,
 }
