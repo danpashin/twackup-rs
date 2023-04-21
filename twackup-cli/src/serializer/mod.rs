@@ -40,8 +40,8 @@ impl Format {
         match self {
             Self::Json => serde_json::to_writer(writer, value)?,
             Self::Toml => {
-                let result = toml::to_vec(value)?;
-                writer.write_all(&result)?;
+                let result = toml::to_string(value)?;
+                writer.write_all(result.as_bytes())?;
             }
             Self::Yaml => serde_yaml::to_writer(writer, value)?,
         }
@@ -52,11 +52,11 @@ impl Format {
     pub(crate) fn de_from_reader<T: DeserializeOwned, R: Read>(&self, mut reader: R) -> Result<T> {
         Ok(match self {
             Self::Json => serde_json::from_reader(reader)?,
-            Self::Toml => {
-                let mut data = Vec::new();
-                reader.read_to_end(&mut data)?;
-                toml::from_slice(&data)?
-            }
+            Self::Toml => unsafe {
+                let mut data = String::new();
+                reader.read_to_end(data.as_mut_vec())?;
+                toml::from_str(&data)?
+            },
             Self::Yaml => serde_yaml::from_reader(reader)?,
         })
     }

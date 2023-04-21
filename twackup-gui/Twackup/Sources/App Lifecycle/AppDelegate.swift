@@ -26,8 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         SentrySDK.start { options in
             options.dsn = "https://fe79331fe69841ddabaf9b5161d50e00@o4504339145555968.ingest.sentry.io/4504339146670080"
             options.tracesSampleRate = 1.0
-            options.enableCoreDataTracking = true
-            options.enableUIViewControllerTracking = false
+            options.enableUIViewControllerTracing = false
             options.enableNetworkBreadcrumbs = false
         }
 

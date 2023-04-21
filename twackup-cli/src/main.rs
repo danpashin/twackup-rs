@@ -62,12 +62,13 @@ const LICENSE_PATH: &str = "/usr/share/doc/ru.danpashin.twackup/LICENSE";
 const fn long_version_message() -> &'static str {
     concat!(
         env!("CARGO_PKG_VERSION"),
-        "-",
-        env!("VERGEN_CARGO_PROFILE"),
+        " (Debug: ",
+        env!("VERGEN_CARGO_DEBUG"),
+        ")",
         "\n\nBuild on ",
         env!("VERGEN_BUILD_TIMESTAMP"),
         "\nGit commit: ",
-        env!("VERGEN_GIT_SEMVER"),
+        env!("VERGEN_GIT_DESCRIBE"),
     )
 }
 

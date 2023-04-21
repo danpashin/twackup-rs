@@ -163,7 +163,7 @@ fn tw_library_version() -> char_p::Ref<'static> {
     static VERSION: &str = concat!(
         env!("CARGO_PKG_VERSION"),
         "-",
-        env!("VERGEN_GIT_SEMVER"),
+        env!("VERGEN_GIT_DESCRIBE"),
         "\0",
     );
 
