@@ -39,8 +39,9 @@ args = ["-S", "${TWACKUP_FAT_BINARY}"]
 
 [tasks.create-deb]
 cwd = "${ARTIFACTS_OUTPUT_DIR}"
-command = "fpm"
+command = "bundle"
 args = [
+    "exec", "fpm",
     "--input-type", "dir",
     "--output-type", "deb",
     "--force",

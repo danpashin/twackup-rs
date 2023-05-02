@@ -1,3 +1,17 @@
+GIT
+  remote: https://github.com/danpashin/fpm.git
+  revision: 558332d69f6d3eaa89d91ef12274a44d5d702941
+  branch: no_changelog
+  specs:
+    fpm (1.15.1)
+      arr-pm (~> 0.0.11)
+      backports (>= 2.6.2)
+      cabin (>= 0.6.0)
+      clamp (~> 1.0.0)
+      pleaserun (~> 0.0.29)
+      rexml
+      stud
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -64,14 +78,6 @@ GEM
       ffi (>= 1.15.0)
     ffi (1.15.5)
     fourflusher (2.3.1)
-    fpm (1.15.1)
-      arr-pm (~> 0.0.11)
-      backports (>= 2.6.2)
-      cabin (>= 0.6.0)
-      clamp (~> 1.0.0)
-      pleaserun (~> 0.0.29)
-      rexml
-      stud
     fuzzy_match (2.0.4)
     gh_inspector (1.1.3)
     httpclient (2.8.3)
@@ -112,8 +118,8 @@ PLATFORMS
   x86_64-darwin-22
 
 DEPENDENCIES
-  cocoapods
-  fpm
+  cocoapods (~> 1.12)
+  fpm!
 
 BUNDLED WITH
    2.3.26
