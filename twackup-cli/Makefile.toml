@@ -7,14 +7,10 @@ DEB_NAME = "Twackup (CLI)"
 DEB_IDENTIFIER = "ru.danpashin.twackup"
 DEB_SECTION = "Utilities"
 DEB_PRIORITY = "optional"
-DEB_ARCHITECTURE = "iphoneos-arm"
 DEB_DEPENDS = "firmware (>= 3.0)"
 DEB_CHANGELOG_FILE = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/changelog"
 DEB_HOMEPAGE = "https://moreinfo.thebigboss.org/moreinfo/depiction.php?file=twackupDp"
 DEB_AUTHOR = "DanP"
-
-DEB_FILE_NAME = "${DEB_IDENTIFIER}_${CARGO_MAKE_CRATE_VERSION}_${DEB_ARCHITECTURE}.deb"
-DEB_TARGET_FILE = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/${DEB_FILE_NAME}"
 
 [tasks.build-apple-aarch64]
 command = "cargo"
@@ -42,12 +38,14 @@ command = "ldid"
 args = ["-S", "${TWACKUP_FAT_BINARY}"]
 
 [tasks.create-deb]
+cwd = "${ARTIFACTS_OUTPUT_DIR}"
 command = "fpm"
 args = [
     "--input-type", "dir",
     "--output-type", "deb",
     "--force",
-    "--package", "${DEB_TARGET_FILE}",
+    "--prefix", "${DEB_PREFIX}",
+    "--deb-no-changelog",
     "--log", "warn",
     "--name", "${DEB_IDENTIFIER}",
     "--category", "${DEB_SECTION}",
@@ -59,14 +57,22 @@ args = [
     "--version", "${CARGO_MAKE_CRATE_VERSION}",
     "--license", "${CARGO_MAKE_CRATE_LICENSE}",
     "--vendor", "",
-    "--deb-changelog", "${DEB_CHANGELOG_FILE}",
     "--url", "${DEB_HOMEPAGE}",
     "--deb-field", "Name: ${DEB_NAME}",
 
     "${TWACKUP_FAT_BINARY}=/usr/bin/twackup",
     "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/COPYING=/usr/share/doc/${DEB_IDENTIFIER}/LICENSE",
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/changelog=/usr/share/doc/${DEB_IDENTIFIER}/changelog",
 ]
+
+[tasks.create-rootfull-deb]
+env = { "DEB_ARCHITECTURE" = "iphoneos-arm", "DEB_PREFIX" = "", "ARTIFACTS_OUTPUT_DIR" = "${ARTIFACTS_ROOTFULL_DIR}" }
+run_task = "create-deb"
+
+[tasks.create-rootless-deb]
+env = { "DEB_ARCHITECTURE" = "iphoneos-arm64", "DEB_PREFIX" = "/var/jb", "ARTIFACTS_OUTPUT_DIR" = "${ARTIFACTS_ROOTLESS_DIR}" }
+run_task = "create-deb"
 
 [tasks.create-package]
 dependencies = ["build-fat-binary", "sign-binary"]
-run_task = { name = "create-deb" }
+run_task = { name = ["create-rootfull-deb", "create-rootless-deb"] }

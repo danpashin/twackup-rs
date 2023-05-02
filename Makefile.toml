@@ -1,3 +1,7 @@
+[env]
+ARTIFACTS_DIR = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/artifacts"
+ARTIFACTS_ROOTLESS_DIR = "${ARTIFACTS_DIR}/rootless"
+ARTIFACTS_ROOTFULL_DIR = "${ARTIFACTS_DIR}/rootfull"
 
 [tasks.build-cli-package]
 workspace = false
@@ -18,6 +22,16 @@ args = [
     "create-package"
 ]
 
+[tasks.create-artifacts-dir]
+command = "mkdir"
+args = ["-p", "${ARTIFACTS_ROOTLESS_DIR}", "${ARTIFACTS_ROOTFULL_DIR}"]
+
 [tasks.build-all]
 workspace = false
-dependencies = ["test", "build-cli-package", "build-lib-package", "build-gui-package"]
+dependencies = [
+    "create-artifacts-dir",
+    "test",
+    "build-cli-package",
+    "build-lib-package",
+    "build-gui-package"
+]

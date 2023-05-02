@@ -18,9 +18,6 @@ DEB_CHANGELOG_FILE = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/changelog"
 DEB_HOMEPAGE = "https://moreinfo.thebigboss.org/moreinfo/depiction.php?file=twackupDp"
 DEB_AUTHOR = "DanP"
 
-DEB_FILE_NAME = "${DEB_IDENTIFIER}_${CARGO_MAKE_CRATE_VERSION}_${DEB_ARCHITECTURE}.deb"
-DEB_TARGET_FILE = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/${DEB_FILE_NAME}"
-
 [tasks.build-apple-aarch64-ios]
 command = "cargo"
 toolchain = "${CARGO_MAKE_RUST_DEFAULT_TOOLCHAIN}"
@@ -73,12 +70,14 @@ command = "ldid"
 args = ["-S", "${TWACKUP_FAT_DYLIB}"]
 
 [tasks.create-deb]
+cwd = "${ARTIFACTS_OUTPUT_DIR}"
 command = "fpm"
 args = [
     "--input-type", "dir",
     "--output-type", "deb",
     "--force",
-    "--package", "${DEB_TARGET_FILE}",
+    "--prefix", "${DEB_PREFIX}",
+    "--deb-no-changelog",
     "--log", "warn",
     "--name", "${DEB_IDENTIFIER}",
     "--category", "${DEB_SECTION}",
@@ -97,7 +96,16 @@ args = [
     "${TWACKUP_FAT_DYLIB}=/usr/lib/${TWACKUP_DYLIB_NAME}",
     "${TWACKUP_FAT_STATIC_LIB}=/usr/lib/${TWACKUP_STATIC_LIB_NAME}",
     "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/twackup.h=/usr/include/twackup.h",
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/changelog=/usr/share/doc/${DEB_IDENTIFIER}/changelog",
 ]
+
+[tasks.create-rootfull-deb]
+env = { "DEB_ARCHITECTURE" = "iphoneos-arm", "DEB_PREFIX" = "", "ARTIFACTS_OUTPUT_DIR" = "${ARTIFACTS_ROOTFULL_DIR}" }
+run_task = "create-deb"
+
+[tasks.create-rootless-deb]
+env = { "DEB_ARCHITECTURE" = "iphoneos-arm64", "DEB_PREFIX" = "/var/jb", "ARTIFACTS_OUTPUT_DIR" = "${ARTIFACTS_ROOTLESS_DIR}" }
+run_task = "create-deb"
 
 [tasks.build-ffi-binary]
 dependencies = ["build-native-library"]
@@ -126,4 +134,4 @@ dependencies = [
     "create-headers",
     "test-ffi",
 ]
-run_task = { name = "create-deb" }
+run_task = { name = ["create-rootfull-deb", "create-rootless-deb"] }

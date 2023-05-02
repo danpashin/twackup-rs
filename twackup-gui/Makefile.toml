@@ -18,9 +18,6 @@ DEB_AUTHOR = "DanP"
 DEB_LICENSE = "GPL-3.0-only"
 DEB_DESCRIPTION = "Safe and fast GUI utility for rebuilding DEBs and backing up packages"
 
-DEB_FILE_NAME = "${DEB_IDENTIFIER}_${CARGO_MAKE_CRATE_VERSION}_${DEB_ARCHITECTURE}.deb"
-DEB_TARGET_FILE = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/${DEB_FILE_NAME}"
-
 [tasks.archive]
 command = "xcrun"
 args = [
@@ -39,12 +36,14 @@ command = "ldid"
 args = [ "-S", "${GUI_APP_DIR}" ]
 
 [tasks.create-deb]
+cwd = "${ARTIFACTS_OUTPUT_DIR}"
 command = "fpm"
 args = [
     "--input-type", "dir",
     "--output-type", "deb",
     "--force",
-    "--package", "${DEB_TARGET_FILE}",
+    "--prefix", "${DEB_PREFIX}",
+    "--deb-no-changelog",
     "--log", "warn",
     "--name", "${DEB_IDENTIFIER}",
     "--category", "${DEB_SECTION}",
@@ -61,16 +60,26 @@ args = [
     "--deb-field", "Name: ${DEB_NAME}",
 
     "${GUI_APP_DIR}=/Applications",
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/changelog=/usr/share/doc/${DEB_IDENTIFIER}/changelog",
 ]
+
+[tasks.create-rootfull-deb]
+env = { "DEB_ARCHITECTURE" = "iphoneos-arm", "DEB_PREFIX" = "", "ARTIFACTS_OUTPUT_DIR" = "${ARTIFACTS_ROOTFULL_DIR}" }
+run_task = "create-deb"
+
+[tasks.create-rootless-deb]
+env = { "DEB_ARCHITECTURE" = "iphoneos-arm64", "DEB_PREFIX" = "/var/jb", "ARTIFACTS_OUTPUT_DIR" = "${ARTIFACTS_ROOTLESS_DIR}" }
+run_task = "create-deb"
 
 [tasks.create-ipa]
 script = """
 working_dir=$(realpath ${GUI_APP_DIR}/../../)
 mv "$working_dir/Applications" "$working_dir/Payload"
 cd "$working_dir"
-zip -r "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/Twackup-${CARGO_MAKE_CRATE_VERSION}.ipa" Payload
+zip -r "${ARTIFACTS_DIR}/Twackup-${CARGO_MAKE_CRATE_VERSION}.ipa" Payload
 mv "$working_dir/Payload" "$working_dir/Applications"
 """
 
 [tasks.create-package]
-dependencies = ["archive", "sign", "create-deb", "create-ipa"]
+dependencies = ["archive", "sign"]
+run_task = { name = ["create-rootfull-deb", "create-rootless-deb", "create-ipa"] }

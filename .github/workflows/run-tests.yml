@@ -35,7 +35,13 @@ jobs:
         cargo build-ios
     - uses: actions/upload-artifact@v3
       with:
-        name: Twackup-git-${{ env.GIT_SHA }}
-        path: |
-          target/*.deb
-          target/*.ipa
+        name: Twackup-rootfull-g${{ env.GIT_SHA }}
+        path: target/artifacts/rootfull/*.deb
+    - uses: actions/upload-artifact@v3
+      with:
+        name: Twackup-rootless-g${{ env.GIT_SHA }}
+        path: target/artifacts/rootless/*.deb
+    - uses: actions/upload-artifact@v3
+      with:
+        name: Twackup-g${{ env.GIT_SHA }}
+        path: target/artifacts/*.ipa
