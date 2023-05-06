@@ -33,7 +33,7 @@ args = [
 
 [tasks.sign]
 command = "ldid"
-args = [ "-S", "${GUI_APP_DIR}" ]
+args = [ "-S${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/entitlements.plist", "${GUI_APP_DIR}" ]
 
 [tasks.create-deb]
 cwd = "${ARTIFACTS_OUTPUT_DIR}"
