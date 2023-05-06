@@ -48,15 +48,19 @@ impl Deb {
     /// # Errors
     /// Returns IO error if temp dir is not writable
     #[inline]
-    pub(crate) fn new<O: AsRef<Path>>(output: O, compression: Compression) -> Result<Self> {
+    pub(crate) fn new<O: AsRef<Path>>(
+        output: O,
+        compression: Compression,
+        follow_symlinks: bool,
+    ) -> Result<Self> {
         let control_file = Encoder::new(vec![], compression)?;
         let data_file = Encoder::new(vec![], compression)?;
 
         Ok(Self {
             compression,
             output: output.as_ref().to_path_buf(),
-            control: TarArchive::new(control_file),
-            data: TarArchive::new(data_file),
+            control: TarArchive::new(control_file, follow_symlinks),
+            data: TarArchive::new(data_file, follow_symlinks),
         })
     }
 
@@ -115,9 +119,9 @@ impl Deb {
 
 impl<W: tokio::io::AsyncWrite + Unpin + Send + Sync> TarArchive<W> {
     #[inline]
-    pub(crate) fn new(writer: W) -> Self {
+    pub(crate) fn new(writer: W, follow_symlinks: bool) -> Self {
         let mut builder = Tar::new(writer);
-        builder.follow_symlinks(false);
+        builder.follow_symlinks(follow_symlinks);
         Self { builder }
     }
 

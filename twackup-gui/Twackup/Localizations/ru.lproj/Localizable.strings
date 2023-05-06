@@ -63,6 +63,9 @@
 "settings-compression-type" = "Тип контейнера";
 "settings-compression-footer" = "Сжатие влияет на время сборки deb-пакетов и занимаемое ими место. Правильно выбирайте тип, исходя из ваших потребностей.";
 
+"settings-follow-symlinks" = "Резолвить симлинки";
+"settings-follow-symlinks-footer" = "Выполнять переход по симлинкам при сборке пакета. Неверное значение может сломать работу deb-пакета.";
+
 "compression-level-none" = "Не сжимать";
 "compression-level-fast" = "Быстрое";
 "compression-level-normal" = "Оптимальное";

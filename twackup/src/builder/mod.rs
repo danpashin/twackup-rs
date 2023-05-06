@@ -93,6 +93,9 @@ pub struct Preferences {
     /// Compression type and level
     /// Gzip and 6 level by default
     pub compression: Compression,
+    /// Should follow symlinks while creating deb or not.
+    /// Disabling can produce broken debs.
+    pub follow_symlinks: bool,
     /// Dpkg dir paths
     paths: Paths,
     /// Directory to which final deb should be moved
@@ -120,6 +123,7 @@ impl Preferences {
         Self {
             remove_deb: false,
             compression: Compression::default(),
+            follow_symlinks: false,
             paths: admin_dir.into(),
             destination_dir: destination_dir.as_ref().to_path_buf(),
         }
@@ -163,7 +167,11 @@ impl<'a, T: Progress> Worker<'a, T> {
         let deb_name = format!("{}.deb", self.package.canonical_name());
         let deb_path = self.preferences.destination_dir.join(deb_name);
 
-        let mut deb = Deb::new(&deb_path, self.preferences.compression)?;
+        let mut deb = Deb::new(
+            &deb_path,
+            self.preferences.compression,
+            self.preferences.follow_symlinks,
+        )?;
         self.archive_files(deb.data_mut_ref()).await?;
         self.archive_metadata(deb.control_mut_ref()).await?;
         deb.build().await?;

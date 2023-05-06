@@ -61,6 +61,9 @@ Look here if you have any errors when building packages.";
 "settings-compression-type" = "Compression container";
 "settings-compression-footer" = "Compression will affect the build time of deb packages and the space they occupy. Choose the right type based on your needs.";
 
+"settings-follow-symlinks" = "Follow symlinks";
+"settings-follow-symlinks-footer" = "Follow symlinks when rebuilding deb. Invalid value can break deb-package.";
+
 "compression-level-none" = "None";
 "compression-level-fast" = "Fast";
 "compression-level-normal" = "Optimal";

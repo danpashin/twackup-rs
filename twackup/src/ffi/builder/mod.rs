@@ -90,6 +90,7 @@ impl From<TwCompressionLevel> for crate::archiver::Level {
 pub struct TwBuildPreferences {
     compression_type: TwCompressionType,
     compression_level: TwCompressionLevel,
+    follow_symlinks: bool,
 }
 
 #[derive_ReprC]
@@ -114,6 +115,7 @@ pub(crate) fn rebuild_packages(dpkg: &TwDpkg, parameters: TwBuildParameters<'_>)
     let mut preferences = Preferences::new(dpkg_paths, out_dir);
     preferences.compression.level = parameters.preferences.compression_level.into();
     preferences.compression.r#type = parameters.preferences.compression_type.into();
+    preferences.follow_symlinks = parameters.preferences.follow_symlinks;
 
     let dpkg_contents = Arc::new(dpkg.inner_dpkg().info_dir_contents()?);
 

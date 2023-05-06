@@ -54,6 +54,16 @@ impl From<CompressionType> for twackup::archiver::Type {
     }
 }
 
+#[cfg(not(target_os = "ios"))]
+fn should_follow_symlinks() -> bool {
+    false
+}
+
+#[cfg(target_os = "ios")]
+pub(crate) fn should_follow_symlinks() -> bool {
+    std::fs::metadata("/var/jb/var/lib/dpkg").is_ok()
+}
+
 #[derive(clap::Parser)]
 #[clap(
     version,
@@ -97,6 +107,11 @@ pub(crate) struct Build {
     /// DEB Compression type
     #[arg(long, short = 'c', default_value = "gzip")]
     compression_type: CompressionType,
+
+    /// Will add files to deb by following symlinks if flag is set.
+    /// Enabled by default only for rootless jailbreaks.
+    #[arg(long, short = 'f', default_value_t = should_follow_symlinks())]
+    follow_symlinks: bool,
 
     /// Package identifier or number from the list command.
     /// This argument can have multiple values separated by space ' '.
@@ -167,6 +182,7 @@ impl Build {
         let mut preferences =
             Preferences::new(&self.global_options.admin_dir, &self.destination_dir);
         preferences.remove_deb = self.remove_after;
+        preferences.follow_symlinks = self.follow_symlinks;
         preferences.compression.level = CompressionLevel::Custom(self.compression_level);
         preferences.compression.r#type = self.compression_type.into();
 

@@ -85,6 +85,7 @@ class Dpkg {
         // Since Swift enums have values equal to FFI ones, it is safe to just pass them by without any checks
         buildParameters.preferences.compression_level = .init(preferences.compression.level.rawValue)
         buildParameters.preferences.compression_type = .init(preferences.compression.kind.rawValue)
+        buildParameters.preferences.follow_symlinks = preferences.followSymlinks
 
         var ffiResults = slice_boxed_TwPackagesRebuildResult()
         withUnsafeMutablePointer(to: &ffiResults) { buildParameters.results = $0 }

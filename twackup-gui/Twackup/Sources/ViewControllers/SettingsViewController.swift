@@ -47,6 +47,12 @@ struct SettingsViewController: View {
                 })
 
                 Section(content: {
+                    Toggle("settings-follow-symlinks", isOn: $preferences.followSymlinks)
+                }, footer: {
+                    Text("settings-follow-symlinks-footer")
+                })
+
+                Section(content: {
                     diskUsageView
                         .padding(.vertical, 8.0)
                     Button("settings-clear-appdata-button") {
