@@ -67,20 +67,21 @@ unsafe impl safer_ffi::layout::CType for TwPackageRef {
     type OPAQUE_KIND = OpaqueKind::Concrete;
 
     #[cfg(feature = "ffi-headers")]
-    fn c_short_name_fmt(fmt: &'_ mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(fmt, "TwPackageRef")
+    fn short_name() -> String {
+        "TwPackageRef".to_string()
     }
 
     #[cfg(feature = "ffi-headers")]
-    fn c_define_self(definer: &'_ mut dyn safer_ffi::headers::Definer) -> std::io::Result<()> {
-        let me = &Self::c_short_name().to_string();
-        definer.define_once(me, &mut |definer| {
+    fn define_self__impl(
+        language: &'_ dyn safer_ffi::headers::languages::HeaderLanguage,
+        definer: &'_ mut dyn safer_ffi::headers::Definer,
+    ) -> std::io::Result<()> {
+        use safer_ffi::headers::languages;
+        if language.is::<languages::C>() {
+            let me = Self::name(language);
             writeln!(definer.out(), "typedef void *{};", me)
-        })
-    }
-
-    #[cfg(feature = "ffi-headers")]
-    fn c_var_fmt(fmt: &'_ mut std::fmt::Formatter<'_>, var_name: &'_ str) -> std::fmt::Result {
-        write!(fmt, "{} {}", Self::c_short_name(), var_name)
+        } else {
+            Ok(())
+        }
     }
 }

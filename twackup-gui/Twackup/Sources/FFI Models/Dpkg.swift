@@ -48,8 +48,8 @@ class Dpkg {
     /// - Returns: Array of parsed packages. Improper packages will be skipped
     func parsePackages(onlyLeaves: Bool) throws -> [FFIPackage] {
         var rawPkgs = slice_boxed_TwPackage_t()
-        let result = tw_get_packages(innerDpkg, onlyLeaves, .init(TW_PACKAGES_SORT_NAME), &rawPkgs)
-        if result != .init(TW_RESULT_OK) || rawPkgs.ptr == nil {
+        let result = tw_get_packages(innerDpkg, onlyLeaves, TW_PACKAGES_SORT_NAME, &rawPkgs)
+        if result != TW_RESULT_OK || rawPkgs.ptr == nil {
             throw NSError(domain: "ru.danpashin.twackup", code: 0, userInfo: [
                 NSLocalizedDescriptionKey: "FFI returned \(result) code. Critical bug?"
             ])
@@ -83,8 +83,8 @@ class Dpkg {
         buildParameters.functions = createProgressFuncs()
 
         // Since Swift enums have values equal to FFI ones, it is safe to just pass them by without any checks
-        buildParameters.preferences.compression_level = .init(preferences.compression.level.rawValue)
-        buildParameters.preferences.compression_type = .init(preferences.compression.kind.rawValue)
+        buildParameters.preferences.compression_level = .init(UInt32(preferences.compression.level.rawValue))
+        buildParameters.preferences.compression_type = .init(UInt32(preferences.compression.kind.rawValue))
         buildParameters.preferences.follow_symlinks = preferences.followSymlinks
 
         var ffiResults = slice_boxed_TwPackagesRebuildResult()
@@ -102,7 +102,7 @@ class Dpkg {
             }
         }
 
-        if status != .init(TW_RESULT_OK) {
+        if status != TW_RESULT_OK {
             tw_free_rebuild_results(ffiResults)
 
             throw NSError(domain: "ru.danpashin.twackup", code: 0, userInfo: [

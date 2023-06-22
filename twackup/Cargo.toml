@@ -33,9 +33,9 @@ harness = false
 
 # Core
 twackup-derive = { version = "2.0.2", path = "../twackup-derive" }
-tokio = { version = "1.27", features = ["rt-multi-thread", "sync", "macros", "fs"] }
+tokio = { version = "1.28", features = ["rt-multi-thread", "sync", "macros", "fs"] }
 memmem = "0.1"
-memmap2 = "0.5"
+memmap2 = "0.7.0"
 
 # Archiving
 ar = "0.9"
@@ -55,13 +55,13 @@ thiserror = "1.0"
 
 # Misc
 libc = "0.2"
-safer-ffi = { version = "0.0.10", features = ["proc_macros"], optional = true }
+safer-ffi = { version = "0.1.0", features = ["proc_macros"], optional = true }
 
 # CLI Utils
 console = { version = "0.15", default-features = false, features = [], optional = true }
 
 [dev-dependencies]
-criterion = { version = "0.4", features = ["async_tokio"] }
+criterion = { version = "0.5.1", features = ["async_tokio"] }
 
 [build-dependencies]
-vergen = { version = "8.1.1", features = ["git", "gitoxide"] }
+vergen = { version = "8.2.1", features = ["git", "gitoxide"] }

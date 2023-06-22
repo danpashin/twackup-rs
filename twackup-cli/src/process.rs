@@ -18,6 +18,7 @@
  */
 
 use libproc::libproc::proc_pid;
+use libproc::processes::{pids_by_type, ProcFilter};
 use std::collections::HashSet;
 
 // Taken from sysinfo crate
@@ -99,7 +100,7 @@ pub(crate) fn send_signal_to_multiple<'a>(
     signal: Signal,
 ) {
     let executables: HashSet<&str> = executables.collect();
-    let pids = proc_pid::listpids(proc_pid::ProcType::ProcAllPIDS).unwrap_or_default();
+    let pids = pids_by_type(ProcFilter::All).unwrap_or_default();
 
     #[allow(clippy::cast_possible_wrap)]
     pids.into_iter()

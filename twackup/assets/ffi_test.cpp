@@ -1,5 +1,6 @@
 #include "twackup.h"
 #include <iostream>
+#include <cassert>
 
 static void started_processing(void *context, TwPackage_t const *package) {
   std::cout

@@ -31,11 +31,7 @@ use self::{
     package::{container::TwPackageRef, field::TwPackageField, TwPackage},
 };
 use crate::Dpkg;
-use safer_ffi::{
-    derive_ReprC, ffi_export,
-    prelude::c_slice,
-    prelude::{char_p, repr_c},
-};
+use safer_ffi::{boxed, derive_ReprC, ffi_export, prelude::c_slice, prelude::char_p};
 use std::ptr;
 
 #[derive_ReprC]
@@ -51,9 +47,9 @@ pub enum TwResult {
 /// \param[in] lock If dpkg database dir must be locked for parsing packages
 ///
 #[ffi_export]
-fn tw_init(dpkg_dir: char_p::Ref<'_>, lock: bool) -> repr_c::Box<TwDpkg> {
+fn tw_init(dpkg_dir: char_p::Ref<'_>, lock: bool) -> boxed::Box_<TwDpkg> {
     let dpkg = Dpkg::new(dpkg_dir.to_str(), lock);
-    repr_c::Box::new(TwDpkg::new(dpkg))
+    boxed::Box_::new(TwDpkg::new(dpkg))
 }
 
 /// Deallocates dpkg instance
@@ -61,7 +57,7 @@ fn tw_init(dpkg_dir: char_p::Ref<'_>, lock: bool) -> repr_c::Box<TwDpkg> {
 /// \param[in] dpkg Instance to be deallocated
 ///
 #[ffi_export]
-fn tw_free(dpkg: repr_c::Box<TwDpkg>) {
+fn tw_free(dpkg: boxed::Box_<TwDpkg>) {
     drop(dpkg);
 }
 

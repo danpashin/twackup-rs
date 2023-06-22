@@ -55,16 +55,16 @@ enum PackageSection: UInt16 {
 extension TwPackageSection_t {
     var swiftSection: PackageSection {
         switch self {
-        case TwPackageSection_t(TW_PACKAGE_SECTION_ARCHIVING): return .archiving
-        case TwPackageSection_t(TW_PACKAGE_SECTION_DEVELOPMENT): return .development
-        case TwPackageSection_t(TW_PACKAGE_SECTION_NETWORKING): return .networking
-        case TwPackageSection_t(TW_PACKAGE_SECTION_PACKAGING): return .packaging
-        case TwPackageSection_t(TW_PACKAGE_SECTION_SYSTEM): return .system
-        case TwPackageSection_t(TW_PACKAGE_SECTION_TERMINAL_SUPPORT): return .terminalSupport
-        case TwPackageSection_t(TW_PACKAGE_SECTION_TEXT_EDITORS): return .textEditors
-        case TwPackageSection_t(TW_PACKAGE_SECTION_THEMES): return .themes
-        case TwPackageSection_t(TW_PACKAGE_SECTION_TWEAKS): return .tweaks
-        case TwPackageSection_t(TW_PACKAGE_SECTION_UTILITIES): return .utilities
+        case TW_PACKAGE_SECTION_ARCHIVING: return .archiving
+        case TW_PACKAGE_SECTION_DEVELOPMENT: return .development
+        case TW_PACKAGE_SECTION_NETWORKING: return .networking
+        case TW_PACKAGE_SECTION_PACKAGING: return .packaging
+        case TW_PACKAGE_SECTION_SYSTEM: return .system
+        case TW_PACKAGE_SECTION_TERMINAL_SUPPORT: return .terminalSupport
+        case TW_PACKAGE_SECTION_TEXT_EDITORS: return .textEditors
+        case TW_PACKAGE_SECTION_THEMES: return .themes
+        case TW_PACKAGE_SECTION_TWEAKS: return .tweaks
+        case TW_PACKAGE_SECTION_UTILITIES: return .utilities
 
         default: return .other
         }

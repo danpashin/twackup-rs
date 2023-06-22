@@ -20,7 +20,6 @@
 #![deny(
     rust_2018_idioms,
     clippy::pedantic,
-    unreachable_pub,
     clippy::string_lit_as_bytes,
     clippy::deref_by_slicing,
     clippy::filetype_is_file,

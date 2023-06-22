@@ -13,7 +13,7 @@ protocol FFILoggerSubscriber: NSObjectProtocol {
 
 class FFILogger {
     @objc
-    enum Level: UInt8 {
+    enum Level: UInt32 {
         case off
         case error
         case warning
@@ -38,7 +38,7 @@ class FFILogger {
             guard let context,
                   let msgText = String(ffiSlice: ffiMsg.text, deallocate: true),
                   let msgTarget = String(ffiSlice: ffiMsg.target, deallocate: true),
-                  let level = Level(rawValue: level) else {
+                  let level = Level(rawValue: level.rawValue) else {
                 return
             }
 
@@ -46,7 +46,7 @@ class FFILogger {
             logger.log(message: Message(text: msgText, target: msgTarget), level: level)
         }
 
-        tw_enable_logging(funcs, level.rawValue)
+        tw_enable_logging(funcs, .init(UInt32(level.rawValue)))
     }
 
     func log(message: Message, level: Level) {

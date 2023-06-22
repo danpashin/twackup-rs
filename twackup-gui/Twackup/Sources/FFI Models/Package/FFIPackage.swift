@@ -19,18 +19,15 @@ class FFIPackage: Package {
     }
 
     private(set) lazy var icon: URL? = {
-        let field = TwPackageField_t(TW_PACKAGE_FIELD_ICON)
-        guard let icon = String(ffiSlice: pkg.get_field(pkg.inner_ptr, field)) else { return nil }
+        guard let icon = String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_ICON)) else { return nil }
 
         return URL(string: icon)
     }()
 
     private(set) lazy var depiction: URL? = {
-        let field = TwPackageField_t(TW_PACKAGE_FIELD_DEPICTION)
-        var depiction = String(ffiSlice: pkg.get_field(pkg.inner_ptr, field))
+        var depiction = String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_DEPICTION))
         if depiction == nil {
-            let field = TwPackageField_t(TW_PACKAGE_FIELD_HOMEPAGE)
-            depiction = String(ffiSlice: pkg.get_field(pkg.inner_ptr, field))
+            depiction = String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_HOMEPAGE))
         }
 
         guard let depiction else { return nil }
@@ -38,15 +35,15 @@ class FFIPackage: Package {
     }()
 
     private(set) lazy var humanDescription: String? = {
-        String(ffiSlice: pkg.get_field(pkg.inner_ptr, TwPackageField_t(TW_PACKAGE_FIELD_DESCRIPTION)))
+        String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_DESCRIPTION))
     }()
 
     private(set) lazy var architecture: String? = {
-        String(ffiSlice: pkg.get_field(pkg.inner_ptr, TwPackageField_t(TW_PACKAGE_FIELD_ARCHITECTURE)))
+        String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_ARCHITECTURE))
     }()
 
     private(set) lazy var installedSize: Int64 = {
-        let field = TwPackageField_t(TW_PACKAGE_FIELD_INSTALLED_SIZE)
+        let field = TW_PACKAGE_FIELD_INSTALLED_SIZE
         guard let stringSize = String(ffiSlice: pkg.get_field(pkg.inner_ptr, field)) else { return 0 }
         guard let size = Int64(stringSize) else { return 0 }
         return size * 1_000
