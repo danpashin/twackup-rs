@@ -1,0 +1,62 @@
+{
+  "abi-return-struct-as-int": true,
+  "arch": "arm",
+  "archive-format": "darwin",
+  "cpu": "cortex-a8",
+  "data-layout": "e-m:o-p:32:32-Fi8-f64:32:64-v64:32:64-v128:32:128-a:0:32-n32-S32",
+  "debuginfo-kind": "dwarf-dsym",
+  "default-dwarf-version": 2,
+  "dll-suffix": ".dylib",
+  "dynamic-linking": true,
+  "eh-frame-header": false,
+  "emit-debug-gdb-scripts": false,
+  "features": "+v7,+vfp3,+neon",
+  "frame-pointer": "always",
+  "function-sections": false,
+  "has-rpath": true,
+  "is-like-osx": true,
+  "link-env": [
+    "ZERO_AR_DATE=1"
+  ],
+  "link-env-remove": [
+    "MACOSX_DEPLOYMENT_TARGET"
+  ],
+  "linker-is-gnu": false,
+  "lld-flavor": "darwin",
+  "llvm-target": "armv7-apple-ios7.0.0",
+  "max-atomic-width": 64,
+  "os": "ios",
+  "pre-link-args": {
+    "gcc": [
+      "-arch",
+      "armv7"
+    ],
+    "ld": [
+      "-arch",
+      "armv7",
+      "-platform_version",
+      "ios",
+      "7.0",
+      "7.0"
+    ],
+    "ld64.lld": [
+      "-arch",
+      "armv7",
+      "-platform_version",
+      "ios",
+      "7.0",
+      "7.0"
+    ]
+  },
+  "split-debuginfo": "packed",
+  "supported-split-debuginfo": [
+    "packed",
+    "unpacked",
+    "off"
+  ],
+  "target-family": [
+    "unix"
+  ],
+  "target-pointer-width": "32",
+  "vendor": "apple"
+}

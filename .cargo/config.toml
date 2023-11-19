@@ -1,5 +1,2 @@
-[unstable]
-build-std = ["std", "compiler_builtins"]
-
 [alias]
 build-ios = "make -p release build-all"

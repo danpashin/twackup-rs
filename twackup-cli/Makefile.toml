@@ -20,7 +20,12 @@ args = ["build", "@@remove-empty(CARGO_BUILD_RELEASE_ARG)", "--target", "aarch64
 [tasks.build-apple-armv7]
 command = "cargo"
 toolchain = "nightly"
-args = ["build", "@@remove-empty(CARGO_BUILD_RELEASE_ARG)", "--target", "armv7-apple-ios"]
+args = [
+    "build",
+    "@@remove-empty(CARGO_BUILD_RELEASE_ARG)",
+    "--target", "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/assets/armv7-apple-ios.json",
+    "-Z", "build-std",
+]
 
 [tasks.build-fat-binary]
 dependencies = ["build-apple-aarch64", "build-apple-armv7"]
