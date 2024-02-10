@@ -67,7 +67,7 @@ impl Import {
 
     async fn import_repositories(data: &ExportData) -> Result<()> {
         let Some(repos) = &data.repositories else {
-            return Ok(())
+            return Ok(());
         };
 
         for repo_group in repos {
@@ -121,7 +121,7 @@ impl Import {
 
     fn import_packages(data: &ExportData) -> Result<()> {
         let Some(packages) = &data.packages else {
-            return Ok(())
+            return Ok(());
         };
 
         log::info!("Importing packages...");
@@ -153,8 +153,7 @@ impl Import {
 
         assert!(
             apt_cmd.success(),
-            "Apt exited with status: {:?}. See stderr for more info.",
-            apt_cmd
+            "Apt exited with status: {apt_cmd:?}. See stderr for more info."
         );
 
         Ok(())

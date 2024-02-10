@@ -42,6 +42,11 @@ impl TwPackageRef {
         ));
         Self(NonNull::new(Box::into_raw(contents)).unwrap())
     }
+
+    pub(crate) fn deinit(self) {
+        let raw = unsafe { Box::from_raw(self.0.as_ptr()) };
+        drop(raw);
+    }
 }
 
 impl AsRef<Package> for TwPackageRef {

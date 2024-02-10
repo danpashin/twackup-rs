@@ -25,12 +25,10 @@
     clippy::deref_by_slicing,
     clippy::filetype_is_file,
     clippy::let_underscore_must_use,
-    clippy::print_stdout,
     clippy::redundant_feature_names
 )]
-#![deny(rust_2018_idioms, clippy::pedantic, unreachable_pub)]
 #![warn(clippy::single_match_else, clippy::unused_self)]
-#![allow(clippy::print_stdout, clippy::uninlined_format_args)]
+#![allow(clippy::struct_excessive_bools)]
 
 mod commands;
 mod error;
@@ -96,7 +94,7 @@ async fn _run() -> Result<()> {
 
         Command::ShowLicense => {
             let license = fs::read_to_string(paths::LICENSE_PATH)?;
-            eprintln!("\n{}\n", license);
+            eprintln!("\n{license}\n");
 
             Ok(())
         }

@@ -117,7 +117,7 @@ fn tw_package_build_control(package: TwPackageRef) -> c_slice::Box<u8> {
 /// Deallocated package instance. Nothing else
 #[ffi_export]
 fn tw_package_free(package: TwPackageRef) {
-    drop(package)
+    package.deinit();
 }
 
 /// Rebuilds package to deb file.

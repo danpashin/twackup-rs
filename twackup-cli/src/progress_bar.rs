@@ -21,7 +21,7 @@ use indicatif::ProgressBar as ProgressBarImpl;
 use std::path::Path;
 use twackup::{package::Package, progress::Progress};
 
-pub(crate) static mut PROGRESS_BAR: Option<&'static ProgressBar> = None;
+pub(crate) static mut PROGRESS_BAR: Option<ProgressBar> = None;
 
 #[derive(Clone)]
 pub(crate) struct ProgressBar(pub(crate) ProgressBarImpl);
@@ -41,13 +41,7 @@ impl ProgressBar {
     }
 
     pub(crate) fn make_static(self) -> &'static Self {
-        unsafe {
-            assert!(PROGRESS_BAR.is_none(), "progress bar is already set!");
-
-            let pb = Box::leak(Box::new(self));
-            PROGRESS_BAR = Some(pb);
-            pb
-        }
+        unsafe { PROGRESS_BAR.insert(self) }
     }
 }
 
@@ -67,14 +61,6 @@ impl Progress for ProgressBar {
     fn finished_all(&self) {
         self.0.finish_and_clear();
 
-        unsafe {
-            if let Some(progress_bar) = PROGRESS_BAR {
-                let progress_bar: *mut Self = progress_bar as *const _ as *mut _;
-                let progress_bar = Box::from_raw(progress_bar);
-                drop(progress_bar);
-
-                PROGRESS_BAR = None;
-            }
-        }
+        unsafe { PROGRESS_BAR.take() };
     }
 }

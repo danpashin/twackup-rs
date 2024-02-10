@@ -22,6 +22,7 @@ use std::{
     fs::File,
     io::{BufRead, BufReader},
     path::PathBuf,
+    result::Result as StdResult,
 };
 use twackup::{repository::Repository, Parser};
 
@@ -108,7 +109,7 @@ where
         let file = File::open(self.repos_file_path())?;
 
         let mut repos = Vec::new();
-        for line in BufReader::new(file).lines().flatten() {
+        for line in BufReader::new(file).lines().map_while(StdResult::ok) {
             match Repository::from_one_line(line.as_str()) {
                 Ok(repo) => repos.push(repo),
                 Err(error) => log::warn!("[{}] {:?}", self.exec_name(), error),

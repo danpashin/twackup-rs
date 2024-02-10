@@ -42,7 +42,7 @@ impl Log for Logger {
     }
 
     fn log(&self, record: &Record<'_>) {
-        match unsafe { PROGRESS_BAR } {
+        match unsafe { PROGRESS_BAR.as_ref() } {
             Some(progress_bar) => progress_bar.0.suspend(|| self.0.log(record)),
             None => self.0.log(record),
         }
