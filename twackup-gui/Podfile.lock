@@ -1,14 +1,11 @@
 PODS:
   - DZNEmptyDataSet (1.8.1)
-  - SDWebImage (5.18.10):
-    - SDWebImage/Core (= 5.18.10)
-  - SDWebImage/Core (5.18.10)
-  - Sentry (8.20.0):
-    - Sentry/Core (= 8.20.0)
-    - SentryPrivate (= 8.20.0)
-  - Sentry/Core (8.20.0):
-    - SentryPrivate (= 8.20.0)
-  - SentryPrivate (8.20.0)
+  - SDWebImage (5.19.2):
+    - SDWebImage/Core (= 5.19.2)
+  - SDWebImage/Core (5.19.2)
+  - Sentry (8.28.0):
+    - Sentry/Core (= 8.28.0)
+  - Sentry/Core (8.28.0)
   - StyledTextKit (0.2.0)
 
 DEPENDENCIES:
@@ -22,14 +19,12 @@ SPEC REPOS:
     - DZNEmptyDataSet
     - SDWebImage
     - Sentry
-    - SentryPrivate
     - StyledTextKit
 
 SPEC CHECKSUMS:
   DZNEmptyDataSet: 9525833b9e68ac21c30253e1d3d7076cc828eaa7
-  SDWebImage: fc8f2d48bbfd72ef39d70e981bd24a3f3be53fec
-  Sentry: a8d7b373b9f9868442b02a0c425192f693103cbf
-  SentryPrivate: 006b24af16828441f70e2ab6adf241bd0a8ad130
+  SDWebImage: dfe95b2466a9823cf9f0c6d01217c06550d7b29a
+  Sentry: 1482a20b132098929714143f436a4fe574ad0517
   StyledTextKit: dbfb29a59922c6f18897a0266acd139b7c9e712b
 
 PODFILE CHECKSUM: a9ff5b807d1ae60c2e0cea81cc3e17c39440f4ef

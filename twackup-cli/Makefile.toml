@@ -1,7 +1,8 @@
 [env]
-CARGO_BUILD_RELEASE_ARG = { value = "--release", condition = { profiles = ["release"] }}
+CARGO_BUILD_RELEASE_ARG = { value = "--release", condition = { profiles = ["release"] } }
 RUSTFLAGS = "--remap-path-prefix=${HOME}="
 TWACKUP_FAT_BINARY = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/${CARGO_MAKE_PROJECT_NAME}"
+IPHONEOS_DEPLOYMENT_TARGET = "7.0"
 
 DEB_NAME = "Twackup (CLI)"
 DEB_IDENTIFIER = "ru.danpashin.twackup"
@@ -65,7 +66,6 @@ args = [
     "--vendor", "",
     "--url", "${DEB_HOMEPAGE}",
     "--deb-field", "Name: ${DEB_NAME}",
-
     "${TWACKUP_FAT_BINARY}=/usr/bin/twackup",
     "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/COPYING=/usr/share/doc/${DEB_IDENTIFIER}/LICENSE",
     "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/changelog=/usr/share/doc/${DEB_IDENTIFIER}/changelog",

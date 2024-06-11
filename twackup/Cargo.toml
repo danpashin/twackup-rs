@@ -10,7 +10,7 @@ categories = ["filesystem", "parser-implementations"]
 keywords = ["dpkg", "linux", "ios"]
 
 [lib]
-crate-type = [ "staticlib", "rlib", "cdylib" ]
+crate-type = ["staticlib", "rlib", "cdylib"]
 
 [features]
 default = []
@@ -38,8 +38,8 @@ libc = "0.2"
 log = { version = "0.4", features = ["std"] }
 memmap2 = "0.9.4"
 memmem = "0.1"
-plist = { version = "1.6.0", default-features = false, optional = true}
-safer-ffi = { version = "0.1.5", features = ["proc_macros"], optional = true }
+plist = { version = "1.6.1", default-features = false, optional = true }
+safer-ffi = { version = "0.1.8", features = ["proc_macros"], optional = true }
 serde = { version = "1.0", features = ["derive"], optional = true }
 thiserror = "1.0"
 tokio = { version = "1.34.0", features = ["rt-multi-thread", "sync", "macros", "fs"] }
