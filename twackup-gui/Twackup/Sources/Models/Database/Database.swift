@@ -5,22 +5,27 @@
 //  Created by Daniil on 28.11.2022.
 //
 
-import CoreData
+@preconcurrency import CoreData
 import os
 
-class Database {
-    private lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "Twackup")
-        container.loadPersistentStores { _, error in
+final class Database: Sendable {
+    private let persistentContainer: NSPersistentContainer
+
+    private let context: NSManagedObjectContext
+
+    init() {
+        persistentContainer = NSPersistentContainer(name: "Twackup")
+        persistentContainer.loadPersistentStores { _, error in
             if let error = error as NSError? {
-                FFILogger.shared.log("Unresolved error \(error), \(error.userInfo)")
+                Task(priority: .utility) {
+                    await FFILogger.shared.log("Unresolved error \(error), \(error.userInfo)")
+                }
             }
         }
-        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        return container
-    }()
+        persistentContainer.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
 
-    private lazy var context: NSManagedObjectContext = persistentContainer.newBackgroundContext()
+        context = persistentContainer.newBackgroundContext()
+    }
 
     private func saveContext(_ context: NSManagedObjectContext) {
         if !context.hasChanges { return }
@@ -49,8 +54,8 @@ class Database {
         return nil
     }
 
-    func addBuildedPackages(_ packages: [BuildedPackage], completion: (() -> Void)? = nil) {
-        persistentContainer.performBackgroundTask { context in
+    func add(packages: [BuildedPackage]) async {
+        await background { context in
             var index = 0
             let total = packages.count
 
@@ -71,39 +76,35 @@ class Database {
             // swiftlint:enable trailing_closure
 
             _ = self.execute(request: request, context: context)
-
-            completion?()
         }
     }
 
-    func fetchBuildedPackages() -> [DebPackage] {
-        (try? self.context.fetch(DebPackage.fetchRequest())) ?? []
+    func fetchPackages() throws -> [DebPackage] {
+        try self.context.fetch(DebPackage.fetchRequest())
     }
 
-    func fetch(package: Package) -> DebPackage? {
-        try? context.fetch(DebPackage.fetchRequest(package: package)).first
+    func fetch(package: Package) throws -> DebPackage? {
+        let possiblePackages = try context.fetch(DebPackage.fetchRequest(package: package))
+        return possiblePackages.first
     }
 
-    func delete(package: DebPackage, completion: (() -> Void)? = nil) {
-        delete(packages: [package], completion: completion)
+    func delete(package: DebPackage) async {
+        await delete(packages: [package])
     }
 
-    func delete(packages: [DebPackage], completion: (() -> Void)? = nil) {
-        persistentContainer.performBackgroundTask { context in
+    func delete(packages: [DebPackage]) async {
+        await background { context in
             if packages.isEmpty {
-                completion?()
                 return
             }
 
             let request = NSBatchDeleteRequest(objectIDs: packages.map { $0.objectID })
             _ = self.execute(request: request, context: context)
-
-            completion?()
         }
     }
 
-    func delete(packages: [Package], completion: (() -> Void)? = nil) {
-        delete(packages: packages.compactMap { $0 as? DebPackage }, completion: completion)
+    func delete(packages: [Package]) async {
+        await delete(packages: packages.compactMap { $0 as? DebPackage })
     }
 
     func packagesSize() -> Int64 {
@@ -125,5 +126,14 @@ class Database {
         }
 
         return size
+    }
+
+    private func background(_ work: @escaping (NSManagedObjectContext) -> Void) async {
+        await withCheckedContinuation { continuation in
+            persistentContainer.performBackgroundTask { context in
+                work(context)
+                continuation.resume()
+            }
+        }
     }
 }

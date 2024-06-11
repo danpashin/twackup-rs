@@ -47,7 +47,9 @@ class DiskSpaceUsageView: UIView {
             queue: .main
         ) { [weak self] _  in
             guard let self else { return }
-            self.update()
+            Task {
+                await self.update()
+            }
         }
     }
 
@@ -56,7 +58,12 @@ class DiskSpaceUsageView: UIView {
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(reloadObserver as Any)
+        // Apple moment
+        Task {
+            await MainActor.run {
+                NotificationCenter.default.removeObserver(reloadObserver as Any)
+            }
+        }
     }
 
     override func updateConstraints() {
@@ -82,26 +89,27 @@ class DiskSpaceUsageView: UIView {
         chart.isHidden = true
         activityIndicator.startAnimating()
 
-        diskStats.update { [self] in
-            appItem.bytes = diskStats.appSpace
+        Task {
+            await diskStats.update()
+
+            appItem.bytes = await diskStats.appSpace
             appItem.title = "disk-usage-app".localized + " • "
 
-            deviceItem.bytes = diskStats.usedSpace
+            deviceItem.bytes = await diskStats.usedSpace
             deviceItem.title = "disk-usage-other".localized + " • "
 
-            totalItem.bytes = diskStats.totalSpace
+            totalItem.bytes = await diskStats.totalSpace
             totalItem.title = "disk-usage-total-space".localized + " • "
 
-            DispatchQueue.main.sync {
-                chart.set(items: [appItem, deviceItem, totalItem])
+            chart.set(items: [appItem, deviceItem, totalItem])
 
-                activityIndicator.stopAnimating()
-                chart.isHidden = false
-            }
+            activityIndicator.stopAnimating()
+            chart.isHidden = false
         }
     }
 }
 
+@MainActor
 struct DiskSpaceUsage: UIViewRepresentable {
     typealias UIViewType = DiskSpaceUsageView
 

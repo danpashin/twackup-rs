@@ -7,18 +7,18 @@
 
 import Sentry
 
-protocol DpkgProgressDelegate: AnyObject {
+protocol DpkgProgress: Actor {
     /// Being called when package is ready to start it's rebuilding operation
     func startProcessing(package: Package)
 
     /// Being called when package just finished it's rebuilding operation
-    func finishedProcessing(package: Package, debPath: URL)
+    func finishedProcessing(package: Package, debURL: URL)
 
     /// Being called when all packages are processed
     func finishedAll()
 }
 
-class Dpkg {
+actor Dpkg {
     enum MessageLevel: UInt8 {
         case debug
         case info
@@ -26,17 +26,22 @@ class Dpkg {
         case error
     }
 
-    static let defaultSaveDirectory: URL = {
+    nonisolated static let defaultSaveDirectory: URL = {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }()
 
     /// Delegate which will be called on build state update
-    weak var buildProgressDelegate: DpkgProgressDelegate?
+    weak var buildProgressDelegate: DpkgProgress?
 
     private let innerDpkg: UnsafeMutablePointer<TwDpkg_t>
 
-    init(path: String, lock: Bool = false) {
+    private let preferences: Preferences
+
+    private var buildParameters = TwBuildParameters_t()
+
+    init(path: String, preferences: Preferences, lock: Bool = false) {
         innerDpkg = tw_init(path, lock)
+        self.preferences = preferences
     }
 
     deinit {
@@ -76,19 +81,21 @@ class Dpkg {
     ///   - outDir: Directory that will contain debs of packages
     /// - Returns: Array with results.
     /// Every result contains full deb path if rebuild is success or error if not
-    func rebuild(packages: [FFIPackage], outDir: URL = defaultSaveDirectory) throws -> [Result<URL, NSError>] {
-        let preferences = Preferences()
+    func rebuild(packages: [FFIPackage], outDir: URL = defaultSaveDirectory) async throws -> [Result<URL, Error>] {
+        var ffiResults = slice_boxed_TwPackagesRebuildResult()
+        withUnsafeMutablePointer(to: &ffiResults) { buildParameters.results = $0 }
 
-        var buildParameters = TwBuildParameters_t()
         buildParameters.functions = createProgressFuncs()
 
         // Since Swift enums have values equal to FFI ones, it is safe to just pass them by without any checks
-        buildParameters.preferences.compression_level = .init(UInt32(preferences.compression.level.rawValue))
-        buildParameters.preferences.compression_type = .init(UInt32(preferences.compression.kind.rawValue))
-        buildParameters.preferences.follow_symlinks = preferences.followSymlinks
+        buildParameters.preferences.compression_level = await .init(UInt32(preferences.compression.level.rawValue))
+        buildParameters.preferences.compression_type = await .init(UInt32(preferences.compression.kind.rawValue))
+        buildParameters.preferences.follow_symlinks = await preferences.followSymlinks
 
-        var ffiResults = slice_boxed_TwPackagesRebuildResult()
-        withUnsafeMutablePointer(to: &ffiResults) { buildParameters.results = $0 }
+        outDir.path.utf8CString.withUnsafeBufferPointer { buffer in
+            buildParameters.out_dir = UnsafePointer(strdup(buffer.baseAddress!))
+        }
+        defer { buildParameters.out_dir.deallocate() }
 
         let status = outDir.path.utf8CString.withUnsafeBufferPointer { pointer in
             // safe to unwrap?
@@ -110,7 +117,7 @@ class Dpkg {
             ])
         }
 
-        let results: [Result<URL, NSError>] = UnsafeBufferPointer(start: ffiResults.ptr, count: ffiResults.len)
+        let results: [Result<URL, Error>] = UnsafeBufferPointer(start: ffiResults.ptr, count: ffiResults.len)
             .map { result in
                 if !result.success {
                     return .failure(NSError(domain: "ru.danpashin.twackup", code: 0, userInfo: [
@@ -138,7 +145,9 @@ class Dpkg {
             guard let context, let package, let ffiPackage = FFIPackage(package.pointee) else { return }
 
             let dpkg = Unmanaged<Dpkg>.fromOpaque(context).takeUnretainedValue()
-            dpkg.buildProgressDelegate?.startProcessing(package: ffiPackage)
+            Task(priority: .utility) {
+                await dpkg.buildProgressDelegate?.startProcessing(package: ffiPackage)
+            }
         }
         funcs.finished_processing = { context, package, debPath in
             // Package is a stack pointer so it doesn't need to be released
@@ -149,14 +158,23 @@ class Dpkg {
             else { return }
 
             let dpkg = Unmanaged<Dpkg>.fromOpaque(context).takeUnretainedValue()
-            dpkg.buildProgressDelegate?.finishedProcessing(package: ffiPackage, debPath: URL(fileURLWithPath: debPath))
+            Task(priority: .utility) {
+                let debURL = URL(fileURLWithPath: debPath)
+                await dpkg.buildProgressDelegate?.finishedProcessing(package: ffiPackage, debURL: debURL)
+            }
         }
         funcs.finished_all = { context in
             guard let context else { return }
             let dpkg = Unmanaged<Dpkg>.fromOpaque(context).takeUnretainedValue()
-            dpkg.buildProgressDelegate?.finishedAll()
+            Task(priority: .utility) {
+                await dpkg.buildProgressDelegate?.finishedAll()
+            }
         }
 
         return funcs
     }
 }
+
+#if swift(>=6.0)
+extension UnsafeMutablePointer<TwDpkg_t>: @unchecked @retroactive Sendable {}
+#endif

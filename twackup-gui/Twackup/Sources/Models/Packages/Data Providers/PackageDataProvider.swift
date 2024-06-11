@@ -5,7 +5,7 @@
 //  Created by Daniil on 28.11.2022.
 //
 
-class PackageDataProvider {
+class PackageDataProvider: @unchecked Sendable {
     enum Filter {
         case name(String)
     }

@@ -40,7 +40,11 @@ class DebsListVC: SelectablePackageListVC, DebsListModelDelegate {
             object: nil,
             queue: .current
         ) { [weak self] _  in
-            self?.reloadData()
+            guard let self else { return }
+
+            Task {
+                await self.reloadData()
+            }
         }
     }
 
@@ -49,13 +53,17 @@ class DebsListVC: SelectablePackageListVC, DebsListModelDelegate {
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(reloadObserver as Any)
+        // Apple moment
+        Task {
+            await MainActor.run {
+                NotificationCenter.default.removeObserver(reloadObserver as Any)
+            }
+        }
     }
 
-    override func reloadData() {
-        debsModel.debsProvider.reload {
-            super.reloadData()
-        }
+    override func reloadData() async {
+        try? debsModel.debsProvider.reload()
+        await super.reloadData()
     }
 
     override func didSelect(items: [PackageListModel.TableViewItem], inEditState: Bool) {
@@ -104,9 +112,11 @@ class DebsListVC: SelectablePackageListVC, DebsListModelDelegate {
     @objc
     func actionRemoveSelected() {
         guard let indexPaths = tableView.indexPathsForSelectedRows else { return }
-        if debsModel.debsProvider.deletePackages(at: indexPaths.map({ $0.row })) {
-            tableView.deleteRows(at: indexPaths, with: .automatic)
-            endReloadingData()
+        Task {
+            if await debsModel.debsProvider.deletePackages(at: indexPaths.map({ $0.row })) {
+                tableView.deleteRows(at: indexPaths, with: .automatic)
+                await endReloadingData()
+            }
         }
     }
 
@@ -119,9 +129,11 @@ class DebsListVC: SelectablePackageListVC, DebsListModelDelegate {
             indexPaths.append(IndexPath(row: row, section: 0))
         }
 
-        if debsModel.debsProvider.deletePackages(at: indexPaths.map({ $0.row })) {
-            tableView.deleteRows(at: indexPaths, with: .automatic)
-            endReloadingData()
+        Task {
+            if await debsModel.debsProvider.deletePackages(at: indexPaths.map({ $0.row })) {
+                tableView.deleteRows(at: indexPaths, with: .automatic)
+                await endReloadingData()
+            }
         }
     }
 

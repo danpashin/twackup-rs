@@ -7,12 +7,13 @@
 
 import UIKit
 
+@MainActor
 protocol PackageListDelegate: AnyObject {
     func didSelect(items: [PackageListModel.TableViewItem], inEditState: Bool)
 
-    func reloadData()
+    func reloadData() async
 
-    func endReloadingData()
+    func endReloadingData() async
 }
 
 class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, UITableViewDataSource {
@@ -111,8 +112,10 @@ class PackageListModel: NSObject, UISearchResultsUpdating, UITableViewDelegate, 
         var filter: PackageDataProvider.Filter?
         if let text = searchController.searchBar.text, !text.isEmpty { filter = .name(text) }
 
-        dataProvider.applyFilter(filter)
+        Task(priority: .userInitiated) {
+            dataProvider.applyFilter(filter)
 
-        delegate?.reloadData()
+            await delegate?.reloadData()
+        }
     }
 }

@@ -8,6 +8,8 @@
 class DpkgListVC: SelectablePackageListVC {
     let dpkgModel: DpkgListModel
 
+    private var rebuildHUD: RJTHud?
+
     private lazy var rebuildAllBarBtn: UIBarButtonItem = {
         let title = "debs-rebuildall-btn".localized
         return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionRebuildAll))
@@ -36,20 +38,18 @@ class DpkgListVC: SelectablePackageListVC {
         tableView.refreshControl = refresh
     }
 
-    override func reloadData() {
-        dpkgModel.dpkgProvider.reload {
-            super.reloadData()
-        }
+    override func reloadData() async {
+        await dpkgModel.dpkgProvider.reload()
+        await super.reloadData()
     }
 
-    override func endReloadingData() {
-        super.endReloadingData()
+    override func endReloadingData() async {
+        await super.endReloadingData()
 
         // Twackup parses database so quick that user can think it is not working as he expects
         // That's why there's half-of-a-second delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
-            tableView.refreshControl?.endRefreshing()
-        }
+        try? await Task.sleep(nanoseconds: 500 * 1_000_000)
+        tableView.refreshControl?.endRefreshing()
     }
 
     override func didSelect(items: [PackageListModel.TableViewItem], inEditState: Bool) {
@@ -90,27 +90,38 @@ class DpkgListVC: SelectablePackageListVC {
 
     @objc
     func actionRefresh() {
-        tableView.refreshControl?.beginRefreshing()
-        reloadData()
+        Task(priority: .userInitiated) {
+            tableView.refreshControl?.beginRefreshing()
+            await reloadData()
+        }
     }
 
     func rebuild(packages: [Package]) {
         guard !packages.isEmpty else { return }
 
-        let hud = RJTHud.show()
-        hud?.text = "rebuild-packages-status-title".localized
-        hud?.style = .spinner
+        rebuildHUD = RJTHud.show()
+        rebuildHUD?.text = "rebuild-packages-status-title".localized
+        rebuildHUD?.style = .spinner
 
-        let rebuilder = PackagesRebuilder(mainModel: model.mainModel)
-        rebuilder.rebuild(packages: packages.compactMap { $0 as? FFIPackage }) { progress in
-            hud?.detailedText = String(
-                format: "rebuild-packages-status".localized,
-                progress.completedUnitCount,
-                progress.totalUnitCount,
-                Int(progress.fractionCompleted * 100)
-            )
-        } completion: {
-            hud?.hide(animated: true)
+        Task(priority: .medium) {
+            let rebuilder = PackagesRebuilder(mainModel: model.mainModel) { progress in
+                Task {
+                    await self.updateProgress(progress)
+                }
+            }
+
+            let packages = packages.compactMap { $0 as? FFIPackage }
+            await rebuilder.rebuild(packages: packages)
         }
+    }
+
+    func updateProgress(_ progress: Progress) {
+        let hud = RJTHud.show()
+        hud?.detailedText = String(
+            format: "rebuild-packages-status".localized,
+            progress.completedUnitCount,
+            progress.totalUnitCount,
+            Int(progress.fractionCompleted * 100)
+        )
     }
 }

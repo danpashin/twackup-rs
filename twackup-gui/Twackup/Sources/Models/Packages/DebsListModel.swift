@@ -7,6 +7,7 @@
 
 import DZNEmptyDataSet
 
+@MainActor
 protocol DebsListModelDelegate: PackageListDelegate {
     func debsModel(
         _ debsModel: DebsListModel,
@@ -46,9 +47,11 @@ class DebsListModel: PackageListModel {
     }
 
     func removePackage(at indexPath: IndexPath) {
-        if debsProvider.deletePackage(at: indexPath.row) {
-            tableView?.deleteRows(at: [indexPath], with: .automatic)
-            delegate?.endReloadingData()
+        Task {
+            if await debsProvider.deletePackage(at: indexPath.row) {
+                tableView?.deleteRows(at: [indexPath], with: .automatic)
+                await delegate?.endReloadingData()
+            }
         }
     }
 

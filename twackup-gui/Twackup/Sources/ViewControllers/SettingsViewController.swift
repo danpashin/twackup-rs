@@ -12,7 +12,7 @@ struct SettingsViewController: View {
 
     let mainModel: MainModel
 
-    @ObservedObject private var preferences = Preferences.default
+    @ObservedObject private var preferences: Preferences
 
     @State private var showClearDataAlert = false
 
@@ -21,6 +21,7 @@ struct SettingsViewController: View {
     init(mainModel: MainModel, metadata: ViewControllerMetadata) {
         self.mainModel = mainModel
         self.metadata = metadata
+        self.preferences = mainModel.preferences
 
         diskUsageView = DiskSpaceUsage(mainModel: mainModel)
     }
@@ -97,7 +98,8 @@ struct SettingsViewController: View {
     }
 
     func clearAppData() {
-        _ = mainModel.databasePackageProvider.deleteAll {
+        Task {
+            _ = await mainModel.databasePackageProvider.deleteAll()
             NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
         }
     }

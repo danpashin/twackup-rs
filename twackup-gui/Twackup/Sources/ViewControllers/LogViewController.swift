@@ -15,8 +15,6 @@ final class LogViewController: UIViewController, FFILoggerSubscriber, Scrollable
 
     let currentText = NSMutableAttributedString()
 
-    private lazy var logQueue = DispatchQueue(label: "twackup-log", qos: .default)
-
     private var wantsToScrollBottom: Bool = false
 
     private(set) lazy var logView: StyledTextView = {
@@ -46,13 +44,17 @@ final class LogViewController: UIViewController, FFILoggerSubscriber, Scrollable
         self.mainModel = mainModel
         self.metadata = metadata
         super.init(nibName: nil, bundle: nil)
-
-        mainModel.logger.addSubsriber(self)
         tabBarItem = metadata.tabbarItem
+
+        Task {
+            await mainModel.logger.addSubsriber(self)
+        }
     }
 
     deinit {
-        mainModel.logger.removeSubscriber(self)
+        Task {
+            await mainModel.logger.removeSubscriber(self)
+        }
     }
 
     required init?(coder: NSCoder) {
@@ -110,35 +112,31 @@ final class LogViewController: UIViewController, FFILoggerSubscriber, Scrollable
 
     // MARK: - FFILoggerSubscriber
 
-    func log(message: FFILogger.Message, level: FFILogger.Level) {
-        // This queue is serial, so it will put all messages in real `queue`
-        logQueue.async { [self] in
-            var targetColor: UIColor
-            switch level {
-            case .off: targetColor = .clear
-            case .debug: targetColor = .systemIndigo
-            case .info: targetColor = .systemBlue
-            case .warning: targetColor = .systemOrange
-            case .error: targetColor = .systemRed
-            }
-
-            currentText.append(NSAttributedString(string: "[\(message.target ?? "nil")]  ", attributes: [
-                .font: UIFont.boldSystemFont(ofSize: UIFont.systemFontSize),
-                .foregroundColor: targetColor
-            ]))
-
-            currentText.append(NSAttributedString(string: message.text, attributes: [
-                .font: UIFont.monospacedSystemFont(ofSize: UIFont.systemFontSize, weight: .regular),
-                .foregroundColor: UIColor.label
-            ]))
-
-            currentText.append(NSAttributedString(string: "\n"))
-
-            wantsToScrollBottom = true
+    func log(message: FFILogger.Message, level: FFILogger.Level) async {
+        let targetColor: UIColor = switch level {
+        case .off: .clear
+        case .debug: .systemIndigo
+        case .info: .systemBlue
+        case .warning: .systemOrange
+        case .error: .systemRed
         }
+
+        currentText.append(NSAttributedString(string: "[\(message.target ?? "nil")]  ", attributes: [
+            .font: UIFont.boldSystemFont(ofSize: UIFont.systemFontSize),
+            .foregroundColor: targetColor
+        ]))
+
+        currentText.append(NSAttributedString(string: message.text, attributes: [
+            .font: UIFont.monospacedSystemFont(ofSize: UIFont.systemFontSize, weight: .regular),
+            .foregroundColor: UIColor.label
+        ]))
+
+        currentText.append(NSAttributedString(string: "\n"))
+
+        wantsToScrollBottom = true
     }
 
-    func flush() {
+    func flush() async {
     }
 
     // MARK: - ScrollableViewController

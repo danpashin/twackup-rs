@@ -18,8 +18,8 @@ class LeavesListVC: DpkgListVC {
         navigationItem.leftBarButtonItem = shareListButton
     }
 
-    override func endReloadingData() {
-        super.endReloadingData()
+    override func endReloadingData() async {
+        await super.endReloadingData()
         shareListButton.isEnabled = !model.dataProvider.packages.isEmpty
     }
 

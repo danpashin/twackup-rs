@@ -10,6 +10,8 @@ import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    let preferences = Preferences()
+
     private(set) lazy var mainModel: MainModel = {
         let rootfullDir = "/var/lib/dpkg"
         let rootlessDir = "/var/jb/var/lib/dpkg"
@@ -19,7 +21,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             dpkgDir = rootlessDir
         }
 
-        return MainModel(database: Database(), dpkg: Dpkg(path: dpkgDir))
+        let dpkg = Dpkg(path: dpkgDir, preferences: preferences)
+        return MainModel(database: Database(), dpkg: dpkg, preferences: preferences )
     }()
 
     func application(

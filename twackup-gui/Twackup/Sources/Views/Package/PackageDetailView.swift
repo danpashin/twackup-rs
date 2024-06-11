@@ -8,6 +8,7 @@
 import SDWebImage
 import UIKit
 
+@MainActor
 protocol PackageDetailViewDelegate: AnyObject {
     func openExternalPackageInfo(_ package: Package)
 }

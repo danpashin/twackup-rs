@@ -11,6 +11,7 @@ protocol Localized {
     var localized: String { get }
 }
 
+@MainActor
 class Compression: ObservableObject {
     enum Kind: Int, Identifiable, Localized, CaseIterable {
         case gzip

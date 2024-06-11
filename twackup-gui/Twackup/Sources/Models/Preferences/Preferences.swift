@@ -7,9 +7,8 @@
 
 import SwiftUI
 
+@MainActor
 class Preferences: ObservableObject {
-    static let `default` = Preferences()
-
     @ProxiedObservedObject private(set) var compression = Compression()
 
     @AppStorage("should-follow-symlinks")

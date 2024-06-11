@@ -11,14 +11,18 @@ class DpkgDetailVC: PackageDetailVC, RebuildPackageDetailedViewDelegate {
     private lazy var _container = RebuildPackageDetailedView(delegate: self)
     override var detailView: PackageDetailedView { _container }
 
-    func rebuild(_ package: FFIPackage) {
-        let hud = RJTHud.show()
+    nonisolated func rebuild(_ package: FFIPackage) {
+        Task(priority: .userInitiated) {
+            let hud = await RJTHud.show()
 
-        // swiftlint:disable trailing_closure
-        let rebuilder = PackagesRebuilder(mainModel: mainModel)
-        rebuilder.rebuild(packages: [package], completion: {
-            hud?.hide(animated: true)
-        })
-        // swiftlint:enable trailing_closure
+            Task(priority: .utility) {
+                let rebuilder = PackagesRebuilder(mainModel: mainModel)
+                await rebuilder.rebuild(packages: [package])
+
+                Task(priority: .userInitiated) {
+                    await hud?.hide(animated: true)
+                }
+            }
+        }
     }
 }

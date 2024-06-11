@@ -8,38 +8,31 @@
 import Sentry
 
 // swiftlint:disable legacy_objc_type
-class PackagesRebuilder: DpkgProgressDelegate {
+actor PackagesRebuilder: DpkgProgress {
     let mainModel: MainModel
 
-    private class State {
-        var progress: Progress
+    private final class PerformanceMeasurer: @unchecked Sendable {
+        let rootTransaction: Span
 
-        let queue: DispatchQueue
+        let childTransactions: NSCache<NSString, Span> = NSCache()
 
-        let updateHandler: ((Progress) -> Void)?
-
-        var donePackages: [BuildedPackage] = []
-
-        init(progress: Progress, updateHandler: ((Progress) -> Void)?) {
-            self.progress = progress
-            self.updateHandler = updateHandler
-
-            queue = DispatchQueue(label: "twackup.rebuild", qos: .userInitiated)
+        init(rootTransaction: Span) {
+            self.rootTransaction = rootTransaction
         }
     }
 
-    private struct PerformanceMeasurer {
-        var rootTransaction: Span
+    private(set) var progress: Progress = Progress()
 
-        var childTransactions: NSCache<NSString, Span> = NSCache()
-    }
+    let updateHandler: (@Sendable (Progress) -> Void)?
 
-    private var buildState: State?
+    private(set) var donePackages: [BuildedPackage] = []
 
     private var performanceMeasurer: PerformanceMeasurer?
 
-    init(mainModel: MainModel) {
+    init(mainModel: MainModel, updateHandler: (@Sendable (Progress) -> Void)? = nil) {
         self.mainModel = mainModel
+        self.updateHandler = updateHandler
+//        mainModel.dpkg.buildProgressDelegate = self
     }
 
     /// Performs package rebuilding from fs files to debs
@@ -47,50 +40,35 @@ class PackagesRebuilder: DpkgProgressDelegate {
     ///   - packages: packages that needs to be rebuild
     ///   - updateHandler: Handler that contains current progress of rebuild operation
     ///   - completion: Handler that will be called after rebuild will complete
-    func rebuild(packages: [FFIPackage], updateHandler: ((Progress) -> Void)? = nil, completion: (() -> Void)? = nil) {
+    func rebuild(packages: [FFIPackage]) async {
         if packages.isEmpty {
-            completion?()
             return
         }
 
-        let buildState = State(progress: Progress(totalUnitCount: Int64(packages.count)), updateHandler: updateHandler)
-        self.buildState = buildState
+        progress = Progress(totalUnitCount: Int64(packages.count))
+        performanceMeasurer = PerformanceMeasurer(
+            rootTransaction: SentrySDK.startTransaction(name: "multiple-debs-rebuild", operation: "lib")
+        )
 
-        mainModel.dpkg.buildProgressDelegate = self
+        do {
+            let results = try await mainModel.dpkg.rebuild(packages: packages)
+            for result in results {
+                switch result {
+                case .success: continue
 
-        DispatchQueue.global().async { [self] in
-            let measurer = PerformanceMeasurer(
-                rootTransaction: SentrySDK.startTransaction(name: "multiple-debs-rebuild", operation: "lib")
-            )
-            performanceMeasurer = measurer
-
-            do {
-                let results = try mainModel.dpkg.rebuild(packages: packages)
-                for result in results {
-                    switch result {
-                    case .success: continue
-
-                    case .failure(let error):
-                        FFILogger.shared.log("\(error)", level: .error)
-                        SentrySDK.capture(error: error)
-                    }
+                case .failure(let error):
+                    await FFILogger.shared.log("\(error)", level: .error)
+                    SentrySDK.capture(error: error)
                 }
-            } catch {
-                FFILogger.shared.log("\(error)", level: .error)
-                SentrySDK.capture(error: error)
             }
-
-            buildState.queue.async(flags: .barrier) { [self] in
-                addPackagesToDatabase { [self] in
-                    measurer.rootTransaction.finish()
-                    performanceMeasurer = nil
-
-                    buildState.donePackages.removeAll()
-                }
-
-                completion?()
-            }
+        } catch {
+            await FFILogger.shared.log("\(error)", level: .error)
+            SentrySDK.capture(error: error)
         }
+
+        await addPackagesToDatabase()
+        performanceMeasurer?.rootTransaction.finish()
+        performanceMeasurer = nil
     }
 
     func startProcessing(package: Package) {
@@ -102,9 +80,7 @@ class PackagesRebuilder: DpkgProgressDelegate {
         performanceMeasurer.childTransactions.setObject(transaction, forKey: package.id as NSString)
     }
 
-    func finishedProcessing(package: Package, debPath: URL) {
-        guard let buildState else { return }
-
+    func finishedProcessing(package: Package, debURL: URL) {
         if let performanceMeasurer {
             if let transaction = performanceMeasurer.childTransactions.object(forKey: package.id as NSString) {
                 transaction.finish()
@@ -112,11 +88,9 @@ class PackagesRebuilder: DpkgProgressDelegate {
             performanceMeasurer.childTransactions.removeObject(forKey: package.id as NSString)
         }
 
-        buildState.queue.async {
-            buildState.progress.completedUnitCount += 1
-            buildState.donePackages.append(BuildedPackage(package: package, debURL: debPath))
-            buildState.updateHandler?(buildState.progress)
-        }
+        progress.completedUnitCount += 1
+        donePackages.append(BuildedPackage(package: package, debURL: debURL))
+        updateHandler?(progress)
     }
 
     func finishedAll() {
@@ -124,16 +98,14 @@ class PackagesRebuilder: DpkgProgressDelegate {
 
     /// Adds builded packages to database
     /// - Parameter completion: completion that will be executed at end of save operation
-    private func addPackagesToDatabase(completion: (() -> Void)? = nil) {
-        guard let buildState, let performanceMeasurer else { return }
+    private func addPackagesToDatabase() async {
+        guard let performanceMeasurer else { return }
 
         let databaseTransaction = performanceMeasurer.rootTransaction.startChild(operation: "database-packages-save")
-        mainModel.database.addBuildedPackages(buildState.donePackages) {
-            databaseTransaction.finish()
 
-            NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
-            completion?()
-        }
+        await mainModel.database.add(packages: donePackages)
+        databaseTransaction.finish()
+        await NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
     }
 }
 // swiftlint:enable legacy_objc_type

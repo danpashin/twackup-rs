@@ -5,7 +5,7 @@
 //  Created by Daniil on 28.11.2022.
 //
 
-class DatabasePackageProvider: PackageDataProvider {
+class DatabasePackageProvider: PackageDataProvider, @unchecked Sendable {
     private let database: Database
 
     init(_ database: Database) {
@@ -14,17 +14,13 @@ class DatabasePackageProvider: PackageDataProvider {
         super.init()
     }
 
-    func reload(completion: (() -> Void)? = nil) {
-        DispatchQueue.global(qos: .userInitiated).async { [self] in
-            allPackages = database.fetchBuildedPackages()
-            completion?()
-        }
+    func reload() throws {
+        allPackages = try database.fetchPackages()
     }
 
-    func deletePackages(at indexes: [Int], completion: (() -> Void)? = nil) -> Bool {
+    func deletePackages(at indexes: [Int]) async -> Bool {
         let toDelete = packages.enumerated().filter { indexes.contains($0.offset) }.map { $0.element }
         if toDelete.isEmpty {
-            completion?()
             return false
         }
 
@@ -39,21 +35,21 @@ class DatabasePackageProvider: PackageDataProvider {
                 try FileManager.default.removeItem(at: dbPackage.fileURL)
             } catch {
                 let err = error as NSError
-                FFILogger.shared.log(err.localizedDescription, level: .warning)
+                await FFILogger.shared.log(err.localizedDescription, level: .warning)
             }
         }
 
-        database.delete(packages: toDelete, completion: completion)
+        await database.delete(packages: toDelete)
         applyFilter(currentFilter)
 
         return true
     }
 
-    func deletePackage(at index: Int, completion: (() -> Void)? = nil) -> Bool {
-        deletePackages(at: [index], completion: completion)
+    func deletePackage(at index: Int) async -> Bool {
+        await deletePackages(at: [index])
     }
 
-    func deleteAll(completion: (() -> Void)? = nil) -> Bool {
-        deletePackages(at: allPackages.enumerated().map { $0.offset }, completion: completion)
+    func deleteAll() async -> Bool {
+        await deletePackages(at: allPackages.indices.map { $0 })
     }
 }

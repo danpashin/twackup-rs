@@ -5,7 +5,7 @@
 //  Created by Daniil on 24.11.2022.
 //
 
-class FFIPackage: Package {
+final class FFIPackage: Package, Sendable {
     let pkg: TwPackage_t
 
     let id: String
@@ -18,13 +18,13 @@ class FFIPackage: Package {
         return pkg.section.swiftSection
     }
 
-    private(set) lazy var icon: URL? = {
+    var icon: URL? {
         guard let icon = String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_ICON)) else { return nil }
 
         return URL(string: icon)
-    }()
+    }
 
-    private(set) lazy var depiction: URL? = {
+    var depiction: URL? {
         var depiction = String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_DEPICTION))
         if depiction == nil {
             depiction = String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_HOMEPAGE))
@@ -32,22 +32,22 @@ class FFIPackage: Package {
 
         guard let depiction else { return nil }
         return URL(string: depiction)
-    }()
+    }
 
-    private(set) lazy var humanDescription: String? = {
+    var humanDescription: String? {
         String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_DESCRIPTION))
-    }()
+    }
 
-    private(set) lazy var architecture: String? = {
+    var architecture: String? {
         String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_ARCHITECTURE))
-    }()
+    }
 
-    private(set) lazy var installedSize: Int64 = {
+    var installedSize: Int64 {
         let field = TW_PACKAGE_FIELD_INSTALLED_SIZE
         guard let stringSize = String(ffiSlice: pkg.get_field(pkg.inner_ptr, field)) else { return 0 }
         guard let size = Int64(stringSize) else { return 0 }
         return size * 1_000
-    }()
+    }
 
     init?(_ pkg: TwPackage_t) {
         self.pkg = pkg
@@ -72,3 +72,5 @@ class FFIPackage: Package {
         id == other.id && version == other.version
     }
 }
+
+extension TwPackage_t: @unchecked Sendable {}

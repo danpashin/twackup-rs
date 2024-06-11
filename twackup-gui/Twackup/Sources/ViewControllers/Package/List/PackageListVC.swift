@@ -60,17 +60,17 @@ class PackageListVC: UIViewController, PackageListDelegate, ScrollableViewContro
         navigationItem.title = model.metadata.navTitle
         navigationItem.searchController = searchController
 
-        reloadData()
-    }
-
-    func reloadData() {
-        DispatchQueue.main.async { [self] in
-            tableView.reloadData()
-            endReloadingData()
+        Task {
+            await reloadData()
         }
     }
 
-    func endReloadingData() {
+    func reloadData() async {
+        tableView.reloadData()
+        await endReloadingData()
+    }
+
+    func endReloadingData() async {
         tableView.flashScrollIndicators()
         tableViewLargeReloadingIndicator.stopAnimating()
     }

@@ -21,8 +21,8 @@ class SelectablePackageListVC: PackageListVC {
         navigationItem.rightBarButtonItem = editButtonItem
     }
 
-    override func endReloadingData() {
-        super.endReloadingData()
+    override func endReloadingData() async {
+        await super.endReloadingData()
 
         setEditing(false, animated: true)
 

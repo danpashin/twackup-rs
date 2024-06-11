@@ -8,7 +8,7 @@
 
 import CoreData
 
-struct BuildedPackage {
+struct BuildedPackage: @unchecked Sendable {
     let package: Package
 
     let debURL: URL

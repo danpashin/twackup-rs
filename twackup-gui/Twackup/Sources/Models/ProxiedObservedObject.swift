@@ -9,6 +9,7 @@ import Combine
 import SwiftUI
 
 @propertyWrapper
+@MainActor
 struct ProxiedObservedObject<Value>
 where Value: ObservableObject, Value.ObjectWillChangePublisher == ObservableObjectPublisher {
     private class Proxy<T: ObservableObject>

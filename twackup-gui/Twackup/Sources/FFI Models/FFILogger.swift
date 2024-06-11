@@ -5,13 +5,13 @@
 //  Created by Daniil on 09.12.2022.
 //
 
-protocol FFILoggerSubscriber: NSObjectProtocol {
-    func log(message: FFILogger.Message, level: FFILogger.Level)
+protocol FFILoggerSubscriber: NSObjectProtocol, Sendable {
+    func log(message: FFILogger.Message, level: FFILogger.Level) async
 
-    func flush()
+    func flush() async
 }
 
-class FFILogger {
+actor FFILogger {
     @objc
     enum Level: UInt32 {
         case off
@@ -43,16 +43,19 @@ class FFILogger {
             }
 
             let logger = Unmanaged<FFILogger>.fromOpaque(context).takeUnretainedValue()
-            logger.log(message: Message(text: msgText, target: msgTarget), level: level)
+
+            Task(priority: .utility) {
+                await logger.log(message: Message(text: msgText, target: msgTarget), level: level)
+            }
         }
 
         tw_enable_logging(funcs, .init(UInt32(level.rawValue)))
     }
 
     func log(message: Message, level: Level) {
-        DispatchQueue.global().async { [self] in
-            for subscriber in subscribers {
-                subscriber.log(message: message, level: level)
+        for subscriber in subscribers {
+            Task {
+                await subscriber.log(message: message, level: level)
             }
         }
     }
