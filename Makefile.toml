@@ -1,37 +1,53 @@
+[config]
+skip_core_tasks = true
+skip_git_env_info = true
+skip_rust_env_info = true
+
 [env]
 ARTIFACTS_DIR = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/artifacts"
 ARTIFACTS_ROOTLESS_DIR = "${ARTIFACTS_DIR}/rootless"
 ARTIFACTS_ROOTFULL_DIR = "${ARTIFACTS_DIR}/rootfull"
 
-[tasks.build-cli-package]
+[tasks.build-cli]
 workspace = false
+category = "Build"
+description = "Performs build process of CLI module"
+dependencies = ["create-artifacts-dir"]
 env = { "CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS" = ["twackup-cli"] }
 run_task = { name = "create-package", fork = true }
 
-[tasks.build-lib-package]
+[tasks.build-lib]
 workspace = false
+category = "Build"
+description = "Performs build process of all libraries modules"
 env = { "CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS" = ["twackup"] }
+dependencies = ["create-artifacts-dir"]
 run_task = { name = "create-package", fork = true }
 
-[tasks.build-gui-package]
+[tasks.build-gui]
 workspace = false
+category = "Build"
+description = "Performs build process of GUI module"
 command = "cargo"
 args = [
     "make",
     "--cwd", "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/twackup-gui",
-    "create-package"
+    "build-all"
 ]
+dependencies = ["create-artifacts-dir"]
 
 [tasks.create-artifacts-dir]
 command = "mkdir"
+private = true
 args = ["-p", "${ARTIFACTS_ROOTLESS_DIR}", "${ARTIFACTS_ROOTFULL_DIR}"]
 
 [tasks.build-all]
 workspace = false
+category = "Build"
+description = "Builds all modules. Used by CI"
 dependencies = [
-    "create-artifacts-dir",
     "test",
-    "build-cli-package",
-    "build-lib-package",
-    "build-gui-package"
+    "build-cli",
+    "build-lib",
+    "build-gui"
 ]

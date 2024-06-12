@@ -1,10 +1,14 @@
 [config]
 default_to_workspace = false
+skip_core_tasks = true
+skip_git_env_info = true
+skip_rust_env_info = true
 
 [env]
 CARGO_MAKE_CRATE_VERSION = { script = ["xcrun xcodebuild -showBuildSettings | grep MARKETING_VERSION | tr -d 'MARKETING_VERSION ='"] }
 GUI_ARCHIVE_PATH = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/Twackup.xcarchive"
 GUI_APP_DIR = "${GUI_ARCHIVE_PATH}/Products/Applications/Twackup.app"
+XCODE_SCHEME = "Twackup"
 
 DEB_NAME = "Twackup (GUI)"
 DEB_IDENTIFIER = "ru.danpashin.twackup-gui"
@@ -18,14 +22,15 @@ DEB_AUTHOR = "DanP"
 DEB_LICENSE = "GPL-3.0-only"
 DEB_DESCRIPTION = "Safe and fast GUI utility for rebuilding DEBs and backing up packages"
 
-[tasks.archive]
+[tasks.xcode-run-build]
+private = true
 command = "xcrun"
 args = [
     "xcodebuild",
     "clean",
     "archive",
     "-archivePath", "${GUI_ARCHIVE_PATH}",
-    "-scheme", "Twackup",
+    "-scheme", "${XCODE_SCHEME}",
     "-workspace", "Twackup.xcworkspace",
     "CODE_SIGN_IDENTITY=",
     "CODE_SIGNING_REQUIRED="
@@ -33,9 +38,15 @@ args = [
 
 [tasks.sign]
 command = "ldid"
-args = [ "-S${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/twackup-gui/entitlements.plist", "${GUI_APP_DIR}" ]
+private = true
+args = ["-S${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/twackup-gui/entitlements.plist", "${GUI_APP_DIR}"]
+
+[tasks.build-and-sign]
+private = true
+run_task = { name = ["xcode-run-build", "sign"] }
 
 [tasks.create-deb]
+private = true
 cwd = "${ARTIFACTS_OUTPUT_DIR}"
 command = "bundle"
 args = [
@@ -59,20 +70,36 @@ args = [
     "--deb-changelog", "${DEB_CHANGELOG_FILE}",
     "--url", "${DEB_HOMEPAGE}",
     "--deb-field", "Name: ${DEB_NAME}",
-
     "${GUI_APP_DIR}=/Applications",
     "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/changelog=/usr/share/doc/${DEB_IDENTIFIER}/changelog",
 ]
 
-[tasks.create-rootfull-deb]
-env = { "DEB_ARCHITECTURE" = "iphoneos-arm", "DEB_PREFIX" = "", "ARTIFACTS_OUTPUT_DIR" = "${ARTIFACTS_ROOTFULL_DIR}" }
-run_task = "create-deb"
+[tasks.build-rootfull]
+category = "Build"
+description = "Build rootfull DEB for classic jailbreaks"
+run_task = { name = ["build-and-sign", "create-deb"] }
 
-[tasks.create-rootless-deb]
-env = { "DEB_ARCHITECTURE" = "iphoneos-arm64", "DEB_PREFIX" = "/var/jb", "ARTIFACTS_OUTPUT_DIR" = "${ARTIFACTS_ROOTLESS_DIR}" }
-run_task = "create-deb"
+[tasks.build-rootfull.env]
+DEB_ARCHITECTURE = "iphoneos-arm"
+DEB_PREFIX = ""
+XCODE_SCHEME = "Twackup (Rootfull)"
+ARTIFACTS_OUTPUT_DIR = "${ARTIFACTS_ROOTFULL_DIR}"
 
-[tasks.create-ipa]
+[tasks.build-rootless]
+category = "Build"
+description = "Build rootless DEB for use on iOS 15 and higher"
+run_task = { name = ["build-and-sign", "create-deb"] }
+
+[tasks.build-rootless.env]
+DEB_ARCHITECTURE = "iphoneos-arm64"
+DEB_PREFIX = "/var/jb"
+XCODE_SCHEME = "Twackup (Rootless)"
+ARTIFACTS_OUTPUT_DIR = "${ARTIFACTS_ROOTLESS_DIR}"
+
+[tasks.build-ipa]
+category = "Build"
+description = "Build ipa file"
+dependencies = ["build-and-sign"]
 script = """
 working_dir=$(realpath ${GUI_APP_DIR}/../../)
 mv "$working_dir/Applications" "$working_dir/Payload"
@@ -81,6 +108,7 @@ zip -r "${ARTIFACTS_DIR}/Twackup-${CARGO_MAKE_CRATE_VERSION}.ipa" Payload
 mv "$working_dir/Payload" "$working_dir/Applications"
 """
 
-[tasks.create-package]
-dependencies = ["archive", "sign"]
-run_task = { name = ["create-rootfull-deb", "create-rootless-deb", "create-ipa"] }
+[tasks.build-all]
+category = "Build"
+description = "Build all available packages: rootfull/rootless debs and ipa file"
+run_task = { name = ["build-rootfull", "build-rootless", "build-ipa"] }
