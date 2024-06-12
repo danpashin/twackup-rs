@@ -1,0 +1,3 @@
+[submodule "contrib/libroot"]
+	path = contrib/libroot
+	url = https://github.com/opa334/libroot

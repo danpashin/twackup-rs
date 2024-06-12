@@ -15,16 +15,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private var consoleLoggerIsSet = false
 
     private(set) lazy var mainModel: MainModel = {
-        let rootfullDir = "/var/lib/dpkg"
-        let rootlessDir = "/var/jb/var/lib/dpkg"
-
-        var dpkgDir = rootfullDir
-        if !FileManager.default.fileExists(atPath: rootfullDir) {
-            dpkgDir = rootlessDir
-        }
-
-        let dpkg = Dpkg(path: dpkgDir, preferences: preferences)
-        return MainModel(database: Database(), dpkg: dpkg, preferences: preferences )
+        let dpkg = Dpkg(path: jbRootPath("/var/lib/dpkg"), preferences: preferences)
+        return MainModel(database: Database(), dpkg: dpkg, preferences: preferences)
     }()
 
     func application(

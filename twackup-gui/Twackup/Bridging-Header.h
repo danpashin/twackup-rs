@@ -10,6 +10,7 @@
 
 #import "twackup.h"
 #import "RJTHUD.h"
+#import "libroot.h"
 
 @interface UIScrollView (Private)
 @property (assign, nonatomic, readonly, getter=_minimumContentOffset) CGPoint minimumContentOffset;

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -46,6 +46,7 @@
 		0B86618A2930AF7100EA4301 /* Dpkg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8661882930AF7100EA4301 /* Dpkg.swift */; };
 		0B86618B2930AF7100EA4301 /* FFIPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8661892930AF7100EA4301 /* FFIPackage.swift */; };
 		0B86CDA82C18D8F000F3B4A0 /* ConsoleLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86CDA72C18D8F000F3B4A0 /* ConsoleLogger.swift */; };
+		0B86CDCD2C199FA500F3B4A0 /* Jailbreaks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86CDCC2C199FA500F3B4A0 /* Jailbreaks.swift */; };
 		0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3062930B2FB00BA5312 /* PackageSection.swift */; };
 		0B88C30B2930B58D00BA5312 /* PackageDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C30A2930B58D00BA5312 /* PackageDetailVC.swift */; };
 		0B88C30D2930B88800BA5312 /* PackageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */; };
@@ -115,6 +116,7 @@
 		0B8661882930AF7100EA4301 /* Dpkg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dpkg.swift; sourceTree = "<group>"; };
 		0B8661892930AF7100EA4301 /* FFIPackage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FFIPackage.swift; sourceTree = "<group>"; };
 		0B86CDA72C18D8F000F3B4A0 /* ConsoleLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleLogger.swift; sourceTree = "<group>"; };
+		0B86CDCC2C199FA500F3B4A0 /* Jailbreaks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Jailbreaks.swift; sourceTree = "<group>"; };
 		0B88C3062930B2FB00BA5312 /* PackageSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageSection.swift; sourceTree = "<group>"; };
 		0B88C30A2930B58D00BA5312 /* PackageDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageDetailVC.swift; sourceTree = "<group>"; };
 		0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageTableViewCell.swift; sourceTree = "<group>"; };
@@ -146,6 +148,20 @@
 		F4A8FB183915E3D413DF2C45 /* Pods-Twackup.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Twackup.debug.xcconfig"; path = "Target Support Files/Pods-Twackup/Pods-Twackup.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0B86CDCB2C1999AA00F3B4A0 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				libroot/src/dyn.c,
+			);
+			target = 0B8661642930ADA300EA4301 /* Twackup */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		0B86CDC72C19996300F3B4A0 /* contrib */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (0B86CDCB2C1999AA00F3B4A0 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); name = contrib; path = ../contrib; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		0B8661622930ADA300EA4301 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -172,6 +188,7 @@
 			isa = PBXGroup;
 			children = (
 				0B0DBB6E2934FA58002F3BB2 /* String.swift */,
+				0B86CDCC2C199FA500F3B4A0 /* Jailbreaks.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -199,6 +216,7 @@
 			isa = PBXGroup;
 			children = (
 				0B9EB5E1294B8C7700DED54D /* .swiftlint.yml */,
+				0B86CDC72C19996300F3B4A0 /* contrib */,
 				0B8661832930AF4E00EA4301 /* common-include */,
 				0B8661672930ADA300EA4301 /* Twackup */,
 				0B8661662930ADA300EA4301 /* Products */,
@@ -590,6 +608,7 @@
 				0B86CDA82C18D8F000F3B4A0 /* ConsoleLogger.swift in Sources */,
 				0B88C31E2930DEA200BA5312 /* PackageDetailView.swift in Sources */,
 				0B85ABB7294C8E4C00B6C5CF /* DetailedLabelSUI.swift in Sources */,
+				0B86CDCD2C199FA500F3B4A0 /* Jailbreaks.swift in Sources */,
 				0BAAD9922937BE360089C8FB /* RJTHudProgressView.m in Sources */,
 				0B88C3152930CE2E00BA5312 /* PackageListModel.swift in Sources */,
 				0B0DBB6F2934FA58002F3BB2 /* String.swift in Sources */,
@@ -699,6 +718,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/../contrib/libroot/src";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -754,6 +774,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/../contrib/libroot/src";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -789,6 +810,7 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+					/var/jb/usr/lib,
 				);
 				MARKETING_VERSION = 2.0.2;
 				OTHER_LDFLAGS = (
@@ -847,6 +869,7 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+					/var/jb/usr/lib,
 				);
 				MARKETING_VERSION = 2.0.2;
 				OTHER_LDFLAGS = (
