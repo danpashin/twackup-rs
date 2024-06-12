@@ -2,9 +2,9 @@ name: Build and test project
 
 on:
   push:
-    branches: ["master"]
+    branches: [ "master" ]
   pull_request:
-    branches: ["master"]
+    branches: [ "master" ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -13,35 +13,37 @@ jobs:
   run:
     runs-on: macos-14
     steps:
-    - uses: actions/checkout@v4
-    - name: Setting up envs
-      run: echo "GIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-    - name: Install build dependencies
-      run: |
-        cargo install cargo-make
-        brew install dpkg ldid coreutils
-        bundle install
-    - name: Install GUI build dependencies
-      run: |
-        cd twackup-gui
-        pod install
-    - name: Install rust target support
-      run: |
-        rustup target add aarch64-apple-ios x86_64-apple-ios
-        rustup toolchain install nightly
-        rustup component add rust-src --toolchain nightly
-    - name: Build & test
-      run: |
-        cargo build-ios
-    - uses: actions/upload-artifact@v3
-      with:
-        name: Twackup-rootfull-g${{ env.GIT_SHA }}
-        path: target/artifacts/rootfull/*.deb
-    - uses: actions/upload-artifact@v3
-      with:
-        name: Twackup-rootless-g${{ env.GIT_SHA }}
-        path: target/artifacts/rootless/*.deb
-    - uses: actions/upload-artifact@v3
-      with:
-        name: Twackup-g${{ env.GIT_SHA }}
-        path: target/artifacts/*.ipa
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setting up envs
+        run: echo "GIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      - name: Install build dependencies
+        run: |
+          cargo install cargo-make
+          brew install dpkg ldid coreutils
+          bundle install
+      - name: Install GUI build dependencies
+        run: |
+          cd twackup-gui
+          pod install
+      - name: Install rust target support
+        run: |
+          rustup target add aarch64-apple-ios x86_64-apple-ios
+          rustup toolchain install nightly
+          rustup component add rust-src --toolchain nightly
+      - name: Build & test
+        run: |
+          cargo build-ios
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Twackup-rootfull-g${{ env.GIT_SHA }}
+          path: target/artifacts/rootfull/*.deb
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Twackup-rootless-g${{ env.GIT_SHA }}
+          path: target/artifacts/rootless/*.deb
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Twackup-g${{ env.GIT_SHA }}
+          path: target/artifacts/*.ipa

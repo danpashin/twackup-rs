@@ -8,6 +8,12 @@ ARTIFACTS_DIR = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/artifacts"
 ARTIFACTS_ROOTLESS_DIR = "${ARTIFACTS_DIR}/rootless"
 ARTIFACTS_ROOTFULL_DIR = "${ARTIFACTS_DIR}/rootfull"
 
+[tasks.test]
+category = "Test"
+description = "Runs cargo test"
+command = "cargo"
+args = ["test", "--all-features"]
+
 [tasks.build-cli]
 workspace = false
 category = "Build"
