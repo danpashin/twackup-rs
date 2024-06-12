@@ -12,6 +12,8 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     let preferences = Preferences()
 
+    private var consoleLoggerIsSet = false
+
     private(set) lazy var mainModel: MainModel = {
         let rootfullDir = "/var/lib/dpkg"
         let rootlessDir = "/var/jb/var/lib/dpkg"
@@ -37,5 +39,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         return true
+    }
+
+    func setupConsoleLogger() async {
+        if !consoleLoggerIsSet {
+            consoleLoggerIsSet = true
+            await FFILogger.shared.addSubscriber(ConsoleLogger())
+        }
     }
 }

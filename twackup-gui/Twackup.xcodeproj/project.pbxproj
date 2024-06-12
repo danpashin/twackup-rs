@@ -45,6 +45,7 @@
 		0B86617D2930AE5E00EA4301 /* PackageListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86617C2930AE5E00EA4301 /* PackageListVC.swift */; };
 		0B86618A2930AF7100EA4301 /* Dpkg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8661882930AF7100EA4301 /* Dpkg.swift */; };
 		0B86618B2930AF7100EA4301 /* FFIPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8661892930AF7100EA4301 /* FFIPackage.swift */; };
+		0B86CDA82C18D8F000F3B4A0 /* ConsoleLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86CDA72C18D8F000F3B4A0 /* ConsoleLogger.swift */; };
 		0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3062930B2FB00BA5312 /* PackageSection.swift */; };
 		0B88C30B2930B58D00BA5312 /* PackageDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C30A2930B58D00BA5312 /* PackageDetailVC.swift */; };
 		0B88C30D2930B88800BA5312 /* PackageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */; };
@@ -113,6 +114,7 @@
 		0B86617C2930AE5E00EA4301 /* PackageListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageListVC.swift; sourceTree = "<group>"; };
 		0B8661882930AF7100EA4301 /* Dpkg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dpkg.swift; sourceTree = "<group>"; };
 		0B8661892930AF7100EA4301 /* FFIPackage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FFIPackage.swift; sourceTree = "<group>"; };
+		0B86CDA72C18D8F000F3B4A0 /* ConsoleLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleLogger.swift; sourceTree = "<group>"; };
 		0B88C3062930B2FB00BA5312 /* PackageSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageSection.swift; sourceTree = "<group>"; };
 		0B88C30A2930B58D00BA5312 /* PackageDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageDetailVC.swift; sourceTree = "<group>"; };
 		0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageTableViewCell.swift; sourceTree = "<group>"; };
@@ -300,6 +302,7 @@
 				0B85ABB6294C8E4C00B6C5CF /* DetailedLabelSUI.swift */,
 				0B6BB2F0294A599D001E3B43 /* ProxiedObservedObject.swift */,
 				0B5B332A294DA9F00097398F /* MainModel.swift */,
+				0B86CDA72C18D8F000F3B4A0 /* ConsoleLogger.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -584,6 +587,7 @@
 				0B463A9B29389EBB00021EF7 /* DebsListModel.swift in Sources */,
 				0B50FF722949EA7700CF4BCF /* DiskStats.swift in Sources */,
 				0B5D3F9C2934D2EB00AE50F2 /* Database.swift in Sources */,
+				0B86CDA82C18D8F000F3B4A0 /* ConsoleLogger.swift in Sources */,
 				0B88C31E2930DEA200BA5312 /* PackageDetailView.swift in Sources */,
 				0B85ABB7294C8E4C00B6C5CF /* DetailedLabelSUI.swift in Sources */,
 				0BAAD9922937BE360089C8FB /* RJTHudProgressView.m in Sources */,

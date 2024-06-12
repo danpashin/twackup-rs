@@ -19,9 +19,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let delegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = MainTabbarController(mainModel: delegate.mainModel)
         window.makeKeyAndVisible()
-
+        window.backgroundColor = .systemBackground
         self.window = window
+
+        Task {
+            // Since actors are executing on `RunLoop.main`
+            // we can't call logger initialization in `AppDelegate.init` (runloop not run yet)
+            // Another option is to make FFILogger to be not an actor but this will bring libdispatch back
+            //
+            // So, there's a hack. Init mainModel (since it is a lazy var) just after logger
+            // Screen will blink (that's why `window.backgroundColor` is set) but that's ok for us
+            await delegate.setupConsoleLogger()
+
+            window.rootViewController = MainTabbarController(mainModel: delegate.mainModel)
+        }
     }
 }

@@ -20,6 +20,7 @@
 use log::{LevelFilter, Log, Metadata, Record};
 use safer_ffi::{derive_ReprC, prelude::c_slice::Box};
 use std::ffi::c_void;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 #[derive_ReprC]
 #[repr(u8)]
@@ -83,12 +84,23 @@ pub(crate) struct Logger {
     level: TwMessageLevel,
 }
 
+static LOGGER_SETTED_UP: AtomicBool = AtomicBool::new(false);
+
 impl Logger {
     pub(crate) fn init(functions: TwLogFunctions, level: TwMessageLevel) {
+        if LOGGER_SETTED_UP.swap(true, Ordering::SeqCst) {
+            panic!("Logger is already set!");
+        }
+
         let logger = Self { functions, level };
 
         ::log::set_max_level(level.into());
         ::log::set_boxed_logger(std::boxed::Box::new(logger)).expect("Logger failed");
+        LOGGER_SETTED_UP.store(true, Ordering::SeqCst);
+    }
+
+    pub(crate) fn is_already_initted() -> bool {
+        LOGGER_SETTED_UP.load(Ordering::SeqCst)
     }
 }
 

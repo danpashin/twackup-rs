@@ -47,7 +47,7 @@ final class LogViewController: UIViewController, FFILoggerSubscriber, Scrollable
         tabBarItem = metadata.tabbarItem
 
         Task {
-            await mainModel.logger.addSubsriber(self)
+            await mainModel.logger.addSubscriber(self)
         }
     }
 

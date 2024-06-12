@@ -153,6 +153,12 @@ fn tw_enable_logging(functions: TwLogFunctions, level: TwMessageLevel) {
     Logger::init(functions, level)
 }
 
+/// Checked if logger is already enabled
+#[ffi_export]
+fn tw_is_logging_enabled() -> bool {
+    Logger::is_already_initted()
+}
+
 /// Returns library version. It is static - no need to deallocate it.
 #[ffi_export]
 fn tw_library_version() -> char_p::Ref<'static> {
