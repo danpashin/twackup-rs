@@ -19,15 +19,18 @@ final class FFIPackage: Package, Sendable {
     }
 
     var icon: URL? {
-        guard let icon = String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_ICON)) else { return nil }
+        let fieldString = tw_package_field_str(pkg.inner, TW_PACKAGE_FIELD_ICON.clampedToU8)
+        guard let iconURL = String(ffiSlice: fieldString, deallocate: true) else {
+            return nil
+        }
 
-        return URL(string: icon)
+        return URL(string: iconURL)
     }
 
     var depiction: URL? {
-        var depiction = String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_DEPICTION))
+        var depiction = String(ffiSlice: tw_package_field_str(pkg.inner, TW_PACKAGE_FIELD_DEPICTION.clampedToU8))
         if depiction == nil {
-            depiction = String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_HOMEPAGE))
+            depiction = String(ffiSlice: tw_package_field_str(pkg.inner, TW_PACKAGE_FIELD_HOMEPAGE.clampedToU8))
         }
 
         guard let depiction else { return nil }
@@ -35,16 +38,16 @@ final class FFIPackage: Package, Sendable {
     }
 
     var humanDescription: String? {
-        String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_DESCRIPTION))
+        String(ffiSlice: tw_package_field_str(pkg.inner, TW_PACKAGE_FIELD_DESCRIPTION.clampedToU8))
     }
 
     var architecture: String? {
-        String(ffiSlice: pkg.get_field(pkg.inner_ptr, TW_PACKAGE_FIELD_ARCHITECTURE))
+        String(ffiSlice: tw_package_field_str(pkg.inner, TW_PACKAGE_FIELD_ARCHITECTURE.clampedToU8))
     }
 
     var installedSize: Int64 {
-        let field = TW_PACKAGE_FIELD_INSTALLED_SIZE
-        guard let stringSize = String(ffiSlice: pkg.get_field(pkg.inner_ptr, field)) else { return 0 }
+        let field = TW_PACKAGE_FIELD_INSTALLED_SIZE.clampedToU8
+        guard let stringSize = String(ffiSlice: tw_package_field_str(pkg.inner, field)) else { return 0 }
         guard let size = Int64(stringSize) else { return 0 }
         return size * 1_000
     }
@@ -65,7 +68,7 @@ final class FFIPackage: Package, Sendable {
     }
 
     deinit {
-        pkg.deallocate(pkg.inner_ptr)
+        tw_package_release(pkg.inner)
     }
 
     func isEqualTo(_ other: Package) -> Bool {

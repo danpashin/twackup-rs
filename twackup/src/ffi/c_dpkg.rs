@@ -19,8 +19,8 @@
 
 use super::package::TwPackage;
 use crate::{dpkg::PackagesSort, Dpkg};
-use safer_ffi::{derive_ReprC, prelude::c_slice, ptr};
-use std::{ffi::c_void, mem::ManuallyDrop};
+use safer_ffi::{derive_ReprC, prelude::c_slice};
+use std::{ffi::c_void, ptr::NonNull};
 use tokio::runtime::{Builder, Runtime};
 
 #[derive_ReprC]
@@ -46,8 +46,8 @@ impl From<TwPackagesSort> for PackagesSort {
 #[derive_ReprC]
 #[repr(C)]
 pub struct TwDpkg {
-    dpkg_ptr: ptr::NonNull<c_void>,
-    runtime_ptr: ptr::NonNull<c_void>,
+    dpkg_ptr: NonNull<c_void>,
+    runtime_ptr: NonNull<c_void>,
 }
 
 impl TwDpkg {
@@ -62,22 +62,22 @@ impl TwDpkg {
 
         unsafe {
             Self {
-                dpkg_ptr: ptr::NonNull::new_unchecked(dpkg_ptr.cast()),
-                runtime_ptr: ptr::NonNull::new_unchecked(runtime_ptr.cast()),
+                dpkg_ptr: NonNull::new_unchecked(dpkg_ptr.cast()),
+                runtime_ptr: NonNull::new_unchecked(runtime_ptr.cast()),
             }
         }
     }
 
     #[inline]
     #[must_use]
-    pub(crate) fn inner_dpkg(&self) -> &ManuallyDrop<Dpkg> {
-        unsafe { &*self.dpkg_ptr.as_ptr().cast() }
+    pub(crate) fn inner_dpkg(&self) -> &Dpkg {
+        unsafe { self.dpkg_ptr.cast().as_ref() }
     }
 
     #[inline]
     #[must_use]
-    pub(crate) fn inner_tokio_rt(&self) -> &ManuallyDrop<Runtime> {
-        unsafe { &*self.runtime_ptr.as_ptr().cast() }
+    pub(crate) fn inner_tokio_rt(&self) -> &Runtime {
+        unsafe { self.runtime_ptr.cast().as_ref() }
     }
 
     pub(crate) fn get_packages(
@@ -88,31 +88,25 @@ impl TwDpkg {
         let dpkg = self.inner_dpkg();
         let tokio_rt = self.inner_tokio_rt();
 
-        let packages: Result<Vec<_>, _> = tokio_rt.block_on(async {
+        let packages: Option<Vec<_>> = tokio_rt.block_on(async {
             if sort == TwPackagesSort::Unsorted {
-                let packages = dpkg.unsorted_packages(leaves_only).await;
-                let pkgs = packages.map(|pkgs| pkgs.into_iter().map(TwPackage::from));
-                pkgs.map(Iterator::collect)
+                let packages = dpkg.unsorted_packages(leaves_only).await.ok()?;
+                Some(packages.into_iter().map(TwPackage::from).collect())
             } else {
-                let packages = dpkg.packages(leaves_only, sort.into()).await;
-                let pkgs = packages.map(|packages| packages.into_iter().map(|(_, pkg)| pkg));
-                pkgs.map(|pkgs| pkgs.map(TwPackage::from).collect())
+                let packages = dpkg.packages(leaves_only, sort.into()).await.ok()?;
+                Some(packages.into_values().map(TwPackage::from).collect())
             }
         });
 
-        if let Ok(packages) = packages {
-            Some(c_slice::Box::from(packages.into_boxed_slice()))
-        } else {
-            None
-        }
+        Some(c_slice::Box::from(packages?.into_boxed_slice()))
     }
 }
 
 impl Drop for TwDpkg {
     fn drop(&mut self) {
         unsafe {
-            ManuallyDrop::<Dpkg>::drop(&mut *self.dpkg_ptr.as_ptr().cast());
-            ManuallyDrop::<Runtime>::drop(&mut *self.runtime_ptr.as_ptr().cast());
+            drop(Box::from_raw(self.dpkg_ptr.cast::<Dpkg>().as_ptr()));
+            drop(Box::from_raw(self.runtime_ptr.cast::<Runtime>().as_ptr()));
         }
     }
 }

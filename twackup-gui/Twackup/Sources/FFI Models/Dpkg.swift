@@ -52,27 +52,20 @@ actor Dpkg {
     /// - Parameter onlyLeaves: True if only leaves packages should be returned. Otherwise, false
     /// - Returns: Array of parsed packages. Improper packages will be skipped
     func parsePackages(onlyLeaves: Bool) throws -> [FFIPackage] {
-        var rawPkgs = slice_boxed_TwPackage_t()
-        let result = tw_get_packages(innerDpkg, onlyLeaves, TW_PACKAGES_SORT_NAME, &rawPkgs)
-        if result != TW_RESULT_OK || rawPkgs.ptr == nil {
-            throw NSError(domain: "ru.danpashin.twackup", code: 0, userInfo: [
-                NSLocalizedDescriptionKey: "FFI returned \(result) code. Critical bug?"
-            ])
-        }
+        var packagesPtr: UnsafeMutablePointer<TwPackage>?
+        let count = tw_get_packages(innerDpkg, onlyLeaves, TW_PACKAGES_SORT_NAME.clampedToU8, &packagesPtr)
 
-        let packages = UnsafeBufferPointer(start: rawPkgs.ptr, count: rawPkgs.len)
-            .compactMap { package in
-                let model = FFIPackage(package)
-                if model == nil {
-                    package.deallocate(package.inner_ptr)
-                }
+        let buffer = UnsafeBufferPointer(start: packagesPtr, count: Int(count))
+        defer { buffer.deallocate() }
 
-                return model
+        return buffer.compactMap { package in
+            let model = FFIPackage(package)
+            if model == nil {
+                tw_package_release(package.inner)
             }
 
-        rawPkgs.ptr.deallocate()
-
-        return packages
+            return model
+        }
     }
 
     /// Rebuilds packages and saves them to specified directory
@@ -109,7 +102,7 @@ actor Dpkg {
             }
         }
 
-        if status != TW_RESULT_OK {
+        if status != TW_RESULT_OK.clampedToU8 {
             tw_free_rebuild_results(ffiResults)
 
             throw NSError(domain: "ru.danpashin.twackup", code: 0, userInfo: [

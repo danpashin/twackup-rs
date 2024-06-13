@@ -121,13 +121,13 @@ pub(crate) fn rebuild_packages(dpkg: &TwDpkg, parameters: TwBuildParameters<'_>)
 
     let mut workers = LinkedList::new();
     for package in parameters.packages.iter() {
-        let package = package.inner_ptr;
+        let package = package.inner.clone();
         let dpkg_contents = dpkg_contents.clone();
         let preferences = preferences.clone();
 
         workers.push_back(tokio_rt.spawn(async move {
-            let w_package = package.as_ref();
-            let worker = Worker::new(w_package, progress, None, preferences, dpkg_contents);
+            let package = &*package;
+            let worker = Worker::new(package, progress, None, preferences, dpkg_contents);
             worker.run().await
         }));
     }

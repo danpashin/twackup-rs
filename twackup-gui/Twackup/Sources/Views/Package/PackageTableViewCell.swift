@@ -8,7 +8,7 @@
 import UIKit
 
 class PackageTableViewCell: UITableViewCell {
-    var package: Package? {
+    weak var package: Package? {
         didSet {
             updateUI()
         }

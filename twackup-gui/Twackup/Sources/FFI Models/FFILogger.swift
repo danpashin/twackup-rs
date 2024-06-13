@@ -14,7 +14,7 @@ protocol FFILoggerSubscriber: Hashable, Sendable {
 }
 
 actor FFILogger {
-    enum Level: UInt32 {
+    enum Level: UInt8 {
         case off
         case error
         case warning
@@ -61,7 +61,7 @@ actor FFILogger {
             guard let context,
                   let msgText = String(ffiSlice: ffiMsg.text, deallocate: true),
                   let msgTarget = String(ffiSlice: ffiMsg.target, deallocate: true),
-                  let level = Level(rawValue: level.rawValue) else {
+                  let level = Level(rawValue: level) else {
                 return
             }
 

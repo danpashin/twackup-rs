@@ -55,16 +55,16 @@ enum PackageSection: UInt16 {
 extension TwPackageSection_t {
     var swiftSection: PackageSection {
         switch self {
-        case TW_PACKAGE_SECTION_ARCHIVING: return .archiving
-        case TW_PACKAGE_SECTION_DEVELOPMENT: return .development
-        case TW_PACKAGE_SECTION_NETWORKING: return .networking
-        case TW_PACKAGE_SECTION_PACKAGING: return .packaging
-        case TW_PACKAGE_SECTION_SYSTEM: return .system
-        case TW_PACKAGE_SECTION_TERMINAL_SUPPORT: return .terminalSupport
-        case TW_PACKAGE_SECTION_TEXT_EDITORS: return .textEditors
-        case TW_PACKAGE_SECTION_THEMES: return .themes
-        case TW_PACKAGE_SECTION_TWEAKS: return .tweaks
-        case TW_PACKAGE_SECTION_UTILITIES: return .utilities
+        case TW_PACKAGE_SECTION_ARCHIVING.clampedToU8: return .archiving
+        case TW_PACKAGE_SECTION_DEVELOPMENT.clampedToU8: return .development
+        case TW_PACKAGE_SECTION_NETWORKING.clampedToU8: return .networking
+        case TW_PACKAGE_SECTION_PACKAGING.clampedToU8: return .packaging
+        case TW_PACKAGE_SECTION_SYSTEM.clampedToU8: return .system
+        case TW_PACKAGE_SECTION_TERMINAL_SUPPORT.clampedToU8: return .terminalSupport
+        case TW_PACKAGE_SECTION_TEXT_EDITORS.clampedToU8: return .textEditors
+        case TW_PACKAGE_SECTION_THEMES.clampedToU8: return .themes
+        case TW_PACKAGE_SECTION_TWEAKS.clampedToU8: return .tweaks
+        case TW_PACKAGE_SECTION_UTILITIES.clampedToU8: return .utilities
 
         default: return .other
         }

@@ -19,20 +19,25 @@
 
 #![allow(missing_docs)]
 
+mod arc_container;
 pub mod builder;
 pub mod c_dpkg;
 mod logger;
 pub mod package;
 
 use self::{
+    arc_container::ArcContainer,
     builder::{TwBuildParameters, TwPackagesRebuildResult},
     c_dpkg::{TwDpkg, TwPackagesSort},
     logger::{Logger, TwLogFunctions, TwMessageLevel},
-    package::{container::TwPackageRef, field::TwPackageField, TwPackage},
+    package::{field::TwPackageField, TwPackage},
 };
-use crate::Dpkg;
+use crate::{
+    package::{Field, Package},
+    Dpkg,
+};
 use safer_ffi::{boxed, derive_ReprC, ffi_export, prelude::c_slice, prelude::char_p};
-use std::ptr;
+use std::{mem, mem::ManuallyDrop, ptr::NonNull};
 
 #[derive_ReprC]
 #[repr(i8)]
@@ -72,16 +77,17 @@ fn tw_get_packages(
     dpkg: &TwDpkg,
     leaves_only: bool,
     sort: TwPackagesSort,
-    output: &mut c_slice::Box<TwPackage>,
-) -> TwResult {
+    output: safer_ffi::prelude::Out<'_, NonNull<TwPackage>>,
+) -> i64 {
     if let Some(packages) = dpkg.get_packages(leaves_only, sort) {
-        unsafe {
-            let ptr = output as *mut c_slice::Box<TwPackage>;
-            ptr.write(packages);
-        }
-        TwResult::Ok
+        let packages = ManuallyDrop::new(packages);
+
+        let packages_ptr = packages.as_ptr().cast_mut();
+        unsafe { output.write(NonNull::new_unchecked(packages_ptr)) };
+
+        packages.len() as i64
     } else {
-        TwResult::Error
+        TwResult::Error as i64
     }
 }
 
@@ -91,8 +97,13 @@ fn tw_get_packages(
 /// from which section description should be fetched
 ///
 #[ffi_export]
-fn tw_get_package_section_string(package: TwPackageRef) -> c_slice::Raw<u8> {
-    package::get_section_string(package)
+fn tw_package_section_str(package: ArcContainer<Package>) -> c_slice::Raw<u8> {
+    // Since ArcContainer was initialized just by casting pointer, we should retain it
+    // counter will be decremented automatically when container drops
+    package.retain();
+
+    let section = package.section.as_str().as_bytes();
+    c_slice::Ref::from(section).into()
 }
 
 /// Fetches package field value
@@ -101,8 +112,16 @@ fn tw_get_package_section_string(package: TwPackageRef) -> c_slice::Raw<u8> {
 /// \param[in] field Field type
 ///
 #[ffi_export]
-fn tw_get_package_field(package: TwPackageRef, field: TwPackageField) -> c_slice::Raw<u8> {
-    package::get_field(package, field)
+fn tw_package_field_str(package: ArcContainer<Package>, field: TwPackageField) -> c_slice::Raw<u8> {
+    // Since ArcContainer was initialized just by casting pointer, we should retain it
+    // counter will be decremented automatically when container drops
+    package.retain();
+
+    let field: Field = field.into();
+    match package.get(field) {
+        Ok(value) => c_slice::Raw::from(c_slice::Ref::from(value.as_bytes())),
+        Err(_) => c_slice::Raw::from(c_slice::Ref::default()),
+    }
 }
 
 /// Build control file string from package
@@ -110,14 +129,39 @@ fn tw_get_package_field(package: TwPackageRef, field: TwPackageField) -> c_slice
 /// \param[in] package Package from which control string should be build
 ///
 #[ffi_export]
-fn tw_package_build_control(package: TwPackageRef) -> c_slice::Box<u8> {
-    package::build_control(package)
+fn tw_package_build_control(package: ArcContainer<Package>) -> c_slice::Box<u8> {
+    // Since ArcContainer was initialized just by casting pointer, we should retain it
+    // counter will be decremented automatically when container drops
+    package.retain();
+
+    let control = package.to_control();
+    c_slice::Box::from(control.into_bytes().into_boxed_slice())
+}
+
+#[ffi_export]
+fn tw_package_dependencies(package: ArcContainer<Package>) -> c_slice::Box<c_slice::Raw<u8>> {
+    // Since ArcContainer was initialized just by casting pointer, we should retain it
+    // counter will be decremented automatically when container drops
+    package.retain();
+
+    let dependencies = package.dependencies();
+    let dependencies: Vec<_> = dependencies
+        .map(|dep| c_slice::Raw::from(c_slice::Ref::from(dep.as_bytes())))
+        .collect();
+    c_slice::Box::from(dependencies.into_boxed_slice())
 }
 
 /// Deallocated package instance. Nothing else
 #[ffi_export]
-fn tw_package_free(package: TwPackageRef) {
-    package.deinit();
+fn tw_package_release(package: ArcContainer<Package>) {
+    // Should not call release on package here. It will be release by Drop::drop
+    drop(package);
+}
+
+#[ffi_export]
+fn tw_package_retain(package: ArcContainer<Package>) {
+    package.retain();
+    mem::forget(package);
 }
 
 /// Rebuilds package to deb file.
@@ -150,7 +194,7 @@ fn tw_free_rebuild_results(results: c_slice::Box<TwPackagesRebuildResult>) {
 /// \param[in] level Logging level
 #[ffi_export]
 fn tw_enable_logging(functions: TwLogFunctions, level: TwMessageLevel) {
-    Logger::init(functions, level)
+    Logger::init(functions, level);
 }
 
 /// Checked if logger is already enabled
@@ -159,19 +203,17 @@ fn tw_is_logging_enabled() -> bool {
     Logger::is_already_initted()
 }
 
+static VERSION: &str = concat!(
+    env!("CARGO_PKG_VERSION"),
+    "-",
+    env!("VERGEN_GIT_DESCRIBE"),
+    "\0",
+);
+
 /// Returns library version. It is static - no need to deallocate it.
 #[ffi_export]
 fn tw_library_version() -> char_p::Ref<'static> {
-    static VERSION: &str = concat!(
-        env!("CARGO_PKG_VERSION"),
-        "-",
-        env!("VERGEN_GIT_DESCRIBE"),
-        "\0",
-    );
-
-    unsafe {
-        char_p::Ref::from_ptr_unchecked(ptr::NonNull::new_unchecked(VERSION.as_ptr() as *mut _))
-    }
+    unsafe { char_p::Ref::from_ptr_unchecked(NonNull::new_unchecked(VERSION.as_ptr() as *mut _)) }
 }
 
 /// Generates FFI headers
