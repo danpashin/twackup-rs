@@ -91,7 +91,7 @@ pub(crate) enum Signal {
     //Poll = 29,
     /// Power failure (System V).
     Power = 30,
-    /// Bad argument to routine (SVr4).
+    /// Bad argument to routine (`SVr4`).
     Sys = 31,
 }
 

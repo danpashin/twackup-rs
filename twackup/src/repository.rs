@@ -67,7 +67,7 @@ pub struct Repository {
     /// Specifies the root of the archive
     pub url: String,
 
-    /// Specifies a subdirectory in $ARCHIVE_ROOT/dists
+    /// Specifies a subdirectory in `$ARCHIVE_ROOT/dists`
     pub distribution: String,
 
     /// A whitespace separated list of areas.

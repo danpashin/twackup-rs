@@ -135,12 +135,9 @@ pub(crate) fn rebuild_packages(dpkg: &TwDpkg, parameters: TwBuildParameters<'_>)
     let mut errors_vec = vec![];
     tokio_rt.block_on(async {
         for worker in workers {
-            let result = match worker.await {
-                Ok(result) => result,
-                _ => continue,
-            };
+            let Ok(result) = worker.await else { continue };
 
-            log::debug!("rebuild result = {:?}", result);
+            log::debug!("rebuild result = {result:?}");
 
             let (path, error) = match result {
                 Ok(path) => (Some(path), None),

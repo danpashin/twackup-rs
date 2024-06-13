@@ -213,7 +213,7 @@ static VERSION: &str = concat!(
 /// Returns library version. It is static - no need to deallocate it.
 #[ffi_export]
 fn tw_library_version() -> char_p::Ref<'static> {
-    unsafe { char_p::Ref::from_ptr_unchecked(NonNull::new_unchecked(VERSION.as_ptr() as *mut _)) }
+    unsafe { char_p::Ref::from_ptr_unchecked(NonNull::new_unchecked(VERSION.as_ptr().cast_mut())) }
 }
 
 /// Generates FFI headers

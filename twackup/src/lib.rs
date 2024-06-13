@@ -29,7 +29,11 @@
     clippy::redundant_feature_names
 )]
 #![warn(clippy::unused_self, missing_docs)]
-#![allow(clippy::cast_possible_wrap)]
+#![allow(
+    clippy::cast_possible_wrap,
+    clippy::expl_impl_clone_on_copy,
+    clippy::module_name_repetitions
+)]
 
 //! A Tokio-based DPKG database parsing library.
 //!

@@ -131,7 +131,7 @@ where
         use safer_ffi::headers::languages;
         if language.is::<languages::C>() {
             let me = Self::name(language);
-            writeln!(definer.out(), "typedef void *{};", me)
+            writeln!(definer.out(), "typedef void *{me};")
         } else {
             Ok(())
         }

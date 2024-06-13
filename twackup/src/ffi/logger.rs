@@ -88,9 +88,8 @@ static LOGGER_SETTED_UP: AtomicBool = AtomicBool::new(false);
 
 impl Logger {
     pub(crate) fn init(functions: TwLogFunctions, level: TwMessageLevel) {
-        if LOGGER_SETTED_UP.swap(true, Ordering::SeqCst) {
-            panic!("Logger is already set!");
-        }
+        let already_set = LOGGER_SETTED_UP.swap(true, Ordering::SeqCst);
+        assert!(!already_set, "Logger is already set!");
 
         let logger = Self { functions, level };
 
