@@ -7,17 +7,6 @@
 
 import Sentry
 
-protocol DpkgProgress: Actor {
-    /// Being called when package is ready to start it's rebuilding operation
-    func startProcessing(package: Package)
-
-    /// Being called when package just finished it's rebuilding operation
-    func finishedProcessing(package: Package, debURL: URL)
-
-    /// Being called when all packages are processed
-    func finishedAll()
-}
-
 actor Dpkg {
     enum MessageLevel: UInt8 {
         case debug
@@ -30,14 +19,13 @@ actor Dpkg {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }()
 
-    /// Delegate which will be called on build state update
-    weak var buildProgressDelegate: DpkgProgress?
-
     private let innerDpkg: UnsafeMutablePointer<TwDpkg_t>
 
     private let preferences: Preferences
 
     private var buildParameters = TwBuildParameters_t()
+
+    nonisolated let progressNotifier = DpkgProgressNotifier()
 
     init(path: String, preferences: Preferences, lock: Bool = false) {
         innerDpkg = tw_init(path, lock)
@@ -78,7 +66,7 @@ actor Dpkg {
         var ffiResults = slice_boxed_TwPackagesRebuildResult()
         withUnsafeMutablePointer(to: &ffiResults) { buildParameters.results = $0 }
 
-        buildParameters.functions = createProgressFuncs()
+        buildParameters.functions = progressNotifier.ffiFunctions
 
         // Since Swift enums have values equal to FFI ones, it is safe to just pass them by without any checks
         buildParameters.preferences.compression_level = await .init(UInt32(preferences.compression.level.rawValue))
@@ -90,7 +78,7 @@ actor Dpkg {
         }
         defer { buildParameters.out_dir.deallocate() }
 
-        let status =  packages
+        let status = packages
             .map { $0.inner }
             .map { Optional($0) } // Apple moment
             .withUnsafeBufferPointer { pointer in
@@ -110,6 +98,7 @@ actor Dpkg {
 
         let results: [Result<URL, Error>] = UnsafeBufferPointer(start: ffiResults.ptr, count: ffiResults.len)
             .map { result in
+                // package is not used yet. When it will be - should call `tw_package_retain` on it
                 if !result.success {
                     return .failure(NSError(domain: "ru.danpashin.twackup", code: 0, userInfo: [
                         NSLocalizedDescriptionKey: "\(String(ffiSlice: result.error) ?? "")"
@@ -118,59 +107,17 @@ actor Dpkg {
 
                 // safe to unwrap here 'cause Rust string is UTF-8 encoded string
                 let path = String(ffiSlice: result.deb_path)!
+
+                // URL will copy string
                 return .success(URL(fileURLWithPath: path))
             }
 
         tw_free_rebuild_results(ffiResults)
 
-        return []
-    }
-
-    private func createProgressFuncs() -> TwProgressFunctions {
-        var funcs = TwProgressFunctions()
-
-        // not a memory leak actually. It lives as long as self does
-        funcs.context = Unmanaged<Dpkg>.passUnretained(self).toOpaque()
-        funcs.started_processing = { context, package in
-            guard let context,
-                  let ffiPackage = FFIPackage(package)
-            else {
-                tw_package_release(package.inner)
-                return
-            }
-
-            let dpkg = Unmanaged<Dpkg>.fromOpaque(context).takeUnretainedValue()
-            Task(priority: .utility) {
-                await dpkg.buildProgressDelegate?.startProcessing(package: ffiPackage)
-            }
-        }
-        funcs.finished_processing = { context, package, debPath in
-            guard let context,
-                  let ffiPackage = FFIPackage(package),
-                  let debPath = String(ffiSlice: debPath)
-            else {
-                tw_package_release(package.inner)
-                return
-            }
-
-            let dpkg = Unmanaged<Dpkg>.fromOpaque(context).takeUnretainedValue()
-            Task(priority: .utility) {
-                let debURL = URL(fileURLWithPath: debPath)
-                await dpkg.buildProgressDelegate?.finishedProcessing(package: ffiPackage, debURL: debURL)
-            }
-        }
-        funcs.finished_all = { context in
-            guard let context else { return }
-            let dpkg = Unmanaged<Dpkg>.fromOpaque(context).takeUnretainedValue()
-            Task(priority: .utility) {
-                await dpkg.buildProgressDelegate?.finishedAll()
-            }
-        }
-
-        return funcs
+        return results
     }
 }
 
 #if swift(>=6.0)
-extension UnsafeMutablePointer<TwDpkg_t>: @unchecked @retroactive Sendable {}
+extension TwDpkg_t: @unchecked @retroactive Sendable {}
 #endif

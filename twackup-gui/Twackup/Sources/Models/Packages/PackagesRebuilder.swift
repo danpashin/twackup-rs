@@ -8,8 +8,10 @@
 import Sentry
 
 // swiftlint:disable legacy_objc_type
-actor PackagesRebuilder: DpkgProgress {
+actor PackagesRebuilder: DpkgProgressSubscriber, Equatable, Hashable {
     let mainModel: MainModel
+
+    nonisolated private let uuid = UUID()
 
     private final class PerformanceMeasurer: @unchecked Sendable {
         let rootTransaction: Span
@@ -32,7 +34,8 @@ actor PackagesRebuilder: DpkgProgress {
     init(mainModel: MainModel, updateHandler: (@Sendable (Progress) -> Void)? = nil) {
         self.mainModel = mainModel
         self.updateHandler = updateHandler
-//        mainModel.dpkg.buildProgressDelegate = self
+
+        mainModel.dpkg.progressNotifier.addSubscriber(self)
     }
 
     /// Performs package rebuilding from fs files to debs
@@ -50,20 +53,21 @@ actor PackagesRebuilder: DpkgProgress {
             rootTransaction: SentrySDK.startTransaction(name: "multiple-debs-rebuild", operation: "lib")
         )
 
+        func log(error: Error) async {
+            await FFILogger.shared.log("\(error)", level: .error)
+            SentrySDK.capture(error: error)
+        }
+
         do {
             let results = try await mainModel.dpkg.rebuild(packages: packages)
             for result in results {
                 switch result {
                 case .success: continue
-
-                case .failure(let error):
-                    await FFILogger.shared.log("\(error)", level: .error)
-                    SentrySDK.capture(error: error)
+                case .failure(let error): await log(error: error)
                 }
             }
         } catch {
-            await FFILogger.shared.log("\(error)", level: .error)
-            SentrySDK.capture(error: error)
+            await log(error: error)
         }
 
         await addPackagesToDatabase()
@@ -71,7 +75,23 @@ actor PackagesRebuilder: DpkgProgress {
         performanceMeasurer = nil
     }
 
-    func startProcessing(package: Package) {
+    // MARK: - Private methods
+
+    /// Adds builded packages to database
+    /// - Parameter completion: completion that will be executed at end of save operation
+    private func addPackagesToDatabase() async {
+        guard let performanceMeasurer else { return }
+
+        let databaseTransaction = performanceMeasurer.rootTransaction.startChild(operation: "database-packages-save")
+
+        await mainModel.database.add(packages: donePackages)
+        databaseTransaction.finish()
+        await NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
+    }
+
+    // MARK: - DpkgProgressSubscriber
+
+    func startProcessing(package: FFIPackage) {
         guard let performanceMeasurer else { return }
         let transaction = performanceMeasurer.rootTransaction.startChild(
             operation: "single-deb-rebuild",
@@ -80,7 +100,7 @@ actor PackagesRebuilder: DpkgProgress {
         performanceMeasurer.childTransactions.setObject(transaction, forKey: package.id as NSString)
     }
 
-    func finishedProcessing(package: Package, debURL: URL) {
+    func finishedProcessing(package: FFIPackage, debURL: URL) {
         if let performanceMeasurer {
             if let transaction = performanceMeasurer.childTransactions.object(forKey: package.id as NSString) {
                 transaction.finish()
@@ -96,16 +116,17 @@ actor PackagesRebuilder: DpkgProgress {
     func finishedAll() {
     }
 
-    /// Adds builded packages to database
-    /// - Parameter completion: completion that will be executed at end of save operation
-    private func addPackagesToDatabase() async {
-        guard let performanceMeasurer else { return }
+    // MARK: - PackagesRebuilder
 
-        let databaseTransaction = performanceMeasurer.rootTransaction.startChild(operation: "database-packages-save")
+    static func == (lhs: PackagesRebuilder, rhs: PackagesRebuilder) -> Bool {
+        lhs.uuid == rhs.uuid
+    }
 
-        await mainModel.database.add(packages: donePackages)
-        databaseTransaction.finish()
-        await NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
+    // MARK: - Hashable
+
+    nonisolated func hash(into hasher: inout Hasher) {
+        hasher.combine(uuid)
     }
 }
+
 // swiftlint:enable legacy_objc_type

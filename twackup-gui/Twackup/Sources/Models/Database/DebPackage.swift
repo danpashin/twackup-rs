@@ -77,6 +77,7 @@ class DebPackage: NSManagedObject, Package {
         architecture = package.architecture
         section = package.section
         installedSize = package.installedSize
+        buildDate = Date()
     }
 
     func isEqualTo(_ other: Package) -> Bool {
