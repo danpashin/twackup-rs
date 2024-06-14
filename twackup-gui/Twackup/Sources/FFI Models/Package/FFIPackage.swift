@@ -6,7 +6,7 @@
 //
 
 final class FFIPackage: Package, Sendable {
-    let pkg: TwPackage_t
+    private let pkg: TwPackage_t
 
     let id: String
 
@@ -15,7 +15,11 @@ final class FFIPackage: Package, Sendable {
     let version: String
 
     var section: PackageSection {
-        return pkg.section.swiftSection
+        pkg.section.swiftSection
+    }
+
+    var inner: TwPackageRef_t {
+        pkg.inner
     }
 
     var icon: URL? {

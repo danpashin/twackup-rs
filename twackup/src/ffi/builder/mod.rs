@@ -20,9 +20,11 @@
 pub(crate) mod progress;
 
 use self::progress::{TwProgressFunctions, TwProgressImpl};
+use super::ArcContainer;
 use crate::{
     builder::{Preferences, Worker},
     ffi::{c_dpkg::TwDpkg, package::TwPackage},
+    package::Package,
     progress::Progress,
     Result,
 };
@@ -30,7 +32,7 @@ use safer_ffi::{
     derive_ReprC,
     prelude::{
         c_slice::{Box, Ref},
-        char_p,
+        char_p, Out,
     },
     ptr::NonNullMut,
 };
@@ -40,6 +42,7 @@ use std::{collections::LinkedList, os::unix::ffi::OsStringExt, sync::Arc};
 #[repr(C)]
 pub struct TwPackagesRebuildResult {
     success: bool,
+    package: ArcContainer<Package>,
     deb_path: Option<Box<u8>>,
     error: Option<Box<u8>>,
 }
@@ -96,11 +99,11 @@ pub struct TwBuildPreferences {
 #[derive_ReprC]
 #[repr(C)]
 pub struct TwBuildParameters<'a> {
-    packages: Ref<'a, TwPackage>,
+    packages: Ref<'a, ArcContainer<Package>>,
     functions: TwProgressFunctions,
     out_dir: char_p::Ref<'a>,
     preferences: TwBuildPreferences,
-    results: Option<NonNullMut<Box<TwPackagesRebuildResult>>>,
+    results: Option<Out<'a, Box<TwPackagesRebuildResult>>>,
 }
 
 pub(crate) fn rebuild_packages(dpkg: &TwDpkg, parameters: TwBuildParameters<'_>) -> Result<()> {
@@ -121,41 +124,44 @@ pub(crate) fn rebuild_packages(dpkg: &TwDpkg, parameters: TwBuildParameters<'_>)
 
     let mut workers = LinkedList::new();
     for package in parameters.packages.iter() {
-        let package = package.inner.clone();
+        let package = package.clone();
         let dpkg_contents = dpkg_contents.clone();
         let preferences = preferences.clone();
 
         workers.push_back(tokio_rt.spawn(async move {
-            let package = &*package;
-            let worker = Worker::new(package, progress, None, preferences, dpkg_contents);
-            worker.run().await
+            let worker = Worker::new(&*package, progress, None, preferences, dpkg_contents);
+            let result = worker.run().await;
+            (package, result)
         }));
     }
 
-    let mut errors_vec = vec![];
+    let mut results = vec![];
     tokio_rt.block_on(async {
         for worker in workers {
-            let Ok(result) = worker.await else { continue };
+            let Ok((package, result)) = worker.await else {
+                continue;
+            };
 
             log::debug!("rebuild result = {result:?}");
 
-            let (path, error) = match result {
+            let result = result
+                .map(|path| {
+                    let path = OsStringExt::into_vec(path.into_os_string());
+                    Box::from(path.into_boxed_slice())
+                })
+                .map_err(|error| {
+                    let error = error.to_string().into_bytes();
+                    Box::from(error.into_boxed_slice())
+                });
+
+            let (deb_path, error) = match result {
                 Ok(path) => (Some(path), None),
                 Err(error) => (None, Some(error)),
             };
 
-            let deb_path = path.map(|path| {
-                let path = OsStringExt::into_vec(path.into_os_string());
-                Box::from(path.into_boxed_slice())
-            });
-
-            let error = error.map(|error| {
-                let error = error.to_string().into_bytes();
-                Box::from(error.into_boxed_slice())
-            });
-
-            errors_vec.push(TwPackagesRebuildResult {
+            results.push(TwPackagesRebuildResult {
                 success: deb_path.is_some(),
+                package,
                 deb_path,
                 error,
             });
@@ -164,11 +170,9 @@ pub(crate) fn rebuild_packages(dpkg: &TwDpkg, parameters: TwBuildParameters<'_>)
 
     progress.finished_all();
 
-    if let Some(mut results_ptr) = parameters.results {
-        unsafe {
-            let boxed = Box::from(errors_vec.into_boxed_slice());
-            results_ptr.as_mut_ptr().write(boxed);
-        }
+    if let Some(results_out) = parameters.results {
+        let boxed = Box::from(results.into_boxed_slice());
+        results_out.write(boxed);
     }
 
     Ok(())

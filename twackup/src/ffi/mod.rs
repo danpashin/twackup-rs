@@ -176,6 +176,12 @@ fn tw_package_release(package: ArcContainer<Package>) {
 }
 
 #[ffi_export]
+fn tw_package_ref_count(package: ArcContainer<Package>) -> u64 {
+    let package = ManuallyDrop::new(package);
+    package.ref_count() as u64
+}
+
+#[ffi_export]
 fn tw_package_retain(package: ArcContainer<Package>) {
     package.retain();
     mem::forget(package);

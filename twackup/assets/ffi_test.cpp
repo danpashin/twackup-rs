@@ -2,20 +2,24 @@
 #include <iostream>
 #include <cassert>
 
-static void started_processing(void *context, TwPackage_t const *package) {
+static void started_processing(void *context, TwPackage_t package) {
   std::cout
   << "started_processing(\""
-  << std::string((char *)package->identifier.ptr, package->identifier.len)
+  << std::string((char *)package.identifier.ptr, package.identifier.len)
   << "\")"
   << std::endl;
+
+  tw_package_release(package.inner);
 }
 
-static void finished_processing(void *context, TwPackage_t const *package, slice_raw_uint8_t deb_path) {
+static void finished_processing(void *context, TwPackage_t package, slice_raw_uint8_t deb_path) {
   std::cout
   << "finished_processing(\""
-  << std::string((char *)package->identifier.ptr, package->identifier.len)
+  << std::string((char *)package.identifier.ptr, package.identifier.len)
   << "\")"
   << std::endl;
+
+  tw_package_release(package.inner);
 }
 
 static void finished_all(void *context) {
@@ -31,15 +35,16 @@ int main(int argc, char *argv[]) {
 
   auto dpkg = tw_init(argv[1], false);
 
-  TwPackage_t *packages = NULL;
-  size_t count = tw_get_packages(dpkg, false, TW_PACKAGES_SORT_UNSORTED, &packages);
+  TwPackage_t *packagesPtr = NULL;
+  size_t count = tw_get_packages(dpkg, false, TW_PACKAGES_SORT_UNSORTED, &packagesPtr);
+
   assert(count > 0);
+  std::cout << "packages_ptr = "<< packagesPtr << ", count = " << count << std::endl;
 
-  std::cout << "packages_ptr = "<< packages << ", count = " << count << std::endl;
+  std::vector<TwPackage_t> packages(packagesPtr,packagesPtr+count);
 
-  for (int i = 0; i < count; i++) {
-    auto package = packages[i];
-    std::cout << i + 1 << ". " << std::string((char *)package.identifier.ptr, package.identifier.len) << "; ";
+  for (auto package: packages) {
+    std::cout << ". " << std::string((char *)package.identifier.ptr, package.identifier.len) << "; ";
 
     auto section = tw_package_section_str(package.inner);
     std::cout << "section = " << std::string((char *)section.ptr, section.len) << "; ";
@@ -57,8 +62,14 @@ int main(int argc, char *argv[]) {
     std::cout << std::endl;
   }
 
-  slice_ref_TwPackage_t rebuild_packages;
-  rebuild_packages.ptr = packages;
+  auto rawPkgsPointers = new TwPackageRef_t[5];
+  auto rawPkgsPointersPtr = rawPkgsPointers;
+  for (auto package: packages) {
+    *rawPkgsPointersPtr++ = package.inner;
+  }
+
+  slice_ref_TwPackageRef_t rebuild_packages;
+  rebuild_packages.ptr = rawPkgsPointers;
   rebuild_packages.len = count;
 
   TwProgressFunctions_t functions;

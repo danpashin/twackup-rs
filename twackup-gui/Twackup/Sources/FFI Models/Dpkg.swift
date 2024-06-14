@@ -90,17 +90,15 @@ actor Dpkg {
         }
         defer { buildParameters.out_dir.deallocate() }
 
-        let status = outDir.path.utf8CString.withUnsafeBufferPointer { pointer in
-            // safe to unwrap?
-            buildParameters.out_dir = pointer.baseAddress!
-
-            return packages.map { $0.pkg }.withUnsafeBufferPointer { pointer in
+        let status =  packages
+            .map { $0.inner }
+            .map { Optional($0) } // Apple moment
+            .withUnsafeBufferPointer { pointer in
                 // safe to unwrap?
-                buildParameters.packages = slice_ref_TwPackage_t(ptr: pointer.baseAddress!, len: pointer.count)
+                buildParameters.packages = slice_ref_TwPackageRef_t(ptr: pointer.baseAddress!, len: pointer.count)
 
                 return tw_rebuild_packages(innerDpkg, buildParameters)
             }
-        }
 
         if status != TW_RESULT_OK.clampedToU8 {
             tw_free_rebuild_results(ffiResults)
@@ -125,7 +123,7 @@ actor Dpkg {
 
         tw_free_rebuild_results(ffiResults)
 
-        return results
+        return []
     }
 
     private func createProgressFuncs() -> TwProgressFunctions {
@@ -134,8 +132,12 @@ actor Dpkg {
         // not a memory leak actually. It lives as long as self does
         funcs.context = Unmanaged<Dpkg>.passUnretained(self).toOpaque()
         funcs.started_processing = { context, package in
-            // Package is a stack pointer so it doesn't need to be released
-            guard let context, let package, let ffiPackage = FFIPackage(package.pointee) else { return }
+            guard let context,
+                  let ffiPackage = FFIPackage(package)
+            else {
+                tw_package_release(package.inner)
+                return
+            }
 
             let dpkg = Unmanaged<Dpkg>.fromOpaque(context).takeUnretainedValue()
             Task(priority: .utility) {
@@ -143,12 +145,13 @@ actor Dpkg {
             }
         }
         funcs.finished_processing = { context, package, debPath in
-            // Package is a stack pointer so it doesn't need to be released
             guard let context,
-                  let package,
-                  let ffiPackage = FFIPackage(package.pointee),
+                  let ffiPackage = FFIPackage(package),
                   let debPath = String(ffiSlice: debPath)
-            else { return }
+            else {
+                tw_package_release(package.inner)
+                return
+            }
 
             let dpkg = Unmanaged<Dpkg>.fromOpaque(context).takeUnretainedValue()
             Task(priority: .utility) {

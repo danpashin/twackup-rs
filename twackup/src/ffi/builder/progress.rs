@@ -19,24 +19,19 @@
 
 use crate::{ffi::package::TwPackage, package::Package, progress::Progress};
 use safer_ffi::{derive_ReprC, prelude::c_slice::Raw, slice::Ref};
-use std::{ffi::c_void, os::unix::ffi::OsStrExt, path::Path, ptr::addr_of};
+use std::{ffi::c_void, os::unix::ffi::OsStrExt, path::Path, ptr::NonNull};
+
+type Context = Option<NonNull<c_void>>;
 
 #[derive_ReprC]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct TwProgressFunctions {
-    context: Option<std::ptr::NonNull<c_void>>,
-    started_processing: Option<
-        unsafe extern "C" fn(context: Option<std::ptr::NonNull<c_void>>, package: *const TwPackage),
-    >,
-    finished_processing: Option<
-        unsafe extern "C" fn(
-            context: Option<std::ptr::NonNull<c_void>>,
-            package: *const TwPackage,
-            deb_path: Raw<u8>,
-        ),
-    >,
-    finished_all: Option<unsafe extern "C" fn(context: Option<std::ptr::NonNull<c_void>>)>,
+    context: Context,
+    started_processing: Option<unsafe extern "C" fn(context: Context, package: TwPackage)>,
+    finished_processing:
+        Option<unsafe extern "C" fn(context: Context, package: TwPackage, deb_path: Raw<u8>)>,
+    finished_all: Option<unsafe extern "C" fn(context: Context)>,
 }
 
 #[derive(Copy, Clone)]
@@ -48,7 +43,7 @@ impl Progress for TwProgressImpl {
     fn started_processing(&self, package: &Package) {
         if let Some(func) = self.functions.started_processing {
             let package = TwPackage::from(package);
-            unsafe { func(self.functions.context, addr_of!(package)) };
+            unsafe { func(self.functions.context, package) };
         }
     }
 
@@ -58,7 +53,7 @@ impl Progress for TwProgressImpl {
             let deb_path = deb_path.as_ref().as_os_str().as_bytes();
             let deb_path = Raw::from(Ref::from(deb_path));
 
-            unsafe { func(self.functions.context, addr_of!(package), deb_path) };
+            unsafe { func(self.functions.context, package, deb_path) };
         }
     }
 
