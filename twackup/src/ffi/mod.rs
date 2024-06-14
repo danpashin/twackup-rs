@@ -37,7 +37,7 @@ use crate::{
     Dpkg,
 };
 use safer_ffi::{boxed, derive_ReprC, ffi_export, prelude::c_slice, prelude::char_p};
-use std::{mem, mem::ManuallyDrop, ptr::NonNull};
+use std::{mem, mem::ManuallyDrop, ptr::NonNull, slice};
 
 #[derive_ReprC]
 #[repr(i8)]
@@ -82,12 +82,29 @@ fn tw_get_packages(
     if let Some(packages) = dpkg.get_packages(leaves_only, sort) {
         let packages = ManuallyDrop::new(packages);
 
+        // Since memory allocators for Rust and outer FFI callee can be different
+        // we must release slice by ourselves
+        //
+        // To do that, slice must have valid length and layout
+        // Releasing func will decrement counter on ARC, so we need to increase it here
+        for package in packages.as_slice() {
+            package.inner.retain();
+        }
+
         let packages_ptr = packages.as_ptr().cast_mut();
         unsafe { output.write(NonNull::new_unchecked(packages_ptr)) };
 
         packages.len() as i64
     } else {
         TwResult::Error as i64
+    }
+}
+
+#[ffi_export]
+fn tw_free_packages(mut start: NonNull<TwPackage>, length: i64) {
+    unsafe {
+        let packages = slice::from_raw_parts_mut(start.as_mut(), length as usize);
+        drop(Box::from_raw(packages))
     }
 }
 

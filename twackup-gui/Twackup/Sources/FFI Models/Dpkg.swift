@@ -56,7 +56,7 @@ actor Dpkg {
         let count = tw_get_packages(innerDpkg, onlyLeaves, TW_PACKAGES_SORT_NAME.clampedToU8, &packagesPtr)
 
         let buffer = UnsafeBufferPointer(start: packagesPtr, count: Int(count))
-        defer { buffer.deallocate() }
+        defer { tw_free_packages(packagesPtr, count) }
 
         return buffer.compactMap { package in
             let model = FFIPackage(package)

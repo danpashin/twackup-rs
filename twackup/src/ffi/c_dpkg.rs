@@ -91,10 +91,10 @@ impl TwDpkg {
         let packages: Option<Vec<_>> = tokio_rt.block_on(async {
             if sort == TwPackagesSort::Unsorted {
                 let packages = dpkg.unsorted_packages(leaves_only).await.ok()?;
-                Some(packages.into_iter().map(TwPackage::from).collect())
+                Some(packages.into_iter().map(Into::into).collect())
             } else {
                 let packages = dpkg.packages(leaves_only, sort.into()).await.ok()?;
-                Some(packages.into_values().map(TwPackage::from).collect())
+                Some(packages.into_values().map(Into::into).collect())
             }
         });
 
