@@ -7,6 +7,16 @@
 
 import Sentry
 
+enum DpkgError: Error, LocalizedError {
+    case `internal`
+
+    var errorDescription: String? {
+        switch self {
+        case .internal: "Internal error. Needs more details"
+        }
+    }
+}
+
 actor Dpkg {
     enum MessageLevel: UInt8 {
         case debug
@@ -42,6 +52,9 @@ actor Dpkg {
     func parsePackages(onlyLeaves: Bool) throws -> [FFIPackage] {
         var packagesPtr: UnsafeMutablePointer<TwPackage>?
         let count = tw_get_packages(innerDpkg, onlyLeaves, TW_PACKAGES_SORT_NAME.clampedToU8, &packagesPtr)
+        if count == -1 {
+            throw DpkgError.internal
+        }
 
         let buffer = UnsafeBufferPointer(start: packagesPtr, count: Int(count))
         defer { tw_free_packages(packagesPtr, count) }

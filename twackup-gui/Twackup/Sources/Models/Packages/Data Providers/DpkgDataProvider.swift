@@ -25,7 +25,7 @@ class DpkgDataProvier: PackageDataProvider, @unchecked Sendable {
         do {
             allPackages = try await dpkg.parsePackages(onlyLeaves: onlyLeaves)
         } catch {
-            await FFILogger.shared.log("\(error)", level: .error)
+            await FFILogger.shared.log("Error \(error): \(error.localizedDescription)", level: .error)
             SentrySDK.capture(error: error)
         }
 
