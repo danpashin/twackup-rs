@@ -69,8 +69,8 @@
 		0BE87E862C1E0166009C95A7 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE87E852C1E0166009C95A7 /* Sentry */; };
 		0BE87E902C1E0565009C95A7 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE87E8F2C1E0565009C95A7 /* Result.swift */; };
 		0BE87E932C1E05CE009C95A7 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE87E922C1E05CE009C95A7 /* NukeUI */; };
+		0BE87E952C1E2214009C95A7 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0BE87E942C1E2214009C95A7 /* Localizable.xcstrings */; };
 		0BF07A502941027800EEC8FC /* SplitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A4F2941027800EEC8FC /* SplitController.swift */; };
-		0BF07A5C2941D8D100EEC8FC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0BF07A592941D8D100EEC8FC /* Localizable.strings */; };
 		0BF07A62294335F700EEC8FC /* FFILogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A61294335F700EEC8FC /* FFILogger.swift */; };
 		0BF07A6429433BE100EEC8FC /* LogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A6329433BE100EEC8FC /* LogViewController.swift */; };
 		0BF07A662943537A00EEC8FC /* SelectablePackageListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A652943537A00EEC8FC /* SelectablePackageListVC.swift */; };
@@ -148,9 +148,8 @@
 		0BE2E0B12C1B346B00CADFE3 /* SwiftConversions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftConversions.swift; sourceTree = "<group>"; };
 		0BE7803F294DC60C00AE77CE /* DpkgListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgListModel.swift; sourceTree = "<group>"; };
 		0BE87E8F2C1E0565009C95A7 /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
+		0BE87E942C1E2214009C95A7 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		0BF07A4F2941027800EEC8FC /* SplitController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitController.swift; sourceTree = "<group>"; };
-		0BF07A5A2941D8D100EEC8FC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		0BF07A5B2941D8D100EEC8FC /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0BF07A61294335F700EEC8FC /* FFILogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FFILogger.swift; sourceTree = "<group>"; };
 		0BF07A6329433BE100EEC8FC /* LogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogViewController.swift; sourceTree = "<group>"; };
 		0BF07A652943537A00EEC8FC /* SelectablePackageListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectablePackageListVC.swift; sourceTree = "<group>"; };
@@ -240,7 +239,7 @@
 		0B8661672930ADA300EA4301 /* Twackup */ = {
 			isa = PBXGroup;
 			children = (
-				0BF07A582941D8D100EEC8FC /* Localizations */,
+				0BE87E942C1E2214009C95A7 /* Localizable.xcstrings */,
 				0B88C31F2930E32800BA5312 /* Sources */,
 				0B8661712930ADA400EA4301 /* Assets.xcassets */,
 				0B8661732930ADA400EA4301 /* LaunchScreen.storyboard */,
@@ -452,14 +451,6 @@
 			path = "Data Providers";
 			sourceTree = "<group>";
 		};
-		0BF07A582941D8D100EEC8FC /* Localizations */ = {
-			isa = PBXGroup;
-			children = (
-				0BF07A592941D8D100EEC8FC /* Localizable.strings */,
-			);
-			path = Localizations;
-			sourceTree = "<group>";
-		};
 		A9DB1EE24AF2E5EE6554C623 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -551,7 +542,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0B8661752930ADA400EA4301 /* LaunchScreen.storyboard in Resources */,
-				0BF07A5C2941D8D100EEC8FC /* Localizable.strings in Resources */,
+				0BE87E952C1E2214009C95A7 /* Localizable.xcstrings in Resources */,
 				0B8661722930ADA400EA4301 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -685,15 +676,6 @@
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
-		0BF07A592941D8D100EEC8FC /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				0BF07A5A2941D8D100EEC8FC /* en */,
-				0BF07A5B2941D8D100EEC8FC /* ru */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -756,6 +738,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = "Debug rootless";
@@ -815,6 +798,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -996,6 +980,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = "Debug rootfull";
@@ -1110,6 +1095,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1231,6 +1217,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -1345,6 +1332,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
