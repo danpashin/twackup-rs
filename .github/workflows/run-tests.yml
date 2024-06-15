@@ -26,6 +26,9 @@ jobs:
       - name: Install cargo-binstall
         uses: cargo-bins/cargo-binstall@v1.7.1
 
+      - name: Select Xcode 16
+        run: sudo xcode-select -s /Applications/Xcode_16.0.app
+
       - name: Install build dependencies
         run: |
           cargo binstall --no-confirm --force cargo-make
