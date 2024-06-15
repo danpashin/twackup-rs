@@ -9,6 +9,7 @@ CARGO_MAKE_CRATE_VERSION = { script = ["xcrun xcodebuild -showBuildSettings | gr
 GUI_ARCHIVE_PATH = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/Twackup.xcarchive"
 GUI_APP_DIR = "${GUI_ARCHIVE_PATH}/Products/Applications/Twackup.app"
 XCODE_SCHEME = "Twackup"
+ARTIFACTS_OUTPUT_DIR = "${ARTIFACTS_DIR}"
 
 DEB_NAME = "Twackup (GUI)"
 DEB_IDENTIFIER = "ru.danpashin.twackup-gui"
@@ -43,7 +44,13 @@ args = ["-S${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/twackup-gui/entitlements.pl
 
 [tasks.build-and-sign]
 private = true
-run_task = { name = ["xcode-run-build", "sign"] }
+run_task = { name = ["xcode-run-build", "sign", "copy-dsym"] }
+
+[tasks.copy-dsym]
+private = true
+cwd = "${GUI_ARCHIVE_PATH}/dSYMs"
+command = "mv"
+args = ["Twackup.app.dSYM", "${ARTIFACTS_OUTPUT_DIR}/Twackup-${CARGO_MAKE_CRATE_VERSION}.dSYM"]
 
 [tasks.create-deb]
 private = true
@@ -100,12 +107,10 @@ ARTIFACTS_OUTPUT_DIR = "${ARTIFACTS_ROOTLESS_DIR}"
 category = "Build"
 description = "Build ipa file"
 dependencies = ["build-and-sign"]
+cwd = "${GUI_ARCHIVE_PATH}/Products"
 script = """
-working_dir=$(realpath ${GUI_APP_DIR}/../../)
-mv "$working_dir/Applications" "$working_dir/Payload"
-cd "$working_dir"
-zip -r "${ARTIFACTS_DIR}/Twackup-${CARGO_MAKE_CRATE_VERSION}.ipa" Payload
-mv "$working_dir/Payload" "$working_dir/Applications"
+mv Applications Payload
+zip -rmT "${ARTIFACTS_DIR}/Twackup-${CARGO_MAKE_CRATE_VERSION}.ipa" Payload
 """
 
 [tasks.build-all]
