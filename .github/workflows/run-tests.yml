@@ -28,7 +28,7 @@ jobs:
 
       - name: Install build dependencies
         run: |
-          cargo binstall --no-confirm cargo-make
+          cargo binstall --no-confirm --force cargo-make
           brew install dpkg ldid coreutils
           bundle install
 
