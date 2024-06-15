@@ -16,38 +16,53 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
+
       - name: Setting up envs
         run: echo "GIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Cache Rust artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@v1.7.1
+
       - name: Install build dependencies
         run: |
-          cargo install cargo-make
+          cargo binstall --no-confirm cargo-make
           brew install dpkg ldid coreutils
           bundle install
-      - name: Install GUI build dependencies
+
+      - name: Install GUI dependencies
         run: |
           cd twackup-gui
           pod install
+
       - name: Install rust target support
         run: |
+          rustup toolchain install nightly --profile minimal --component rust-src
           rustup target add aarch64-apple-ios x86_64-apple-ios
-          rustup toolchain install nightly
-          rustup component add rust-src --toolchain nightly
+
       - name: Build & test
-        run: |
-          cargo build-ios
-      - uses: actions/upload-artifact@v4
+        run: cargo build-ios
+
+      - name: Upload rootfull artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: Twackup-rootfull-g${{ env.GIT_SHA }}
           path: |
             target/artifacts/rootfull/*.deb
             target/artifacts/rootfull/*.dSYM
-      - uses: actions/upload-artifact@v3
+
+      - name: Upload rootless artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: Twackup-rootless-g${{ env.GIT_SHA }}
           path: |
             target/artifacts/rootless/*.deb
             target/artifacts/rootless/*.dSYM
-      - uses: actions/upload-artifact@v3
+
+      - name: Upload IPA artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: Twackup-ipa-g${{ env.GIT_SHA }}
           path: |
