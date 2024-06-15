@@ -66,6 +66,9 @@
 		0BBD2FDF2C1C67D500438457 /* DpkgProgressNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BBD2FDE2C1C67D500438457 /* DpkgProgressNotifier.swift */; };
 		0BE2E0B22C1B346B00CADFE3 /* SwiftConversions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE2E0B12C1B346B00CADFE3 /* SwiftConversions.swift */; };
 		0BE78040294DC60C00AE77CE /* DpkgListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE7803F294DC60C00AE77CE /* DpkgListModel.swift */; };
+		0BE87E862C1E0166009C95A7 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE87E852C1E0166009C95A7 /* Sentry */; };
+		0BE87E902C1E0565009C95A7 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE87E8F2C1E0565009C95A7 /* Result.swift */; };
+		0BE87E932C1E05CE009C95A7 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE87E922C1E05CE009C95A7 /* NukeUI */; };
 		0BF07A502941027800EEC8FC /* SplitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A4F2941027800EEC8FC /* SplitController.swift */; };
 		0BF07A5C2941D8D100EEC8FC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0BF07A592941D8D100EEC8FC /* Localizable.strings */; };
 		0BF07A62294335F700EEC8FC /* FFILogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BF07A61294335F700EEC8FC /* FFILogger.swift */; };
@@ -144,6 +147,7 @@
 		0BBD2FDE2C1C67D500438457 /* DpkgProgressNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgProgressNotifier.swift; sourceTree = "<group>"; };
 		0BE2E0B12C1B346B00CADFE3 /* SwiftConversions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftConversions.swift; sourceTree = "<group>"; };
 		0BE7803F294DC60C00AE77CE /* DpkgListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgListModel.swift; sourceTree = "<group>"; };
+		0BE87E8F2C1E0565009C95A7 /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		0BF07A4F2941027800EEC8FC /* SplitController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitController.swift; sourceTree = "<group>"; };
 		0BF07A5A2941D8D100EEC8FC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0BF07A5B2941D8D100EEC8FC /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -164,7 +168,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BE87E932C1E05CE009C95A7 /* NukeUI in Frameworks */,
 				C1FF8C5621CC9FEC564B8CCE /* Pods_Twackup.framework in Frameworks */,
+				0BE87E862C1E0166009C95A7 /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -186,6 +192,7 @@
 			children = (
 				0B0DBB6E2934FA58002F3BB2 /* String.swift */,
 				0B86CDCC2C199FA500F3B4A0 /* Jailbreaks.swift */,
+				0BE87E8F2C1E0565009C95A7 /* Result.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -486,13 +493,16 @@
 				0B8661622930ADA300EA4301 /* Frameworks */,
 				0B8661632930ADA300EA4301 /* Resources */,
 				0B0DBB702934FAB5002F3BB2 /* Lint swift sources */,
-				F1259801DF613223D64EE4AB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Twackup;
+			packageProductDependencies = (
+				0BE87E852C1E0166009C95A7 /* Sentry */,
+				0BE87E922C1E05CE009C95A7 /* NukeUI */,
+			);
 			productName = Twackup;
 			productReference = 0B8661652930ADA300EA4301 /* Twackup.app */;
 			productType = "com.apple.product-type.application";
@@ -522,6 +532,10 @@
 				ru,
 			);
 			mainGroup = 0B86615C2930ADA300EA4301;
+			packageReferences = (
+				0BE87E842C1E0166009C95A7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
+				0BE87E912C1E05CE009C95A7 /* XCRemoteSwiftPackageReference "Nuke" */,
+			);
 			productRefGroup = 0B8661662930ADA300EA4301 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -587,23 +601,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F1259801DF613223D64EE4AB /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Twackup/Pods-Twackup-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Twackup/Pods-Twackup-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Twackup/Pods-Twackup-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -629,6 +626,7 @@
 				0B50FF742949EAB900CF4BCF /* DiskSpaceUsageView.swift in Sources */,
 				0B5B332B294DA9F00097398F /* MainModel.swift in Sources */,
 				0BF07A6429433BE100EEC8FC /* LogViewController.swift in Sources */,
+				0BE87E902C1E0565009C95A7 /* Result.swift in Sources */,
 				0BB369E52952EF6B004AAFFF /* ScrollableViewController.swift in Sources */,
 				0B5B332F294DB7770097398F /* InstalledPackagesModel.swift in Sources */,
 				0B463A9B29389EBB00021EF7 /* DebsListModel.swift in Sources */,
@@ -849,11 +847,14 @@
 				MARKETING_VERSION = 2.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
+					"-ObjC",
 					"-framework",
-					"\"ImageIO\"",
+					"\"DZNEmptyDataSet\"",
 					"-framework",
-					"\"SDWebImage\"",
-					"$(PROJECT_DIR)/../target/libtwackup.a",
+					"\"StyledTextKit\"",
+					"-framework",
+					"\"UIKit\"",
+					"\"$(PROJECT_DIR)/../target/libtwackup.a\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -905,11 +906,14 @@
 				MARKETING_VERSION = 2.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
+					"-ObjC",
 					"-framework",
-					"\"ImageIO\"",
+					"\"DZNEmptyDataSet\"",
 					"-framework",
-					"\"SDWebImage\"",
-					"$(PROJECT_DIR)/../target/libtwackup.a",
+					"\"StyledTextKit\"",
+					"-framework",
+					"\"UIKit\"",
+					"\"$(PROJECT_DIR)/../target/libtwackup.a\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1022,11 +1026,14 @@
 				MARKETING_VERSION = 2.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
+					"-ObjC",
 					"-framework",
-					"\"ImageIO\"",
+					"\"DZNEmptyDataSet\"",
 					"-framework",
-					"\"SDWebImage\"",
-					"$(PROJECT_DIR)/../target/libtwackup.a",
+					"\"StyledTextKit\"",
+					"-framework",
+					"\"UIKit\"",
+					"\"$(PROJECT_DIR)/../target/libtwackup.a\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1134,11 +1141,14 @@
 				MARKETING_VERSION = 2.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
+					"-ObjC",
 					"-framework",
-					"\"ImageIO\"",
+					"\"DZNEmptyDataSet\"",
 					"-framework",
-					"\"SDWebImage\"",
-					"$(PROJECT_DIR)/../target/libtwackup.a",
+					"\"StyledTextKit\"",
+					"-framework",
+					"\"UIKit\"",
+					"\"$(PROJECT_DIR)/../target/libtwackup.a\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1251,11 +1261,14 @@
 				MARKETING_VERSION = 2.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
+					"-ObjC",
 					"-framework",
-					"\"ImageIO\"",
+					"\"DZNEmptyDataSet\"",
 					"-framework",
-					"\"SDWebImage\"",
-					"$(PROJECT_DIR)/../target/libtwackup.a",
+					"\"StyledTextKit\"",
+					"-framework",
+					"\"UIKit\"",
+					"\"$(PROJECT_DIR)/../target/libtwackup.a\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1363,11 +1376,14 @@
 				MARKETING_VERSION = 2.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
+					"-ObjC",
 					"-framework",
-					"\"ImageIO\"",
+					"\"DZNEmptyDataSet\"",
 					"-framework",
-					"\"SDWebImage\"",
-					"$(PROJECT_DIR)/../target/libtwackup.a",
+					"\"StyledTextKit\"",
+					"-framework",
+					"\"UIKit\"",
+					"\"$(PROJECT_DIR)/../target/libtwackup.a\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1422,6 +1438,38 @@
 			defaultConfigurationName = "Release rootless";
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0BE87E842C1E0166009C95A7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.29.0;
+			};
+		};
+		0BE87E912C1E05CE009C95A7 /* XCRemoteSwiftPackageReference "Nuke" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Nuke";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.7.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0BE87E852C1E0166009C95A7 /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0BE87E842C1E0166009C95A7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
+		};
+		0BE87E922C1E05CE009C95A7 /* NukeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0BE87E912C1E05CE009C95A7 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		0B5D3F982934D0C300AE50F2 /* Twackup.xcdatamodeld */ = {

@@ -5,7 +5,7 @@
 //  Created by Daniil on 25.11.2022.
 //
 
-import SDWebImage
+import NukeUI
 import UIKit
 
 @MainActor
@@ -49,13 +49,17 @@ class PackageDetailedView: UIView {
     }()
 
     private(set) lazy var logoHeightConstraint = logoView.heightAnchor.constraint(equalToConstant: 0.0)
-    private(set) lazy var logoView: UIImageView = {
-        let view = UIImageView()
+    private(set) lazy var logoView: LazyImageView = {
+        let view = LazyImageView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleAspectFit
         view.layer.cornerCurve = .continuous
         view.layer.cornerRadius = 14
         view.layer.masksToBounds = true
+
+        view.onCompletion = { [self] result in
+            logoHeightConstraint.constant = result.isSuccess ? 60 : 0
+        }
 
         return view
     }()
@@ -112,6 +116,7 @@ class PackageDetailedView: UIView {
             let constraints = [
                 logoView.topAnchor.constraint(equalTo: scrollView.topAnchor),
                 logoHeightConstraint,
+                logoView.widthAnchor.constraint(equalTo: logoView.heightAnchor),
                 logoView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
 
                 labelsStack.topAnchor.constraint(equalTo: logoView.bottomAnchor),
@@ -146,14 +151,7 @@ class PackageDetailedView: UIView {
         }
 
         if let icon = package.icon {
-            if icon.isFileURL {
-                logoView.image = UIImage(contentsOfFile: icon.relativePath)
-                logoHeightConstraint.constant = logoView.image != nil ? 60.0 : 0.0
-            } else {
-                logoView.sd_setImage(with: icon, placeholderImage: nil) { img, _, _, _ in
-                    self.logoHeightConstraint.constant = img != nil ? 60.0 : 0.0
-                }
-            }
+            logoView.url = icon
         } else {
             logoHeightConstraint.constant = 0.0
         }

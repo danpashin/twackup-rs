@@ -1,0 +1,24 @@
+{
+  "originHash" : "d1aeda81a7bf270897b56c013ea456af992a1f3b963407fcd269c45746c97503",
+  "pins" : [
+    {
+      "identity" : "nuke",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kean/Nuke",
+      "state" : {
+        "revision" : "084076db4f9b9ee4db51177ef5a4879689c1aa09",
+        "version" : "12.7.2"
+      }
+    },
+    {
+      "identity" : "sentry-cocoa",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/getsentry/sentry-cocoa",
+      "state" : {
+        "revision" : "c9a692ba837f4832ec7ce6378c071cb91cb55f92",
+        "version" : "8.29.0"
+      }
+    }
+  ],
+  "version" : 3
+}
