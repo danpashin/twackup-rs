@@ -9,8 +9,8 @@
 #define Twackup_Bridging_Header_h
 
 #import "twackup.h"
-#import "RJTHUD.h"
 #import "libroot.h"
+#import <UIKit/UIScrollView.h>
 
 @interface UIScrollView (Private)
 @property (assign, nonatomic, readonly, getter=_minimumContentOffset) CGPoint minimumContentOffset;

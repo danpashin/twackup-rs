@@ -12,17 +12,13 @@ class DpkgDetailVC: PackageDetailVC, RebuildPackageDetailedViewDelegate {
     override var detailView: PackageDetailedView { _container }
 
     nonisolated func rebuild(_ package: FFIPackage) {
-        Task(priority: .userInitiated) {
-            let hud = await RJTHud.show()
+        Task {
+            let hud = await Hud.show()
 
-            Task(priority: .utility) {
-                let rebuilder = PackagesRebuilder(mainModel: mainModel)
-                await rebuilder.rebuild(packages: [package])
+            let rebuilder = PackagesRebuilder(mainModel: mainModel)
+            await rebuilder.rebuild(packages: [package])
 
-                Task(priority: .userInitiated) {
-                    await hud?.hide(animated: true)
-                }
-            }
+            await hud?.hide(animated: true)
         }
     }
 }

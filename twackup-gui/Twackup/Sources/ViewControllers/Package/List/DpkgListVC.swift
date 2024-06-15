@@ -8,7 +8,7 @@
 class DpkgListVC: SelectablePackageListVC {
     let dpkgModel: DpkgListModel
 
-    private var rebuildHUD: RJTHud?
+    private var rebuildHUD: Hud?
 
     private lazy var rebuildAllBarBtn: UIBarButtonItem = {
         let title = "debs-rebuildall-btn".localized
@@ -99,9 +99,9 @@ class DpkgListVC: SelectablePackageListVC {
     func rebuild(packages: [Package]) {
         guard !packages.isEmpty else { return }
 
-        rebuildHUD = RJTHud.show()
+        rebuildHUD = Hud.show()
         rebuildHUD?.text = "rebuild-packages-status-title".localized
-        rebuildHUD?.style = .spinner
+        rebuildHUD?.style = .arcRotate
 
         Task(priority: .medium) {
             let rebuilder = PackagesRebuilder(mainModel: model.mainModel) { progress in
@@ -116,7 +116,7 @@ class DpkgListVC: SelectablePackageListVC {
     }
 
     func updateProgress(_ progress: Progress) {
-        let hud = RJTHud.show()
+        let hud = Hud.show()
         hud?.detailedText = String(
             format: "rebuild-packages-status".localized,
             progress.completedUnitCount,
