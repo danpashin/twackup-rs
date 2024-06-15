@@ -58,11 +58,8 @@ class DiskSpaceUsageView: UIView {
     }
 
     deinit {
-        // Apple moment
-        Task {
-            await MainActor.run {
-                NotificationCenter.default.removeObserver(reloadObserver as Any)
-            }
+        Task { @MainActor in
+            NotificationCenter.default.removeObserver(reloadObserver as Any)
         }
     }
 

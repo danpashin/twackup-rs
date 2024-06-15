@@ -28,16 +28,8 @@ extension LogViewController: DZNEmptyDataSetSource {
     }
 }
 
-#if swift(>=6.0)
-extension LogViewController: @preconcurrency DZNEmptyDataSetDelegate {
-    func emptyDataSetShouldDisplay(_ scrollView: UIScrollView?) -> Bool {
-        currentText.length == 0
-    }
-}
-#else
 extension LogViewController: DZNEmptyDataSetDelegate {
-    func emptyDataSetShouldDisplay(_ scrollView: UIScrollView?) -> Bool {
-        currentText.length == 0
+    nonisolated func emptyDataSetShouldDisplay(_ scrollView: UIScrollView?) -> Bool {
+        MainActor.assumeIsolated { currentText.length == 0 }
     }
 }
-#endif

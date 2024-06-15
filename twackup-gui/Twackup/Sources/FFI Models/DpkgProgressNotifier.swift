@@ -30,11 +30,11 @@ final class DpkgProgressNotifier: @unchecked Sendable {
         initFuncs()
     }
 
-    func addSubscriber(_ subscriber: any DpkgProgressSubscriber) {
+    func addSubscriber<S: DpkgProgressSubscriber>(_ subscriber: S) {
         untypedSubscribers.insert(AnyHashable(subscriber))
     }
 
-    func removeSubscriber(_ subscriber: any DpkgProgressSubscriber) {
+    func removeSubscriber<S: DpkgProgressSubscriber>(_ subscriber: S) {
         untypedSubscribers.remove(subscriber)
     }
 

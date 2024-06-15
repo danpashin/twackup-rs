@@ -116,7 +116,7 @@ actor PackagesRebuilder: DpkgProgressSubscriber, Equatable, Hashable {
     func finishedAll() {
     }
 
-    // MARK: - PackagesRebuilder
+    // MARK: - Equatable
 
     static func == (lhs: PackagesRebuilder, rhs: PackagesRebuilder) -> Bool {
         lhs.uuid == rhs.uuid

@@ -13,6 +13,6 @@ func jbRootPath(_ cPath: UnsafePointer<CChar>?) -> String {
     return result
 }
 
-func jbRootPath(_ path: any StringProtocol) -> String {
+func jbRootPath<S: StringProtocol>(_ path: S) -> String {
     path.withCString { jbRootPath($0) }
 }

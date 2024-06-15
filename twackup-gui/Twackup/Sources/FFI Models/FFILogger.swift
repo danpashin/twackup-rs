@@ -99,11 +99,11 @@ actor FFILogger {
         log(message: Message(text: text), level: level)
     }
 
-    func addSubscriber(_ subscriber: any FFILoggerSubscriber) {
+    func addSubscriber<S: FFILoggerSubscriber>(_ subscriber: S) {
         subscribers.insert(AnyHashable(subscriber))
     }
 
-    func removeSubscriber(_ subscriber: any FFILoggerSubscriber) {
+    func removeSubscriber<S: FFILoggerSubscriber>(_ subscriber: S) {
         subscribers.remove(subscriber)
     }
 

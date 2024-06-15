@@ -132,5 +132,5 @@ actor Dpkg {
 }
 
 #if swift(>=6.0)
-extension TwDpkg_t: @unchecked @retroactive Sendable {}
+extension UnsafeMutablePointer<TwDpkg_t>: @unchecked @retroactive Sendable {}
 #endif
