@@ -29,16 +29,13 @@ class DatabasePackageProvider: PackageDataProvider, @unchecked Sendable {
             !toDelete.contains { $0.isEqualTo(package) }
         }
 
-        for package in toDelete {
-            guard let dbPackage = package.asDEB else { continue }
-            do {
-                try FileManager.default.removeItem(at: dbPackage.fileURL)
-            } catch {
-                await FFILogger.shared.log(error.localizedDescription, level: .warning)
-            }
+        do {
+            try await database.delete(packages: toDelete)
+        } catch {
+            await FFILogger.shared.log(error.localizedDescription, level: .warning)
+            return false
         }
 
-        await database.delete(packages: toDelete)
         applyFilter(currentFilter)
 
         return true

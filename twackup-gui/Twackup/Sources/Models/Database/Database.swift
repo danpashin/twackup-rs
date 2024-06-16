@@ -69,7 +69,7 @@ actor Database {
 
     func fetchPackages() throws -> [DebPackage] {
         let request = DebPackageObject.fetchRequest()
-        return try backroundContext.fetch(request).map({ DebPackage(object: $0) })
+        return try backroundContext.fetch(request).map { DebPackage(object: $0) }
     }
 
     func fetch(package: Package) throws -> DebPackage? {
@@ -81,21 +81,25 @@ actor Database {
         return DebPackage(object: object)
     }
 
-    func delete(package: DebPackage) async {
-        await delete(packages: [package])
+    func delete(package: DebPackage) async throws {
+        try await delete(packages: [package])
     }
 
-    func delete(packages: [DebPackage]) async {
+    func delete(packages: [DebPackage]) async throws {
         if packages.isEmpty {
             return
+        }
+
+        for pkg in packages {
+            try FileManager.default.removeItem(at: pkg.fileURL)
         }
 
         let request = NSBatchDeleteRequest(objectIDs: packages.map { $0.databaseID })
         _ = await execute(request: request, context: backroundContext)
     }
 
-    func delete(packages: [Package]) async {
-        await delete(packages: packages.compactMap { $0.asDEB })
+    func delete(packages: [Package]) async throws {
+        try await delete(packages: packages.compactMap { $0.asDEB })
     }
 
     func packagesSize() -> Int64 {

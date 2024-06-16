@@ -8,7 +8,6 @@
 import CoreData
 
 final class DebPackage: Package, Sendable {
-
     let databaseID: NSManagedObjectID
 
     let id: String
