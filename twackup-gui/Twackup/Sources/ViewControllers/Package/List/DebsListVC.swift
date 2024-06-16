@@ -78,7 +78,7 @@ class DebsListVC: SelectablePackageListVC, DebsListModelDelegate {
     @objc
     func actionShareSelected(_ button: UIBarButtonItem) {
         let debURLS: [URL] = model.selectedItems.compactMap { item in
-            guard let package = item.package as? DebPackage else { return nil }
+            guard let package = item.package.asDEB else { return nil }
             return package.fileURL
         }
 

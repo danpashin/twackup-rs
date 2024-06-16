@@ -50,14 +50,14 @@ actor Database {
         var index = 0
         let total = packages.count
 
-        let request = NSBatchInsertRequest(entity: DebPackage.entity()) { (object: NSManagedObject) in
+        let request = NSBatchInsertRequest(entity: DebPackageObject.entity()) { (object: NSManagedObject) in
             guard index < total else { return true }
 
-            if let debPackage = object as? DebPackage {
+            if let object = object as? DebPackageObject {
                 let package = packages[index]
 
-                debPackage.setProperties(package: package.package)
-                debPackage.setProperties(file: package.debURL)
+                object.fillFrom(package: package.package)
+                object.fillFrom(file: package.debURL)
             }
 
             index += 1
@@ -68,12 +68,17 @@ actor Database {
     }
 
     func fetchPackages() throws -> [DebPackage] {
-        return try backroundContext.fetch(DebPackage.fetchRequest())
+        let request = DebPackageObject.fetchRequest()
+        return try backroundContext.fetch(request).map({ DebPackage(object: $0) })
     }
 
     func fetch(package: Package) throws -> DebPackage? {
-        let possiblePackages = try backroundContext.fetch(DebPackage.fetchRequest(package: package))
-        return possiblePackages.first
+        let request = DebPackageObject.fetchRequest(package: package)
+        guard let object = try backroundContext.fetch(request).first else {
+            return nil
+        }
+
+        return DebPackage(object: object)
     }
 
     func delete(package: DebPackage) async {
@@ -85,16 +90,16 @@ actor Database {
             return
         }
 
-        let request = NSBatchDeleteRequest(objectIDs: packages.map { $0.objectID })
+        let request = NSBatchDeleteRequest(objectIDs: packages.map { $0.databaseID })
         _ = await execute(request: request, context: backroundContext)
     }
 
     func delete(packages: [Package]) async {
-        await delete(packages: packages.compactMap { $0 as? DebPackage })
+        await delete(packages: packages.compactMap { $0.asDEB })
     }
 
     func packagesSize() -> Int64 {
-        let request = DebPackage.debsSizeRequest()
+        let request = DebPackageObject.debsSizeRequest()
         guard let results = try? backroundContext.fetch(request) as? [[String: Int64]] else {
             return 0
         }

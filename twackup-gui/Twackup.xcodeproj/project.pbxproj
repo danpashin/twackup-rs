@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		0B0DBB6F2934FA58002F3BB2 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB6E2934FA58002F3BB2 /* String.swift */; };
 		0B0DBB72293501DE002F3BB2 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0DBB71293501DE002F3BB2 /* Package.swift */; };
-		0B0F22C7293CA01E002128EA /* DebPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0F22C5293CA01E002128EA /* DebPackage.swift */; };
+		0B0F22C7293CA01E002128EA /* DebPackageObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0F22C5293CA01E002128EA /* DebPackageObject.swift */; };
 		0B2636DF2948B867003EA806 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2636DE2948B867003EA806 /* Preferences.swift */; };
 		0B2636E12948B887003EA806 /* Compression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2636E02948B887003EA806 /* Compression.swift */; };
 		0B2636E62948B92E003EA806 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2636E52948B92E003EA806 /* SettingsViewController.swift */; };
@@ -20,6 +20,7 @@
 		0B434F9C2935E90000311FB6 /* DatabaseDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F9B2935E90000311FB6 /* DatabaseDetailVC.swift */; };
 		0B434F9E2935E97200311FB6 /* DatabasePackageDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F9D2935E97200311FB6 /* DatabasePackageDetailedView.swift */; };
 		0B463A9B29389EBB00021EF7 /* DebsListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B463A9A29389EBB00021EF7 /* DebsListModel.swift */; };
+		0B48EF3B2C1EF8E6007C0EC0 /* DatabasePackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3A2C1EF8E6007C0EC0 /* DatabasePackage.swift */; };
 		0B50FF6E2949B80900CF4BCF /* CapacityBarLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B50FF6D2949B80900CF4BCF /* CapacityBarLabel.swift */; };
 		0B50FF702949B82900CF4BCF /* CapacityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B50FF6F2949B82900CF4BCF /* CapacityView.swift */; };
 		0B50FF722949EA7700CF4BCF /* DiskStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B50FF712949EA7700CF4BCF /* DiskStats.swift */; };
@@ -83,7 +84,7 @@
 		007C412C6D65357FB85FA8C6 /* Pods-Twackup.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Twackup.release.xcconfig"; path = "Target Support Files/Pods-Twackup/Pods-Twackup.release.xcconfig"; sourceTree = "<group>"; };
 		0B0DBB6E2934FA58002F3BB2 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		0B0DBB71293501DE002F3BB2 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
-		0B0F22C5293CA01E002128EA /* DebPackage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebPackage.swift; sourceTree = "<group>"; };
+		0B0F22C5293CA01E002128EA /* DebPackageObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebPackageObject.swift; sourceTree = "<group>"; };
 		0B2636DE2948B867003EA806 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		0B2636E02948B887003EA806 /* Compression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compression.swift; sourceTree = "<group>"; };
 		0B2636E52948B92E003EA806 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
@@ -95,6 +96,7 @@
 		0B434F9D2935E97200311FB6 /* DatabasePackageDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackageDetailedView.swift; sourceTree = "<group>"; };
 		0B434FA02936351700311FB6 /* twackup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = twackup.h; path = ../target/twackup.h; sourceTree = "<group>"; };
 		0B463A9A29389EBB00021EF7 /* DebsListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebsListModel.swift; sourceTree = "<group>"; };
+		0B48EF3A2C1EF8E6007C0EC0 /* DatabasePackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackage.swift; sourceTree = "<group>"; };
 		0B50FF6D2949B80900CF4BCF /* CapacityBarLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapacityBarLabel.swift; sourceTree = "<group>"; };
 		0B50FF6F2949B82900CF4BCF /* CapacityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapacityView.swift; sourceTree = "<group>"; };
 		0B50FF712949EA7700CF4BCF /* DiskStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskStats.swift; sourceTree = "<group>"; };
@@ -179,7 +181,8 @@
 		0B0DBB642934DE7E002F3BB2 /* Database */ = {
 			isa = PBXGroup;
 			children = (
-				0B0F22C5293CA01E002128EA /* DebPackage.swift */,
+				0B0F22C5293CA01E002128EA /* DebPackageObject.swift */,
+				0B48EF3A2C1EF8E6007C0EC0 /* DatabasePackage.swift */,
 				0B5D3F982934D0C300AE50F2 /* Twackup.xcdatamodeld */,
 				0B5D3F9B2934D2EB00AE50F2 /* Database.swift */,
 			);
@@ -646,7 +649,7 @@
 				0B434F9C2935E90000311FB6 /* DatabaseDetailVC.swift in Sources */,
 				0BF07A662943537A00EEC8FC /* SelectablePackageListVC.swift in Sources */,
 				0B2636E12948B887003EA806 /* Compression.swift in Sources */,
-				0B0F22C7293CA01E002128EA /* DebPackage.swift in Sources */,
+				0B0F22C7293CA01E002128EA /* DebPackageObject.swift in Sources */,
 				0B5B332D294DB55B0097398F /* NavigationController.swift in Sources */,
 				0B5D3F9E2934D85500AE50F2 /* DatabasePackageProvider.swift in Sources */,
 				0BF07A502941027800EEC8FC /* SplitController.swift in Sources */,
@@ -655,6 +658,7 @@
 				0BBD2FDF2C1C67D500438457 /* DpkgProgressNotifier.swift in Sources */,
 				0B434F9E2935E97200311FB6 /* DatabasePackageDetailedView.swift in Sources */,
 				0B2636DF2948B867003EA806 /* Preferences.swift in Sources */,
+				0B48EF3B2C1EF8E6007C0EC0 /* DatabasePackage.swift in Sources */,
 				0BE2E0B22C1B346B00CADFE3 /* SwiftConversions.swift in Sources */,
 				0B5D3F9A2934D0C300AE50F2 /* Twackup.xcdatamodeld in Sources */,
 				0BAC44D629562C6B0038074C /* DpkgListModel+DZNEmptyDataSet.swift in Sources */,

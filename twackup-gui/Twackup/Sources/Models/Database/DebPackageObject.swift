@@ -1,6 +1,6 @@
 //
-//  DebPackage.swift
-//  
+//  DebPackageObject.swift
+//
 //
 //  Created by Daniil on 28.11.2022.
 //
@@ -14,17 +14,17 @@ struct BuildedPackage: @unchecked Sendable {
     let debURL: URL
 }
 
-class DebPackage: NSManagedObject, Package, @unchecked Sendable {
-    static let entityName = "DebPackage"
+class DebPackageObject: NSManagedObject {
+    static let entityName = "DebPackageObject"
 
-    class func fetchRequest() -> NSFetchRequest<DebPackage> {
-        let request = NSFetchRequest<DebPackage>(entityName: entityName)
+    class func fetchRequest() -> NSFetchRequest<DebPackageObject> {
+        let request = NSFetchRequest<DebPackageObject>(entityName: entityName)
         request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         return request
     }
 
-    class func fetchRequest(package: Package) -> NSFetchRequest<DebPackage> {
-        let request = NSFetchRequest<DebPackage>(entityName: entityName)
+    class func fetchRequest(package: Package) -> NSFetchRequest<DebPackageObject> {
+        let request = NSFetchRequest<DebPackageObject>(entityName: entityName)
         request.predicate = NSPredicate(format: "id == %@ && version == %@", package.id, package.version)
         return request
     }
@@ -58,18 +58,14 @@ class DebPackage: NSManagedObject, Package, @unchecked Sendable {
     var icon: URL?
     var depiction: URL?
 
-    var fileURL: URL {
-        Dpkg.defaultSaveDirectory.appendingPathComponent(relPath)
-    }
-
-    func setProperties(file: URL) {
+    func fillFrom(file: URL) {
         let metadata = try? FileManager.default.attributesOfItem(atPath: file.path)
         debSize = (metadata?[.size] as? Int64) ?? 0
 
         relPath = file.path.deletePrefix(Dpkg.defaultSaveDirectory.path)
     }
 
-    func setProperties(package: Package) {
+    func fillFrom(package: Package) {
         assert(!package.name.isEmpty)
         name = package.name
         id = package.id
@@ -78,9 +74,5 @@ class DebPackage: NSManagedObject, Package, @unchecked Sendable {
         section = package.section
         installedSize = package.installedSize
         buildDate = Date()
-    }
-
-    func isEqualTo(_ other: Package) -> Bool {
-        id == other.id && version == other.version
     }
 }

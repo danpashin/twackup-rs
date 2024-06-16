@@ -52,3 +52,9 @@ extension Package {
     /// Casts self as DebPackage class
     var asDEB: DebPackage? { self as? DebPackage }
 }
+
+extension Package {
+    func isEqualTo(_ other: Package) -> Bool {
+        id == other.id && version == other.version
+    }
+}

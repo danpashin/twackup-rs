@@ -22,10 +22,11 @@ class DatabasePackageDetailedView: PackageDetailedView {
         super.updateContents(forPackage: package)
         learnMoreButton.isHidden = true
 
-        guard let package = package as? DebPackage else { return }
+        guard let package = package.asDEB else { return }
 
-        if package.debSize != 0 {
-            debSizeLabel.valueLabel.text = ByteCountFormatter().string(fromByteCount: package.debSize)
+        // float value comparement logic
+        if package.debSize.value > 1 {
+            debSizeLabel.valueLabel.text = ByteCountFormatter().string(from: package.debSize)
         } else {
             debSizeLabel.valueLabel.text = "unknown".localized
         }

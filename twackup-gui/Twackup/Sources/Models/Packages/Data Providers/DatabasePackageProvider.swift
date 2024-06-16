@@ -30,12 +30,11 @@ class DatabasePackageProvider: PackageDataProvider, @unchecked Sendable {
         }
 
         for package in toDelete {
-            guard let dbPackage = package as? DebPackage else { continue }
+            guard let dbPackage = package.asDEB else { continue }
             do {
                 try FileManager.default.removeItem(at: dbPackage.fileURL)
             } catch {
-                let err = error as NSError
-                await FFILogger.shared.log(err.localizedDescription, level: .warning)
+                await FFILogger.shared.log(error.localizedDescription, level: .warning)
             }
         }
 

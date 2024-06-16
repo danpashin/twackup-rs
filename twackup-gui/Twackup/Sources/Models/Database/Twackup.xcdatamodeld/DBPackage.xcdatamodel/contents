@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21513" systemVersion="22A400" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="DebPackage" representedClassName=".DebPackage" syncable="YES">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23173.10" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="DebPackageObject" representedClassName=".DebPackageObject" syncable="YES">
         <attribute name="architecture" optional="YES" attributeType="String"/>
         <attribute name="buildDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="debSize" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
