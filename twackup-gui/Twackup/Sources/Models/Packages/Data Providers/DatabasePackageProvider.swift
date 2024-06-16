@@ -14,8 +14,8 @@ class DatabasePackageProvider: PackageDataProvider, @unchecked Sendable {
         super.init()
     }
 
-    func reload() throws {
-        allPackages = try database.fetchPackages()
+    func reload() async throws {
+        allPackages = try await database.fetchPackages()
     }
 
     func deletePackages(at indexes: [Int]) async -> Bool {

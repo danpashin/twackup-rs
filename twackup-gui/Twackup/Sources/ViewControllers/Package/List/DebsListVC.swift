@@ -59,7 +59,7 @@ class DebsListVC: SelectablePackageListVC, DebsListModelDelegate {
     }
 
     override func reloadData() async {
-        try? debsModel.debsProvider.reload()
+        try? await debsModel.debsProvider.reload()
         await super.reloadData()
     }
 

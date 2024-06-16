@@ -8,83 +8,71 @@
 @preconcurrency import CoreData
 import os
 
-final class Database: Sendable {
+actor Database {
     private let persistentContainer: NSPersistentContainer
 
-    private let context: NSManagedObjectContext
+    var backroundContext: NSManagedObjectContext {
+        let context = persistentContainer.newBackgroundContext()
+        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+
+        return context
+    }
 
     init() {
         persistentContainer = NSPersistentContainer(name: "Twackup")
-        persistentContainer.loadPersistentStores { _, error in
-            if let error = error as NSError? {
-                Task(priority: .utility) {
-                    await FFILogger.shared.log("Unresolved error \(error), \(error.userInfo)")
-                }
-            }
-        }
         persistentContainer.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        persistentContainer.loadPersistentStores { _, error in
+            guard let error else { return }
 
-        context = persistentContainer.newBackgroundContext()
-    }
-
-    private func saveContext(_ context: NSManagedObjectContext) {
-        if !context.hasChanges { return }
-
-        do {
-            try context.save()
-        } catch {
-            context.rollback()
-            os_log("Unresolved error \(error), \((error as NSError).userInfo)")
+            Task(priority: .utility) {
+                await FFILogger.shared.log("Unresolved error \(error),\(error.localizedDescription)")
+            }
         }
     }
 
     private func execute(
         request: NSPersistentStoreRequest,
         context: NSManagedObjectContext
-    ) -> NSPersistentStoreResult? {
+    ) async -> NSPersistentStoreResult? {
         do {
             let result = try context.execute(request)
             try context.save()
             return result
         } catch {
             context.rollback()
-            os_log("Unresolved error \(error), \((error as NSError).userInfo)")
+            await FFILogger.shared.log("Unresolved error \(error), \(error.localizedDescription)")
         }
 
         return nil
     }
 
     func add(packages: [BuildedPackage]) async {
-        await background { context in
-            var index = 0
-            let total = packages.count
+        var index = 0
+        let total = packages.count
 
-            // swiftlint:disable trailing_closure
-            let request = NSBatchInsertRequest(entity: DebPackage.entity(), managedObjectHandler: { object in
-                guard index < total else { return true }
+        let request = NSBatchInsertRequest(entity: DebPackage.entity()) { (object: NSManagedObject) in
+            guard index < total else { return true }
 
-                if let debPackage = object as? DebPackage {
-                    let package = packages[index]
+            if let debPackage = object as? DebPackage {
+                let package = packages[index]
 
-                    debPackage.setProperties(package: package.package)
-                    debPackage.setProperties(file: package.debURL)
-                }
+                debPackage.setProperties(package: package.package)
+                debPackage.setProperties(file: package.debURL)
+            }
 
-                index += 1
-                return false
-            })
-            // swiftlint:enable trailing_closure
-
-            _ = self.execute(request: request, context: context)
+            index += 1
+            return false
         }
+
+        _ = await execute(request: request, context: backroundContext)
     }
 
     func fetchPackages() throws -> [DebPackage] {
-        try self.context.fetch(DebPackage.fetchRequest())
+        return try backroundContext.fetch(DebPackage.fetchRequest())
     }
 
     func fetch(package: Package) throws -> DebPackage? {
-        let possiblePackages = try context.fetch(DebPackage.fetchRequest(package: package))
+        let possiblePackages = try backroundContext.fetch(DebPackage.fetchRequest(package: package))
         return possiblePackages.first
     }
 
@@ -93,14 +81,12 @@ final class Database: Sendable {
     }
 
     func delete(packages: [DebPackage]) async {
-        await background { context in
-            if packages.isEmpty {
-                return
-            }
-
-            let request = NSBatchDeleteRequest(objectIDs: packages.map { $0.objectID })
-            _ = self.execute(request: request, context: context)
+        if packages.isEmpty {
+            return
         }
+
+        let request = NSBatchDeleteRequest(objectIDs: packages.map { $0.objectID })
+        _ = await execute(request: request, context: backroundContext)
     }
 
     func delete(packages: [Package]) async {
@@ -108,11 +94,12 @@ final class Database: Sendable {
     }
 
     func packagesSize() -> Int64 {
-        guard let results = try? self.context.fetch(DebPackage.debsSizeRequest()) else { return 0 }
-        guard let results = results as? [[String: Int64]] else { return 0 }
-        guard let result = results.first else { return 0 }
+        let request = DebPackage.debsSizeRequest()
+        guard let results = try? backroundContext.fetch(request) as? [[String: Int64]] else {
+            return 0
+        }
 
-        return result["totalSize"] ?? 0
+        return results.first?["totalSize"] ?? 0
     }
 
     func databaseSize() -> Int64 {
@@ -126,14 +113,5 @@ final class Database: Sendable {
         }
 
         return size
-    }
-
-    private func background(_ work: @escaping (NSManagedObjectContext) -> Void) async {
-        await withCheckedContinuation { continuation in
-            persistentContainer.performBackgroundTask { context in
-                work(context)
-                continuation.resume()
-            }
-        }
     }
 }

@@ -28,7 +28,7 @@ actor DiskStats {
 
             totalSpace = Int64(values.volumeTotalCapacity ?? 0)
             usedSpace = totalSpace - Int64(values.volumeAvailableCapacityForImportantUsage ?? 0)
-            appSpace = mainModel.database.databaseSize() + mainModel.database.packagesSize()
+            appSpace = await mainModel.database.databaseSize() + mainModel.database.packagesSize()
         } catch {
            await FFILogger.shared.log(error.localizedDescription, level: .warning)
         }

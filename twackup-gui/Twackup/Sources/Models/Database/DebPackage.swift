@@ -14,7 +14,7 @@ struct BuildedPackage: @unchecked Sendable {
     let debURL: URL
 }
 
-class DebPackage: NSManagedObject, Package {
+class DebPackage: NSManagedObject, Package, @unchecked Sendable {
     static let entityName = "DebPackage"
 
     class func fetchRequest() -> NSFetchRequest<DebPackage> {
