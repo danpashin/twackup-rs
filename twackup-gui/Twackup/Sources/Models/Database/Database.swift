@@ -91,7 +91,11 @@ actor Database {
         }
 
         for pkg in packages {
-            try FileManager.default.removeItem(at: pkg.fileURL)
+            let manager = FileManager.default
+            let path = pkg.fileURL.path
+            if manager.fileExists(atPath: path) {
+                try manager.removeItem(atPath: path)
+            }
         }
 
         let request = NSBatchDeleteRequest(objectIDs: packages.map { $0.databaseID })
