@@ -24,6 +24,8 @@
 		0B48B1BA2C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B1B92C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift */; };
 		0B48B1CF2C22E47A00D21737 /* libroot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B48B1C12C22E43B00D21737 /* libroot.a */; };
 		0B48B1D62C22E6DD00D21737 /* dyn.c in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B1D42C22E6D600D21737 /* dyn.c */; };
+		0B48B2152C2307BE00D21737 /* libSandy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B20E2C23079800D21737 /* libSandy.m */; };
+		0B48B2162C23082D00D21737 /* libSandy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B48B1DB2C23070E00D21737 /* libSandy.a */; };
 		0B48EF3B2C1EF8E6007C0EC0 /* DatabasePackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3A2C1EF8E6007C0EC0 /* DatabasePackage.swift */; };
 		0B48EF3D2C1F488A007C0EC0 /* Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3C2C1F488A007C0EC0 /* Sequence.swift */; };
 		0B48EF3F2C1F4F87007C0EC0 /* UnfairLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3E2C1F4F87007C0EC0 /* UnfairLock.swift */; };
@@ -105,6 +107,9 @@
 		0B48B1C12C22E43B00D21737 /* libroot.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libroot.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B48B1D42C22E6D600D21737 /* dyn.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = dyn.c; path = src/dyn.c; sourceTree = "<group>"; };
 		0B48B1D52C22E6D600D21737 /* libroot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = libroot.h; path = src/libroot.h; sourceTree = "<group>"; };
+		0B48B1DB2C23070E00D21737 /* libSandy.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSandy.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		0B48B20D2C23079800D21737 /* libSandy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libSandy.h; sourceTree = "<group>"; };
+		0B48B20E2C23079800D21737 /* libSandy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = libSandy.m; sourceTree = "<group>"; };
 		0B48EF3A2C1EF8E6007C0EC0 /* DatabasePackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackage.swift; sourceTree = "<group>"; };
 		0B48EF3C2C1F488A007C0EC0 /* Sequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sequence.swift; sourceTree = "<group>"; };
 		0B48EF3E2C1F4F87007C0EC0 /* UnfairLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnfairLock.swift; sourceTree = "<group>"; };
@@ -178,6 +183,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B48B2162C23082D00D21737 /* libSandy.a in Frameworks */,
 				0B48B1CF2C22E47A00D21737 /* libroot.a in Frameworks */,
 				0BE87E932C1E05CE009C95A7 /* NukeUI in Frameworks */,
 				C1FF8C5621CC9FEC564B8CCE /* Pods_Twackup.framework in Frameworks */,
@@ -221,6 +227,15 @@
 			path = Preferences;
 			sourceTree = "<group>";
 		};
+		0B48B2142C23079800D21737 /* libSandy */ = {
+			isa = PBXGroup;
+			children = (
+				0B48B20D2C23079800D21737 /* libSandy.h */,
+				0B48B20E2C23079800D21737 /* libSandy.m */,
+			);
+			path = libSandy;
+			sourceTree = "<group>";
+		};
 		0B48EF442C200CA7007C0EC0 /* UI Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -262,6 +277,7 @@
 			children = (
 				0B8661652930ADA300EA4301 /* Twackup.app */,
 				0B48B1C12C22E43B00D21737 /* libroot.a */,
+				0B48B1DB2C23070E00D21737 /* libSandy.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -335,6 +351,7 @@
 		0B86CDF82C19AC1A00F3B4A0 /* contrib */ = {
 			isa = PBXGroup;
 			children = (
+				0B48B2142C23079800D21737 /* libSandy */,
 				0B86CDF72C19AC1A00F3B4A0 /* libroot */,
 			);
 			name = contrib;
@@ -507,6 +524,21 @@
 			productReference = 0B48B1C12C22E43B00D21737 /* libroot.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		0B48B1DA2C23070E00D21737 /* Sandy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0B48B1E72C23070E00D21737 /* Build configuration list for PBXNativeTarget "Sandy" */;
+			buildPhases = (
+				0B48B1D72C23070E00D21737 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Sandy;
+			productName = Sandy;
+			productReference = 0B48B1DB2C23070E00D21737 /* libSandy.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		0B8661642930ADA300EA4301 /* Twackup */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0B8661792930ADA400EA4301 /* Build configuration list for PBXNativeTarget "Twackup" */;
@@ -544,6 +576,9 @@
 					0B48B1C02C22E43B00D21737 = {
 						CreatedOnToolsVersion = 16.0;
 					};
+					0B48B1DA2C23070E00D21737 = {
+						CreatedOnToolsVersion = 16.0;
+					};
 					0B8661642930ADA300EA4301 = {
 						CreatedOnToolsVersion = 14.1;
 					};
@@ -570,6 +605,7 @@
 			targets = (
 				0B8661642930ADA300EA4301 /* Twackup */,
 				0B48B1C02C22E43B00D21737 /* root */,
+				0B48B1DA2C23070E00D21737 /* Sandy */,
 			);
 		};
 /* End PBXProject section */
@@ -638,6 +674,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				0B48B1D62C22E6DD00D21737 /* dyn.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0B48B1D72C23070E00D21737 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0B48B2152C2307BE00D21737 /* libSandy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -798,6 +842,138 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+			};
+			name = Release;
+		};
+		0B48B1E12C23070E00D21737 /* Debug rootless */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_STRICT_PROTOTYPES = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../contrib/libSandy/headers",
+					"$(PROJECT_DIR)/../contrib/libroot/src",
+					"$(PROJECT_DIR)/../contrib/include",
+				);
+			};
+			name = "Debug rootless";
+		};
+		0B48B1E22C23070E00D21737 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_STRICT_PROTOTYPES = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../contrib/libSandy/headers",
+					"$(PROJECT_DIR)/../contrib/libroot/src",
+					"$(PROJECT_DIR)/../contrib/include",
+				);
+			};
+			name = Debug;
+		};
+		0B48B1E32C23070E00D21737 /* Debug rootfull */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_STRICT_PROTOTYPES = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../contrib/libSandy/headers",
+					"$(PROJECT_DIR)/../contrib/libroot/src",
+					"$(PROJECT_DIR)/../contrib/include",
+				);
+			};
+			name = "Debug rootfull";
+		};
+		0B48B1E42C23070E00D21737 /* Release rootless */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_STRICT_PROTOTYPES = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../contrib/libSandy/headers",
+					"$(PROJECT_DIR)/../contrib/libroot/src",
+					"$(PROJECT_DIR)/../contrib/include",
+				);
+			};
+			name = "Release rootless";
+		};
+		0B48B1E52C23070E00D21737 /* Release rootfull */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_STRICT_PROTOTYPES = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../contrib/libSandy/headers",
+					"$(PROJECT_DIR)/../contrib/libroot/src",
+					"$(PROJECT_DIR)/../contrib/include",
+				);
+			};
+			name = "Release rootfull";
+		};
+		0B48B1E62C23070E00D21737 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_STRICT_PROTOTYPES = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/../contrib/libSandy/headers",
+					"$(PROJECT_DIR)/../contrib/libroot/src",
+					"$(PROJECT_DIR)/../contrib/include",
+				);
 			};
 			name = Release;
 		};
@@ -1500,6 +1676,19 @@
 				0B48B1CB2C22E43B00D21737 /* Release rootless */,
 				0B48B1CC2C22E43B00D21737 /* Release rootfull */,
 				0B48B1CD2C22E43B00D21737 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Release rootless";
+		};
+		0B48B1E72C23070E00D21737 /* Build configuration list for PBXNativeTarget "Sandy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0B48B1E12C23070E00D21737 /* Debug rootless */,
+				0B48B1E22C23070E00D21737 /* Debug */,
+				0B48B1E32C23070E00D21737 /* Debug rootfull */,
+				0B48B1E42C23070E00D21737 /* Release rootless */,
+				0B48B1E52C23070E00D21737 /* Release rootfull */,
+				0B48B1E62C23070E00D21737 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Release rootless";

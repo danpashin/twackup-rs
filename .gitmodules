@@ -1,3 +1,6 @@
 [submodule "contrib/libroot"]
 	path = contrib/libroot
 	url = https://github.com/opa334/libroot
+[submodule "contrib/libSandy"]
+	path = contrib/libSandy
+	url = https://github.com/danpashin/libSandy
