@@ -6,6 +6,7 @@ edition = "2021"
 publish = false
 license = "GPL-3.0-only"
 build = "build.rs"
+rust-version = "1.74.1"
 
 [[bin]]
 name = "twackup-cli"
