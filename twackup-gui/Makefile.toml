@@ -49,8 +49,11 @@ run_task = { name = ["xcode-run-build", "sign", "copy-dsym"] }
 [tasks.copy-dsym]
 private = true
 cwd = "${GUI_ARCHIVE_PATH}/dSYMs"
-command = "mv"
-args = ["Twackup.app.dSYM", "${ARTIFACTS_OUTPUT_DIR}/Twackup-${CARGO_MAKE_CRATE_VERSION}.dSYM"]
+script = """
+DEST_DIR="${ARTIFACTS_OUTPUT_DIR}/Twackup-${CARGO_MAKE_CRATE_VERSION}.dSYM"
+rm -rf "${DEST_DIR}"
+mv -v Twackup.app.dSYM "${DEST_DIR}"
+"""
 
 [tasks.create-deb]
 private = true
@@ -110,6 +113,7 @@ dependencies = ["build-and-sign"]
 cwd = "${GUI_ARCHIVE_PATH}/Products"
 script = """
 mv Applications Payload
+find Payload -type f \\( -perm +111 -or -name "*.dylib" \\) -exec xcrun bitcode_strip "{}" -r -v -o "{}" \\;
 zip -rmT "${ARTIFACTS_DIR}/Twackup-${CARGO_MAKE_CRATE_VERSION}.ipa" Payload
 """
 
