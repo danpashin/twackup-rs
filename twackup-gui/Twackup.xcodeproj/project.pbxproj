@@ -24,6 +24,7 @@
 		0B48B1BA2C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B1B92C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift */; };
 		0B48B1CF2C22E47A00D21737 /* libroot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B48B1C12C22E43B00D21737 /* libroot.a */; };
 		0B48B1D62C22E6DD00D21737 /* dyn.c in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B1D42C22E6D600D21737 /* dyn.c */; };
+		0B48B6A42C23600400D21737 /* StyledLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B6A32C23600400D21737 /* StyledLogger.swift */; };
 		0B48EF3B2C1EF8E6007C0EC0 /* DatabasePackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3A2C1EF8E6007C0EC0 /* DatabasePackage.swift */; };
 		0B48EF3D2C1F488A007C0EC0 /* Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3C2C1F488A007C0EC0 /* Sequence.swift */; };
 		0B48EF3F2C1F4F87007C0EC0 /* UnfairLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3E2C1F4F87007C0EC0 /* UnfairLock.swift */; };
@@ -105,6 +106,7 @@
 		0B48B1C12C22E43B00D21737 /* libroot.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libroot.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B48B1D42C22E6D600D21737 /* dyn.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = dyn.c; path = src/dyn.c; sourceTree = "<group>"; };
 		0B48B1D52C22E6D600D21737 /* libroot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = libroot.h; path = src/libroot.h; sourceTree = "<group>"; };
+		0B48B6A32C23600400D21737 /* StyledLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyledLogger.swift; sourceTree = "<group>"; };
 		0B48EF3A2C1EF8E6007C0EC0 /* DatabasePackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackage.swift; sourceTree = "<group>"; };
 		0B48EF3C2C1F488A007C0EC0 /* Sequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sequence.swift; sourceTree = "<group>"; };
 		0B48EF3E2C1F4F87007C0EC0 /* UnfairLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnfairLock.swift; sourceTree = "<group>"; };
@@ -374,6 +376,7 @@
 				0B6BB2F0294A599D001E3B43 /* ProxiedObservedObject.swift */,
 				0B5B332A294DA9F00097398F /* MainModel.swift */,
 				0B86CDA72C18D8F000F3B4A0 /* ConsoleLogger.swift */,
+				0B48B6A32C23600400D21737 /* StyledLogger.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -683,6 +686,7 @@
 				0B50FF702949B82900CF4BCF /* CapacityView.swift in Sources */,
 				0B48B1B82C22B04600D21737 /* DebsListVC+BlankSlate.swift in Sources */,
 				0B6BB2F1294A599D001E3B43 /* ProxiedObservedObject.swift in Sources */,
+				0B48B6A42C23600400D21737 /* StyledLogger.swift in Sources */,
 				0B2636E62948B92E003EA806 /* SettingsViewController.swift in Sources */,
 				0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */,
 				0B434F982935DEFA00311FB6 /* RebuildPackageDetailedView.swift in Sources */,
