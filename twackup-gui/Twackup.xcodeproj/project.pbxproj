@@ -22,6 +22,9 @@
 		0B48B1B62C21B40000D21737 /* BlankSlate in Frameworks */ = {isa = PBXBuildFile; productRef = 0B48B1B52C21B40000D21737 /* BlankSlate */; };
 		0B48B1B82C22B04600D21737 /* DebsListVC+BlankSlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B1B72C22B04600D21737 /* DebsListVC+BlankSlate.swift */; };
 		0B48B1BA2C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B1B92C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift */; };
+		0B48B1CF2C22E47A00D21737 /* libroot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B48B1C12C22E43B00D21737 /* libroot.a */; };
+		0B48B1D32C22E68A00D21737 /* libtwackup.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B48B1D22C22E66300D21737 /* libtwackup.a */; };
+		0B48B1D62C22E6DD00D21737 /* dyn.c in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B1D42C22E6D600D21737 /* dyn.c */; };
 		0B48EF3B2C1EF8E6007C0EC0 /* DatabasePackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3A2C1EF8E6007C0EC0 /* DatabasePackage.swift */; };
 		0B48EF3D2C1F488A007C0EC0 /* Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3C2C1F488A007C0EC0 /* Sequence.swift */; };
 		0B48EF3F2C1F4F87007C0EC0 /* UnfairLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3E2C1F4F87007C0EC0 /* UnfairLock.swift */; };
@@ -56,7 +59,6 @@
 		0B86618B2930AF7100EA4301 /* FFIPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8661892930AF7100EA4301 /* FFIPackage.swift */; };
 		0B86CDA82C18D8F000F3B4A0 /* ConsoleLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86CDA72C18D8F000F3B4A0 /* ConsoleLogger.swift */; };
 		0B86CDCD2C199FA500F3B4A0 /* Jailbreaks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B86CDCC2C199FA500F3B4A0 /* Jailbreaks.swift */; };
-		0B86CDF92C19AC4E00F3B4A0 /* dyn.c in Sources */ = {isa = PBXBuildFile; fileRef = 0B86CDEE2C19AC1A00F3B4A0 /* dyn.c */; };
 		0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3062930B2FB00BA5312 /* PackageSection.swift */; };
 		0B88C30B2930B58D00BA5312 /* PackageDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C30A2930B58D00BA5312 /* PackageDetailVC.swift */; };
 		0B88C30D2930B88800BA5312 /* PackageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */; };
@@ -101,6 +103,10 @@
 		0B434FA02936351700311FB6 /* twackup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = twackup.h; path = ../target/twackup.h; sourceTree = "<group>"; };
 		0B48B1B72C22B04600D21737 /* DebsListVC+BlankSlate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebsListVC+BlankSlate.swift"; sourceTree = "<group>"; };
 		0B48B1B92C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DpkgListVC+BlankSlate.swift"; sourceTree = "<group>"; };
+		0B48B1C12C22E43B00D21737 /* libroot.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libroot.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		0B48B1D22C22E66300D21737 /* libtwackup.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtwackup.a; path = ../target/libtwackup.a; sourceTree = "<group>"; };
+		0B48B1D42C22E6D600D21737 /* dyn.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = dyn.c; path = src/dyn.c; sourceTree = "<group>"; };
+		0B48B1D52C22E6D600D21737 /* libroot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = libroot.h; path = src/libroot.h; sourceTree = "<group>"; };
 		0B48EF3A2C1EF8E6007C0EC0 /* DatabasePackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackage.swift; sourceTree = "<group>"; };
 		0B48EF3C2C1F488A007C0EC0 /* Sequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sequence.swift; sourceTree = "<group>"; };
 		0B48EF3E2C1F4F87007C0EC0 /* UnfairLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnfairLock.swift; sourceTree = "<group>"; };
@@ -137,8 +143,6 @@
 		0B8661892930AF7100EA4301 /* FFIPackage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FFIPackage.swift; sourceTree = "<group>"; };
 		0B86CDA72C18D8F000F3B4A0 /* ConsoleLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleLogger.swift; sourceTree = "<group>"; };
 		0B86CDCC2C199FA500F3B4A0 /* Jailbreaks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Jailbreaks.swift; sourceTree = "<group>"; };
-		0B86CDEE2C19AC1A00F3B4A0 /* dyn.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = dyn.c; sourceTree = "<group>"; };
-		0B86CDEF2C19AC1A00F3B4A0 /* libroot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libroot.h; sourceTree = "<group>"; };
 		0B88C3062930B2FB00BA5312 /* PackageSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageSection.swift; sourceTree = "<group>"; };
 		0B88C30A2930B58D00BA5312 /* PackageDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageDetailVC.swift; sourceTree = "<group>"; };
 		0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageTableViewCell.swift; sourceTree = "<group>"; };
@@ -176,6 +180,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B48B1CF2C22E47A00D21737 /* libroot.a in Frameworks */,
+				0B48B1D32C22E68A00D21737 /* libtwackup.a in Frameworks */,
 				0BE87E932C1E05CE009C95A7 /* NukeUI in Frameworks */,
 				C1FF8C5621CC9FEC564B8CCE /* Pods_Twackup.framework in Frameworks */,
 				0BE87E862C1E0166009C95A7 /* Sentry in Frameworks */,
@@ -245,6 +251,7 @@
 			isa = PBXGroup;
 			children = (
 				0B9EB5E1294B8C7700DED54D /* .swiftlint.yml */,
+				0B48B1D22C22E66300D21737 /* libtwackup.a */,
 				0B86CDF82C19AC1A00F3B4A0 /* contrib */,
 				0B8661832930AF4E00EA4301 /* common-include */,
 				0B8661672930ADA300EA4301 /* Twackup */,
@@ -258,6 +265,7 @@
 			isa = PBXGroup;
 			children = (
 				0B8661652930ADA300EA4301 /* Twackup.app */,
+				0B48B1C12C22E43B00D21737 /* libroot.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -319,19 +327,11 @@
 			path = "App Lifecycle";
 			sourceTree = "<group>";
 		};
-		0B86CDF02C19AC1A00F3B4A0 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				0B86CDEE2C19AC1A00F3B4A0 /* dyn.c */,
-				0B86CDEF2C19AC1A00F3B4A0 /* libroot.h */,
-			);
-			path = src;
-			sourceTree = "<group>";
-		};
 		0B86CDF72C19AC1A00F3B4A0 /* libroot */ = {
 			isa = PBXGroup;
 			children = (
-				0B86CDF02C19AC1A00F3B4A0 /* src */,
+				0B48B1D42C22E6D600D21737 /* dyn.c */,
+				0B48B1D52C22E6D600D21737 /* libroot.h */,
 			);
 			path = libroot;
 			sourceTree = "<group>";
@@ -496,6 +496,21 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0B48B1C02C22E43B00D21737 /* root */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0B48B1C72C22E43B00D21737 /* Build configuration list for PBXNativeTarget "root" */;
+			buildPhases = (
+				0B48B1BD2C22E43B00D21737 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = root;
+			productName = libroot;
+			productReference = 0B48B1C12C22E43B00D21737 /* libroot.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		0B8661642930ADA300EA4301 /* Twackup */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0B8661792930ADA400EA4301 /* Build configuration list for PBXNativeTarget "Twackup" */;
@@ -530,6 +545,9 @@
 				LastSwiftUpdateCheck = 1410;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
+					0B48B1C02C22E43B00D21737 = {
+						CreatedOnToolsVersion = 16.0;
+					};
 					0B8661642930ADA300EA4301 = {
 						CreatedOnToolsVersion = 14.1;
 					};
@@ -555,6 +573,7 @@
 			projectRoot = "";
 			targets = (
 				0B8661642930ADA300EA4301 /* Twackup */,
+				0B48B1C02C22E43B00D21737 /* root */,
 			);
 		};
 /* End PBXProject section */
@@ -618,6 +637,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0B48B1BD2C22E43B00D21737 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0B48B1D62C22E6DD00D21737 /* dyn.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0B8661612930ADA300EA4301 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -686,7 +713,6 @@
 				0BE2E0B22C1B346B00CADFE3 /* SwiftConversions.swift in Sources */,
 				0B5D3F9A2934D0C300AE50F2 /* Twackup.xcdatamodeld in Sources */,
 				0B48EF432C200C50007C0EC0 /* PackageListDelegate.swift in Sources */,
-				0B86CDF92C19AC4E00F3B4A0 /* dyn.c in Sources */,
 				0B0DBB72293501DE002F3BB2 /* Package.swift in Sources */,
 				0B86616B2930ADA300EA4301 /* SceneDelegate.swift in Sources */,
 				0BE87E9D2C1E23D3009C95A7 /* UIWindow.swift in Sources */,
@@ -707,6 +733,78 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		0B48B1C82C22E43B00D21737 /* Debug rootless */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+			};
+			name = "Debug rootless";
+		};
+		0B48B1C92C22E43B00D21737 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+			};
+			name = Debug;
+		};
+		0B48B1CA2C22E43B00D21737 /* Debug rootfull */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+			};
+			name = "Debug rootfull";
+		};
+		0B48B1CB2C22E43B00D21737 /* Release rootless */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+			};
+			name = "Release rootless";
+		};
+		0B48B1CC2C22E43B00D21737 /* Release rootfull */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+			};
+			name = "Release rootfull";
+		};
+		0B48B1CD2C22E43B00D21737 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+			};
+			name = Release;
+		};
 		0B8661772930ADA400EA4301 /* Debug rootless */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -715,7 +813,6 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -759,7 +856,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/../contrib/libroot/src";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -768,6 +864,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "Debug rootless";
 		};
@@ -779,7 +876,6 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -820,7 +916,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/../contrib/libroot/src";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -828,6 +923,7 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Release rootless";
@@ -848,7 +944,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Twackup;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -856,21 +952,19 @@
 					"@executable_path/Frameworks",
 					/var/jb/usr/lib,
 				);
-				MARKETING_VERSION = 2.0.2;
-				OTHER_LDFLAGS = (
+				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"-ObjC",
-					"-framework",
-					"\"StyledTextKit\"",
-					"-framework",
-					"\"UIKit\"",
-					"\"$(PROJECT_DIR)/../target/libtwackup.a\"",
+					"\"${TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
+					/usr/lib/swift,
+					"$(PROJECT_DIR)/../target",
 				);
+				MARKETING_VERSION = 2.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/$(TARGET_NAME)/Bridging-Header.h";
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -885,7 +979,6 @@
 				SWIFT_UPCOMING_FEATURE_ISOLATED_DEFAULT_VALUES = YES;
 				SWIFT_UPCOMING_FEATURE_REGION_BASED_ISOLATION = YES;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "Debug rootless";
 		};
@@ -905,7 +998,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Twackup;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -913,21 +1006,19 @@
 					"@executable_path/Frameworks",
 					/var/jb/usr/lib,
 				);
-				MARKETING_VERSION = 2.0.2;
-				OTHER_LDFLAGS = (
+				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"-ObjC",
-					"-framework",
-					"\"StyledTextKit\"",
-					"-framework",
-					"\"UIKit\"",
-					"\"$(PROJECT_DIR)/../target/libtwackup.a\"",
+					"\"${TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
+					/usr/lib/swift,
+					"$(PROJECT_DIR)/../target",
 				);
+				MARKETING_VERSION = 2.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/$(TARGET_NAME)/Bridging-Header.h";
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -942,7 +1033,6 @@
 				SWIFT_UPCOMING_FEATURE_ISOLATED_DEFAULT_VALUES = YES;
 				SWIFT_UPCOMING_FEATURE_REGION_BASED_ISOLATION = YES;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "Release rootless";
 		};
@@ -954,7 +1044,6 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -997,7 +1086,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/../contrib/libroot/src";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1006,6 +1094,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "Debug rootfull";
 		};
@@ -1025,28 +1114,26 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Twackup;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.2;
-				OTHER_LDFLAGS = (
+				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"-ObjC",
-					"-framework",
-					"\"StyledTextKit\"",
-					"-framework",
-					"\"UIKit\"",
-					"\"$(PROJECT_DIR)/../target/libtwackup.a\"",
+					"\"${TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
+					/usr/lib/swift,
+					"$(PROJECT_DIR)/../target",
 				);
+				MARKETING_VERSION = 2.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/$(TARGET_NAME)/Bridging-Header.h";
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -1061,7 +1148,6 @@
 				SWIFT_UPCOMING_FEATURE_ISOLATED_DEFAULT_VALUES = YES;
 				SWIFT_UPCOMING_FEATURE_REGION_BASED_ISOLATION = YES;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "Debug rootfull";
 		};
@@ -1073,7 +1159,6 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -1111,7 +1196,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/../contrib/libroot/src";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -1119,6 +1203,7 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Release rootfull";
@@ -1139,28 +1224,26 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Twackup;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.2;
-				OTHER_LDFLAGS = (
+				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"-ObjC",
-					"-framework",
-					"\"StyledTextKit\"",
-					"-framework",
-					"\"UIKit\"",
-					"\"$(PROJECT_DIR)/../target/libtwackup.a\"",
+					"\"${TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
+					/usr/lib/swift,
+					"$(PROJECT_DIR)/../target",
 				);
+				MARKETING_VERSION = 2.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/$(TARGET_NAME)/Bridging-Header.h";
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -1175,7 +1258,6 @@
 				SWIFT_UPCOMING_FEATURE_ISOLATED_DEFAULT_VALUES = YES;
 				SWIFT_UPCOMING_FEATURE_REGION_BASED_ISOLATION = YES;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "Release rootfull";
 		};
@@ -1187,7 +1269,6 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -1230,7 +1311,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/../contrib/libroot/src";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1239,6 +1319,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1258,28 +1339,26 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Twackup;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.2;
-				OTHER_LDFLAGS = (
+				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"-ObjC",
-					"-framework",
-					"\"StyledTextKit\"",
-					"-framework",
-					"\"UIKit\"",
-					"\"$(PROJECT_DIR)/../target/libtwackup.a\"",
+					"\"${TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
+					/usr/lib/swift,
+					"$(PROJECT_DIR)/../target",
 				);
+				MARKETING_VERSION = 2.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/$(TARGET_NAME)/Bridging-Header.h";
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -1294,7 +1373,6 @@
 				SWIFT_UPCOMING_FEATURE_ISOLATED_DEFAULT_VALUES = YES;
 				SWIFT_UPCOMING_FEATURE_REGION_BASED_ISOLATION = YES;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1306,7 +1384,6 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -1344,7 +1421,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(PROJECT_DIR)/../contrib/libroot/src";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -1352,6 +1428,7 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -1372,28 +1449,26 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Twackup;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.2;
-				OTHER_LDFLAGS = (
+				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"-ObjC",
-					"-framework",
-					"\"StyledTextKit\"",
-					"-framework",
-					"\"UIKit\"",
-					"\"$(PROJECT_DIR)/../target/libtwackup.a\"",
+					"\"${TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
+					/usr/lib/swift,
+					"$(PROJECT_DIR)/../target",
 				);
+				MARKETING_VERSION = 2.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/$(TARGET_NAME)/Bridging-Header.h";
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -1408,13 +1483,25 @@
 				SWIFT_UPCOMING_FEATURE_ISOLATED_DEFAULT_VALUES = YES;
 				SWIFT_UPCOMING_FEATURE_REGION_BASED_ISOLATION = YES;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0B48B1C72C22E43B00D21737 /* Build configuration list for PBXNativeTarget "root" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0B48B1C82C22E43B00D21737 /* Debug rootless */,
+				0B48B1C92C22E43B00D21737 /* Debug */,
+				0B48B1CA2C22E43B00D21737 /* Debug rootfull */,
+				0B48B1CB2C22E43B00D21737 /* Release rootless */,
+				0B48B1CC2C22E43B00D21737 /* Release rootfull */,
+				0B48B1CD2C22E43B00D21737 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Release rootless";
+		};
 		0B8661602930ADA300EA4301 /* Build configuration list for PBXProject "Twackup" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1448,24 +1535,24 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/liam-i/BlankSlate";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.7.1;
+				kind = exactVersion;
+				version = 0.7.1;
 			};
 		};
 		0BE87E842C1E0166009C95A7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.29.0;
+				kind = exactVersion;
+				version = 8.29.0;
 			};
 		};
 		0BE87E912C1E05CE009C95A7 /* XCRemoteSwiftPackageReference "Nuke" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kean/Nuke";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 12.7.2;
+				kind = exactVersion;
+				version = 12.7.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
