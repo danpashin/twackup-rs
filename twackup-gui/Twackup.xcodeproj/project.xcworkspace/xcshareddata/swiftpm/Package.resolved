@@ -1,0 +1,33 @@
+{
+  "originHash" : "1a055f4282d36d81bef8ff5498f3decfa03f4df1f3d72bf2a161602b00410ee6",
+  "pins" : [
+    {
+      "identity" : "blankslate",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/liam-i/BlankSlate",
+      "state" : {
+        "revision" : "db6e0bddbb77182079a40dcb780aa4a85f93d784",
+        "version" : "0.7.1"
+      }
+    },
+    {
+      "identity" : "nuke",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kean/Nuke",
+      "state" : {
+        "revision" : "084076db4f9b9ee4db51177ef5a4879689c1aa09",
+        "version" : "12.7.2"
+      }
+    },
+    {
+      "identity" : "sentry-cocoa",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/getsentry/sentry-cocoa",
+      "state" : {
+        "revision" : "c9a692ba837f4832ec7ce6378c071cb91cb55f92",
+        "version" : "8.29.0"
+      }
+    }
+  ],
+  "version" : 3
+}
