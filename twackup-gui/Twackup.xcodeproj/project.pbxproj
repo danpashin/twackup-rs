@@ -23,7 +23,6 @@
 		0B48B1B82C22B04600D21737 /* DebsListVC+BlankSlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B1B72C22B04600D21737 /* DebsListVC+BlankSlate.swift */; };
 		0B48B1BA2C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B1B92C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift */; };
 		0B48B1CF2C22E47A00D21737 /* libroot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B48B1C12C22E43B00D21737 /* libroot.a */; };
-		0B48B1D32C22E68A00D21737 /* libtwackup.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B48B1D22C22E66300D21737 /* libtwackup.a */; };
 		0B48B1D62C22E6DD00D21737 /* dyn.c in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B1D42C22E6D600D21737 /* dyn.c */; };
 		0B48EF3B2C1EF8E6007C0EC0 /* DatabasePackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3A2C1EF8E6007C0EC0 /* DatabasePackage.swift */; };
 		0B48EF3D2C1F488A007C0EC0 /* Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3C2C1F488A007C0EC0 /* Sequence.swift */; };
@@ -104,7 +103,6 @@
 		0B48B1B72C22B04600D21737 /* DebsListVC+BlankSlate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebsListVC+BlankSlate.swift"; sourceTree = "<group>"; };
 		0B48B1B92C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DpkgListVC+BlankSlate.swift"; sourceTree = "<group>"; };
 		0B48B1C12C22E43B00D21737 /* libroot.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libroot.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		0B48B1D22C22E66300D21737 /* libtwackup.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtwackup.a; path = ../target/libtwackup.a; sourceTree = "<group>"; };
 		0B48B1D42C22E6D600D21737 /* dyn.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = dyn.c; path = src/dyn.c; sourceTree = "<group>"; };
 		0B48B1D52C22E6D600D21737 /* libroot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = libroot.h; path = src/libroot.h; sourceTree = "<group>"; };
 		0B48EF3A2C1EF8E6007C0EC0 /* DatabasePackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackage.swift; sourceTree = "<group>"; };
@@ -181,7 +179,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0B48B1CF2C22E47A00D21737 /* libroot.a in Frameworks */,
-				0B48B1D32C22E68A00D21737 /* libtwackup.a in Frameworks */,
 				0BE87E932C1E05CE009C95A7 /* NukeUI in Frameworks */,
 				C1FF8C5621CC9FEC564B8CCE /* Pods_Twackup.framework in Frameworks */,
 				0BE87E862C1E0166009C95A7 /* Sentry in Frameworks */,
@@ -251,7 +248,6 @@
 			isa = PBXGroup;
 			children = (
 				0B9EB5E1294B8C7700DED54D /* .swiftlint.yml */,
-				0B48B1D22C22E66300D21737 /* libtwackup.a */,
 				0B86CDF82C19AC1A00F3B4A0 /* contrib */,
 				0B8661832930AF4E00EA4301 /* common-include */,
 				0B8661672930ADA300EA4301 /* Twackup */,
@@ -952,13 +948,14 @@
 					"@executable_path/Frameworks",
 					/var/jb/usr/lib,
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
-					/usr/lib/swift,
-					"$(PROJECT_DIR)/../target",
-				);
 				MARKETING_VERSION = 2.0.2;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-framework",
+					"\"StyledTextKit\"",
+					"$(PROJECT_DIR)/../target/libtwackup.a",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1006,13 +1003,14 @@
 					"@executable_path/Frameworks",
 					/var/jb/usr/lib,
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
-					/usr/lib/swift,
-					"$(PROJECT_DIR)/../target",
-				);
 				MARKETING_VERSION = 2.0.2;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-framework",
+					"\"StyledTextKit\"",
+					"$(PROJECT_DIR)/../target/libtwackup.a",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1121,13 +1119,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
-					/usr/lib/swift,
-					"$(PROJECT_DIR)/../target",
-				);
 				MARKETING_VERSION = 2.0.2;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-framework",
+					"\"StyledTextKit\"",
+					"$(PROJECT_DIR)/../target/libtwackup.a",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1231,13 +1230,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
-					/usr/lib/swift,
-					"$(PROJECT_DIR)/../target",
-				);
 				MARKETING_VERSION = 2.0.2;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-framework",
+					"\"StyledTextKit\"",
+					"$(PROJECT_DIR)/../target/libtwackup.a",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1346,13 +1346,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
-					/usr/lib/swift,
-					"$(PROJECT_DIR)/../target",
-				);
 				MARKETING_VERSION = 2.0.2;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-framework",
+					"\"StyledTextKit\"",
+					"$(PROJECT_DIR)/../target/libtwackup.a",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1456,13 +1457,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"${TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}\"",
-					/usr/lib/swift,
-					"$(PROJECT_DIR)/../target",
-				);
 				MARKETING_VERSION = 2.0.2;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-framework",
+					"\"StyledTextKit\"",
+					"$(PROJECT_DIR)/../target/libtwackup.a",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = ru.danpashin.Twackup;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

@@ -38,7 +38,9 @@ class SelectablePackageListVC<P: Package>: PackageListVC<P> {
     override func selectionDidUpdate() {
         super.selectionDidUpdate()
 
-        navigationItem.leftBarButtonItem = dataSource.isAllSelected ? deselectAllBarBtn : selectAllBarBtn
+        if isEditing {
+            navigationItem.leftBarButtonItem = dataSource.isAllSelected ? deselectAllBarBtn : selectAllBarBtn
+        }
     }
 
     override func setEditing(_ editing: Bool, animated: Bool) {
