@@ -5,13 +5,19 @@
 //  Created by Daniil on 09.12.2022.
 //
 
-import DZNEmptyDataSet
 import UIKit
 
-class SelectablePackageListVC: PackageListVC {
+class SelectablePackageListVC<P: Package>: PackageListVC<P> {
     private(set) lazy var selectAllBarBtn: UIBarButtonItem = {
-        let title = "debs-selectall-btn".localized
-        return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionSelectAll))
+        UIBarButtonItem(title: "Select All".localized, primaryAction: UIAction { [self] _ in
+            tableHandler.selectAll(animated: false)
+        })
+    }()
+
+    private(set) lazy var deselectAllBarBtn: UIBarButtonItem = {
+        UIBarButtonItem(title: "Deselect All".localized, primaryAction: UIAction { [self] _ in
+            tableHandler.deselectAll(animated: false)
+        })
     }()
 
     override func viewDidLoad() {
@@ -21,13 +27,18 @@ class SelectablePackageListVC: PackageListVC {
         navigationItem.rightBarButtonItem = editButtonItem
     }
 
-    override func endReloadingData() async {
-        await super.endReloadingData()
+    override func reloadData(animated: Bool, force: Bool) async {
+        await super.reloadData(animated: animated, force: force)
 
-        setEditing(false, animated: true)
+        setEditing(false, animated: animated)
 
-        tableView.reloadEmptyDataSet()
-        editButtonItem.isEnabled = !model.dataProvider.packages.isEmpty
+        editButtonItem.isEnabled = !dataSource.dataProvider.packages.isEmpty
+    }
+
+    override func selectionDidUpdate() {
+        super.selectionDidUpdate()
+
+        navigationItem.leftBarButtonItem = dataSource.isAllSelected ? deselectAllBarBtn : selectAllBarBtn
     }
 
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -35,12 +46,5 @@ class SelectablePackageListVC: PackageListVC {
 
         tableView.setEditing(editing, animated: animated)
         navigationItem.leftBarButtonItem = editing ? selectAllBarBtn : nil
-    }
-
-    // MARK: - Actions
-
-    @objc
-    func actionSelectAll() {
-        model.selectAll()
     }
 }

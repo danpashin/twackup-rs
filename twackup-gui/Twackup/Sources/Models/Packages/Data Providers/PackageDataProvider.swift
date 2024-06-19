@@ -5,28 +5,28 @@
 //  Created by Daniil on 28.11.2022.
 //
 
-class PackageDataProvider: @unchecked Sendable {
+class PackageDataProvider<P: Package>: @unchecked Sendable {
     enum Filter {
         case name(String)
     }
 
-    var packages: [Package] {
+    var packages: [P] {
         guard let filteredPackages else { return allPackages }
         return filteredPackages
     }
 
-    var allPackages: [Package] {
+    @UnfairLockWrap var allPackages: [P] {
         didSet {
             applyFilter(currentFilter)
         }
     }
 
-    private(set) var filteredPackages: [Package]?
+    @UnfairLockWrap private var filteredPackages: [P]?
 
-    private(set) var currentFilter: Filter?
+    @UnfairLockWrap private(set) var currentFilter: Filter?
 
-    init(packages: [Package] = []) {
-        self.allPackages = packages
+    init(packages: [P] = []) {
+        allPackages = packages
     }
 
     func applyFilter(_ filter: Filter?) {
@@ -39,8 +39,11 @@ class PackageDataProvider: @unchecked Sendable {
         filteredPackages = allPackages.filter { package in
             switch filter {
             case .name(let name):
-                return package.name.contains(name)
+                return package.name.localizedCaseInsensitiveContains(name)
             }
         }
+    }
+
+    func reload() async throws {
     }
 }

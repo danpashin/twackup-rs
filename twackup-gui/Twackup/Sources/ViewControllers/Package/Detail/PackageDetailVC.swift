@@ -7,12 +7,12 @@
 
 import UIKit
 
-class PackageDetailVC: UIViewController, PackageDetailViewDelegate {
-    private(set) lazy var detailView = PackageDetailedView(delegate: self)
+class PackageDetailVC<P: Package>: UIViewController, PackageDetailViewDelegate {
+    private(set) lazy var detailView = PackageDetailedView<P>(delegate: self)
 
     let mainModel: MainModel
 
-    var package: Package? {
+    var package: P? {
         didSet {
             navigationItem.title = package?.name
 
@@ -61,8 +61,8 @@ class PackageDetailVC: UIViewController, PackageDetailViewDelegate {
         }
     }
 
-    func openExternalPackageInfo(_ package: Package) {
-        guard let depiction = package.depiction else { return }
+    func openExternalPackageInfo() {
+        guard let depiction = package?.depiction else { return }
         UIApplication.shared.open(depiction)
     }
 }

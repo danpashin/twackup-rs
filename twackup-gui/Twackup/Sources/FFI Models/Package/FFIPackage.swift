@@ -6,6 +6,10 @@
 //
 
 final class FFIPackage: Package, Sendable {
+    static func == (lhs: FFIPackage, rhs: FFIPackage) -> Bool {
+        lhs.id == rhs.id && lhs.version == rhs.version
+    }
+
     private let pkg: TwPackage_t
 
     let id: String
@@ -75,8 +79,9 @@ final class FFIPackage: Package, Sendable {
         tw_package_release(pkg.inner)
     }
 
-    func isEqualTo(_ other: Package) -> Bool {
-        id == other.id && version == other.version
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(version)
     }
 }
 

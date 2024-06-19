@@ -7,41 +7,44 @@
 
 import UIKit
 
-class PackageListVC: UIViewController, PackageListDelegate, ScrollableViewController {
-    private(set) var model: PackageListModel
+class PackageListVC<P: Package>: UIViewController, ScrollableViewController {
+    private(set) lazy var dataSource: PackageListDataSource<P> = configureDataSource()
 
-    private(set) var detail: PackageDetailVC
+    private(set) lazy var tableHandler: PackageListDelegate<P> = configureTableDelegate()
+
+    let mainModel: MainModel
+
+    class var metadata: (any ViewControllerMetadata)? {
+        nil
+    }
+
+    private(set) var detail: PackageDetailVC<P>
 
     override var tabBarItem: UITabBarItem? {
-        get { model.metadata.tabbarItem }
+        get { Self.metadata?.tabbarItem }
         set { }
     }
 
     private(set) lazy var searchController: UISearchController = {
         let controller = UISearchController(searchResultsController: nil)
         controller.obscuresBackgroundDuringPresentation = false
-        controller.searchResultsUpdater = model
+        controller.searchResultsUpdater = dataSource
         controller.searchBar.placeholder = "search-field-lbl".localized
         return controller
     }()
 
     private(set) lazy var tableView: UITableView = {
         let table = UITableView(frame: .zero, style: .insetGrouped)
-        table.delegate = model
-        table.dataSource = model
         table.backgroundColor = .systemGroupedBackground
 
         return table
     }()
 
-    lazy var tableViewLargeReloadingIndicator = UIActivityIndicatorView(style: .large)
-
-    init(model: PackageListModel, detail: PackageDetailVC ) {
-        self.model = model
+    init(mainModel: MainModel, detail: PackageDetailVC<P>) {
+        self.mainModel = mainModel
         self.detail = detail
-        super.init(nibName: nil, bundle: nil)
 
-        model.delegate = self
+        super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
@@ -50,46 +53,50 @@ class PackageListVC: UIViewController, PackageListDelegate, ScrollableViewContro
 
     override func loadView() {
         view = tableView
-        model.tableView = tableView
-        tableView.backgroundView = tableViewLargeReloadingIndicator
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.title = model.metadata.navTitle
+        tableView.dataSource = dataSource
+        tableView.delegate = tableHandler
+
+        let cell = PackageTableViewCell<P>.self
+        tableView.register(cell, forCellReuseIdentifier: String(describing: cell))
+
+        navigationItem.title = Self.metadata?.navTitle
         navigationItem.searchController = searchController
 
+        reloadData(animated: false, force: true)
+    }
+
+    nonisolated func reloadData(animated: Bool, force: Bool) {
         Task {
-            await reloadData()
+            await reloadData(animated: false, force: true)
         }
     }
 
-    func reloadData() async {
-        tableView.reloadData()
-        await endReloadingData()
-    }
+    func reloadData(animated: Bool, force: Bool) async {
+        await dataSource.updateData(animated: animated, force: force)
 
-    func endReloadingData() async {
         tableView.flashScrollIndicators()
-        tableViewLargeReloadingIndicator.stopAnimating()
     }
 
-    func didSelect(items: [PackageListModel.TableViewItem], inEditState: Bool) {
-        guard !inEditState, let item = items.first else { return }
-        guard let detailNav = detail.navigationController else { return }
-
-        if splitViewController?.isCollapsed ?? false {
-            tableView.deselectRow(at: item.indexPath, animated: true)
-        }
-
-        detail.package = item.package
-
-        showDetailViewController(detailNav, sender: nil)
+    func selectionDidUpdate() {
     }
+
+    func configureDataSource() -> PackageListDataSource<P> {
+        fatalError("Must be overritten by child classes")
+    }
+
+    func configureTableDelegate() -> PackageListDelegate<P> {
+        PackageListDelegate(dataSource: dataSource, listController: self)
+    }
+
+    // MARK: - ScrollableViewController
 
     func scrollToInitialPosition(animated: Bool) {
-        if model.dataProvider.packages.isEmpty { return }
+        if dataSource.dataProvider.packages.isEmpty { return }
         tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: animated)
     }
 }

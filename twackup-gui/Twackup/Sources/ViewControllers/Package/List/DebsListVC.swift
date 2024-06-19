@@ -5,46 +5,47 @@
 //  Created by Daniil on 01.12.2022.
 //
 
-class DebsListVC: SelectablePackageListVC, DebsListModelDelegate {
-    private var debsModel: DebsListModel
-    override var model: PackageListModel {
-        get { return debsModel }
-        set { }
+import BlankSlate
+
+final class DebsListVC: SelectablePackageListVC<DebPackage> {
+    override class var metadata: (any ViewControllerMetadata)? {
+        BuildedPkgsMetadata()
     }
 
-    private lazy var removeAllBarBtn: UIBarButtonItem = {
-        let title = "debs-remove-all-btn".localized
-        return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionRemoveAll))
+    var debsDataSource: DebsListDataSource {
+        dataSource as! DebsListDataSource // swiftlint:disable:this force_cast
+    }
+
+    private let databaseProvider: DatabasePackageProvider
+
+    private(set) lazy var removeAllBarBtn: UIBarButtonItem = {
+        UIBarButtonItem(title: "debs-remove-all-btn".localized, primaryAction: UIAction { [self] _ in
+            setEditing(false, animated: true)
+            askAndDelete(packages: databaseProvider.allPackages)
+        })
     }()
 
-    private lazy var removeSelectedBarBtn: UIBarButtonItem = {
-        let title = "debs-remove-selected-btn".localized
-        return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionRemoveSelected))
+    private(set) lazy var removeSelectedBarBtn: UIBarButtonItem = {
+        UIBarButtonItem(title: "debs-remove-selected-btn".localized, primaryAction: UIAction { [self] _ in
+            askAndDelete(packages: dataSource.selected())
+        })
     }()
 
-    private lazy var shareSelectedBarBtn: UIBarButtonItem = {
+    private(set) lazy var shareSelectedBarBtn: UIBarButtonItem = {
         let title = "debs-share-btn".localized
         return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionShareSelected))
     }()
 
     private var reloadObserver: NSObjectProtocol?
 
-    init(model: DebsListModel, detail: PackageDetailVC) {
-        debsModel = model
-        super.init(model: model, detail: detail)
+    override init(mainModel: MainModel, detail: PackageDetailVC<DebPackage>) {
+        databaseProvider = DatabasePackageProvider(mainModel.database)
 
-        debsModel.debsModelDelegate = self
+        super.init(mainModel: mainModel, detail: detail)
 
-        reloadObserver = NotificationCenter.default.addObserver(
-            forName: DebsListModel.NotificationName,
-            object: nil,
-            queue: .current
-        ) { [weak self] _  in
-            guard let self else { return }
-
-            Task {
-                await self.reloadData()
-            }
+        let center = NotificationCenter.default
+        reloadObserver = center.addObserver(forName: .DebsReload, object: nil, queue: .main) { [weak self] _ in
+            self?.reloadData(animated: true, force: true)
         }
     }
 
@@ -58,36 +59,42 @@ class DebsListVC: SelectablePackageListVC, DebsListModelDelegate {
         }
     }
 
-    override func reloadData() async {
-        try? await debsModel.debsProvider.reload()
-        await super.reloadData()
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        tableView.bs.dataSource = self
     }
 
-    override func didSelect(items: [PackageListModel.TableViewItem], inEditState: Bool) {
-        super.didSelect(items: items, inEditState: inEditState)
+    override func selectionDidUpdate() {
+        super.selectionDidUpdate()
 
-        if inEditState {
-            shareSelectedBarBtn.isEnabled = !items.isEmpty
+        if isEditing {
+            let isAnySelected = dataSource.isAnySelected
 
+            shareSelectedBarBtn.isEnabled = isAnySelected
             guard var buttons = toolbarItems, !buttons.isEmpty else { return }
-            buttons[0] = items.isEmpty ? removeAllBarBtn : removeSelectedBarBtn
+            buttons[0] = isAnySelected ? removeSelectedBarBtn : removeAllBarBtn
             setToolbarItems(buttons, animated: false)
         }
     }
 
-    @objc
-    func actionShareSelected(_ button: UIBarButtonItem) {
-        let debURLS: [URL] = model.selectedItems.compactMap { item in
-            guard let package = item.package.asDEB else { return nil }
-            return package.fileURL
+    override func configureDataSource() -> PackageListDataSource<DebPackage> {
+        let cell = DebTableViewCell.self
+        let cellID = String(describing: cell)
+        tableView.register(cell, forCellReuseIdentifier: cellID)
+
+        return DebsListDataSource(tableView: tableView, dataProvider: databaseProvider) { table, indexPath, package in
+            let cell = table.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
+            if let cell = cell as? DebTableViewCell {
+                cell.package = package
+            }
+
+            return cell
         }
+    }
 
-        if debURLS.isEmpty { return }
-
-        let activityVC = UIActivityViewController(activityItems: debURLS, applicationActivities: nil)
-        activityVC.popoverPresentationController?.barButtonItem = button
-
-        present(activityVC, animated: true, completion: nil)
+    override func configureTableDelegate() -> PackageListDelegate<DebPackage> {
+        DebsListDelegate(dataSource: debsDataSource, listController: self)
     }
 
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -96,59 +103,37 @@ class DebsListVC: SelectablePackageListVC, DebsListModelDelegate {
         if editing {
             shareSelectedBarBtn.isEnabled = false
 
-            setToolbarItems([
-                removeAllBarBtn,
-                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-                shareSelectedBarBtn
-            ], animated: false)
+            let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+            setToolbarItems([removeAllBarBtn, spacer, shareSelectedBarBtn], animated: false)
         }
 
         navigationController?.setToolbarHidden(!editing, animated: animated)
     }
 
-    @objc
-    func actionRemoveSelected() {
-        guard let indexPaths = tableView.indexPathsForSelectedRows else { return }
-        Task {
-            if await debsModel.debsProvider.deletePackages(at: indexPaths.map({ $0.row })) {
-                tableView.deleteRows(at: indexPaths, with: .automatic)
-                await endReloadingData()
-            }
-        }
-    }
+    // MARK: - Actions
 
     @objc
-    func actionRemoveAll() {
-        setEditing(false, animated: true)
+    func actionShareSelected(_ button: UIBarButtonItem) {
+        let debURLS = dataSource.selected().map { $0.fileURL }
+        if debURLS.isEmpty { return }
 
-        var indexPaths: [IndexPath] = []
-        for row in 0..<debsModel.dataProvider.packages.count {
-            indexPaths.append(IndexPath(row: row, section: 0))
-        }
+        let activityVC = UIActivityViewController(activityItems: debURLS, applicationActivities: nil)
+        activityVC.popoverPresentationController?.barButtonItem = button
 
-        Task {
-            if await debsModel.debsProvider.deletePackages(at: indexPaths.map({ $0.row })) {
-                tableView.deleteRows(at: indexPaths, with: .automatic)
-                await endReloadingData()
-            }
-        }
+        present(activityVC, animated: true, completion: nil)
     }
 
-    // MARK: - DebsListModelDelegate
-
-    func debsModel(
-        _ debsModel: DebsListModel,
-        didRecieveDebRemoveChallenge package: DebPackage,
-        completion: @escaping (_ allow: Bool) -> Void
-    ) {
+    func askAndDelete(packages: [DebPackage]) {
         let alert = UIAlertController(
             title: "deb-remove-alert-title".localized,
             message: "deb-remove-alert-subtitle".localized,
             preferredStyle: .alert
         )
 
-        alert.addAction(UIAlertAction(title: "deb-remove-alert-ok".localized, style: .destructive) { _ in
-            completion(true)
+        alert.addAction(UIAlertAction(title: "deb-remove-alert-ok".localized, style: .destructive) { [self] _ in
+            Task {
+                await debsDataSource.delete(packages: packages)
+            }
         })
 
         alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))

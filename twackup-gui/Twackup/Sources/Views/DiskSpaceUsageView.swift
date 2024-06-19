@@ -41,12 +41,10 @@ class DiskSpaceUsageView: UIView {
 
         chart.set(items: [appItem, deviceItem, totalItem])
 
-        reloadObserver = NotificationCenter.default.addObserver(
-            forName: DebsListModel.NotificationName,
-            object: nil,
-            queue: .main
-        ) { [weak self] _  in
+        let center = NotificationCenter.default
+        reloadObserver = center.addObserver(forName: .DebsReload, object: nil, queue: .main) { [weak self] _  in
             guard let self else { return }
+
             Task {
                 await self.update()
             }

@@ -6,7 +6,7 @@
 //
 
 /// An abstract class, describing Debian package format
-protocol Package: AnyObject {
+protocol Package: AnyObject, Equatable, Hashable, Sendable {
     /// Unique package identifier
     var id: String { get }
 
@@ -41,20 +41,8 @@ protocol Package: AnyObject {
 
     /// The approximate total size of the package's installed files
     var installedSize: Int64 { get }
-
-    func isEqualTo(_ other: Package) -> Bool
 }
 
-extension Package {
-    /// Casts self as FFIPackage class
-    var asFFI: FFIPackage? { self as? FFIPackage }
-
-    /// Casts self as DebPackage class
-    var asDEB: DebPackage? { self as? DebPackage }
-}
-
-extension Package {
-    func isEqualTo(_ other: Package) -> Bool {
-        id == other.id && version == other.version
-    }
+extension Notification.Name {
+    static let DebsReload = Self("twackup/reloadDEBS")
 }

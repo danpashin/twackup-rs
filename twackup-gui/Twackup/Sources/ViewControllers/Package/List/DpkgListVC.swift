@@ -5,24 +5,46 @@
 //  Created by Daniil on 09.12.2022.
 //
 
-class DpkgListVC: SelectablePackageListVC {
-    let dpkgModel: DpkgListModel
+import BlankSlate
 
-    private var rebuildHUD: Hud?
+class DpkgListVC: SelectablePackageListVC<FFIPackage> {
+    override class var metadata: (any ViewControllerMetadata)? {
+        AllPkgsMetadata()
+    }
+
+    let dpkgProvider: DpkgDataProvier
 
     private lazy var rebuildAllBarBtn: UIBarButtonItem = {
         let title = "debs-rebuildall-btn".localized
-        return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionRebuildAll))
+        return UIBarButtonItem(title: title, primaryAction: UIAction { [self] _ in
+            setEditing(false, animated: true)
+            rebuild(packages: dataSource.dataProvider.packages)
+        })
     }()
 
     private lazy var rebuildSelectedBarBtn: UIBarButtonItem = {
         let title = "debs-rebuildselected-btn".localized
-        return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionRebuildSelected))
+        return UIBarButtonItem(title: title, primaryAction: UIAction { [self] _ in
+            rebuild(packages: dataSource.selected())
+        })
     }()
 
-    init(model: DpkgListModel, detail: PackageDetailVC) {
-        dpkgModel = model
-        super.init(model: model, detail: detail)
+    private lazy var refreshControl: UIRefreshControl = {
+        let refresh = UIRefreshControl()
+        refresh.addAction(UIAction { [self] _ in
+            refresh.beginRefreshing()
+            Task {
+                await reloadData(animated: false, force: true)
+            }
+        }, for: .valueChanged)
+
+        return refresh
+    }()
+
+    init(mainModel: MainModel, detail: PackageDetailVC<FFIPackage>, leaves: Bool = false) {
+        dpkgProvider = DpkgDataProvier(mainModel.dpkg, leaves: leaves)
+
+        super.init(mainModel: mainModel, detail: detail)
     }
 
     required init?(coder: NSCoder) {
@@ -32,32 +54,25 @@ class DpkgListVC: SelectablePackageListVC {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let refresh = UIRefreshControl()
-        refresh.addTarget(self, action: #selector(actionRefresh), for: .valueChanged)
-
-        tableView.refreshControl = refresh
+        tableView.refreshControl = refreshControl
+        tableView.bs.dataSource = self
     }
 
-    override func reloadData() async {
-        await dpkgModel.dpkgProvider.reload()
-        await super.reloadData()
-    }
-
-    override func endReloadingData() async {
-        await super.endReloadingData()
+    override func reloadData(animated: Bool, force: Bool) async {
+        await super.reloadData(animated: animated, force: force)
 
         // Twackup parses database so quick that user can think it is not working as he expects
         // That's why there's half-of-a-second delay
         try? await Task.sleep(nanoseconds: 500 * 1_000_000)
-        tableView.refreshControl?.endRefreshing()
+        refreshControl.endRefreshing()
     }
 
-    override func didSelect(items: [PackageListModel.TableViewItem], inEditState: Bool) {
-        super.didSelect(items: items, inEditState: inEditState)
+    override func selectionDidUpdate() {
+        super.selectionDidUpdate()
 
-        if inEditState {
+        if isEditing {
             guard var buttons = toolbarItems, !buttons.isEmpty else { return }
-            buttons[0] = items.isEmpty ? rebuildAllBarBtn : rebuildSelectedBarBtn
+            buttons[0] = dataSource.isAnySelected ? rebuildSelectedBarBtn : rebuildAllBarBtn
             setToolbarItems(buttons, animated: false)
         }
     }
@@ -69,59 +84,48 @@ class DpkgListVC: SelectablePackageListVC {
 
         if editing {
             setToolbarItems([rebuildAllBarBtn], animated: false)
-        } else {
-            navigationItem.leftBarButtonItem = nil
         }
 
         navigationController?.setToolbarHidden(!editing, animated: animated)
     }
 
-    @objc
-    func actionRebuildSelected() {
-        rebuild(packages: model.selectedItems.map { $0.package })
-    }
-
-    @objc
-    func actionRebuildAll() {
-        setEditing(false, animated: true)
-
-        rebuild(packages: model.dataProvider.packages)
-    }
-
-    @objc
-    func actionRefresh() {
-        Task(priority: .userInitiated) {
-            tableView.refreshControl?.beginRefreshing()
-            await reloadData()
-        }
-    }
-
-    func rebuild(packages: [Package]) {
-        guard !packages.isEmpty else { return }
-
-        rebuildHUD = Hud.show()
-        rebuildHUD?.text = "rebuild-packages-status-title".localized
-        rebuildHUD?.style = .arcRotate
-
-        Task(priority: .medium) {
-            let rebuilder = PackagesRebuilder(mainModel: model.mainModel) { progress in
-                Task {
-                    await self.updateProgress(progress)
-                }
+    override func configureDataSource() -> PackageListDataSource<FFIPackage> {
+        DpkgListDataSource(tableView: tableView, dataProvider: dpkgProvider) { tableView, indexPath, package in
+            let cellID = String(describing: PackageTableViewCell<FFIPackage>.self)
+            let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
+            if let cell = cell as? PackageTableViewCell<FFIPackage> {
+                cell.package = package
             }
 
-            let packages = packages.compactMap { $0 as? FFIPackage }
-            await rebuilder.rebuild(packages: packages)
+            return cell
         }
     }
 
-    func updateProgress(_ progress: Progress) {
+    override func configureTableDelegate() -> PackageListDelegate<FFIPackage> {
+        DpkgListDelegate(dataSource: dataSource, listController: self)
+    }
+
+    func rebuild(packages: [FFIPackage]) {
+        guard !packages.isEmpty else { return }
+
         let hud = Hud.show()
-        hud?.detailedText = String(
-            format: "rebuild-packages-status".localized,
-            progress.completedUnitCount,
-            progress.totalUnitCount,
-            Int(progress.fractionCompleted * 100)
-        )
+        hud?.text = "rebuild-packages-status-title".localized
+        hud?.style = .arcRotate
+
+        let rebuilder = PackagesRebuilder(mainModel: mainModel) { progress in
+            Task { @MainActor in
+                hud?.detailedText = String(
+                    format: "rebuild-packages-status".localized,
+                    progress.completedUnitCount,
+                    progress.totalUnitCount,
+                    Int(progress.fractionCompleted * 100)
+                )
+            }
+        }
+
+        Task {
+            await rebuilder.rebuild(packages: packages)
+            await hud?.hide()
+        }
     }
 }

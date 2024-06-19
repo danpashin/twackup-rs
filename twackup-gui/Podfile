@@ -2,7 +2,6 @@ target "Twackup" do
   platform :ios, "14.0"
   use_frameworks! :linkage => :static
 
-  pod "DZNEmptyDataSet"
   pod "StyledTextKit"
 
   post_install do |installer|

@@ -19,8 +19,18 @@
 		0B434F9A2935E29300311FB6 /* DpkgDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F992935E29300311FB6 /* DpkgDetailVC.swift */; };
 		0B434F9C2935E90000311FB6 /* DatabaseDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F9B2935E90000311FB6 /* DatabaseDetailVC.swift */; };
 		0B434F9E2935E97200311FB6 /* DatabasePackageDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F9D2935E97200311FB6 /* DatabasePackageDetailedView.swift */; };
-		0B463A9B29389EBB00021EF7 /* DebsListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B463A9A29389EBB00021EF7 /* DebsListModel.swift */; };
+		0B48B1B62C21B40000D21737 /* BlankSlate in Frameworks */ = {isa = PBXBuildFile; productRef = 0B48B1B52C21B40000D21737 /* BlankSlate */; };
+		0B48B1B82C22B04600D21737 /* DebsListVC+BlankSlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B1B72C22B04600D21737 /* DebsListVC+BlankSlate.swift */; };
+		0B48B1BA2C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B1B92C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift */; };
 		0B48EF3B2C1EF8E6007C0EC0 /* DatabasePackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3A2C1EF8E6007C0EC0 /* DatabasePackage.swift */; };
+		0B48EF3D2C1F488A007C0EC0 /* Sequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3C2C1F488A007C0EC0 /* Sequence.swift */; };
+		0B48EF3F2C1F4F87007C0EC0 /* UnfairLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF3E2C1F4F87007C0EC0 /* UnfairLock.swift */; };
+		0B48EF412C200C3E007C0EC0 /* PackageListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF402C200C3E007C0EC0 /* PackageListDataSource.swift */; };
+		0B48EF432C200C50007C0EC0 /* PackageListDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF422C200C50007C0EC0 /* PackageListDelegate.swift */; };
+		0B48EF462C200D63007C0EC0 /* DebsListDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF452C200D63007C0EC0 /* DebsListDelegate.swift */; };
+		0B48EF482C200DA6007C0EC0 /* DebsListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF472C200DA6007C0EC0 /* DebsListDataSource.swift */; };
+		0B48EF4A2C201947007C0EC0 /* DpkgListDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF492C201947007C0EC0 /* DpkgListDelegate.swift */; };
+		0B48EF4C2C201980007C0EC0 /* DpkgListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48EF4B2C201980007C0EC0 /* DpkgListDataSource.swift */; };
 		0B50FF6E2949B80900CF4BCF /* CapacityBarLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B50FF6D2949B80900CF4BCF /* CapacityBarLabel.swift */; };
 		0B50FF702949B82900CF4BCF /* CapacityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B50FF6F2949B82900CF4BCF /* CapacityView.swift */; };
 		0B50FF722949EA7700CF4BCF /* DiskStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B50FF712949EA7700CF4BCF /* DiskStats.swift */; };
@@ -28,8 +38,6 @@
 		0B5B328C2943827500B51274 /* PackagesRebuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5B328B2943827500B51274 /* PackagesRebuilder.swift */; };
 		0B5B332B294DA9F00097398F /* MainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5B332A294DA9F00097398F /* MainModel.swift */; };
 		0B5B332D294DB55B0097398F /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5B332C294DB55B0097398F /* NavigationController.swift */; };
-		0B5B332F294DB7770097398F /* InstalledPackagesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5B332E294DB7770097398F /* InstalledPackagesModel.swift */; };
-		0B5B3331294DB8510097398F /* LeavesPackagesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5B3330294DB8510097398F /* LeavesPackagesModel.swift */; };
 		0B5D3F972934CB2C00AE50F2 /* PackageDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F962934CB2C00AE50F2 /* PackageDataProvider.swift */; };
 		0B5D3F9A2934D0C300AE50F2 /* Twackup.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F982934D0C300AE50F2 /* Twackup.xcdatamodeld */; };
 		0B5D3F9C2934D2EB00AE50F2 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D3F9B2934D2EB00AE50F2 /* Database.swift */; };
@@ -52,19 +60,15 @@
 		0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3062930B2FB00BA5312 /* PackageSection.swift */; };
 		0B88C30B2930B58D00BA5312 /* PackageDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C30A2930B58D00BA5312 /* PackageDetailVC.swift */; };
 		0B88C30D2930B88800BA5312 /* PackageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */; };
-		0B88C3152930CE2E00BA5312 /* PackageListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3142930CE2E00BA5312 /* PackageListModel.swift */; };
 		0B88C3172930CE3900BA5312 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C3162930CE3900BA5312 /* Metadata.swift */; };
 		0B88C31C2930DE8C00BA5312 /* KeyValueLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C31B2930DE8C00BA5312 /* KeyValueLabelView.swift */; };
 		0B88C31E2930DEA200BA5312 /* PackageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B88C31D2930DEA200BA5312 /* PackageDetailView.swift */; };
 		0BAAD99729388D310089C8FB /* DebsListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAAD99629388D310089C8FB /* DebsListVC.swift */; };
 		0BAAD99C293893EF0089C8FB /* DpkgDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAAD99B293893EF0089C8FB /* DpkgDataProvider.swift */; };
-		0BAC44D429562BDE0038074C /* DebsListModel+DZNEmptyDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAC44D329562BDE0038074C /* DebsListModel+DZNEmptyDataSet.swift */; };
-		0BAC44D629562C6B0038074C /* DpkgListModel+DZNEmptyDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAC44D529562C6B0038074C /* DpkgListModel+DZNEmptyDataSet.swift */; };
-		0BAC44D92956EFCB0038074C /* LogViewController+DZNEmptyDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAC44D82956EFCB0038074C /* LogViewController+DZNEmptyDataSet.swift */; };
+		0BAC44D92956EFCB0038074C /* LogViewController+BlankSlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAC44D82956EFCB0038074C /* LogViewController+BlankSlate.swift */; };
 		0BB369E52952EF6B004AAFFF /* ScrollableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB369E42952EF6B004AAFFF /* ScrollableViewController.swift */; };
 		0BBD2FDF2C1C67D500438457 /* DpkgProgressNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BBD2FDE2C1C67D500438457 /* DpkgProgressNotifier.swift */; };
 		0BE2E0B22C1B346B00CADFE3 /* SwiftConversions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE2E0B12C1B346B00CADFE3 /* SwiftConversions.swift */; };
-		0BE78040294DC60C00AE77CE /* DpkgListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE7803F294DC60C00AE77CE /* DpkgListModel.swift */; };
 		0BE87E862C1E0166009C95A7 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE87E852C1E0166009C95A7 /* Sentry */; };
 		0BE87E902C1E0565009C95A7 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE87E8F2C1E0565009C95A7 /* Result.swift */; };
 		0BE87E932C1E05CE009C95A7 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE87E922C1E05CE009C95A7 /* NukeUI */; };
@@ -95,8 +99,17 @@
 		0B434F9B2935E90000311FB6 /* DatabaseDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseDetailVC.swift; sourceTree = "<group>"; };
 		0B434F9D2935E97200311FB6 /* DatabasePackageDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackageDetailedView.swift; sourceTree = "<group>"; };
 		0B434FA02936351700311FB6 /* twackup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = twackup.h; path = ../target/twackup.h; sourceTree = "<group>"; };
-		0B463A9A29389EBB00021EF7 /* DebsListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebsListModel.swift; sourceTree = "<group>"; };
+		0B48B1B72C22B04600D21737 /* DebsListVC+BlankSlate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebsListVC+BlankSlate.swift"; sourceTree = "<group>"; };
+		0B48B1B92C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DpkgListVC+BlankSlate.swift"; sourceTree = "<group>"; };
 		0B48EF3A2C1EF8E6007C0EC0 /* DatabasePackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackage.swift; sourceTree = "<group>"; };
+		0B48EF3C2C1F488A007C0EC0 /* Sequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sequence.swift; sourceTree = "<group>"; };
+		0B48EF3E2C1F4F87007C0EC0 /* UnfairLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnfairLock.swift; sourceTree = "<group>"; };
+		0B48EF402C200C3E007C0EC0 /* PackageListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageListDataSource.swift; sourceTree = "<group>"; };
+		0B48EF422C200C50007C0EC0 /* PackageListDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageListDelegate.swift; sourceTree = "<group>"; };
+		0B48EF452C200D63007C0EC0 /* DebsListDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebsListDelegate.swift; sourceTree = "<group>"; };
+		0B48EF472C200DA6007C0EC0 /* DebsListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebsListDataSource.swift; sourceTree = "<group>"; };
+		0B48EF492C201947007C0EC0 /* DpkgListDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgListDelegate.swift; sourceTree = "<group>"; };
+		0B48EF4B2C201980007C0EC0 /* DpkgListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgListDataSource.swift; sourceTree = "<group>"; };
 		0B50FF6D2949B80900CF4BCF /* CapacityBarLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapacityBarLabel.swift; sourceTree = "<group>"; };
 		0B50FF6F2949B82900CF4BCF /* CapacityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapacityView.swift; sourceTree = "<group>"; };
 		0B50FF712949EA7700CF4BCF /* DiskStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskStats.swift; sourceTree = "<group>"; };
@@ -104,8 +117,6 @@
 		0B5B328B2943827500B51274 /* PackagesRebuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagesRebuilder.swift; sourceTree = "<group>"; };
 		0B5B332A294DA9F00097398F /* MainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainModel.swift; sourceTree = "<group>"; };
 		0B5B332C294DB55B0097398F /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
-		0B5B332E294DB7770097398F /* InstalledPackagesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstalledPackagesModel.swift; sourceTree = "<group>"; };
-		0B5B3330294DB8510097398F /* LeavesPackagesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeavesPackagesModel.swift; sourceTree = "<group>"; };
 		0B5D3F962934CB2C00AE50F2 /* PackageDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageDataProvider.swift; sourceTree = "<group>"; };
 		0B5D3F992934D0C300AE50F2 /* DBPackage.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DBPackage.xcdatamodel; sourceTree = "<group>"; };
 		0B5D3F9B2934D2EB00AE50F2 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
@@ -131,7 +142,6 @@
 		0B88C3062930B2FB00BA5312 /* PackageSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageSection.swift; sourceTree = "<group>"; };
 		0B88C30A2930B58D00BA5312 /* PackageDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageDetailVC.swift; sourceTree = "<group>"; };
 		0B88C30C2930B88800BA5312 /* PackageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageTableViewCell.swift; sourceTree = "<group>"; };
-		0B88C3142930CE2E00BA5312 /* PackageListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageListModel.swift; sourceTree = "<group>"; };
 		0B88C3162930CE3900BA5312 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		0B88C31B2930DE8C00BA5312 /* KeyValueLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueLabelView.swift; sourceTree = "<group>"; };
 		0B88C31D2930DEA200BA5312 /* PackageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageDetailView.swift; sourceTree = "<group>"; };
@@ -139,13 +149,10 @@
 		0BAAD9952937BE840089C8FB /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Bridging-Header.h"; path = "Twackup/Bridging-Header.h"; sourceTree = "<group>"; };
 		0BAAD99629388D310089C8FB /* DebsListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebsListVC.swift; sourceTree = "<group>"; };
 		0BAAD99B293893EF0089C8FB /* DpkgDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgDataProvider.swift; sourceTree = "<group>"; };
-		0BAC44D329562BDE0038074C /* DebsListModel+DZNEmptyDataSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebsListModel+DZNEmptyDataSet.swift"; sourceTree = "<group>"; };
-		0BAC44D529562C6B0038074C /* DpkgListModel+DZNEmptyDataSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DpkgListModel+DZNEmptyDataSet.swift"; sourceTree = "<group>"; };
-		0BAC44D82956EFCB0038074C /* LogViewController+DZNEmptyDataSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogViewController+DZNEmptyDataSet.swift"; sourceTree = "<group>"; };
+		0BAC44D82956EFCB0038074C /* LogViewController+BlankSlate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogViewController+BlankSlate.swift"; sourceTree = "<group>"; };
 		0BB369E42952EF6B004AAFFF /* ScrollableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollableViewController.swift; sourceTree = "<group>"; };
 		0BBD2FDE2C1C67D500438457 /* DpkgProgressNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgProgressNotifier.swift; sourceTree = "<group>"; };
 		0BE2E0B12C1B346B00CADFE3 /* SwiftConversions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftConversions.swift; sourceTree = "<group>"; };
-		0BE7803F294DC60C00AE77CE /* DpkgListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DpkgListModel.swift; sourceTree = "<group>"; };
 		0BE87E8F2C1E0565009C95A7 /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		0BE87E942C1E2214009C95A7 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		0BE87E962C1E23A2009C95A7 /* Hud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hud.swift; sourceTree = "<group>"; };
@@ -172,6 +179,7 @@
 				0BE87E932C1E05CE009C95A7 /* NukeUI in Frameworks */,
 				C1FF8C5621CC9FEC564B8CCE /* Pods_Twackup.framework in Frameworks */,
 				0BE87E862C1E0166009C95A7 /* Sentry in Frameworks */,
+				0B48B1B62C21B40000D21737 /* BlankSlate in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,6 +203,8 @@
 				0B0DBB6E2934FA58002F3BB2 /* String.swift */,
 				0B86CDCC2C199FA500F3B4A0 /* Jailbreaks.swift */,
 				0BE87E8F2C1E0565009C95A7 /* Result.swift */,
+				0B48EF3C2C1F488A007C0EC0 /* Sequence.swift */,
+				0B48EF3E2C1F4F87007C0EC0 /* UnfairLock.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -206,6 +216,19 @@
 				0B2636E02948B887003EA806 /* Compression.swift */,
 			);
 			path = Preferences;
+			sourceTree = "<group>";
+		};
+		0B48EF442C200CA7007C0EC0 /* UI Models */ = {
+			isa = PBXGroup;
+			children = (
+				0B48EF402C200C3E007C0EC0 /* PackageListDataSource.swift */,
+				0B48EF422C200C50007C0EC0 /* PackageListDelegate.swift */,
+				0B48EF472C200DA6007C0EC0 /* DebsListDataSource.swift */,
+				0B48EF452C200D63007C0EC0 /* DebsListDelegate.swift */,
+				0B48EF4B2C201980007C0EC0 /* DpkgListDataSource.swift */,
+				0B48EF492C201947007C0EC0 /* DpkgListDelegate.swift */,
+			);
+			path = "UI Models";
 			sourceTree = "<group>";
 		};
 		0B50FF6C2949B7F500CF4BCF /* Capacity */ = {
@@ -277,7 +300,7 @@
 			children = (
 				0B86616C2930ADA300EA4301 /* MainTabbarController.swift */,
 				0BF07A6329433BE100EEC8FC /* LogViewController.swift */,
-				0BAC44D82956EFCB0038074C /* LogViewController+DZNEmptyDataSet.swift */,
+				0BAC44D82956EFCB0038074C /* LogViewController+BlankSlate.swift */,
 				0BF07A4F2941027800EEC8FC /* SplitController.swift */,
 				0BB369E42952EF6B004AAFFF /* ScrollableViewController.swift */,
 				0B5B332C294DB55B0097398F /* NavigationController.swift */,
@@ -363,13 +386,7 @@
 			isa = PBXGroup;
 			children = (
 				0B0DBB71293501DE002F3BB2 /* Package.swift */,
-				0B88C3142930CE2E00BA5312 /* PackageListModel.swift */,
-				0BE7803F294DC60C00AE77CE /* DpkgListModel.swift */,
-				0BAC44D529562C6B0038074C /* DpkgListModel+DZNEmptyDataSet.swift */,
-				0B5B332E294DB7770097398F /* InstalledPackagesModel.swift */,
-				0B5B3330294DB8510097398F /* LeavesPackagesModel.swift */,
-				0B463A9A29389EBB00021EF7 /* DebsListModel.swift */,
-				0BAC44D329562BDE0038074C /* DebsListModel+DZNEmptyDataSet.swift */,
+				0B48EF442C200CA7007C0EC0 /* UI Models */,
 				0B88C3162930CE3900BA5312 /* Metadata.swift */,
 				0B5B328B2943827500B51274 /* PackagesRebuilder.swift */,
 				0BAAD99A293893CB0089C8FB /* Data Providers */,
@@ -427,7 +444,9 @@
 				0B86617C2930AE5E00EA4301 /* PackageListVC.swift */,
 				0BF07A652943537A00EEC8FC /* SelectablePackageListVC.swift */,
 				0BAAD99629388D310089C8FB /* DebsListVC.swift */,
+				0B48B1B72C22B04600D21737 /* DebsListVC+BlankSlate.swift */,
 				0BF07A67294354E800EEC8FC /* DpkgListVC.swift */,
+				0B48B1B92C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift */,
 				0B85ABB2294C712A00B6C5CF /* LeavesListVC.swift */,
 			);
 			path = List;
@@ -495,6 +514,7 @@
 			packageProductDependencies = (
 				0BE87E852C1E0166009C95A7 /* Sentry */,
 				0BE87E922C1E05CE009C95A7 /* NukeUI */,
+				0B48B1B52C21B40000D21737 /* BlankSlate */,
 			);
 			productName = Twackup;
 			productReference = 0B8661652930ADA300EA4301 /* Twackup.app */;
@@ -528,6 +548,7 @@
 			packageReferences = (
 				0BE87E842C1E0166009C95A7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				0BE87E912C1E05CE009C95A7 /* XCRemoteSwiftPackageReference "Nuke" */,
+				0B48B1B42C21B40000D21737 /* XCRemoteSwiftPackageReference "BlankSlate" */,
 			);
 			productRefGroup = 0B8661662930ADA300EA4301 /* Products */;
 			projectDirPath = "";
@@ -601,17 +622,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0B5B3331294DB8510097398F /* LeavesPackagesModel.swift in Sources */,
-				0BE78040294DC60C00AE77CE /* DpkgListModel.swift in Sources */,
 				0BF07A68294354E800EEC8FC /* DpkgListVC.swift in Sources */,
 				0B86618B2930AF7100EA4301 /* FFIPackage.swift in Sources */,
 				0BAAD99C293893EF0089C8FB /* DpkgDataProvider.swift in Sources */,
-				0BAC44D92956EFCB0038074C /* LogViewController+DZNEmptyDataSet.swift in Sources */,
+				0B48EF412C200C3E007C0EC0 /* PackageListDataSource.swift in Sources */,
+				0BAC44D92956EFCB0038074C /* LogViewController+BlankSlate.swift in Sources */,
+				0B48B1BA2C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift in Sources */,
 				0B32B17E2954426D008E2F33 /* CopyableLabel.swift in Sources */,
 				0B88C30B2930B58D00BA5312 /* PackageDetailVC.swift in Sources */,
 				0B434F9A2935E29300311FB6 /* DpkgDetailVC.swift in Sources */,
 				0B86617D2930AE5E00EA4301 /* PackageListVC.swift in Sources */,
-				0BAC44D429562BDE0038074C /* DebsListModel+DZNEmptyDataSet.swift in Sources */,
 				0B86618A2930AF7100EA4301 /* Dpkg.swift in Sources */,
 				0BAAD99729388D310089C8FB /* DebsListVC.swift in Sources */,
 				0B88C30D2930B88800BA5312 /* PackageTableViewCell.swift in Sources */,
@@ -621,15 +641,14 @@
 				0BF07A6429433BE100EEC8FC /* LogViewController.swift in Sources */,
 				0BE87E902C1E0565009C95A7 /* Result.swift in Sources */,
 				0BB369E52952EF6B004AAFFF /* ScrollableViewController.swift in Sources */,
-				0B5B332F294DB7770097398F /* InstalledPackagesModel.swift in Sources */,
-				0B463A9B29389EBB00021EF7 /* DebsListModel.swift in Sources */,
 				0B50FF722949EA7700CF4BCF /* DiskStats.swift in Sources */,
 				0B5D3F9C2934D2EB00AE50F2 /* Database.swift in Sources */,
 				0B86CDA82C18D8F000F3B4A0 /* ConsoleLogger.swift in Sources */,
 				0B88C31E2930DEA200BA5312 /* PackageDetailView.swift in Sources */,
 				0B85ABB7294C8E4C00B6C5CF /* DetailedLabelSUI.swift in Sources */,
 				0B86CDCD2C199FA500F3B4A0 /* Jailbreaks.swift in Sources */,
-				0B88C3152930CE2E00BA5312 /* PackageListModel.swift in Sources */,
+				0B48EF482C200DA6007C0EC0 /* DebsListDataSource.swift in Sources */,
+				0B48EF4A2C201947007C0EC0 /* DpkgListDelegate.swift in Sources */,
 				0B0DBB6F2934FA58002F3BB2 /* String.swift in Sources */,
 				0B50FF6E2949B80900CF4BCF /* CapacityBarLabel.swift in Sources */,
 				0B5B328C2943827500B51274 /* PackagesRebuilder.swift in Sources */,
@@ -639,19 +658,24 @@
 				0BE87E992C1E23A2009C95A7 /* HudCircularProgressView.swift in Sources */,
 				0B86616D2930ADA300EA4301 /* MainTabbarController.swift in Sources */,
 				0B50FF702949B82900CF4BCF /* CapacityView.swift in Sources */,
+				0B48B1B82C22B04600D21737 /* DebsListVC+BlankSlate.swift in Sources */,
 				0B6BB2F1294A599D001E3B43 /* ProxiedObservedObject.swift in Sources */,
 				0B2636E62948B92E003EA806 /* SettingsViewController.swift in Sources */,
 				0B88C3072930B2FB00BA5312 /* PackageSection.swift in Sources */,
 				0B434F982935DEFA00311FB6 /* RebuildPackageDetailedView.swift in Sources */,
 				0B8661692930ADA300EA4301 /* AppDelegate.swift in Sources */,
+				0B48EF462C200D63007C0EC0 /* DebsListDelegate.swift in Sources */,
 				0B85ABB3294C712A00B6C5CF /* LeavesListVC.swift in Sources */,
+				0B48EF4C2C201980007C0EC0 /* DpkgListDataSource.swift in Sources */,
 				0BF07A62294335F700EEC8FC /* FFILogger.swift in Sources */,
 				0B434F9C2935E90000311FB6 /* DatabaseDetailVC.swift in Sources */,
 				0BF07A662943537A00EEC8FC /* SelectablePackageListVC.swift in Sources */,
 				0B2636E12948B887003EA806 /* Compression.swift in Sources */,
 				0B0F22C7293CA01E002128EA /* DebPackageObject.swift in Sources */,
 				0B5B332D294DB55B0097398F /* NavigationController.swift in Sources */,
+				0B48EF3D2C1F488A007C0EC0 /* Sequence.swift in Sources */,
 				0B5D3F9E2934D85500AE50F2 /* DatabasePackageProvider.swift in Sources */,
+				0B48EF3F2C1F4F87007C0EC0 /* UnfairLock.swift in Sources */,
 				0BF07A502941027800EEC8FC /* SplitController.swift in Sources */,
 				0B88C31C2930DE8C00BA5312 /* KeyValueLabelView.swift in Sources */,
 				0B85ABB5294C80B200B6C5CF /* DebTableViewCell.swift in Sources */,
@@ -661,7 +685,7 @@
 				0B48EF3B2C1EF8E6007C0EC0 /* DatabasePackage.swift in Sources */,
 				0BE2E0B22C1B346B00CADFE3 /* SwiftConversions.swift in Sources */,
 				0B5D3F9A2934D0C300AE50F2 /* Twackup.xcdatamodeld in Sources */,
-				0BAC44D629562C6B0038074C /* DpkgListModel+DZNEmptyDataSet.swift in Sources */,
+				0B48EF432C200C50007C0EC0 /* PackageListDelegate.swift in Sources */,
 				0B86CDF92C19AC4E00F3B4A0 /* dyn.c in Sources */,
 				0B0DBB72293501DE002F3BB2 /* Package.swift in Sources */,
 				0B86616B2930ADA300EA4301 /* SceneDelegate.swift in Sources */,
@@ -837,8 +861,6 @@
 					"$(inherited)",
 					"-ObjC",
 					"-framework",
-					"\"DZNEmptyDataSet\"",
-					"-framework",
 					"\"StyledTextKit\"",
 					"-framework",
 					"\"UIKit\"",
@@ -895,8 +917,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
-					"-framework",
-					"\"DZNEmptyDataSet\"",
 					"-framework",
 					"\"StyledTextKit\"",
 					"-framework",
@@ -1017,8 +1037,6 @@
 					"$(inherited)",
 					"-ObjC",
 					"-framework",
-					"\"DZNEmptyDataSet\"",
-					"-framework",
 					"\"StyledTextKit\"",
 					"-framework",
 					"\"UIKit\"",
@@ -1132,8 +1150,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
-					"-framework",
-					"\"DZNEmptyDataSet\"",
 					"-framework",
 					"\"StyledTextKit\"",
 					"-framework",
@@ -1254,8 +1270,6 @@
 					"$(inherited)",
 					"-ObjC",
 					"-framework",
-					"\"DZNEmptyDataSet\"",
-					"-framework",
 					"\"StyledTextKit\"",
 					"-framework",
 					"\"UIKit\"",
@@ -1370,8 +1384,6 @@
 					"$(inherited)",
 					"-ObjC",
 					"-framework",
-					"\"DZNEmptyDataSet\"",
-					"-framework",
 					"\"StyledTextKit\"",
 					"-framework",
 					"\"UIKit\"",
@@ -1432,6 +1444,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0B48B1B42C21B40000D21737 /* XCRemoteSwiftPackageReference "BlankSlate" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/liam-i/BlankSlate";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.7.1;
+			};
+		};
 		0BE87E842C1E0166009C95A7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa";
@@ -1451,6 +1471,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0B48B1B52C21B40000D21737 /* BlankSlate */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0B48B1B42C21B40000D21737 /* XCRemoteSwiftPackageReference "BlankSlate" */;
+			productName = BlankSlate;
+		};
 		0BE87E852C1E0166009C95A7 /* Sentry */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0BE87E842C1E0166009C95A7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;

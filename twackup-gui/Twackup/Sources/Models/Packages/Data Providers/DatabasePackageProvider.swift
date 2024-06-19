@@ -5,7 +5,7 @@
 //  Created by Daniil on 28.11.2022.
 //
 
-class DatabasePackageProvider: PackageDataProvider, @unchecked Sendable {
+class DatabasePackageProvider: PackageDataProvider<DebPackage>, @unchecked Sendable {
     private let database: Database
 
     init(_ database: Database) {
@@ -14,38 +14,32 @@ class DatabasePackageProvider: PackageDataProvider, @unchecked Sendable {
         super.init()
     }
 
-    func reload() async throws {
+    override func reload() async throws {
         allPackages = try await database.fetchPackages()
     }
 
-    func deletePackages(at indexes: [Int]) async -> Bool {
-        let toDelete = packages.enumerated().filter { indexes.contains($0.offset) }.map { $0.element }
+    func deletePackages(at indexes: [Int]) async throws {
+        let toDelete = packages.enumerated().filter { indexes.contains($0.offset) }.map(\.element)
         if toDelete.isEmpty {
-            return false
+            return
         }
 
-        // refactor to use of SET
-        allPackages = allPackages.filter { package in
-            !toDelete.contains { $0.isEqualTo(package) }
-        }
+        try await delete(packages: toDelete)
+    }
 
-        do {
-            try await database.delete(packages: toDelete)
-        } catch {
-            await FFILogger.shared.log(error.localizedDescription, level: .warning)
-            return false
-        }
+    func deletePackage(at index: Int) async throws {
+        try await deletePackages(at: [index])
+    }
 
+    func delete(packages: [DebPackage]) async throws {
+        let snapshot = Set(allPackages).subtracting(Set(packages))
+        try await database.delete(packages: packages)
+
+        allPackages = snapshot.sorted(by: \.name)
         applyFilter(currentFilter)
-
-        return true
     }
 
-    func deletePackage(at index: Int) async -> Bool {
-        await deletePackages(at: [index])
-    }
-
-    func deleteAll() async -> Bool {
-        await deletePackages(at: allPackages.indices.map { $0 })
+    func deleteAll() async throws {
+        try await delete(packages: allPackages)
     }
 }

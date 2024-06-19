@@ -73,7 +73,7 @@ final class DpkgProgressNotifier: @unchecked Sendable {
 
     private func startProcessing(_ package: FFIPackage) {
         subscribers.forEach { subscriber in
-            Task(priority: .utility) {
+            Task(priority: .high) {
                 await subscriber.startProcessing(package: package)
             }
         }
@@ -81,7 +81,7 @@ final class DpkgProgressNotifier: @unchecked Sendable {
 
     private func finishedProcessing(_ package: FFIPackage, debURL: URL) {
         subscribers.forEach { subscriber in
-            Task(priority: .utility) {
+            Task(priority: .high) {
                 await subscriber.finishedProcessing(package: package, debURL: debURL)
             }
         }
@@ -89,7 +89,7 @@ final class DpkgProgressNotifier: @unchecked Sendable {
 
     private func finishedAll() {
         subscribers.forEach { subscriber in
-            Task(priority: .utility) {
+            Task(priority: .high) {
                 await subscriber.finishedAll()
             }
         }

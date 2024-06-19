@@ -1,20 +1,16 @@
 PODS:
-  - DZNEmptyDataSet (1.8.1)
   - StyledTextKit (0.2.0)
 
 DEPENDENCIES:
-  - DZNEmptyDataSet
   - StyledTextKit
 
 SPEC REPOS:
   trunk:
-    - DZNEmptyDataSet
     - StyledTextKit
 
 SPEC CHECKSUMS:
-  DZNEmptyDataSet: 9525833b9e68ac21c30253e1d3d7076cc828eaa7
   StyledTextKit: dbfb29a59922c6f18897a0266acd139b7c9e712b
 
-PODFILE CHECKSUM: 0333d228da71984d961f27bce3f4f90e02f0018b
+PODFILE CHECKSUM: 344bd33b6be452101823bffd5448fc64f3ec1453
 
 COCOAPODS: 1.15.2

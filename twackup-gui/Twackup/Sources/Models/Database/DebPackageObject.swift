@@ -9,7 +9,7 @@
 import CoreData
 
 struct BuildedPackage: @unchecked Sendable {
-    let package: Package
+    let package: any Package
 
     let debURL: URL
 }
@@ -23,7 +23,7 @@ class DebPackageObject: NSManagedObject {
         return request
     }
 
-    class func fetchRequest(package: Package) -> NSFetchRequest<DebPackageObject> {
+    class func fetchRequest<P: Package>(package: P) -> NSFetchRequest<DebPackageObject> {
         let request = NSFetchRequest<DebPackageObject>(entityName: entityName)
         request.predicate = NSPredicate(format: "id == %@ && version == %@", package.id, package.version)
         return request
@@ -65,7 +65,7 @@ class DebPackageObject: NSManagedObject {
         relPath = file.path.deletePrefix(Dpkg.defaultSaveDirectory.path)
     }
 
-    func fillFrom(package: Package) {
+    func fillFrom<P: Package>(package: P) {
         assert(!package.name.isEmpty)
         name = package.name
         id = package.id

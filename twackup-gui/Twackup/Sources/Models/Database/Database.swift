@@ -72,7 +72,7 @@ actor Database {
         return try backroundContext.fetch(request).map { DebPackage(object: $0) }
     }
 
-    func fetch(package: Package) throws -> DebPackage? {
+    func fetch<P: Package>(package: P) throws -> DebPackage? {
         let request = DebPackageObject.fetchRequest(package: package)
         guard let object = try backroundContext.fetch(request).first else {
             return nil
@@ -100,10 +100,6 @@ actor Database {
 
         let request = NSBatchDeleteRequest(objectIDs: packages.map { $0.databaseID })
         _ = await execute(request: request, context: backroundContext)
-    }
-
-    func delete(packages: [Package]) async throws {
-        try await delete(packages: packages.compactMap { $0.asDEB })
     }
 
     func packagesSize() -> Int64 {

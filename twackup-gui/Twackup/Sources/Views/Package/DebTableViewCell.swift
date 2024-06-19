@@ -7,14 +7,10 @@
 
 import UIKit
 
-class DebTableViewCell: PackageTableViewCell {
-    override func updateUI() {
-        guard let package else { return }
-
+class DebTableViewCell: PackageTableViewCell<DebPackage> {
+    override func setup(config: inout UIListContentConfiguration, for package: DebPackage) {
         config.image = UIImage(systemName: package.section.systemImageName)
         config.text = package.name
         config.secondaryText = package.version
-
-        contentConfiguration = config
     }
 }

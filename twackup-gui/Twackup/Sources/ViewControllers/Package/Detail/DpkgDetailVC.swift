@@ -7,9 +7,9 @@
 
 import UIKit
 
-class DpkgDetailVC: PackageDetailVC, RebuildPackageDetailedViewDelegate {
+class DpkgDetailVC: PackageDetailVC<FFIPackage>, RebuildPackageDetailedViewDelegate {
     private lazy var _container = RebuildPackageDetailedView(delegate: self)
-    override var detailView: PackageDetailedView { _container }
+    override var detailView: PackageDetailedView<FFIPackage> { _container }
 
     nonisolated func rebuild(_ package: FFIPackage) {
         Task {

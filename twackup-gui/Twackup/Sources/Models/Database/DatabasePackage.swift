@@ -8,6 +8,10 @@
 import CoreData
 
 final class DebPackage: Package, Sendable {
+    static func == (lhs: DebPackage, rhs: DebPackage) -> Bool {
+        lhs.id == rhs.id && lhs.version == rhs.version
+    }
+
     let databaseID: NSManagedObjectID
 
     let id: String
@@ -48,5 +52,10 @@ final class DebPackage: Package, Sendable {
         fileURL = Dpkg.defaultSaveDirectory.appendingPathComponent(object.relPath)
 
         debSize = Measurement(value: Double(object.debSize), unit: .bytes)
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(version)
     }
 }

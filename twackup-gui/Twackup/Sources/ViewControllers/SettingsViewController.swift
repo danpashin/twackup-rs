@@ -99,8 +99,8 @@ struct SettingsViewController: View {
 
     func clearAppData() {
         Task {
-            _ = await mainModel.databasePackageProvider.deleteAll()
-            NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
+            try? await mainModel.databasePackageProvider.deleteAll()
+            NotificationCenter.default.post(name: .DebsReload, object: nil)
         }
     }
 }

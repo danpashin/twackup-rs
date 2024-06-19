@@ -5,7 +5,7 @@
 //  Created by Daniil on 29.11.2022.
 //
 
-class DatabasePackageDetailedView: PackageDetailedView {
+class DatabasePackageDetailedView: PackageDetailedView<DebPackage> {
     let debSizeLabel = KeyValueLabel(key: "detailed-view-debsize-lbl".localized)
 
     override init(delegate: PackageDetailViewDelegate) {
@@ -18,11 +18,9 @@ class DatabasePackageDetailedView: PackageDetailedView {
         super.init(coder: coder)
     }
 
-    override func updateContents(forPackage package: Package) {
+    override func updateContents(forPackage package: DebPackage) {
         super.updateContents(forPackage: package)
         learnMoreButton.isHidden = true
-
-        guard let package = package.asDEB else { return }
 
         // float value comparement logic
         if package.debSize.value > 1 {

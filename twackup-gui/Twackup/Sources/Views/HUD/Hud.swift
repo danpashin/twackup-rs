@@ -197,16 +197,20 @@ final class Hud: UIView {
             try? await Task.sleep(nanoseconds: UInt64(delaySec) * 1_000_000_000)
         }
 
-        if animated {
-            UIView.animate(withDuration: 0.5) { [self] in
-                alpha = 0.0
-            } completion: { [self] _ in
+        await withCheckedContinuation { continuation in
+            if animated {
+                UIView.animate(withDuration: 0.5) { [self] in
+                    alpha = 0.0
+                } completion: { [self] _ in
+                    progressView.stopAnimation()
+                    removeFromSuperview()
+                    continuation.resume()
+                }
+            } else {
                 progressView.stopAnimation()
                 removeFromSuperview()
+                continuation.resume()
             }
-        } else {
-            progressView.stopAnimation()
-            removeFromSuperview()
         }
     }
 

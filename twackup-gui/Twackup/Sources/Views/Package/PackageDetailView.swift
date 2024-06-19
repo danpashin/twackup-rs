@@ -10,13 +10,13 @@ import UIKit
 
 @MainActor
 protocol PackageDetailViewDelegate: AnyObject {
-    func openExternalPackageInfo(_ package: Package)
+    func openExternalPackageInfo()
 }
 
-class PackageDetailedView: UIView {
+class PackageDetailedView<P: Package>: UIView {
     private(set) weak var delegate: PackageDetailViewDelegate?
 
-    private(set) var package: Package?
+    private(set) var package: P?
 
     let identifierLabel = KeyValueLabel(key: "detailed-view-identifier-lbl".localized)
     let versionLabel = KeyValueLabel(key: "detailed-view-version-lbl".localized)
@@ -80,7 +80,10 @@ class PackageDetailedView: UIView {
     private(set) lazy var learnMoreButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("detailed-view-learnmore-btn".localized, for: .normal)
-        button.addTarget(self, action: #selector(learnMoreTapped), for: .touchUpInside)
+        button.addAction(UIAction { [self] _ in
+            delegate?.openExternalPackageInfo()
+        }, for: .touchUpInside)
+
         return button
     }()
 
@@ -135,7 +138,7 @@ class PackageDetailedView: UIView {
         }
     }
 
-    func updateContents(forPackage package: Package) {
+    func updateContents(forPackage package: P) {
         self.package = package
 
         identifierLabel.valueLabel.text = package.id
@@ -155,11 +158,5 @@ class PackageDetailedView: UIView {
         } else {
             logoHeightConstraint.constant = 0.0
         }
-    }
-
-    @objc
-    func learnMoreTapped() {
-        guard let package else { return }
-        delegate?.openExternalPackageInfo(package)
     }
 }

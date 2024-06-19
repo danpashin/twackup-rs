@@ -10,8 +10,6 @@ class MainModel: @unchecked Sendable {
 
     let dpkg: Dpkg
 
-    let logger = FFILogger.shared
-
     let preferences: Preferences
 
     private(set) lazy var databasePackageProvider = DatabasePackageProvider(database)

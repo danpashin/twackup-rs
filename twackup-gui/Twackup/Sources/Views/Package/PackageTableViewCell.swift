@@ -7,46 +7,35 @@
 
 import UIKit
 
-class PackageTableViewCell: UITableViewCell {
-    weak var package: Package? {
-        didSet {
-            updateUI()
-        }
-    }
+class PackageTableViewCell<P: Package>: UITableViewCell {
+    var package: P?
 
-    lazy var config: UIListContentConfiguration = {
-        var cfg = defaultContentConfiguration()
-
-        cfg.directionalLayoutMargins.top = 6.0
-        cfg.directionalLayoutMargins.bottom = 6.0
-
-        cfg.textProperties.font = UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: .semibold)
-        cfg.textToSecondaryTextVerticalPadding = 2.0
-
-        cfg.secondaryTextProperties.font = UIFont.systemFont(ofSize: UIFont.smallSystemFontSize, weight: .regular)
-        cfg.secondaryTextProperties.color = .secondaryLabel
-        cfg.secondaryTextProperties.numberOfLines = 2
-
-        return cfg
-    }()
-
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
-
+    override func updateConfiguration(using state: UICellConfigurationState) {
+        super.updateConfiguration(using: state)
         accessoryType = .disclosureIndicator
+
+        var config = defaultContentConfiguration().updated(for: state)
+
+        config.directionalLayoutMargins.top = 6.0
+        config.directionalLayoutMargins.bottom = 6.0
+
+        config.textProperties.font = UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: .semibold)
+        config.textToSecondaryTextVerticalPadding = 2.0
+
+        config.secondaryTextProperties.font = UIFont.systemFont(ofSize: UIFont.smallSystemFontSize, weight: .regular)
+        config.secondaryTextProperties.color = .secondaryLabel
+        config.secondaryTextProperties.numberOfLines = 2
+
+        if let package {
+            setup(config: &config, for: package)
+        }
+
+        contentConfiguration = config
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func updateUI() {
-        guard let package else { return }
-
+    func setup(config: inout UIListContentConfiguration, for package: P) {
         config.image = UIImage(systemName: package.section.systemImageName)
         config.text = package.name
         config.secondaryText = package.humanDescription?.truncate(70)
-
-        contentConfiguration = config
     }
 }

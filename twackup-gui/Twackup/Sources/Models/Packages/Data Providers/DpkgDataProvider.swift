@@ -7,7 +7,7 @@
 
 import Sentry
 
-class DpkgDataProvier: PackageDataProvider, @unchecked Sendable {
+class DpkgDataProvier: PackageDataProvider<FFIPackage>, @unchecked Sendable {
     let dpkg: Dpkg
 
     let onlyLeaves: Bool
@@ -19,16 +19,15 @@ class DpkgDataProvier: PackageDataProvider, @unchecked Sendable {
         super.init(packages: [])
     }
 
-    func reload() async {
-        let transaction = SentrySDK.startTransaction(name: "database-parse", operation: "lib")
-
+    override func reload() async throws {
         do {
+            let transaction = SentrySDK.startTransaction(name: "database-parse", operation: "lib")
+            defer { transaction.finish() }
+
             allPackages = try await dpkg.parsePackages(onlyLeaves: onlyLeaves)
         } catch {
-            await FFILogger.shared.log("Error \(error): \(error.localizedDescription)", level: .error)
             SentrySDK.capture(error: error)
+            throw error
         }
-
-        transaction.finish()
     }
 }

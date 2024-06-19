@@ -86,7 +86,8 @@ actor PackagesRebuilder: DpkgProgressSubscriber, Equatable, Hashable {
 
         await mainModel.database.add(packages: donePackages)
         databaseTransaction.finish()
-        await NotificationCenter.default.post(name: DebsListModel.NotificationName, object: nil)
+
+        NotificationCenter.default.post(name: .DebsReload, object: nil)
     }
 
     // MARK: - DpkgProgressSubscriber

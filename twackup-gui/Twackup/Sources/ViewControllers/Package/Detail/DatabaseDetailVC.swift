@@ -7,15 +7,15 @@
 
 import UIKit
 
-class DatabaseDetailVC: PackageDetailVC {
+class DatabaseDetailVC: PackageDetailVC<DebPackage> {
     private lazy var _container = DatabasePackageDetailedView(delegate: self)
-    override var detailView: PackageDetailedView { _container }
+    override var detailView: PackageDetailedView<DebPackage> { _container }
 
     private lazy var shareDebButton: UIBarButtonItem = {
         UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareDeb))
     }()
 
-    override var package: Package? {
+    override var package: DebPackage? {
         didSet {
             navigationItem.rightBarButtonItem = package != nil ? shareDebButton : nil
         }
@@ -23,7 +23,7 @@ class DatabaseDetailVC: PackageDetailVC {
 
     @objc
     func shareDeb(_ button: UIBarButtonItem) {
-        guard let package = package?.asDEB else { return }
+        guard let package else { return }
 
         let activityVC = UIActivityViewController(activityItems: [package.fileURL], applicationActivities: nil)
         activityVC.popoverPresentationController?.barButtonItem = button

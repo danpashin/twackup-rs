@@ -5,7 +5,7 @@
 //  Created by Daniil on 09.12.2022.
 //
 
-import DZNEmptyDataSet
+import BlankSlate
 import StyledTextKit
 
 final class LogViewController: UIViewController, FFILoggerSubscriber, ScrollableViewController {
@@ -29,8 +29,7 @@ final class LogViewController: UIViewController, FFILoggerSubscriber, Scrollable
         view.alwaysBounceVertical = true
         view.addSubview(logView)
 
-        view.emptyDataSetSource = self
-        view.emptyDataSetDelegate = self
+        view.bs.setDataSourceAndDelegate(self)
 
         return view
     }()
@@ -47,13 +46,13 @@ final class LogViewController: UIViewController, FFILoggerSubscriber, Scrollable
         tabBarItem = metadata.tabbarItem
 
         Task {
-            await mainModel.logger.addSubscriber(self)
+            await FFILogger.shared.addSubscriber(self)
         }
     }
 
     deinit {
         Task {
-            await mainModel.logger.removeSubscriber(self)
+            await FFILogger.shared.removeSubscriber(self)
         }
     }
 
@@ -81,7 +80,7 @@ final class LogViewController: UIViewController, FFILoggerSubscriber, Scrollable
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        scrollView.reloadEmptyDataSet()
+        scrollView.bs.reloadBlankSlate()
         scrollToBottomIfNeeded()
     }
 
@@ -107,7 +106,7 @@ final class LogViewController: UIViewController, FFILoggerSubscriber, Scrollable
         renderLog()
 
         scrollView.contentOffset = scrollView.minimumContentOffset
-        scrollView.reloadEmptyDataSet()
+        scrollView.bs.reloadBlankSlate()
     }
 
     // MARK: - FFILoggerSubscriber

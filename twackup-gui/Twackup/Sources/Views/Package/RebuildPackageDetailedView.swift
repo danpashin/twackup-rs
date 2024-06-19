@@ -11,7 +11,7 @@ protocol RebuildPackageDetailedViewDelegate: PackageDetailViewDelegate {
     func rebuild(_ package: FFIPackage)
 }
 
-class RebuildPackageDetailedView: PackageDetailedView {
+class RebuildPackageDetailedView: PackageDetailedView<FFIPackage> {
     private(set) lazy var rebuildButton: UIButton = {
         let button = UIButton(type: .system)
         button.addTarget(self, action: #selector(rebuild), for: .touchUpInside)
@@ -88,7 +88,7 @@ class RebuildPackageDetailedView: PackageDetailedView {
 
     @objc
     func rebuild() {
-        guard let package = package as? FFIPackage else { return }
+        guard let package else { return }
         (delegate as? any RebuildPackageDetailedViewDelegate)?.rebuild(package)
     }
 }

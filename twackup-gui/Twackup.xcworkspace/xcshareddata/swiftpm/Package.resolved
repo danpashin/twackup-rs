@@ -1,6 +1,15 @@
 {
-  "originHash" : "839d123f1900edaad890380425ae489268bb665e6f7d1f35eee14d76b0126426",
+  "originHash" : "03268da808f69f46a11c728919d5ae418587344e0bf31a559a25c07b2d55fcf7",
   "pins" : [
+    {
+      "identity" : "blankslate",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/liam-i/BlankSlate",
+      "state" : {
+        "revision" : "db6e0bddbb77182079a40dcb780aa4a85f93d784",
+        "version" : "0.7.1"
+      }
+    },
     {
       "identity" : "nuke",
       "kind" : "remoteSourceControl",
