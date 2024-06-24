@@ -82,6 +82,7 @@ args = [
     "--url", "${DEB_HOMEPAGE}",
     "--deb-field", "Name: ${DEB_NAME}",
     "${GUI_APP_DIR}=/Applications",
+    "${CARGO_MAKE_WORKING_DIRECTORY}/assets/TwackupGUI.plist=/Library/libSandy/TwackupGUI.plist",
     "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/changelog=/usr/share/doc/${DEB_IDENTIFIER}/changelog",
 ]
 

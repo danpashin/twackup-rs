@@ -19,6 +19,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return MainModel(database: Database(), dpkg: dpkg, preferences: preferences)
     }()
 
+    override init() {
+        super.init()
+
+        libSandy_applyProfile("TwackupGUI")
+    }
+
     func application(
         _ application: UIApplication, didFinishLaunchingWithOptions
         launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil

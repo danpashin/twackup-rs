@@ -63,10 +63,6 @@ class MainTabbarController: UITabBarController, UITabBarControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-#if DEBUG
-        debugPrint("libSandy works: \(libSandy_works())")
-#endif
-
         delegate = self
 
         setViewControllers([
