@@ -57,7 +57,7 @@ mv -v Twackup.app.dSYM "${DEST_DIR}"
 
 [tasks.create-deb]
 private = true
-cwd = "${ARTIFACTS_OUTPUT_DIR}"
+cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}"
 command = "bundle"
 args = [
     "exec", "fpm",
@@ -65,6 +65,7 @@ args = [
     "--output-type", "deb",
     "--force",
     "--prefix", "${DEB_PREFIX}",
+    "--package", "${ARTIFACTS_OUTPUT_DIR}/${DEB_IDENTIFIER}_${CARGO_MAKE_CRATE_VERSION}_${DEB_ARCHITECTURE}.deb",
     "--deb-no-changelog",
     "--log", "warn",
     "--name", "${DEB_IDENTIFIER}",
