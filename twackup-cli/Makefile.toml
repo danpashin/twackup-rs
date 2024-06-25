@@ -20,7 +20,7 @@ args = ["build", "@@remove-empty(CARGO_BUILD_RELEASE_ARG)", "--target", "aarch64
 
 [tasks.build-apple-armv7]
 command = "cargo"
-toolchain = "nightly"
+toolchain = "nightly-2024-06-24"
 args = [
     "build",
     "@@remove-empty(CARGO_BUILD_RELEASE_ARG)",
