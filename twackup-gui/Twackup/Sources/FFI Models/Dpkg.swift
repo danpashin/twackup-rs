@@ -35,13 +35,16 @@ actor Dpkg {
         }
 
         var isDir: ObjCBool = true
-        let exists = FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir)
+        var exists = FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir)
 
         // Application is not usable without directories created
         // swiftlint:disable force_try
         if exists && !isDir.boolValue {
             try! FileManager.default.removeItem(at: url)
-        } else if !exists {
+            exists = false
+        }
+
+        if !exists {
             try! FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         }
         // swiftlint:enable force_try

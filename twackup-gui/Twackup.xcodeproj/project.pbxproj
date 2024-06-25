@@ -105,7 +105,6 @@
 		0B47A8762C2AD8790043B8A7 /* LSApplicationProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LSApplicationProxy.h; sourceTree = "<group>"; };
 		0B47A8792C2AD8790043B8A7 /* LSBundleProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LSBundleProxy.h; sourceTree = "<group>"; };
 		0B47A87D2C2AD8790043B8A7 /* LSResourceProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LSResourceProxy.h; sourceTree = "<group>"; };
-		0B47A8822C2AD9690043B8A7 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		0B47A8842C2AD9700043B8A7 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		0B48B1B72C22B04600D21737 /* DebsListVC+BlankSlate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebsListVC+BlankSlate.swift"; sourceTree = "<group>"; };
 		0B48B1B92C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DpkgListVC+BlankSlate.swift"; sourceTree = "<group>"; };
@@ -500,7 +499,6 @@
 			isa = PBXGroup;
 			children = (
 				0B47A8842C2AD9700043B8A7 /* MobileCoreServices.framework */,
-				0B47A8822C2AD9690043B8A7 /* CoreServices.framework */,
 				CEF70D3062CF0C2BA7D149B4 /* Pods_Twackup.framework */,
 			);
 			name = Frameworks;
