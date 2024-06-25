@@ -19,6 +19,7 @@
 		0B434F9A2935E29300311FB6 /* DpkgDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F992935E29300311FB6 /* DpkgDetailVC.swift */; };
 		0B434F9C2935E90000311FB6 /* DatabaseDetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F9B2935E90000311FB6 /* DatabaseDetailVC.swift */; };
 		0B434F9E2935E97200311FB6 /* DatabasePackageDetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B434F9D2935E97200311FB6 /* DatabasePackageDetailedView.swift */; };
+		0B47A8852C2AD9700043B8A7 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B47A8842C2AD9700043B8A7 /* MobileCoreServices.framework */; };
 		0B48B1B62C21B40000D21737 /* BlankSlate in Frameworks */ = {isa = PBXBuildFile; productRef = 0B48B1B52C21B40000D21737 /* BlankSlate */; };
 		0B48B1B82C22B04600D21737 /* DebsListVC+BlankSlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B1B72C22B04600D21737 /* DebsListVC+BlankSlate.swift */; };
 		0B48B1BA2C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B48B1B92C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift */; };
@@ -100,6 +101,12 @@
 		0B434F9B2935E90000311FB6 /* DatabaseDetailVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseDetailVC.swift; sourceTree = "<group>"; };
 		0B434F9D2935E97200311FB6 /* DatabasePackageDetailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabasePackageDetailedView.swift; sourceTree = "<group>"; };
 		0B434FA02936351700311FB6 /* twackup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = twackup.h; path = ../target/twackup.h; sourceTree = "<group>"; };
+		0B47A8752C2AD8790043B8A7 /* _LSQueryResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = _LSQueryResult.h; sourceTree = "<group>"; };
+		0B47A8762C2AD8790043B8A7 /* LSApplicationProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LSApplicationProxy.h; sourceTree = "<group>"; };
+		0B47A8792C2AD8790043B8A7 /* LSBundleProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LSBundleProxy.h; sourceTree = "<group>"; };
+		0B47A87D2C2AD8790043B8A7 /* LSResourceProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LSResourceProxy.h; sourceTree = "<group>"; };
+		0B47A8822C2AD9690043B8A7 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		0B47A8842C2AD9700043B8A7 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		0B48B1B72C22B04600D21737 /* DebsListVC+BlankSlate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebsListVC+BlankSlate.swift"; sourceTree = "<group>"; };
 		0B48B1B92C22B2CD00D21737 /* DpkgListVC+BlankSlate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DpkgListVC+BlankSlate.swift"; sourceTree = "<group>"; };
 		0B48B1C12C22E43B00D21737 /* libroot.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libroot.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -178,6 +185,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B47A8852C2AD9700043B8A7 /* MobileCoreServices.framework in Frameworks */,
 				0B48B1CF2C22E47A00D21737 /* libroot.a in Frameworks */,
 				0BE87E932C1E05CE009C95A7 /* NukeUI in Frameworks */,
 				C1FF8C5621CC9FEC564B8CCE /* Pods_Twackup.framework in Frameworks */,
@@ -219,6 +227,25 @@
 				0B2636E02948B887003EA806 /* Compression.swift */,
 			);
 			path = Preferences;
+			sourceTree = "<group>";
+		};
+		0B47A8802C2AD8790043B8A7 /* MobileCoreServices */ = {
+			isa = PBXGroup;
+			children = (
+				0B47A8752C2AD8790043B8A7 /* _LSQueryResult.h */,
+				0B47A8762C2AD8790043B8A7 /* LSApplicationProxy.h */,
+				0B47A8792C2AD8790043B8A7 /* LSBundleProxy.h */,
+				0B47A87D2C2AD8790043B8A7 /* LSResourceProxy.h */,
+			);
+			path = MobileCoreServices;
+			sourceTree = "<group>";
+		};
+		0B47A8812C2AD8790043B8A7 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				0B47A8802C2AD8790043B8A7 /* MobileCoreServices */,
+			);
+			path = include;
 			sourceTree = "<group>";
 		};
 		0B48EF442C200CA7007C0EC0 /* UI Models */ = {
@@ -271,6 +298,7 @@
 			children = (
 				0BE87E942C1E2214009C95A7 /* Localizable.xcstrings */,
 				0B88C31F2930E32800BA5312 /* Sources */,
+				0B47A8812C2AD8790043B8A7 /* include */,
 				0B8661712930ADA400EA4301 /* Assets.xcassets */,
 				0B8661732930ADA400EA4301 /* LaunchScreen.storyboard */,
 				0B8661762930ADA400EA4301 /* Info.plist */,
@@ -471,6 +499,8 @@
 		A9DB1EE24AF2E5EE6554C623 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0B47A8842C2AD9700043B8A7 /* MobileCoreServices.framework */,
+				0B47A8822C2AD9690043B8A7 /* CoreServices.framework */,
 				CEF70D3062CF0C2BA7D149B4 /* Pods_Twackup.framework */,
 			);
 			name = Frameworks;

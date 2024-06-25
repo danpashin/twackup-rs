@@ -26,7 +26,27 @@ actor Dpkg {
     }
 
     nonisolated static let defaultSaveDirectory: URL = {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        var url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+
+        let proxy = LSApplicationProxy.forCurrentProcess()
+        let unsandboxed = (proxy?.entitlements["com.apple.private.security.no-sandbox"] as? Bool) ?? false
+        if unsandboxed {
+            url = URL(fileURLWithPath: "/var/mobile/Documents/Twackup")
+        }
+
+        var isDir: ObjCBool = true
+        let exists = FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir)
+
+        // Application is not usable without directories created
+        // swiftlint:disable force_try
+        if exists && !isDir.boolValue {
+            try! FileManager.default.removeItem(at: url)
+        } else if !exists {
+            try! FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        }
+        // swiftlint:enable force_try
+
+        return url
     }()
 
     private let innerDpkg: UnsafeMutablePointer<TwDpkg_t>
