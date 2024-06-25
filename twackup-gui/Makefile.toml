@@ -106,6 +106,7 @@ DEB_ARCHITECTURE = "iphoneos-arm64"
 DEB_PREFIX = "/var/jb"
 XCODE_SCHEME = "Twackup (Rootless)"
 ARTIFACTS_OUTPUT_DIR = "${ARTIFACTS_ROOTLESS_DIR}"
+DEB_DEPENDS = "${DEB_DEPENDS}, libroot-dopamine"
 
 [tasks.build-ipa]
 category = "Build"
