@@ -56,6 +56,11 @@ actor FFILogger {
         }
 
         var funcs = TwLogFunctions()
+        // Intented leak since logger can be deinited in Swift but pointer will be saved by Rust struct
+        // and it will crash in some of this C-style handlers
+        //
+        // Maybe there should be some kind of `deinit` func which will balance RC
+        // but Rust log crate doesn't support deiniting yet
         funcs.context = Unmanaged<FFILogger>.passRetained(self).toOpaque()
         funcs.log = { context, ffiMsg, level in
             guard let context,

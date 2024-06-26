@@ -41,7 +41,8 @@ final class DpkgProgressNotifier: @unchecked Sendable {
     // MARK: - Private methods
 
     private func initFuncs() {
-        ffiFunctions.context = Unmanaged.passUnretained(self).toOpaque()
+        // Temporarily make a leak and consume it in finished_all func
+        ffiFunctions.context = Unmanaged.passRetained(self).toOpaque()
         ffiFunctions.started_processing = { context, package in
             guard let context, let ffiPackage = FFIPackage(package) else {
                 tw_package_release(package.inner)
@@ -66,7 +67,7 @@ final class DpkgProgressNotifier: @unchecked Sendable {
         ffiFunctions.finished_all = { context in
             guard let context else { return }
 
-            let dpkg = Unmanaged<DpkgProgressNotifier>.fromOpaque(context).takeUnretainedValue()
+            let dpkg = Unmanaged<DpkgProgressNotifier>.fromOpaque(context).takeRetainedValue()
             dpkg.finishedAll()
         }
     }
