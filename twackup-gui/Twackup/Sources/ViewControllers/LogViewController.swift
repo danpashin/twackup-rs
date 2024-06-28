@@ -8,28 +8,18 @@
 import BlankSlate
 import StyledTextKit
 
-final class LogViewController: UIViewController, FFILoggerSubscriber, ScrollableViewController {
+final class LogViewController: UIViewController, ScrollableViewController {
     let metadata: ViewControllerMetadata
 
-    let mainModel: MainModel
+    private let styledLogger = StyledLogger()
 
-    let currentText = NSMutableAttributedString()
-
-    private var wantsToScrollBottom: Bool = false
-
-    private(set) lazy var logView: StyledTextView = {
-        let view = StyledTextView()
-
-        return view
-    }()
+    private let textView = UIView()
 
     private(set) lazy var scrollView: UIScrollView = {
         let view = UIScrollView()
         view.isScrollEnabled = true
         view.alwaysBounceVertical = true
-        view.addSubview(logView)
-
-        view.bs.setDataSourceAndDelegate(self)
+        view.addSubview(textView)
 
         return view
     }()
@@ -39,21 +29,10 @@ final class LogViewController: UIViewController, FFILoggerSubscriber, Scrollable
         return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(actionClearLog))
     }()
 
-    init(mainModel: MainModel, metadata: ViewControllerMetadata) {
-        self.mainModel = mainModel
+    init(metadata: ViewControllerMetadata) {
         self.metadata = metadata
         super.init(nibName: nil, bundle: nil)
         tabBarItem = metadata.tabbarItem
-
-        Task {
-            await FFILogger.shared.addSubscriber(self)
-        }
-    }
-
-    deinit {
-        Task {
-            await FFILogger.shared.removeSubscriber(self)
-        }
     }
 
     required init?(coder: NSCoder) {
@@ -74,74 +53,35 @@ final class LogViewController: UIViewController, FFILoggerSubscriber, Scrollable
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        renderLog()
+        Task {
+            await renderLog()
+        }
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    private func renderLog() async {
+        do {
+            let category = traitCollection.preferredContentSizeCategory
+            let result = try await styledLogger.render(for: view.frame.width, contentSizeCategory: category)
 
-        scrollView.bs.reloadBlankSlate()
-        scrollToBottomIfNeeded()
-    }
-
-    private func renderLog() {
-        let category = UIApplication.shared.preferredContentSizeCategory
-        let builder = StyledTextBuilder(attributedText: currentText)
-        let renderer = StyledTextRenderer(string: builder.build(), contentSizeCategory: category)
-        logView.configure(with: renderer, width: view.bounds.width)
-
-        scrollView.contentSize = logView.bounds.size
-    }
-
-    private func scrollToBottomIfNeeded() {
-        if wantsToScrollBottom {
-            scrollView.contentOffset = scrollView.maximumContentOffset
-            wantsToScrollBottom = false
+            textView.layer.contents = result.image
+            textView.frame = CGRect(origin: CGPoint(x: result.insets.left, y: result.insets.top), size: result.size)
+        } catch {
+            textView.layer.contents = nil
+            textView.frame = .zero
+            print(error)
         }
     }
 
     @objc
     func actionClearLog() {
-        currentText.setAttributedString(NSAttributedString())
-        renderLog()
-
-        scrollView.contentOffset = scrollView.minimumContentOffset
-        scrollView.bs.reloadBlankSlate()
-    }
-
-    // MARK: - FFILoggerSubscriber
-
-    func log(message: FFILogger.Message, level: FFILogger.Level) async {
-        let targetColor: UIColor = switch level {
-        case .off: .clear
-        case .debug: .systemIndigo
-        case .info: .systemBlue
-        case .warning: .systemOrange
-        case .error: .systemRed
+        Task {
+            await styledLogger.flush()
+            await renderLog()
         }
-
-        currentText.append(NSAttributedString(string: "[\(message.target ?? "nil")]  ", attributes: [
-            .font: UIFont.boldSystemFont(ofSize: UIFont.systemFontSize),
-            .foregroundColor: targetColor
-        ]))
-
-        currentText.append(NSAttributedString(string: message.text, attributes: [
-            .font: UIFont.monospacedSystemFont(ofSize: UIFont.systemFontSize, weight: .regular),
-            .foregroundColor: UIColor.label
-        ]))
-
-        currentText.append(NSAttributedString(string: "\n"))
-
-        wantsToScrollBottom = true
-    }
-
-    func flush() async {
     }
 
     // MARK: - ScrollableViewController
 
     func scrollToInitialPosition(animated: Bool) {
-        wantsToScrollBottom = true
-        scrollToBottomIfNeeded()
     }
 }

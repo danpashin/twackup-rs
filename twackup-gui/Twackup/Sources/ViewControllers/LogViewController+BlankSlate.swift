@@ -28,6 +28,7 @@ extension LogViewController: @preconcurrency BlankSlate.DataSource, @preconcurre
     }
     
     func blankSlateShouldDisplay(_ view: UIView) -> Bool {
-        MainActor.assumeIsolated { currentText.length == 0 }
+//        MainActor.assumeIsolated { currentText.length == 0 }
+        false
     }
 }
