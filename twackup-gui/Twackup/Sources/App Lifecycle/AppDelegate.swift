@@ -10,13 +10,14 @@ import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    let preferences = Preferences()
+    let preferences = try! Preferences()
 
     private var consoleLoggerIsSet = false
 
     private(set) lazy var mainModel: MainModel = {
         let dpkg = Dpkg(path: jbRootPath("/var/lib/dpkg"), preferences: preferences)
-        return MainModel(database: Database(), dpkg: dpkg, preferences: preferences)
+        let database = Database(preferences: preferences)
+        return MainModel(database: database, dpkg: dpkg, preferences: preferences)
     }()
 
     func application(

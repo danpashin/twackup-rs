@@ -36,7 +36,7 @@ final class DebPackage: Package, Sendable {
 
     let debSize: Measurement<UnitInformationStorage>
 
-    init(object: DebPackageObject) {
+    init(object: DebPackageObject, saveDiskNode: Int64) {
         databaseID = object.objectID
 
         id = object.id
@@ -49,8 +49,7 @@ final class DebPackage: Package, Sendable {
         humanDescription = object.humanDescription
         installedSize = object.installedSize
 
-        fileURL = Dpkg.defaultSaveDirectory.appendingPathComponent(object.relPath)
-
+        fileURL = URL(fileURLWithPath: "/.file/id=\(saveDiskNode).\(object.inodeID)")
         debSize = Measurement(value: Double(object.debSize), unit: .bytes)
     }
 

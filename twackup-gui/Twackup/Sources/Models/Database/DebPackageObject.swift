@@ -14,6 +14,9 @@ struct BuildedPackage: @unchecked Sendable {
     let debURL: URL
 }
 
+struct UpdateMetadataError: Error {
+}
+
 class DebPackageObject: NSManagedObject {
     static let entityName = "DebPackageObject"
 
@@ -53,16 +56,21 @@ class DebPackageObject: NSManagedObject {
     @NSManaged var debSize: Int64
 
     @NSManaged var buildDate: Date
-    @NSManaged var relPath: String
+    @NSManaged var inodeID: Int64
 
     var icon: URL?
     var depiction: URL?
 
-    func fillFrom(file: URL) {
-        let metadata = try? FileManager.default.attributesOfItem(atPath: file.path)
-        debSize = (metadata?[.size] as? Int64) ?? 0
+    func fillFrom(file: URL) throws {
+        let metadata = try FileManager.default.attributesOfItem(atPath: file.path)
+        guard let size = metadata[.size] as? Int64,
+              let inode = metadata[.systemFileNumber] as? Int64
+        else {
+            throw UpdateMetadataError()
+        }
 
-        relPath = file.path.deletePrefix(Dpkg.defaultSaveDirectory.path)
+        debSize = size
+        inodeID = inode
     }
 
     func fillFrom<P: Package>(package: P) {

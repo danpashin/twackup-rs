@@ -59,7 +59,8 @@ actor PackagesRebuilder: DpkgProgressSubscriber, Equatable, Hashable {
         }
 
         do {
-            let results = try await mainModel.dpkg.rebuild(packages: packages)
+            let saveDir = await mainModel.preferences.saveDirectory
+            let results = try await mainModel.dpkg.rebuild(packages: packages, outDir: saveDir)
             for result in results {
                 switch result {
                 case .success: continue

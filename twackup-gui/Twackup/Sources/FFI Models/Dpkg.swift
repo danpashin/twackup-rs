@@ -25,33 +25,6 @@ actor Dpkg {
         case error
     }
 
-    nonisolated static let defaultSaveDirectory: URL = {
-        var url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-
-        let proxy = LSApplicationProxy.forCurrentProcess()
-        let unsandboxed = (proxy?.entitlements["com.apple.private.security.no-sandbox"] as? Bool) ?? false
-        if unsandboxed {
-            url = URL(fileURLWithPath: "/var/mobile/Documents/Twackup")
-        }
-
-        var isDir: ObjCBool = true
-        var exists = FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir)
-
-        // Application is not usable without directories created
-        // swiftlint:disable force_try
-        if exists && !isDir.boolValue {
-            try! FileManager.default.removeItem(at: url)
-            exists = false
-        }
-
-        if !exists {
-            try! FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
-        }
-        // swiftlint:enable force_try
-
-        return url
-    }()
-
     private let innerDpkg: UnsafeMutablePointer<TwDpkg_t>
 
     private let preferences: Preferences
@@ -98,7 +71,7 @@ actor Dpkg {
     ///   - outDir: Directory that will contain debs of packages
     /// - Returns: Array with results.
     /// Every result contains full deb path if rebuild is success or error if not
-    func rebuild(packages: [FFIPackage], outDir: URL = defaultSaveDirectory) async throws -> [Result<URL, Error>] {
+    func rebuild(packages: [FFIPackage], outDir: URL) async throws -> [Result<URL, Error>] {
         var ffiResults = slice_boxed_TwPackagesRebuildResult()
         withUnsafeMutablePointer(to: &ffiResults) { buildParameters.results = $0 }
 

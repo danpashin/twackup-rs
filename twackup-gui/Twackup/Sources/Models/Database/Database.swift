@@ -11,6 +11,8 @@ import os
 actor Database {
     private let persistentContainer: NSPersistentContainer
 
+    let preferences: Preferences
+
     var backroundContext: NSManagedObjectContext {
         let context = persistentContainer.newBackgroundContext()
         context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
@@ -18,7 +20,9 @@ actor Database {
         return context
     }
 
-    init() {
+    init(preferences: Preferences) {
+        self.preferences = preferences
+
         persistentContainer = NSPersistentContainer(name: "Twackup")
         persistentContainer.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         persistentContainer.loadPersistentStores { _, error in
@@ -57,7 +61,11 @@ actor Database {
                 let package = packages[index]
 
                 object.fillFrom(package: package.package)
-                object.fillFrom(file: package.debURL)
+                do {
+                    try object.fillFrom(file: package.debURL)
+                } catch {
+                    return true
+                }
             }
 
             index += 1
@@ -67,18 +75,21 @@ actor Database {
         _ = await execute(request: request, context: backroundContext)
     }
 
-    func fetchPackages() throws -> [DebPackage] {
+    func fetchPackages() async throws -> [DebPackage] {
         let request = DebPackageObject.fetchRequest()
-        return try backroundContext.fetch(request).map { DebPackage(object: $0) }
+
+        let saveDiskNode = try await preferences.saveDiskNode
+        return try backroundContext.fetch(request).map { DebPackage(object: $0, saveDiskNode: saveDiskNode) }
     }
 
-    func fetch<P: Package>(package: P) throws -> DebPackage? {
+    func fetch<P: Package>(package: P) async throws -> DebPackage? {
         let request = DebPackageObject.fetchRequest(package: package)
         guard let object = try backroundContext.fetch(request).first else {
             return nil
         }
 
-        return DebPackage(object: object)
+        let saveDiskNode = try await preferences.saveDiskNode
+        return DebPackage(object: object, saveDiskNode: saveDiskNode)
     }
 
     func delete(package: DebPackage) async throws {
