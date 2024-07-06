@@ -54,6 +54,8 @@ actor Database {
         var index = 0
         let total = packages.count
 
+        var failedIds = [NSManagedObjectID]()
+
         let request = NSBatchInsertRequest(entity: DebPackageObject.entity()) { (object: NSManagedObject) in
             guard index < total else { return true }
 
@@ -64,7 +66,10 @@ actor Database {
                 do {
                     try object.fillFrom(file: package.debURL)
                 } catch {
-                    return true
+                    // This branch must never be executed
+                    // But if it is - remove object from database and remove deb since they are managed by db
+                    failedIds.append(object.objectID)
+                    try? FileManager.default.removeItem(at: package.debURL)
                 }
             }
 
@@ -73,6 +78,11 @@ actor Database {
         }
 
         _ = await execute(request: request, context: backroundContext)
+
+        if !failedIds.isEmpty {
+            let request = NSBatchDeleteRequest(objectIDs: failedIds)
+            _ = await execute(request: request, context: backroundContext)
+        }
     }
 
     func fetchPackages() async throws -> [DebPackage] {
