@@ -44,7 +44,7 @@ jobs:
 
       - name: Install rust target support
         run: |
-          rustup toolchain install nightly-2024-06-24 --profile minimal --component rust-src
+          rustup toolchain install nightly-2024-06-23 --profile minimal --component rust-src
           rustup target add aarch64-apple-ios x86_64-apple-ios
 
       - name: Build & test
