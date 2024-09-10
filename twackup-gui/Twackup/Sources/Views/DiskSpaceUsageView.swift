@@ -56,7 +56,7 @@ class DiskSpaceUsageView: UIView {
     }
 
     deinit {
-        Task { @MainActor in
+        Task { @MainActor [self] in
             NotificationCenter.default.removeObserver(reloadObserver as Any)
         }
     }

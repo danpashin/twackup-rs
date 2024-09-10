@@ -54,7 +54,7 @@ final class DebsListVC: SelectablePackageListVC<DebPackage> {
     }
 
     deinit {
-        Task { @MainActor in
+        Task { @MainActor [self] in
             NotificationCenter.default.removeObserver(reloadObserver as Any)
         }
     }

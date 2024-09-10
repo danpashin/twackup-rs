@@ -51,7 +51,7 @@ final class LogViewController: UIViewController, FFILoggerSubscriber, Scrollable
     }
 
     deinit {
-        Task {
+        Task { [self] in
             await FFILogger.shared.removeSubscriber(self)
         }
     }
